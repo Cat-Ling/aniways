@@ -1,25 +1,14 @@
-'use client';
+import { unstable_noStore } from 'next/cache';
 
-import { Button } from '@/components/ui/button';
-import { signIn, signOut, useSession } from '@animelist/auth-next/client';
+const Home = async () => {
+  unstable_noStore();
 
-export default function Home() {
-  const { user, isLoading } = useSession();
+  const res = await fetch(
+    // 'https://gogotaku.info/recent-release-anime?page=2'
+    'https://anitaku.to/sousou-no-frieren-episode-1'
+  ).then(res => res.text());
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  return <div dangerouslySetInnerHTML={{ __html: res }} />;
+};
 
-  if (user) {
-    return (
-      <div>
-        <pre>
-          <code>{JSON.stringify(user, null, 2)}</code>
-        </pre>
-        <Button onClick={signOut}>Log Out</Button>
-      </div>
-    );
-  }
-
-  return <Button onClick={signIn}>Log In</Button>;
-}
+export default Home;
