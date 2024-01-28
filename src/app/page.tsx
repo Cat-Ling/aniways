@@ -1,7 +1,7 @@
 import { Play } from 'lucide-react';
 import { Pagination } from './pagination';
 import { Suspense } from 'react';
-import { getRecentlyReleased } from '@/data-access/anime';
+import { getRecentlyReleasedFromAllAnime } from '@/data-access/anime';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
@@ -31,7 +31,7 @@ const RecentlyReleasedAnimeGridLoader = () => {
 };
 
 const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
-  const recentlyReleased = await getRecentlyReleased(page);
+  let recentlyReleased = await getRecentlyReleasedFromAllAnime(page);
 
   return (
     <ul className="grid grid-cols-6 gap-3 h-full">
