@@ -94,6 +94,8 @@ type Response = {
   };
 };
 
+export type AllAnimeShowInfo = Response['data']['shows']['edges'][number];
+
 // more reliable than gogo but need testing
 export const getRecentlyReleasedFromAllAnime = async (
   page: number,

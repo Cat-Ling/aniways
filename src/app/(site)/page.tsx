@@ -8,7 +8,7 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
 
   return (
-    <div className="container mx-auto p-6">
+    <>
       <div className="w-full flex justify-between mb-5 items-center">
         <h1 className="text-2xl font-bold">Recently Released</h1>
         <Pagination />
@@ -16,7 +16,7 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
       <Suspense key={page} fallback={<RecentlyReleasedAnimeGridLoader />}>
         <RecentlyReleasedAnimeGrid page={page} />
       </Suspense>
-    </div>
+    </>
   );
 };
 

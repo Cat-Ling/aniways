@@ -5,7 +5,7 @@ import './globals.css';
 import { MyAnimeListAuthProvider } from './providers';
 import { getUser } from '@animelist/auth-next/server';
 import { cookies } from 'next/headers';
-import Image from 'next/image';
+import { Navbar } from './navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,7 +25,7 @@ export default async function RootLayout({
     <html lang="en" className="dark">
       <body className={cn('min-h-screen', inter.className)}>
         <MyAnimeListAuthProvider session={session}>
-          <Image src="/logo.jpg" width={80} height={80} alt="AniWays Logo" />
+          <Navbar />
           {children}
         </MyAnimeListAuthProvider>
       </body>
