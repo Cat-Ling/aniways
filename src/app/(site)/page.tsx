@@ -40,10 +40,7 @@ const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
           key={i}
           className="bg-background border rounded-md border-border p-2 group"
         >
-          <a
-            href={`https://anitaku.to/${url}`}
-            className="h-full flex flex-col gap-3"
-          >
+          <a href={`${url}`} className="h-full flex flex-col gap-3">
             <div className="relative">
               <div
                 className="w-full aspect-[450/650] bg-cover rounded-md"

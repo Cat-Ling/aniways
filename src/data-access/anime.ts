@@ -3,6 +3,7 @@ import parse from 'node-html-parser';
 
 export type Anime = AwaitedReturnType<typeof getRecentlyReleasedFromGogo>[0];
 
+// unreliable so should be used as a fallback
 export const getRecentlyReleasedFromGogo = async (page: number) => {
   unstable_noStore();
 
@@ -93,9 +94,35 @@ type Response = {
   };
 };
 
-export const getRecentlyReleasedFromAllAnime = async (page: number) => {
+// more reliable than gogo but need testing
+export const getRecentlyReleasedFromAllAnime = async (
+  page: number,
+  query?: string
+) => {
+  unstable_noStore();
+
+  const variables = {
+    search: {
+      query,
+    },
+    limit: 30,
+    page: page,
+    translationType: 'sub',
+    countryOrigin: 'JP',
+  };
+
+  const extensions = {
+    persistedQuery: {
+      version: 1,
+      sha256Hash:
+        '06327bc10dd682e1ee7e07b6db9c16e9ad2fd56c1b769e47513128cd5c9fc77a', // stolen from allanime dk when it will expire
+    },
+  };
+
   const res = (await fetch(
-    `https://api.allanime.day/api?variables={%22search%22:{},%22limit%22:30,%22page%22:${page},%22translationType%22:%22sub%22,%22countryOrigin%22:%22JP%22}&extensions={%22persistedQuery%22:{%22version%22:1,%22sha256Hash%22:%2206327bc10dd682e1ee7e07b6db9c16e9ad2fd56c1b769e47513128cd5c9fc77a%22}}`,
+    `https://api.allanime.day/api?variables=${encodeURIComponent(
+      JSON.stringify(variables)
+    )}&extensions=${encodeURIComponent(JSON.stringify(extensions))}`,
     {
       headers: {
         Origin: 'https://allmanga.to',
@@ -104,18 +131,36 @@ export const getRecentlyReleasedFromAllAnime = async (page: number) => {
   ).then(res => res.json())) as Response;
 
   const recentlyReleased = res.data.shows.edges.map(show => {
-    const image = show.thumbnail;
+    // for some reason the thumbnail is not a valid url when it starts with https://cdnimg.xyz/
+    const image = show.thumbnail.startsWith('https://cdnimg.xyz/')
+      ? show.thumbnail.replace('https:/', 'https://wp.youtube-anime.com')
+      : show.thumbnail;
+
     const name = show.name;
     const episode = show.lastEpisodeInfo.sub.episodeString;
-    const url = show._id;
+    const url = `/anime/${show._id}/${encodeURIComponent(
+      name.replace(/ /g, '-')
+    )}/${episode}`;
 
     return {
       name,
       image,
       episode,
-      url: url,
+      url,
     };
   });
 
   return recentlyReleased;
+};
+
+type Args = {
+  id: string;
+  name: string;
+  episode: number;
+};
+
+export const getAllAnimeUrlSource = (args: Args) => {
+  const { id, name, episode } = args;
+  const encodedName = encodeURIComponent(name.replace(/ /g, '-')); // replace spaces with dashes + encode
+  return `https://allmanga.to/bangumi/${id}/${encodedName}/p-${episode}-sub`;
 };
