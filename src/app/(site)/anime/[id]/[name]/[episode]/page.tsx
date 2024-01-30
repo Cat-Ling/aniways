@@ -59,9 +59,12 @@ const AnimePage = async ({
 
   const { show, episodeSelections } = data.fetch[Object.keys(data.fetch)[0]];
 
-  const [episodeVideoSource] = episodeSelections.filter(e =>
-    e.sourceUrl.startsWith('http')
-  );
+  const [episodeVideoSource] = episodeSelections
+    .sort((a, b) => {
+      if (a.sourceUrl.includes('embtaku.pro')) return -1;
+      return b.priority - a.priority;
+    })
+    .filter(e => e.sourceUrl.startsWith('http'));
 
   return (
     <>
