@@ -61,8 +61,24 @@ const AnimePage = async ({
 
   const [episodeVideoSource] = episodeSelections
     .sort((a, b) => {
-      if (a.sourceUrl.includes('embtaku.pro')) return -1;
+      if (
+        a.sourceUrl.includes('embtaku.pro') ||
+        a.downloadUrl?.includes('embtaku.pro')
+      )
+        return -1;
       return b.priority - a.priority;
+    })
+    .map(e => {
+      // some sources are not working, so we need to fix them
+      if (e.downloadUrl?.includes('embtaku.pro')) {
+        return {
+          ...e,
+          sourceUrl: e.sourceUrl.startsWith('/')
+            ? `https://embtaku.pro/streaming.php?${e.sourceUrl.split('?')[1]}`
+            : e.sourceUrl,
+        };
+      }
+      return e;
     })
     .filter(e => e.sourceUrl.startsWith('http'));
 

@@ -43,6 +43,11 @@ export const getRecentlyReleasedFromGogo = async (page: number) => {
   return recentlyReleased;
 };
 
+type EpisodeInfo = {
+  episodeString: string;
+  notes: string;
+};
+
 type Response = {
   data: {
     shows: {
@@ -56,10 +61,9 @@ type Response = {
         nativeName: string;
         thumbnail: string;
         lastEpisodeInfo: {
-          sub: {
-            episodeString: string;
-            notes: string;
-          };
+          sub: EpisodeInfo;
+          dub: EpisodeInfo;
+          raw: EpisodeInfo;
         };
         lastEpisodeDate: {
           sub: {
@@ -97,10 +101,7 @@ type Response = {
 export type AllAnimeShowInfo = Response['data']['shows']['edges'][number];
 
 // more reliable than gogo but need testing
-export const getRecentlyReleasedFromAllAnime = async (
-  page: number,
-  query?: string
-) => {
+export const getAnimeFromAllAnime = async (page: number, query?: string) => {
   unstable_noStore();
 
   const variables = {
@@ -133,13 +134,15 @@ export const getRecentlyReleasedFromAllAnime = async (
   ).then(res => res.json())) as Response;
 
   const recentlyReleased = res.data.shows.edges.map(show => {
-    // for some reason the thumbnail is not a valid url when it starts with https://cdnimg.xyz/
-    const image = show.thumbnail.startsWith('https://cdnimg.xyz/')
-      ? show.thumbnail.replace('https:/', 'https://wp.youtube-anime.com')
-      : show.thumbnail;
+    // use the website cache for iamges
+    const image = show.thumbnail.replace(
+      'https:/',
+      'https://wp.youtube-anime.com'
+    );
 
     const name = show.name;
-    const episode = show.lastEpisodeInfo.sub.episodeString;
+    const type = show.type;
+    const episode = show.lastEpisodeInfo.sub?.episodeString ?? '1';
     const url = `/anime/${show._id}/${encodeURIComponent(
       name.replace(/ /g, '-')
     )}/${episode}`;
@@ -149,10 +152,11 @@ export const getRecentlyReleasedFromAllAnime = async (
       image,
       episode,
       url,
+      type,
     };
   });
 
-  return recentlyReleased;
+  return { anime: recentlyReleased, total: res.data.shows.pageInfo.total };
 };
 
 type Args = {

@@ -5,6 +5,7 @@ specifiers:
   '@animelist/client': ^0.1.0
   '@radix-ui/react-slot': ^1.0.2
   '@radix-ui/react-tooltip': ^1.0.7
+  '@types/lodash': ^4.14.202
   '@types/node': ^20
   '@types/react': ^18
   '@types/react-dom': ^18
@@ -13,6 +14,7 @@ specifiers:
   clsx: ^2.1.0
   eslint: ^8
   eslint-config-next: 14.1.0
+  lodash: ^4.17.21
   lucide-react: ^0.316.0
   next: 14.1.1-canary.21
   node-html-parser: ^6.1.12
@@ -31,6 +33,7 @@ dependencies:
   '@radix-ui/react-tooltip': 1.0.7_zgwwugpnwb5kzp3fjmd337gy2u
   class-variance-authority: 0.7.0
   clsx: 2.1.0
+  lodash: 4.17.21
   lucide-react: 0.316.0_react@18.2.0
   next: 14.1.1-canary.21_biqbaboplfbrettd7655fr4n2y
   node-html-parser: 6.1.12
@@ -40,6 +43,7 @@ dependencies:
   tailwindcss-animate: 1.0.7_tailwindcss@3.4.1
 
 devDependencies:
+  '@types/lodash': 4.14.202
   '@types/node': 20.11.7
   '@types/react': 18.2.48
   '@types/react-dom': 18.2.18
@@ -694,6 +698,10 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/lodash/4.14.202:
+    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
     dev: true
 
   /@types/node/20.11.7:
@@ -2205,6 +2213,10 @@ packages:
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
 
   /loose-envify/1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
