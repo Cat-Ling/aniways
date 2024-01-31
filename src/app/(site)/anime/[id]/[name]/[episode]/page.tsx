@@ -59,6 +59,10 @@ const AnimePage = async ({
 
   const { show, episodeSelections } = data.fetch[Object.keys(data.fetch)[0]];
 
+  if (!episodeSelections || episodeSelections.length === 0) {
+    return notFound();
+  }
+
   const [episodeVideoSource] = episodeSelections
     .sort((a, b) => {
       if (
