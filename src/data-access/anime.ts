@@ -101,7 +101,20 @@ type Response = {
 export type AllAnimeShowInfo = Response['data']['shows']['edges'][number];
 
 // more reliable than gogo but need testing
-export const getAnimeFromAllAnime = async (page: number, query?: string) => {
+export const getAnimeFromAllAnime = async (
+  page: number,
+  query?: string,
+  loadNext: boolean = true
+): Promise<{
+  anime: {
+    name: string;
+    image: string;
+    episode: string;
+    url: string;
+    type: string;
+  }[];
+  next?: number;
+}> => {
   unstable_noStore();
 
   const variables = {
@@ -156,7 +169,14 @@ export const getAnimeFromAllAnime = async (page: number, query?: string) => {
     };
   });
 
-  return { anime: recentlyReleased, total: res.data.shows.pageInfo.total };
+  const next = loadNext
+    ? await getAnimeFromAllAnime(page + 1, query, false)
+    : { anime: [] };
+
+  return {
+    anime: recentlyReleased,
+    next: next.anime.length ? page + 1 : undefined,
+  };
 };
 
 type Args = {

@@ -10,7 +10,7 @@ import {
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export const Pagination = () => {
+export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -57,6 +57,7 @@ export const Pagination = () => {
             <Button
               size={'icon'}
               variant={'ghost'}
+              disabled={!hasNext}
               onClick={() => {
                 console.log('hello');
                 setPage(page + 1);

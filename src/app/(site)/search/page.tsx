@@ -3,6 +3,7 @@ import { AnimeGridLoader } from '../anime-grid-loader';
 import { AnimeGrid } from '../anime-grid';
 import { getAnimeFromAllAnime } from '@/data-access/anime';
 import { Pagination } from '../pagination';
+import { PaginationLoader } from '../pagination-loader';
 
 const SearchPage = async ({
   searchParams: { query, ...searchParams },
@@ -20,7 +21,12 @@ const SearchPage = async ({
             Showing results for <span className="text-foreground">{query}</span>
           </p>
         </div>
-        <Pagination />
+        <Suspense
+          key={query + page + '-pagination'}
+          fallback={<PaginationLoader />}
+        >
+          <PaginationWrapper page={page} query={query} />
+        </Suspense>
       </div>
       <Suspense key={query + page} fallback={<AnimeGridLoader />}>
         <SearchResults query={query} page={page} />
@@ -39,6 +45,12 @@ const SearchResults = async ({
   const { anime } = await getAnimeFromAllAnime(page, query);
 
   return <AnimeGrid anime={anime} />;
+};
+
+const PaginationWrapper = async (props: { page: number; query: string }) => {
+  const { next } = await getAnimeFromAllAnime(props.page, props.query);
+
+  return <Pagination hasNext={!!next} />;
 };
 
 export default SearchPage;
