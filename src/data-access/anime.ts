@@ -1,6 +1,12 @@
 import { unstable_noStore } from 'next/cache';
 import parse from 'node-html-parser';
 
+// website url patterns to get the episode video url
+// 1. anitaku.to/${name.replace(/ /g, '-')}-episode-${episode}
+// 2. allanime.to/bangumi/${id}/${encodeURIComponent(name.replace(/ /g, '-'))}/p-${episode}-sub
+// 3. gogoanime3.co/${name.replace(/ /g, '-')}-episode-${episode}
+// 4. embtaku.pro/videos/${name.replace(/ /g, '-')}-episode-${episode}
+
 export type Anime = AwaitedReturnType<typeof getRecentlyReleasedFromGogo>[0];
 
 // unreliable so should be used as a fallback
