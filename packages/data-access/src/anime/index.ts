@@ -189,3 +189,5 @@ export const getAllAnimeUrlSource = (args: Args) => {
   const encodedName = encodeURIComponent(name.replace(/ /g, '-')); // replace spaces with dashes + encode
   return `https://allmanga.to/bangumi/${id}/${encodedName}/p-${episode}-sub`;
 };
+
+export { default as getRecentlyReleasedAnime } from './recently-released';

@@ -4,14 +4,16 @@
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
-    "node-html-parser": "^6.1.12",
     "@animelist/auth-next": "^0.1.1",
     "@animelist/client": "^0.1.0",
-    "@tutkli/jikan-ts": "^1.0.1"
+    "lodash": "^4.17.21",
+    "node-html-parser": "^6.1.12",
+    "node-myanimelist": "^4.1.2"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^20.10.6",
     "typescript": "^5.3.3"
   }

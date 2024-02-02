@@ -12,7 +12,7 @@ type AnimeGridProps = {
 
 export const AnimeGrid = ({ anime }: AnimeGridProps) => {
   return (
-    <ul className="grid h-full grid-cols-6 gap-3">
+    <ul className="grid h-full grid-cols-1 gap-3 md:grid-cols-5">
       {anime.map(({ name, image, episode, url, type }, i) => (
         <li
           key={i}
