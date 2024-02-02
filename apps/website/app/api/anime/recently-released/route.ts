@@ -1,4 +1,4 @@
-import { getAnimeFromAllAnime } from '@aniways/data';
+import { getAnimeFromAllAnime } from '@aniways/data-access';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {

@@ -9,8 +9,9 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@aniways/ui": "workspace:*",
+    "@animelist/auth-next": "^0.1.1",
     "@aniways/data-access": "workspace:*",
+    "@aniways/ui": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lodash": "^4.17.21",
@@ -23,9 +24,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^14.0.4",
     "@aniways/eslint-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
+    "@next/eslint-plugin-next": "^14.0.4",
     "@types/eslint": "^8.56.1",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20",

@@ -18,6 +18,7 @@ importers:
 
   apps/website:
     specifiers:
+      '@animelist/auth-next': ^0.1.1
       '@aniways/data-access': workspace:*
       '@aniways/eslint-config': workspace:*
       '@aniways/typescript-config': workspace:*
@@ -45,6 +46,7 @@ importers:
       tailwindcss-animate: ^1.0.7
       typescript: ^5
     dependencies:
+      '@animelist/auth-next': 0.1.1
       '@aniways/data-access': link:../../packages/data-access
       '@aniways/ui': link:../../packages/ui
       class-variance-authority: 0.7.0

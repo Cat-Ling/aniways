@@ -7,7 +7,7 @@
       },
     ],
     "paths": {
-      "@/*": ["../../apps/website/src/*"],
+      "@/*": ["../../apps/website/*"],
       "@ui/*": ["../../packages/ui/src/*"],
     },
   },

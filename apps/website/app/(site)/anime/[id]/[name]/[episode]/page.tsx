@@ -1,4 +1,4 @@
-import { AllAnimeShowInfo, getAllAnimeUrlSource } from '@aniways/data';
+import { AllAnimeShowInfo, getAllAnimeUrlSource } from '@aniways/data-access';
 import { notFound } from 'next/navigation';
 import parse from 'node-html-parser';
 
