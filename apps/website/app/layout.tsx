@@ -11,8 +11,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'AniWays',
-  description: 
-  
+  description:   
   'Another anime website but with a MyAnimeList Integration',
 };
 
