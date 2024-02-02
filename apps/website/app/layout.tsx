@@ -11,7 +11,9 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'AniWays',
-  description: 'Another anime website but with a MyAnimeList Integration',
+  description: 
+  
+  'Another anime website but with a MyAnimeList Integration',
 };
 
 export default async function RootLayout({
