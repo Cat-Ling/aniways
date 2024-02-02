@@ -1,0 +1,18 @@
+{
+  "name": "@aniways/data-access",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "node-html-parser": "^6.1.12",
+    "@animelist/auth-next": "^0.1.1",
+    "@animelist/client": "^0.1.0",
+    "@tutkli/jikan-ts": "^1.0.1"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3"
+  }
+}

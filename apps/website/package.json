@@ -10,9 +10,7 @@
   },
   "dependencies": {
     "@aniways/ui": "workspace:*",
-    "@animelist/auth-next": "^0.1.1",
-    "@animelist/client": "^0.1.0",
-    "@tutkli/jikan-ts": "^1.0.1",
+    "@aniways/data-access": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lodash": "^4.17.21",

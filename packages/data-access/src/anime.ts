@@ -1,5 +1,3 @@
-import { AwaitedReturnType } from '@/types/awaited-return-type';
-import { unstable_noStore } from 'next/cache';
 import parse from 'node-html-parser';
 
 // website url patterns to get the episode video url
@@ -8,12 +6,8 @@ import parse from 'node-html-parser';
 // 3. gogoanime3.co/${name.replace(/ /g, '-')}-episode-${episode}
 // 4. embtaku.pro/videos/${name.replace(/ /g, '-')}-episode-${episode}
 
-export type Anime = AwaitedReturnType<typeof getRecentlyReleasedFromGogo>[0];
-
 // unreliable so should be used as a fallback
 export const getRecentlyReleasedFromGogo = async (page: number) => {
-  unstable_noStore();
-
   // each page is 60 anime we want 30 per page
   // so we need to get the page number and divide by 2
   // if the page is even we want the second 30
@@ -122,8 +116,6 @@ export const getAnimeFromAllAnime = async (
   }[];
   next?: number;
 }> => {
-  unstable_noStore();
-
   const variables = {
     search: {
       query,

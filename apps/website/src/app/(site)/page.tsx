@@ -1,6 +1,6 @@
 import { Pagination } from './pagination';
 import { Suspense } from 'react';
-import { getAnimeFromAllAnime } from '@/data-access/anime';
+import { getAnimeFromAllAnime } from '@aniways/data';
 import { AnimeGridLoader } from './anime-grid-loader';
 import { AnimeGrid } from './anime-grid';
 import { PaginationLoader } from './pagination-loader';
