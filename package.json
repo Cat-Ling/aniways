@@ -10,7 +10,7 @@
     "ui:add": "pnpm --filter @aniways/ui ui:add",
     "workspace:generate": "pnpm turbo gen workspace --name"
   },
-  "precommit": [
+  "pre-commit": [
     "format",
     "lint"
   ],
