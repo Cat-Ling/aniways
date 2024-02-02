@@ -7,6 +7,7 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "precommit": "pnpm run lint && pnpm run format",
     "ui:add": "pnpm --filter @aniways/ui ui:add",
     "workspace:generate": "pnpm turbo gen workspace --name"
   },
