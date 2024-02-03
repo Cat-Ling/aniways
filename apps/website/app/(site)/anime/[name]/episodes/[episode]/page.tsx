@@ -15,15 +15,21 @@ const AnimeStreamingPage = async ({
 
   const iframe = dom.querySelector('iframe')?.getAttribute('src');
 
+  const nameOfAnime = decodeURIComponent(name).split('-').join(' ');
+
   return (
     <>
-      <h1 className="text-2xl font-bold capitalize">
-        {decodeURIComponent(name).split('-').join(' ')} - Episode {episode}
+      <h1 className="mb-3 text-xl font-bold capitalize">
+        {nameOfAnime} -{' '}
+        <span className="text-muted-foreground font-normal">
+          Episode {episode}
+        </span>
       </h1>
       <iframe
         src={iframe}
         className="aspect-video w-full overflow-hidden"
         frameBorder="0"
+        scrolling="no"
         allowFullScreen
       />
     </>
