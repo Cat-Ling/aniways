@@ -1,11 +1,11 @@
-import { _RecentlyReleasedAnime } from '@ui/types';
+import { RecentlyReleasedAnime } from '@data/types';
 import parse from 'node-html-parser';
 
 const BASE_URL = 'https://gogoanime3.co';
 
 export default async function getRecentlyReleasedAnimeFromGogo(
   page: number
-): Promise<_RecentlyReleasedAnime[]> {
+): Promise<RecentlyReleasedAnime[]> {
   // each page is 20 anime
   const response = await fetch(`${BASE_URL}?page=${page}`).then(res =>
     res.text()

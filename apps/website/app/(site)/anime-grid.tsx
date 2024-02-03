@@ -4,16 +4,15 @@ type AnimeGridProps = {
   anime: {
     name: string;
     image: string;
-    episode: string;
+    episode: number | string;
     url: string;
-    type: string;
   }[];
 };
 
 export const AnimeGrid = ({ anime }: AnimeGridProps) => {
   return (
     <ul className="grid h-full grid-cols-1 gap-3 md:grid-cols-5">
-      {anime.map(({ name, image, episode, url, type }, i) => (
+      {anime.map(({ name, image, episode, url }, i) => (
         <li
           key={i}
           className="bg-background border-border group rounded-md border p-2"
@@ -31,9 +30,6 @@ export const AnimeGrid = ({ anime }: AnimeGridProps) => {
                 <p className="text-foreground mt-2 text-lg font-bold">
                   Watch Now
                 </p>
-              </div>
-              <div className="bg-primary absolute bottom-0 left-0 rounded-bl-md rounded-tr-md p-1 text-sm">
-                {type}
               </div>
             </div>
             <div className="flex flex-1 flex-col justify-between">

@@ -9,6 +9,7 @@
     "paths": {
       "@/*": ["../../apps/website/*"],
       "@ui/*": ["../../packages/ui/src/*"],
+      "@data/*": ["../../packages/data-access/src/*"],
     },
   },
   "include": [

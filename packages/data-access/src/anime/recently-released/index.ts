@@ -19,7 +19,10 @@ export default async function getRecentlyReleasedAnime(page: number) {
   ]);
 
   return {
-    anime: recentlyReleasedAnime,
+    anime: recentlyReleasedAnime.map(anime => ({
+      ...anime,
+      url: `/anime/${anime.name.replace(/ /g, '-').toLowerCase()}/episodes/${anime.episode}`,
+    })),
     hasNext: nextRecentlyReleasedAnime.length > 0,
   };
 }

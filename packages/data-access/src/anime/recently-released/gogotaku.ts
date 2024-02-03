@@ -1,4 +1,4 @@
-import { _RecentlyReleasedAnime } from '@ui/types';
+import { RecentlyReleasedAnime } from '@data/types';
 import { chunk } from 'lodash';
 import parse from 'node-html-parser';
 
@@ -6,7 +6,7 @@ const BASE_URL = 'https://gogotaku.info/recent-release-anime';
 
 export default async function getRecentlyReleasedAnimeFromGogoTaku(
   page: number
-): Promise<_RecentlyReleasedAnime[]> {
+): Promise<RecentlyReleasedAnime[]> {
   // each page is 60 anime we want 20 per page
   // page 1 = 1-20
   // page 2 = 21-40

@@ -1,4 +1,4 @@
-import { _RecentlyReleasedAnime } from '@ui/types';
+import { RecentlyReleasedAnime } from '@data/types';
 
 const BASE_URL = 'https://api.allanime.day/api';
 
@@ -17,7 +17,7 @@ type Response = {
 
 export default async function getRecentlyReleasedAnimeFromAllAnime(
   page: number
-): Promise<_RecentlyReleasedAnime[]> {
+): Promise<RecentlyReleasedAnime[]> {
   const variables = JSON.stringify({
     search: {},
     limit: 20,

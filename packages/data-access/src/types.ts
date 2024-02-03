@@ -1,10 +1,10 @@
-export type _RecentlyReleasedAnime = {
+export type RecentlyReleasedAnime = {
   name: string;
   episode: number;
   image: string;
 };
 
-export type Anime = _RecentlyReleasedAnime & {
+export type Anime = RecentlyReleasedAnime & {
   malId: string;
   malUrl: string;
   titles: string[];
