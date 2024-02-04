@@ -1,5 +1,4 @@
 'use client';
-
 import { Button } from '@aniways/ui/components/ui/button';
 import {
   Tooltip,
@@ -7,13 +6,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@aniways/ui/components/ui/tooltip';
+import { cn } from '@ui/lib/utils';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
 
   const page = Number(searchParams.get('page') || '1');
 
@@ -27,10 +27,6 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
     return params.toString();
   };
 
-  const setPage = (page: number) => {
-    replace(`${pathname}?${getParams(page)}`);
-  };
-
   return (
     <div className="grid grid-cols-3 place-items-center items-center">
       <TooltipProvider>
@@ -40,11 +36,12 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
               size={'icon'}
               variant={'ghost'}
               disabled={page === 1}
-              onClick={() => {
-                setPage(page - 1);
-              }}
+              className={cn(page === 1 && 'pointer-events-none opacity-50')}
+              asChild
             >
-              <ArrowLeft />
+              <Link href={`${pathname}?${getParams(page - 1)}`}>
+                <ArrowLeft />
+              </Link>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -58,12 +55,12 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
               size={'icon'}
               variant={'ghost'}
               disabled={!hasNext}
-              onClick={() => {
-                console.log('hello');
-                setPage(page + 1);
-              }}
+              className={cn(!hasNext && 'pointer-events-none opacity-50')}
+              asChild
             >
-              <ArrowRight />
+              <Link href={`${pathname}?${getParams(page + 1)}`}>
+                <ArrowRight />
+              </Link>
             </Button>
           </TooltipTrigger>
           <TooltipContent>

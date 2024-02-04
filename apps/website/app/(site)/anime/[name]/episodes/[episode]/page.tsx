@@ -1,4 +1,4 @@
-import parse from 'node-html-parser';
+import { getVideoSourceUrl } from '@data/anime';
 
 const AnimeStreamingPage = async ({
   params: { name, episode },
@@ -9,12 +9,7 @@ const AnimeStreamingPage = async ({
   };
 }) => {
   // need to move this to data-access module with better error handling and more sources
-  const endpoint = `https://embtaku.pro/videos/${name}-episode-${episode}`;
-  const html = await fetch(endpoint).then(res => res.text());
-  const dom = parse(html);
-
-  const iframe = dom.querySelector('iframe')?.getAttribute('src');
-
+  const iframe = await getVideoSourceUrl(name, episode);
   const nameOfAnime = decodeURIComponent(name).split('-').join(' ');
 
   return (
@@ -25,13 +20,20 @@ const AnimeStreamingPage = async ({
           Episode {episode}
         </span>
       </h1>
-      <iframe
-        src={iframe}
-        className="aspect-video w-full overflow-hidden"
-        frameBorder="0"
-        scrolling="no"
-        allowFullScreen
-      />
+      {iframe ? (
+        <iframe
+          src={iframe}
+          className="aspect-video w-full overflow-hidden"
+          frameBorder="0"
+          scrolling="no"
+          allowFullScreen
+        />
+      ) : (
+        <p className="text-red-500">
+          Sorry, we couldn't find the episode you're looking for. Please try
+          again later.
+        </p>
+      )}
     </>
   );
 };

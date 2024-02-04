@@ -24,12 +24,12 @@ export const AnimeGrid = (props: AnimeGridProps) => {
   return (
     <ul className="grid h-full grid-cols-1 gap-3 md:grid-cols-5">
       {props.type === 'home'
-        ? props.anime.map((anime, i) => {
-            return <HomeAnimeItem {...anime} key={i} />;
+        ? props.anime.map(anime => {
+            return <HomeAnimeItem {...anime} key={anime.name} />;
           })
         : props.type === 'search'
-          ? props.anime.map((anime, i) => {
-              return <SearchAnimeItem {...anime} key={i} />;
+          ? props.anime.map(anime => {
+              return <SearchAnimeItem {...anime} key={anime.name} />;
             })
           : null}
     </ul>
