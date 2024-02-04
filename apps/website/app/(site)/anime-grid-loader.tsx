@@ -4,7 +4,7 @@ export const AnimeGridLoader = () => {
   return (
     <ul className="grid h-full grid-cols-5 gap-3">
       {Array.from({ length: 24 }).map((_, i) => (
-        <Skeleton key={i} className="h-[380px]" />
+        <Skeleton key={i} className="h-[440px]" />
       ))}
     </ul>
   );

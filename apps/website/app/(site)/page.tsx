@@ -26,7 +26,7 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
   const { anime } = await getRecentlyReleasedAnime(page);
 
-  return <AnimeGrid anime={anime} />;
+  return <AnimeGrid anime={anime} type="home" />;
 };
 
 const PaginationWrapper = async ({ page }: { page: number }) => {

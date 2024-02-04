@@ -1,9 +1,38 @@
 import { Suspense } from 'react';
 import { AnimeGridLoader } from '../anime-grid-loader';
 import { AnimeGrid } from '../anime-grid';
-import { getAnimeFromAllAnime } from '@aniways/data-access';
+import { searchAnime } from '@aniways/data-access';
 import { Pagination } from '../pagination';
 import { PaginationLoader } from '../pagination-loader';
+import { unstable_cache } from 'next/cache';
+
+const ONE_HOUR = 1000 * 60 * 60;
+
+const cachedAnimeSearch = unstable_cache(
+  async (query: string, page: number) => {
+    // ensure we don't get rate limited on dev mode
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    if (process.env.NODE_ENV === 'development') {
+      return {
+        animes: [
+          {
+            name: 'Naruto',
+            image: 'https://cdn.myanimelist.net/images/anime/1565/111305.jpg',
+            url: '/anime/naruto',
+            total: 220,
+          },
+        ],
+        hasNext: false,
+      };
+    }
+    return await searchAnime(query, page);
+  },
+  ['search'],
+  {
+    tags: ['search'],
+    revalidate: ONE_HOUR,
+  }
+);
 
 const SearchPage = async ({
   searchParams: { query, ...searchParams },
@@ -42,15 +71,15 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  const { anime } = await getAnimeFromAllAnime(page, query);
+  const { animes } = await cachedAnimeSearch(query, page);
 
-  return <AnimeGrid anime={anime} />;
+  return <AnimeGrid anime={animes} type="search" />;
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { next } = await getAnimeFromAllAnime(props.page, props.query);
+  const { hasNext } = await cachedAnimeSearch(props.query, props.page);
 
-  return <Pagination hasNext={!!next} />;
+  return <Pagination hasNext={hasNext} />;
 };
 
 export default SearchPage;

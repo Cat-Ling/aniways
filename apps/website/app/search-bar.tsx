@@ -3,10 +3,13 @@
 import { Input } from '@aniways/ui/components/ui/input';
 import { cn } from '@aniways/ui/lib/utils';
 import { Search } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { debounce } from 'lodash';
+import { useEffect, useRef } from 'react';
 
 export const SearchBar = () => {
+  const ref = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get('query') || '';
@@ -14,11 +17,18 @@ export const SearchBar = () => {
   const setQuery = debounce((query: string) => {
     if (query === '') return router.replace('/');
     router.replace(`/search?query=${query}`);
-  }, 500);
+  }, 1000);
+
+  useEffect(() => {
+    if (pathname === '/search') return;
+    if (!ref.current) return;
+    ref.current.value = '';
+  }, [pathname, searchParams]);
 
   return (
     <div className="group relative">
       <Input
+        ref={ref}
         placeholder="Search for anime"
         className={cn('w-[264px] pl-9 focus:w-[500px]')}
         defaultValue={query}
