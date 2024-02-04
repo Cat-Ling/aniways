@@ -1,28 +1,71 @@
+import { RecentlyReleasedAnime } from 'src';
 import getRecentlyReleasedAnimeFromAllAnime from './allanime';
 import getRecentlyReleasedAnimeFromAnitaku from './anitaku';
 import getRecentlyReleasedAnimeFromGogo from './gogoanime';
 import getRecentlyReleasedAnimeFromGogoTaku from './gogotaku';
 
 export default async function getRecentlyReleasedAnime(page: number) {
-  const recentlyReleasedAnime = await Promise.any([
-    getRecentlyReleasedAnimeFromAllAnime(page),
-    getRecentlyReleasedAnimeFromAnitaku(page),
-    getRecentlyReleasedAnimeFromGogo(page),
-    getRecentlyReleasedAnimeFromGogoTaku(page),
-  ]);
+  const functions = [
+    {
+      fn: getRecentlyReleasedAnimeFromAnitaku,
+      name: 'Anitaku',
+    },
 
-  const nextRecentlyReleasedAnime = await Promise.any([
-    getRecentlyReleasedAnimeFromAllAnime(page + 1),
-    getRecentlyReleasedAnimeFromAnitaku(page + 1),
-    getRecentlyReleasedAnimeFromGogo(page + 1),
-    getRecentlyReleasedAnimeFromGogoTaku(page + 1),
-  ]);
+    {
+      fn: getRecentlyReleasedAnimeFromGogo,
+      name: 'Gogo',
+    },
+    {
+      fn: getRecentlyReleasedAnimeFromGogoTaku,
+      name: 'GogoTaku',
+    },
+    {
+      fn: getRecentlyReleasedAnimeFromAllAnime,
+      name: 'AllAnime',
+    },
+  ] as const;
 
-  return {
-    anime: recentlyReleasedAnime.map(anime => ({
-      ...anime,
-      url: `/anime/${encodeURIComponent(anime.name.replace(/ /g, '-').toLowerCase())}/episodes/${anime.episode}`,
-    })),
-    hasNext: nextRecentlyReleasedAnime.length > 0,
+  // fetch anime
+  // if fails or takes more than 2 seconds, move to the next one
+  const getAnime = async (
+    page: number,
+    name: string,
+    index: number,
+    fn: (typeof functions)[number]['fn']
+  ): Promise<{
+    anime: RecentlyReleasedAnime[];
+    hasNextPage: boolean;
+  }> => {
+    try {
+      let done = false;
+      new Promise((_, reject) => {
+        setTimeout(() => {
+          if (!done) reject('Timeout');
+        }, 5000);
+      });
+      const anime = await fn(page);
+      const hasNextPage = await fn(page + 1).then(res => !!res.length);
+      done = true;
+      console.log(`Fetched ${name} anime`);
+      return {
+        anime: anime.map(show => ({
+          ...show,
+          url: `/anime/${encodeURIComponent(show.name.toLowerCase().replace(/ /g, '-'))}/episodes/${show.episode}`,
+        })),
+        hasNextPage,
+      };
+    } catch (e) {
+      console.error(`Failed to fetch ${name} anime`, e);
+      const nextFn = functions.at(index + 1);
+      if (nextFn) {
+        return await getAnime(page, nextFn.name, index + 1, nextFn.fn);
+      }
+      return {
+        anime: [],
+        hasNextPage: false,
+      };
+    }
   };
+
+  return await getAnime(page, functions[0].name, 0, functions[0].fn);
 }
