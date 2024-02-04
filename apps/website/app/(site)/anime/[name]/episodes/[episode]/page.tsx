@@ -14,15 +14,20 @@ const AnimeStreamingPage = async ({
 
   return (
     <>
-      <h1 className="mb-3 text-xl font-bold capitalize">
-        {nameOfAnime} -{' '}
+      <h1 className="mb-3 text-xl font-bold">
+        {iframe && iframe.name ? (
+          iframe.name
+        ) : (
+          <span className="capitalize">{nameOfAnime}</span>
+        )}{' '}
+        -{' '}
         <span className="text-muted-foreground font-normal">
           Episode {episode}
         </span>
       </h1>
-      {iframe ? (
+      {iframe && iframe.url ? (
         <iframe
-          src={iframe}
+          src={iframe.url}
           className="aspect-video w-full overflow-hidden"
           frameBorder="0"
           scrolling="no"

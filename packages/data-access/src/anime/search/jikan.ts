@@ -1,4 +1,5 @@
 import { Jikan4 } from 'node-myanimelist';
+import { sanitizeName } from '../../utils/sanitize-name';
 
 export default async function searchAnimeFromJikan(
   query: string,
@@ -20,11 +21,7 @@ export default async function searchAnimeFromJikan(
     const title =
       anime.title ?? anime.title_english ?? anime.title_japanese ?? 'unknown';
 
-    const urlFriendlyTitle = encodeURIComponent(
-      title.replace(/ /g, '-').toLowerCase()
-    );
-
-    return `/anime/${urlFriendlyTitle}`;
+    return `/anime/${sanitizeName(title)}`;
   };
 
   return {

@@ -47,10 +47,6 @@ export default async function getRecentlyReleasedAnimeFromAllAnime(
     }
   )
     .then(res => res.json())
-    .then(res => {
-      console.log(res);
-      return res;
-    })
     .then(res => res.data.shows.edges as Response[]);
 
   return response.map(show => {

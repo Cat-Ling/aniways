@@ -1,8 +1,9 @@
-import { RecentlyReleasedAnime } from 'src';
+import { RecentlyReleasedAnime } from '../../types';
 import getRecentlyReleasedAnimeFromAllAnime from './allanime';
 import getRecentlyReleasedAnimeFromAnitaku from './anitaku';
 import getRecentlyReleasedAnimeFromGogo from './gogoanime';
 import getRecentlyReleasedAnimeFromGogoTaku from './gogotaku';
+import { sanitizeName } from '../../utils/sanitize-name';
 
 export default async function getRecentlyReleasedAnime(page: number) {
   const functions = [
@@ -10,14 +11,13 @@ export default async function getRecentlyReleasedAnime(page: number) {
       fn: getRecentlyReleasedAnimeFromAnitaku,
       name: 'Anitaku',
     },
-
-    {
-      fn: getRecentlyReleasedAnimeFromGogo,
-      name: 'Gogo',
-    },
     {
       fn: getRecentlyReleasedAnimeFromGogoTaku,
       name: 'GogoTaku',
+    },
+    {
+      fn: getRecentlyReleasedAnimeFromGogo,
+      name: 'Gogo',
     },
     {
       fn: getRecentlyReleasedAnimeFromAllAnime,
@@ -33,8 +33,10 @@ export default async function getRecentlyReleasedAnime(page: number) {
     index: number,
     fn: (typeof functions)[number]['fn']
   ): Promise<{
-    anime: RecentlyReleasedAnime[];
-    hasNextPage: boolean;
+    anime: (RecentlyReleasedAnime & {
+      url: string;
+    })[];
+    hasNext: boolean;
   }> => {
     try {
       let done = false;
@@ -44,15 +46,15 @@ export default async function getRecentlyReleasedAnime(page: number) {
         }, 5000);
       });
       const anime = await fn(page);
-      const hasNextPage = await fn(page + 1).then(res => !!res.length);
+      const hasNext = await fn(page + 1).then(res => !!res.length);
       done = true;
       console.log(`Fetched ${name} anime`);
       return {
         anime: anime.map(show => ({
           ...show,
-          url: `/anime/${encodeURIComponent(show.name.toLowerCase().replace(/ /g, '-'))}/episodes/${show.episode}`,
+          url: `/anime/${sanitizeName(show.name)}/episodes/${show.episode}`,
         })),
-        hasNextPage,
+        hasNext,
       };
     } catch (e) {
       console.error(`Failed to fetch ${name} anime`, e);
@@ -62,7 +64,7 @@ export default async function getRecentlyReleasedAnime(page: number) {
       }
       return {
         anime: [],
-        hasNextPage: false,
+        hasNext: false,
       };
     }
   };
