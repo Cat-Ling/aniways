@@ -191,3 +191,5 @@ export const getAllAnimeUrlSource = (args: Args) => {
 };
 
 export { default as getRecentlyReleasedAnime } from './recently-released';
+
+export { default as searchAnime } from './search';
