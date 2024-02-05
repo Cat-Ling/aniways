@@ -16,7 +16,7 @@ type AnimeGridProps =
         name: string;
         image: string;
         url: string;
-        total: number | string;
+        episodes: number | string;
       }[];
     };
 
@@ -79,12 +79,12 @@ const SearchAnimeItem = async ({
   name,
   image,
   url,
-  total,
+  episodes,
 }: {
   name: string;
   image: string;
   url: string;
-  total: number | string;
+  episodes: number | string;
 }) => {
   return (
     <li className="bg-background border-border group rounded-md border p-2">
@@ -105,7 +105,9 @@ const SearchAnimeItem = async ({
           <p className="group-hover:text-primary line-clamp-2 text-sm transition">
             {name}
           </p>
-          <p className="text-muted-foreground mt-1 text-sm">{total} episodes</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {episodes} episodes
+          </p>
         </div>
       </a>
     </li>

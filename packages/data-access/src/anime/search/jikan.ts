@@ -33,7 +33,7 @@ export default async function searchAnimeFromJikan(
         anime.images.jpg.large_image_url ??
         anime.images.jpg.small_image_url ??
         '',
-      total: anime.episodes ?? 0,
+      episodes: anime.episodes ?? 0,
     })),
     hasNext: animes.pagination.has_next_page ?? false,
   };

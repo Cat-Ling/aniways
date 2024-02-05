@@ -9,31 +9,10 @@ import { Metadata } from 'next';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
-const cachedAnimeSearch = unstable_cache(
-  async (query: string, page: number) => {
-    // ensure we don't get rate limited on dev mode
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    if (process.env.NODE_ENV === 'development') {
-      return {
-        animes: [
-          {
-            name: 'Naruto',
-            image: 'https://cdn.myanimelist.net/images/anime/1565/111305.jpg',
-            url: '/anime/naruto',
-            total: 220,
-          },
-        ],
-        hasNext: false,
-      };
-    }
-    return await searchAnime(query, page);
-  },
-  ['search'],
-  {
-    tags: ['search'],
-    revalidate: ONE_HOUR,
-  }
-);
+const cachedAnimeSearch = unstable_cache(searchAnime, ['search'], {
+  tags: ['search'],
+  revalidate: ONE_HOUR,
+});
 
 export const generateMetadata = async ({
   searchParams: { query },
