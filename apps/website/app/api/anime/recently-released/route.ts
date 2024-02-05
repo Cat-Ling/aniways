@@ -18,19 +18,20 @@ export const GET = async (req: NextRequest) => {
         url: req.nextUrl.toString(),
         page,
       },
-      next: hasNext
-        ? {
+      next:
+        hasNext ?
+          {
             url: nextUrl.toString(),
             page: page + 1,
           }
         : null,
       prev:
-        page > 1
-          ? {
-              url: prevUrl.toString(),
-              page: page - 1,
-            }
-          : null,
+        page > 1 ?
+          {
+            url: prevUrl.toString(),
+            page: page - 1,
+          }
+        : null,
       total: anime.length,
     },
     anime,

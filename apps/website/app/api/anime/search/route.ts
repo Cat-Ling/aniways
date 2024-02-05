@@ -24,20 +24,21 @@ export const GET = async (req: NextRequest) => {
   const prevUrl = new URL(req.nextUrl.href);
   prevUrl.searchParams.set('page', String(page - 1));
 
-  const next = hasNext
-    ? {
+  const next =
+    hasNext ?
+      {
         url: nextUrl.toString(),
         page: page + 1,
       }
     : null;
 
   const prev =
-    page > 1
-      ? {
-          url: prevUrl.toString(),
-          page: page - 1,
-        }
-      : null;
+    page > 1 ?
+      {
+        url: prevUrl.toString(),
+        page: page - 1,
+      }
+    : null;
 
   return NextResponse.json(
     {

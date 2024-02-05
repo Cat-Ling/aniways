@@ -23,15 +23,15 @@ type AnimeGridProps =
 export const AnimeGrid = (props: AnimeGridProps) => {
   return (
     <ul className="grid h-full grid-cols-1 gap-3 md:grid-cols-5">
-      {props.type === 'home'
-        ? props.anime.map(anime => {
-            return <HomeAnimeItem {...anime} key={anime.name} />;
-          })
-        : props.type === 'search'
-          ? props.anime.map(anime => {
-              return <SearchAnimeItem {...anime} key={anime.name} />;
-            })
-          : null}
+      {props.type === 'home' ?
+        props.anime.map(anime => {
+          return <HomeAnimeItem {...anime} key={anime.name} />;
+        })
+      : props.type === 'search' ?
+        props.anime.map(anime => {
+          return <SearchAnimeItem {...anime} key={anime.name} />;
+        })
+      : null}
     </ul>
   );
 };

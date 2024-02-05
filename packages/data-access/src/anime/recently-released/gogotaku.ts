@@ -40,7 +40,11 @@ export default async function getRecentlyReleasedAnimeFromGogoTaku(
           };
         }),
       20
-    )[page % 3 === 0 ? 2 : page % 3 === 1 ? 0 : 1] ?? [];
+    )[
+      page % 3 === 0 ? 2
+      : page % 3 === 1 ? 0
+      : 1
+    ] ?? [];
 
   return recentlyReleased;
 }
