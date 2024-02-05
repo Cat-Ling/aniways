@@ -4,6 +4,18 @@ import { getRecentlyReleasedAnime } from '@aniways/data-access';
 import { AnimeGridLoader } from './anime-grid-loader';
 import { AnimeGrid } from './anime-grid';
 import { PaginationLoader } from './pagination-loader';
+import { unstable_cache } from 'next/cache';
+
+const FIFTEEN_MINUTES = 1000 * 60 * 15;
+
+const cachedRecentlyReleasedAnime = unstable_cache(
+  getRecentlyReleasedAnime,
+  ['recently-released-anime'],
+  {
+    tags: ['recently-released-anime'],
+    revalidate: FIFTEEN_MINUTES,
+  }
+);
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
@@ -24,13 +36,13 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 };
 
 const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
-  const { anime } = await getRecentlyReleasedAnime(page);
+  const { anime } = await cachedRecentlyReleasedAnime(page);
 
   return <AnimeGrid anime={anime} type="home" />;
 };
 
 const PaginationWrapper = async ({ page }: { page: number }) => {
-  const { hasNext } = await getRecentlyReleasedAnime(page);
+  const { hasNext } = await cachedRecentlyReleasedAnime(page);
 
   return <Pagination hasNext={hasNext} />;
 };

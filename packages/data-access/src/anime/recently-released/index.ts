@@ -8,6 +8,10 @@ import { sanitizeName } from '../../utils/sanitize-name';
 export default async function getRecentlyReleasedAnime(page: number) {
   const functions = [
     {
+      fn: getRecentlyReleasedAnimeFromAllAnime,
+      name: 'AllAnime',
+    },
+    {
       fn: getRecentlyReleasedAnimeFromAnitaku,
       name: 'Anitaku',
     },
@@ -18,10 +22,6 @@ export default async function getRecentlyReleasedAnime(page: number) {
     {
       fn: getRecentlyReleasedAnimeFromGogo,
       name: 'Gogo',
-    },
-    {
-      fn: getRecentlyReleasedAnimeFromAllAnime,
-      name: 'AllAnime',
     },
   ] as const;
 
