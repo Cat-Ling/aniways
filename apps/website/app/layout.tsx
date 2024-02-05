@@ -10,7 +10,10 @@ import { MyAnimeListAuthProvider } from './providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AniWays',
+  title: {
+    default: 'AniWays',
+    template: '%s | AniWays',
+  },
   description: 'Another anime website but with a MyAnimeList Integration',
   icons: {
     icon: '/favicon',

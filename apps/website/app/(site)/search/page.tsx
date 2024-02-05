@@ -5,6 +5,7 @@ import { searchAnime } from '@aniways/data-access';
 import { Pagination } from '../pagination';
 import { PaginationLoader } from '../pagination-loader';
 import { unstable_cache } from 'next/cache';
+import { Metadata } from 'next';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
@@ -33,6 +34,17 @@ const cachedAnimeSearch = unstable_cache(
     revalidate: ONE_HOUR,
   }
 );
+
+export const generateMetadata = async ({
+  searchParams: { query },
+}: {
+  searchParams: { query: string };
+}): Promise<Metadata> => {
+  return {
+    title: `${query} - Search`,
+    description: `Search for ${query} on AniWays`,
+  };
+};
 
 const SearchPage = async ({
   searchParams: { query, ...searchParams },

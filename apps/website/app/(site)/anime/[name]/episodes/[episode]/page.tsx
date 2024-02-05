@@ -1,4 +1,35 @@
 import { getVideoSourceUrl } from '@data/anime';
+import { Metadata } from 'next';
+import { unstable_cache } from 'next/cache';
+
+const ONE_DAY = 1000 * 60 * 60 * 24;
+
+const cachedGetVideoSourceUrl = unstable_cache(
+  getVideoSourceUrl,
+  ['video-source-url-name'],
+  {
+    revalidate: ONE_DAY,
+    tags: ['video-source-url-name'],
+  }
+);
+
+export const generateMetadata = async ({
+  params: { name, episode },
+}: {
+  params: {
+    name: string;
+    episode: string;
+  };
+}): Promise<Metadata> => {
+  const data = await cachedGetVideoSourceUrl(name, episode);
+
+  if (!data || !data.name) return {};
+
+  return {
+    title: `${data.name} - Episode ${episode}`,
+    description: `Watch ${data.name} episode ${episode} online for free.`,
+  };
+};
 
 const AnimeStreamingPage = async ({
   params: { name, episode },
@@ -8,7 +39,7 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
-  const iframe = await getVideoSourceUrl(name, episode);
+  const iframe = await cachedGetVideoSourceUrl(name, episode);
   const decodedNameFromUrl = decodeURIComponent(name).split('-').join(' ');
 
   return (
