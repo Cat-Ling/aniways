@@ -6,12 +6,33 @@ export const GET = async (req: NextRequest) => {
 
   const { anime, hasNext } = await getRecentlyReleasedAnime(page);
 
+  const nextUrl = new URL(req.nextUrl.href);
+  nextUrl.searchParams.set('page', String(page + 1));
+
+  const prevUrl = new URL(req.nextUrl.href);
+  prevUrl.searchParams.set('page', String(page - 1));
+
   return NextResponse.json({
-    anime,
     pagination: {
-      current: page,
-      next: hasNext ? page + 1 : null,
-      prev: page > 1 ? page - 1 : null,
+      current: {
+        url: req.nextUrl.toString(),
+        page,
+      },
+      next: hasNext
+        ? {
+            url: nextUrl.toString(),
+            page: page + 1,
+          }
+        : null,
+      prev:
+        page > 1
+          ? {
+              url: prevUrl.toString(),
+              page: page - 1,
+            }
+          : null,
+      total: anime.length,
     },
+    anime,
   });
 };
