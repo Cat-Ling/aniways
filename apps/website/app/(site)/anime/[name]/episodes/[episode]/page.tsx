@@ -8,9 +8,8 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
-  // need to move this to data-access module with better error handling and more sources
   const iframe = await getVideoSourceUrl(name, episode);
-  const nameOfAnime = decodeURIComponent(name).split('-').join(' ');
+  const decodedNameFromUrl = decodeURIComponent(name).split('-').join(' ');
 
   return (
     <>
@@ -18,7 +17,7 @@ const AnimeStreamingPage = async ({
         {iframe && iframe.name ? (
           iframe.name
         ) : (
-          <span className="capitalize">{nameOfAnime}</span>
+          <span className="capitalize">{decodedNameFromUrl}</span>
         )}{' '}
         -{' '}
         <span className="text-muted-foreground font-normal">
