@@ -9,8 +9,7 @@ export default async function searchAnimeFromJikan(
     q: query,
     limit: 20,
     page: page,
-    order_by: 'favorites',
-    sort: 'desc',
+    sfw: true,
   });
 
   const getUrl = (anime: {
