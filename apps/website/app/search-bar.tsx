@@ -15,9 +15,9 @@ export const SearchBar = () => {
   const query = searchParams.get('query') || '';
 
   const setQuery = debounce((query: string) => {
-    if (query === '') return router.replace('/');
-    router.replace(`/search?query=${query}`);
-  }, 1000);
+    if (query === '') return router.push('/');
+    router.push(`/search?query=${query}`);
+  }, 500);
 
   useEffect(() => {
     if (pathname === '/search') return;
