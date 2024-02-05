@@ -2,13 +2,13 @@ import { getVideoSourceUrl } from '@data/anime';
 import { Metadata } from 'next';
 import { unstable_cache } from 'next/cache';
 
-const ONE_DAY = 1000 * 60 * 60 * 24;
+const FIFTEEN_MINUTES = 1000 * 60 * 15;
 
 const cachedGetVideoSourceUrl = unstable_cache(
   getVideoSourceUrl,
   ['video-source-url-name'],
   {
-    revalidate: ONE_DAY,
+    revalidate: FIFTEEN_MINUTES,
     tags: ['video-source-url-name'],
   }
 );
