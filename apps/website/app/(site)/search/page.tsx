@@ -7,11 +7,11 @@ import { PaginationLoader } from '../pagination-loader';
 import { unstable_cache } from 'next/cache';
 import { Metadata } from 'next';
 
-const ONE_HOUR = 1000 * 60 * 60;
+const ONE_HOUR_IN_SECONDS = 60 * 60;
 
 const cachedAnimeSearch = unstable_cache(searchAnime, ['search'], {
   tags: ['search'],
-  revalidate: ONE_HOUR,
+  revalidate: ONE_HOUR_IN_SECONDS,
 });
 
 export const generateMetadata = async ({

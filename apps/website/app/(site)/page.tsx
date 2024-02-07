@@ -6,14 +6,14 @@ import { AnimeGrid } from './anime-grid';
 import { PaginationLoader } from './pagination-loader';
 import { unstable_cache } from 'next/cache';
 
-const FIFTEEN_MINUTES = 1000 * 60 * 15;
+const FIFTEEN_MINUTES_IN_SECONDS = 60 * 15;
 
 const cachedRecentlyReleasedAnime = unstable_cache(
   getRecentlyReleasedAnime,
   ['recently-released-anime'],
   {
     tags: ['recently-released-anime'],
-    revalidate: FIFTEEN_MINUTES,
+    revalidate: FIFTEEN_MINUTES_IN_SECONDS,
   }
 );
 
