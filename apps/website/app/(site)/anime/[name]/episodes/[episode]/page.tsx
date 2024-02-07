@@ -1,4 +1,4 @@
-import { getVideoSourceUrl } from '@data/anime';
+import { getAnimeDetails, getVideoSourceUrl } from '@data/anime';
 import { Metadata } from 'next';
 import { unstable_cache } from 'next/cache';
 
@@ -10,6 +10,15 @@ const cachedGetVideoSourceUrl = unstable_cache(
   {
     revalidate: FIFTEEN_MINUTES_IN_SECONDS,
     tags: ['video-source-url-name'],
+  }
+);
+
+const cachedGetAnimeDetails = unstable_cache(
+  getAnimeDetails,
+  ['anime-details-name'],
+  {
+    revalidate: FIFTEEN_MINUTES_IN_SECONDS,
+    tags: ['anime-details-name'],
   }
 );
 
@@ -41,6 +50,10 @@ const AnimeStreamingPage = async ({
 }) => {
   const iframe = await cachedGetVideoSourceUrl(name, episode);
   const decodedNameFromUrl = decodeURIComponent(name).split('-').join(' ');
+  const details = await cachedGetAnimeDetails(
+    iframe?.name || decodedNameFromUrl,
+    Number(episode)
+  );
 
   return (
     <>
@@ -66,6 +79,11 @@ const AnimeStreamingPage = async ({
           again later.
         </p>
       }
+      <div className="mt-6 w-full">
+        <pre className="bg-muted border-border w-full rounded-md border">
+          {JSON.stringify(details, null, 2)}
+        </pre>
+      </div>
     </>
   );
 };
