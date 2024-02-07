@@ -1,4 +1,3 @@
-import { RecentlyReleasedAnime } from '@data/types';
 import { chunk } from 'lodash';
 import parse from 'node-html-parser';
 
@@ -6,7 +5,7 @@ const BASE_URL = 'https://gogotaku.info/recent-release-anime';
 
 export default async function getRecentlyReleasedAnimeFromGogoTaku(
   page: number
-): Promise<RecentlyReleasedAnime[]> {
+) {
   // each page is 60 anime we want 20 per page
   // page 1 = 1-20
   // page 2 = 21-40
@@ -33,10 +32,20 @@ export default async function getRecentlyReleasedAnimeFromGogoTaku(
               .split('Episode: ')[1]
           );
 
+          const slug = li
+            .querySelector('a')!
+            .getAttribute('href')!
+            .split('/')
+            .pop()!
+            .split('-episode-')[0]!;
+
+          const url = `/anime/${slug}/episodes/${episode}`;
+
           return {
             name,
             image,
             episode,
+            url,
           };
         }),
       20

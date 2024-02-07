@@ -1,11 +1,10 @@
-import { RecentlyReleasedAnime } from '@data/types';
 import parse from 'node-html-parser';
 
 const BASE_URL = 'https://anitaku.to/home.html';
 
 export default async function getRecentlyReleasedAnimeFromAnitaku(
   page: number
-): Promise<RecentlyReleasedAnime[]> {
+) {
   // total of 20 anime per page
   const response = await fetch(`${BASE_URL}?page=${page}`).then(res =>
     res.text()
@@ -22,10 +21,20 @@ export default async function getRecentlyReleasedAnimeFromAnitaku(
         li.querySelector('.episode')!.innerText.trim().split('Episode ')[1]
       );
 
+      const slug = li
+        .querySelector('a')!
+        .getAttribute('href')!
+        .split('/')
+        .pop()!
+        .split('-episode-')[0]!;
+
+      const url = `/anime/${slug}/episodes/${episode}`;
+
       return {
         name,
         image,
         episode,
+        url,
       };
     });
 

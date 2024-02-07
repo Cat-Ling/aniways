@@ -8,10 +8,6 @@ import { sanitizeName } from '../../utils/sanitize-name';
 export default async function getRecentlyReleasedAnime(page: number) {
   const functions = [
     {
-      fn: getRecentlyReleasedAnimeFromAllAnime,
-      name: 'AllAnime',
-    },
-    {
       fn: getRecentlyReleasedAnimeFromAnitaku,
       name: 'Anitaku',
     },
@@ -22,6 +18,10 @@ export default async function getRecentlyReleasedAnime(page: number) {
     {
       fn: getRecentlyReleasedAnimeFromGogo,
       name: 'Gogo',
+    },
+    {
+      fn: getRecentlyReleasedAnimeFromAllAnime,
+      name: 'AllAnime',
     },
   ] as const;
 
@@ -49,11 +49,19 @@ export default async function getRecentlyReleasedAnime(page: number) {
       const hasNext = await fn(page + 1).then(res => !!res.length);
       done = true;
       console.log(`Fetched ${name} anime`);
+      if (name === 'AllAnime') {
+        return {
+          anime: anime.map(show => ({
+            ...show,
+            url: `/anime/${sanitizeName(show.name)}/episodes/${show.episode}`,
+          })),
+          hasNext,
+        };
+      }
       return {
-        anime: anime.map(show => ({
-          ...show,
-          url: `/anime/${sanitizeName(show.name)}/episodes/${show.episode}`,
-        })),
+        anime: anime as Awaited<
+          ReturnType<typeof getRecentlyReleasedAnimeFromAnitaku>
+        >,
         hasNext,
       };
     } catch (e) {

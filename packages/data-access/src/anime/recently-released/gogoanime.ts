@@ -1,11 +1,8 @@
-import { RecentlyReleasedAnime } from '@data/types';
 import parse from 'node-html-parser';
 
 const BASE_URL = 'https://gogoanime3.co';
 
-export default async function getRecentlyReleasedAnimeFromGogo(
-  page: number
-): Promise<RecentlyReleasedAnime[]> {
+export default async function getRecentlyReleasedAnimeFromGogo(page: number) {
   // each page is 20 anime
   const response = await fetch(`${BASE_URL}?page=${page}`).then(res =>
     res.text()
@@ -22,10 +19,20 @@ export default async function getRecentlyReleasedAnimeFromGogo(
         li.querySelector('.episode')!.innerText.trim().split('Episode ')[1]
       );
 
+      const slug = li
+        .querySelector('a')!
+        .getAttribute('href')!
+        .split('/')
+        .pop()!
+        .split('-episode-')[0]!;
+
+      const url = `/anime/${slug}/episodes/${episode}`;
+
       return {
         name,
         image,
         episode,
+        url,
       };
     });
 
