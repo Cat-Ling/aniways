@@ -5,7 +5,7 @@ const URLS = [
     url: 'https://anitaku.to',
     // eslint-disable-next-line no-undef
     fetchName: (dom: any) => {
-      return dom.querySelector('.anime-info a[title]')?.getAttribute('title');
+      return dom.querySelector('.anime-info a[title]')?.innerHTML;
     },
   },
   {
@@ -19,7 +19,7 @@ const URLS = [
     url: 'https://gogoanime3.co',
     // eslint-disable-next-line no-undef
     fetchName: (dom: any) => {
-      return dom.querySelector('.anime-info a[title]')?.getAttribute('title');
+      return dom.querySelector('.anime-info a[title]')?.innerHTML;
     },
   },
 ] as const;

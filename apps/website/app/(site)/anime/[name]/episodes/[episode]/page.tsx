@@ -1,6 +1,6 @@
 import { getAnimeDetails, getVideoSourceUrl } from '@data/anime';
 import { Metadata } from 'next';
-import { unstable_cache } from 'next/cache';
+import { revalidatePath, unstable_cache } from 'next/cache';
 
 const FIFTEEN_MINUTES_IN_SECONDS = 60 * 15;
 
@@ -48,6 +48,7 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
+  revalidatePath('/', 'layout');
   const iframe = await cachedGetVideoSourceUrl(name, episode);
   const decodedNameFromUrl = decodeURIComponent(name).split('-').join(' ');
   const details = await cachedGetAnimeDetails(
