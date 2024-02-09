@@ -22,13 +22,16 @@ export default async function getAnimeDetails(name: string, episode?: number) {
 
   const currentEpisode = episode ? (await anime.episode(episode)).data : null;
 
+  if (
+    episodes.data.length &&
+    currentEpisode &&
+    episodes.data.at(-1)?.mal_id !== currentEpisode?.mal_id
+  ) {
+    episodes.data.push(currentEpisode);
+  }
+
   return {
     ...data,
-    episodes: [
-      ...new Set([
-        ...episodes.data,
-        ...(currentEpisode ? [currentEpisode] : []),
-      ]),
-    ],
+    episodes: episodes.data,
   };
 }
