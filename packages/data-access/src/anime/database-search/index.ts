@@ -5,6 +5,9 @@ export default async function searchFromDB(query: string, page: number) {
     where: ({ title }, { sql }) => {
       return sql`SIMILARITY(${title}, ${query}) > 0.2`;
     },
+    orderBy: ({ title }, { sql }) => {
+      return sql`SIMILARITY(${title}, ${query}) DESC`;
+    },
     limit: 20,
     offset: (page - 1) * 20,
     with: {
@@ -14,6 +17,9 @@ export default async function searchFromDB(query: string, page: number) {
   const nextAnimes = await db.query.anime.findMany({
     where: ({ title }, { sql }) => {
       return sql`SIMILARITY(${title}, ${query}) > 0.2`;
+    },
+    orderBy: ({ title }, { sql }) => {
+      return sql`SIMILARITY(${title}, ${query}) DESC`;
     },
     limit: 20,
     offset: page * 20,
