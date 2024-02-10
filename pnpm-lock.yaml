@@ -88,6 +88,7 @@ importers:
       '@paralleldrive/cuid2': ^2.2.2
       '@types/lodash': ^4.14.202
       '@types/node': ^20.10.6
+      dotenv: ^16.4.1
       drizzle-kit: ^0.20.14
       drizzle-orm: ^0.29.3
       lodash: ^4.17.21
@@ -100,6 +101,7 @@ importers:
       '@animelist/auth-next': 0.1.1
       '@animelist/client': 0.1.0
       '@paralleldrive/cuid2': 2.2.2
+      dotenv: 16.4.1
       drizzle-orm: 0.29.3_postgres@3.4.3
       lodash: 4.17.21
       node-html-parser: 6.1.12
@@ -2493,6 +2495,11 @@ packages:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
     dev: true
+
+  /dotenv/16.4.1:
+    resolution: {integrity: sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /dreamopt/0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}

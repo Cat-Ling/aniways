@@ -13,10 +13,10 @@ type AnimeGridProps =
   | {
       type: 'search';
       anime: {
-        name: string;
+        title: string;
         image: string;
         url: string;
-        episodes: number | string;
+        episodes?: number | string | undefined;
       }[];
     };
 
@@ -29,7 +29,7 @@ export const AnimeGrid = (props: AnimeGridProps) => {
         })
       : props.type === 'search' ?
         props.anime.map(anime => {
-          return <SearchAnimeItem {...anime} key={anime.name} />;
+          return <SearchAnimeItem {...anime} key={anime.title} />;
         })
       : null}
     </ul>
@@ -76,15 +76,15 @@ const HomeAnimeItem = async ({
 };
 
 const SearchAnimeItem = async ({
-  name,
+  title: name,
   image,
   url,
   episodes,
 }: {
-  name: string;
+  title: string;
   image: string;
   url: string;
-  episodes: number | string;
+  episodes?: number | string | undefined;
 }) => {
   return (
     <li className="bg-background border-border group rounded-md border p-2">
@@ -105,9 +105,11 @@ const SearchAnimeItem = async ({
           <p className="group-hover:text-primary line-clamp-2 text-sm transition">
             {name}
           </p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {episodes} episodes
-          </p>
+          {episodes && (
+            <p className="text-muted-foreground mt-1 text-sm">
+              {episodes} episodes
+            </p>
+          )}
         </div>
       </a>
     </li>

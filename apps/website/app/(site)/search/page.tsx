@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { AnimeGridLoader } from '../anime-grid-loader';
 import { AnimeGrid } from '../anime-grid';
-import { searchAnime } from '@aniways/data-access';
+import { searchFromDB } from '@aniways/data-access';
 import { Pagination } from '../pagination';
 import { PaginationLoader } from '../pagination-loader';
 import { unstable_cache } from 'next/cache';
@@ -9,7 +9,7 @@ import { Metadata } from 'next';
 
 const ONE_HOUR_IN_SECONDS = 60 * 60;
 
-const cachedAnimeSearch = unstable_cache(searchAnime, ['search'], {
+const cachedAnimeSearch = unstable_cache(searchFromDB, ['search'], {
   tags: ['search'],
   revalidate: ONE_HOUR_IN_SECONDS,
 });
@@ -62,6 +62,7 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
+  // const { animes } = await cachedAnimeSearch(query, page);
   const { animes } = await cachedAnimeSearch(query, page);
 
   return <AnimeGrid anime={animes} type="search" />;

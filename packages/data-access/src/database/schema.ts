@@ -6,7 +6,6 @@ import {
   text,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
 
 export const AnimeSeason = pgEnum('anime_season', [
@@ -41,33 +40,63 @@ export const AnimeAgeRating = pgEnum('anime_rating', [
 ]);
 
 export const anime = pgTable('anime', {
-  id: varchar('id', { length: 25 }).primaryKey().default(createId()),
+  id: varchar('id', { length: 25 }).primaryKey(),
   title: text('title').notNull(),
-  titleEnglish: text('title_english').notNull(),
-  titleJapanese: text('title_japanese').notNull(),
   description: text('description').notNull(),
   image: text('image').notNull(),
-  season: AnimeSeason('season').notNull(),
   year: numeric('year').notNull(),
-  malId: numeric('mal_id').notNull(),
-  type: AnimeType('type').notNull(),
-  totalEpisodes: numeric('total_episodes').notNull(),
-  duration: text('duration').notNull(),
-  ageRating: AnimeAgeRating('age_rating').notNull(),
   status: AnimeStatus('status').notNull(),
+  slug: text('slug').notNull(),
+  malAnimeId: varchar('mal_anime_id', { length: 25 }).references(
+    (): AnyPgColumn => malAnime.id
+  ),
 });
 
-export const animeRelations = relations(anime, ({ many }) => ({
+export const animeRelations = relations(anime, ({ many, one }) => ({
   genres: many(animeGenre, {
     relationName: 'anime-genres',
   }),
   videos: many(video, {
     relationName: 'anime-videos',
   }),
+  malAnime: one(malAnime, {
+    relationName: 'mal-anime',
+    fields: [anime.malAnimeId],
+    references: [malAnime.id],
+  }),
+}));
+
+export const malAnime = pgTable('mal_anime', {
+  id: varchar('id', { length: 25 }).primaryKey(),
+  malId: numeric('mal_id').notNull(),
+  year: numeric('year').notNull(),
+  season: AnimeSeason('season').notNull(),
+  type: AnimeType('type').notNull(),
+  status: AnimeStatus('status').notNull(),
+  totalEpisodes: numeric('total_episodes').notNull(),
+  duration: text('duration').notNull(),
+  ageRating: AnimeAgeRating('age_rating').notNull(),
+  malUrl: text('mal_url').notNull(),
+  titles: text('titles').notNull(),
+  score: numeric('score').notNull(),
+  scoredBy: numeric('scored_by').notNull(),
+  airedStart: text('aired_start').notNull(),
+  airedEnd: text('aired_end'),
+  animeId: varchar('anime_id', { length: 25 })
+    .notNull()
+    .references((): AnyPgColumn => anime.id),
+});
+
+export const malAnimeRelations = relations(malAnime, ({ one }) => ({
+  anime: one(anime, {
+    relationName: 'mal-anime',
+    fields: [malAnime.animeId],
+    references: [anime.id],
+  }),
 }));
 
 export const animeGenre = pgTable('anime_genre', {
-  id: varchar('id', { length: 25 }).primaryKey().default(createId()),
+  id: varchar('id', { length: 25 }).primaryKey(),
   animeId: varchar('anime_id', { length: 25 })
     .notNull()
     .references((): AnyPgColumn => anime.id),
@@ -83,7 +112,7 @@ export const genreRelations = relations(animeGenre, ({ one }) => ({
 }));
 
 export const video = pgTable('video', {
-  id: varchar('id', { length: 25 }).primaryKey().default(createId()),
+  id: varchar('id', { length: 25 }).primaryKey(),
   animeId: varchar('anime_id', { length: 25 })
     .notNull()
     .references((): AnyPgColumn => anime.id),
