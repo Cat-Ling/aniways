@@ -8,6 +8,8 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ui:add": "pnpm --filter @aniways/ui ui:add",
+    "db:push": "pnpm --filter @aniways/data-access push",
+    "db:migrate": "pnpm --filter @aniways/data-access migrate",
     "workspace:generate": "pnpm turbo gen workspace --name"
   },
   "devDependencies": {
