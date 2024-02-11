@@ -9,7 +9,7 @@ export default {
       },
       {
         http: {
-          method: 'get',
+          method: 'post',
           path: 'cron',
         },
       },
