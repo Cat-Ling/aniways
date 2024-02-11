@@ -1,0 +1,26 @@
+{
+  "name": "aws-cron",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "serverless offline start",
+    "deploy:prod": "serverless deploy --stage prod",
+    "lint": "eslint '**/*.ts'",
+    "package": "serverless package"
+  },
+  "dependencies": {
+    "@aniways/data-access": "workspace:*"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*",
+    "@serverless/typescript": "^3.38.0",
+    "@types/aws-lambda": "^8.10.133",
+    "@types/node": "^20.11.17",
+    "serverless-offline": "^13.3.3",
+    "serverless-webpack": "^5.13.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1"
+  }
+}

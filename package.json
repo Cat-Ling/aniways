@@ -11,6 +11,8 @@
     "ui:add": "pnpm --filter @aniways/ui ui:add",
     "db:push": "pnpm --filter @aniways/data-access push",
     "db:migrate": "pnpm --filter @aniways/data-access migrate",
+    "deploy:prod": "dotenv -- turbo deploy:prod",
+    "package": "dotenv -- turbo package",
     "workspace:generate": "pnpm turbo gen workspace --name"
   },
   "devDependencies": {
@@ -25,5 +27,8 @@
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
   }
 }

@@ -1,0 +1,40 @@
+name: Deploy Cron Job
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/aws-cron/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.30.3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Install serverless
+        run: pnpm add -g serverless
+
+      - name: Configure AWS Credentials
+        run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Deploy serverless function
+        run: |
+          pnpm deploy:prod

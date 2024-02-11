@@ -1,0 +1,11 @@
+{
+  "extends": "@aniways/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@data/*": ["../../packages/data-access/src/*"],
+    },
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", ".serverless", ".build", ".webpack"],
+}
