@@ -56,6 +56,7 @@ export const anime = pgTable(
   },
   table => ({
     malAnimeIdx: index('anime_mal_anime_idx').on(table.malAnimeId),
+    slugIdx: index('anime_slug_idx').on(table.slug),
   })
 );
 
