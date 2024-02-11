@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { SearchBar } from './search-bar';
 import { getServerSession } from '@animelist/auth-next/server';
 import { cookies } from 'next/headers';
+import { LoginModal } from './login-modal';
+import { LogoutModal } from './logout-modal';
 
 export const Navbar = async () => {
   const user = await getServerSession(cookies());
@@ -27,19 +29,12 @@ export const Navbar = async () => {
         <div className="flex items-center gap-3">
           {user ?
             <>
-              <Button variant="ghost" asChild>
+              <Button asChild>
                 <Link href="/anime-list">Anime List</Link>
               </Button>
-              <Button variant="ghost" asChild>
-                <Link href="/profile">Profile</Link>
-              </Button>
+              <LogoutModal />
             </>
-          : <>
-              <Button variant="secondary" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
-            </>
-          }
+          : <LoginModal />}
         </div>
       </div>
     </nav>
