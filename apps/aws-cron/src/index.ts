@@ -5,9 +5,6 @@ export default {
     handler: 'src/handlers/cron.main',
     events: [
       {
-        schedule: 'rate(1 hour)',
-      },
-      {
         http: {
           method: 'post',
           path: 'cron',

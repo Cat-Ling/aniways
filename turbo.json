@@ -21,13 +21,11 @@
     },
     "package": {
       "dependsOn": ["build", "lint"],
-      "dotEnv": [".env"],
-      "cache": false
+      "dotEnv": [".env"]
     },
     "deploy:prod": {
       "dependsOn": ["package"],
-      "dotEnv": [".env"],
-      "cache": false
+      "dotEnv": [".env"]
     }
   }
 }
