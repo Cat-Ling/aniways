@@ -2,6 +2,7 @@ import postgres from 'postgres';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from './schema';
 
+// eslint-disable-next-line turbo/no-undeclared-env-vars
 const connectionString = process.env.DATABASE_URL!;
 
 // eslint-disable-next-line no-undef

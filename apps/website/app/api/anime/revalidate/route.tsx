@@ -11,6 +11,7 @@ export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
     const { key, path } = Schema.parse(body);
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
     if (key !== process.env.REVALIDATE_KEY) {
       return NextResponse.json({ error: 'Invalid key' }, { status: 401 });
     }
