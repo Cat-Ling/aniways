@@ -1,7 +1,7 @@
 import type { AWS } from '@serverless/typescript';
 import functions from './src';
 
-export default {
+const config: AWS = {
   service: 'aws-cron',
   frameworkVersion: '3',
   plugins: ['serverless-webpack', 'serverless-offline'],
@@ -17,4 +17,6 @@ export default {
     individually: true,
   },
   functions,
-} satisfies AWS;
+};
+
+module.exports = config;

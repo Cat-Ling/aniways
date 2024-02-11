@@ -29,6 +29,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@types/node": "^20.11.17",
     "zod": "^3.22.4"
   }
 }
