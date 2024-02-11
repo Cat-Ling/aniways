@@ -3,8 +3,9 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
+    "build": "dotenv -- turbo build",
+    "dev": "dotenv -- turbo dev",
+    "start": "dotenv -- turbo start",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ui:add": "pnpm --filter @aniways/ui ui:add",
@@ -15,6 +16,7 @@
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
+    "dotenv-cli": "^7.3.0",
     "pre-commit": "^1.2.2",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",

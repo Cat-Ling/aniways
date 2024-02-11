@@ -1,17 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDotEnv": [".env.local", "./apps/website/.env.local"],
-  "globalDependencies": [
-    "NODE_ENV",
-    "MAL_CLIENT_ID",
-    "MAL_CLIENT_SECRET",
-    "MAL_SECRET_KEY",
-    "REVALIDATE_KEY",
-    "DATABASE_URL"
-  ],
+  "globalDotEnv": [".env"],
   "pipeline": {
     "build": {
-      "outputs": [".next/**", "!.next/cache/**"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "dotEnv": [".env"],
       "dependsOn": ["^build"]
     },
     "lint": {
@@ -19,7 +12,11 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dotEnv": [".env"]
+    },
+    "start": {
+      "dependsOn": ["^start"]
     }
   }
 }

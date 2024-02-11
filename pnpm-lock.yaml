@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@aniways/eslint-config': workspace:*
       '@aniways/typescript-config': workspace:*
+      dotenv-cli: ^7.3.0
       pre-commit: ^1.2.2
       prettier: ^3.1.1
       prettier-plugin-tailwindcss: ^0.5.11
@@ -13,6 +14,7 @@ importers:
     devDependencies:
       '@aniways/eslint-config': link:packages/eslint-config
       '@aniways/typescript-config': link:packages/typescript-config
+      dotenv-cli: 7.3.0
       pre-commit: 1.2.2
       prettier: 3.2.4
       prettier-plugin-tailwindcss: 0.5.11_prettier@3.2.4
@@ -2573,6 +2575,21 @@ packages:
       domhandler: 5.0.3
     dev: false
 
+  /dotenv-cli/7.3.0:
+    resolution: {integrity: sha512-314CA4TyK34YEJ6ntBf80eUY+t1XaFLyem1k9P0sX1gn30qThZ5qZr/ZwE318gEnzyYP9yj9HJk6SqwE0upkfw==}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
+      dotenv: 16.4.1
+      dotenv-expand: 10.0.0
+      minimist: 1.2.8
+    dev: true
+
+  /dotenv-expand/10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+    dev: true
+
   /dotenv/16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
@@ -2581,7 +2598,6 @@ packages:
   /dotenv/16.4.1:
     resolution: {integrity: sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==}
     engines: {node: '>=12'}
-    dev: false
 
   /dreamopt/0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}
