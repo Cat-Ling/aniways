@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@aniways/data-access": "workspace:*",
-    "@paralleldrive/cuid2": "^2.2.2"
+    "@paralleldrive/cuid2": "^2.2.2",
+    "node-html-parser": "^6.1.12"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",

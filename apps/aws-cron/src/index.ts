@@ -5,6 +5,9 @@ export default {
     handler: 'src/handlers/cron.main',
     events: [
       {
+        schedule: 'cron(0 * * * ? *)', // every hour
+      },
+      {
         http: {
           method: 'post',
           path: 'cron',
