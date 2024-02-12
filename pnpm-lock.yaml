@@ -30,6 +30,7 @@ importers:
       '@aniways/data-access': workspace:*
       '@aniways/eslint-config': workspace:*
       '@aniways/typescript-config': workspace:*
+      '@paralleldrive/cuid2': ^2.2.2
       '@serverless/typescript': ^3.38.0
       '@types/aws-lambda': ^8.10.133
       '@types/node': ^20.11.17
@@ -40,6 +41,7 @@ importers:
       webpack: ^5.90.1
     dependencies:
       '@aniways/data-access': link:../../packages/data-access
+      '@paralleldrive/cuid2': 2.2.2
     devDependencies:
       '@aniways/eslint-config': link:../../packages/eslint-config
       '@aniways/typescript-config': link:../../packages/typescript-config

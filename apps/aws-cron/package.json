@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "serverless offline start --httpPort 8080",
-    "deploy:prod": "serverless deploy --stage prod",
+    "dev": "serverless offline start --httpPort 8080 --reloadHandler",
+    "deploy:prod": "dotenv -- serverless deploy --stage prod",
     "lint": "eslint . --ext .ts",
     "package": "serverless package"
   },
   "dependencies": {
-    "@aniways/data-access": "workspace:*"
+    "@aniways/data-access": "workspace:*",
+    "@paralleldrive/cuid2": "^2.2.2"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
