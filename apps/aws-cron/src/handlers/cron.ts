@@ -8,7 +8,7 @@ import {
 import { createId } from '@paralleldrive/cuid2';
 import { parse } from 'node-html-parser';
 
-const { anime, video } = schema;
+const { anime, video, animeGenre } = schema;
 const { eq } = orm;
 
 const fetchAnimeDetailsFromAnitaku = async (slug: string) => {
@@ -49,12 +49,22 @@ const fetchAnimeDetailsFromAnitaku = async (slug: string) => {
         )
         .filter(status => status !== null)
         .at(0);
+      const genres = dom
+        .querySelectorAll('.type')
+        .map(a =>
+          a.innerText.includes('Genre') ?
+            a.innerText.replace('Genre: ', '').trim()
+          : null
+        )
+        .filter(status => status !== null)
+        .at(0);
       return {
         title,
         image,
         released,
         status,
         description,
+        genres,
       };
     });
 };
@@ -75,17 +85,18 @@ export const main: APIGatewayProxyHandler = async () => {
   const recentlyReleasedAnime = [
     ...(await getRecentlyReleasedAnime(1)).anime,
     ...(await getRecentlyReleasedAnime(2)).anime,
-  ].map(a => ({
-    ...a,
-    slug: a.url.replace('/anime/', '').split('/')[0]!,
-  }));
+  ]
+    .reverse()
+    .map(a => ({
+      ...a,
+      slug: a.url.replace('/anime/', '').split('/')[0]!,
+    }));
 
   const newAnimes = recentlyReleasedAnime.filter(
     a =>
-      !lastUpdatedAnimeSlugs.includes({
-        slug: a.slug,
-        lastEpisode: String(a.episode),
-      })
+      lastUpdatedAnimeSlugs.find(
+        l => l.slug === a.slug && l.lastEpisode === String(a.episode)
+      ) === undefined
   );
 
   if (newAnimes.length === 0) {
@@ -119,7 +130,8 @@ export const main: APIGatewayProxyHandler = async () => {
             !animedata.image ||
             !animedata.released ||
             !animedata.status ||
-            !animedata.description
+            !animedata.description ||
+            !animedata.genres
           ) {
             return Promise.resolve(undefined);
           }
@@ -149,6 +161,16 @@ export const main: APIGatewayProxyHandler = async () => {
                 updatedAt: new Date(),
               },
             ])
+            .execute();
+          await db
+            .insert(animeGenre)
+            .values(
+              animedata.genres.split(',').map((genre: string) => ({
+                id: createId(),
+                animeId: animeId!,
+                genre: genre.trim(),
+              }))
+            )
             .execute();
         }
         await db
