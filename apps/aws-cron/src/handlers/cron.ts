@@ -182,7 +182,8 @@ export const main: APIGatewayProxyHandler = async () => {
           .where(eq(anime.id, animeId!))
           .execute();
         const episodes = Array.from({
-          length: a.episode < 1 ? 1 : a.episode,
+          length:
+            a.episode < 1 ? 1 : a.episode - Number(animeFromDb!.lastEpisode),
         })
           .map((_, i) => a.episode - i)
           .reverse();
