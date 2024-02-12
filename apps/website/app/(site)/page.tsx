@@ -1,9 +1,9 @@
 import { Pagination } from './pagination';
 import { Suspense } from 'react';
-import { getRecentlyReleasedAnime } from '@aniways/data-access';
 import { AnimeGridLoader } from './anime-grid-loader';
 import { AnimeGrid } from './anime-grid';
 import { PaginationLoader } from './pagination-loader';
+import getRecentlyReleasedFromDB from '@data/anime/database-recently-released';
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
@@ -24,13 +24,13 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 };
 
 const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
-  const { anime } = await getRecentlyReleasedAnime(page);
+  const { recentlyReleased } = await getRecentlyReleasedFromDB(page);
 
-  return <AnimeGrid anime={anime} type="home" />;
+  return <AnimeGrid anime={recentlyReleased} type="home" />;
 };
 
 const PaginationWrapper = async ({ page }: { page: number }) => {
-  const { hasNext } = await getRecentlyReleasedAnime(page);
+  const { hasNext } = await getRecentlyReleasedFromDB(page);
 
   return <Pagination hasNext={hasNext} />;
 };

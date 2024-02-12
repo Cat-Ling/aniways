@@ -4,10 +4,10 @@ type AnimeGridProps =
   | {
       type?: 'home';
       anime: {
-        name: string;
+        title: string;
         image: string;
-        episode: number | string;
-        url: string;
+        lastEpisode: number | string | null;
+        slug: string;
       }[];
     }
   | {
@@ -25,7 +25,7 @@ export const AnimeGrid = (props: AnimeGridProps) => {
     <ul className="grid h-full grid-cols-1 gap-3 md:grid-cols-5">
       {props.type === 'home' ?
         props.anime.map(anime => {
-          return <HomeAnimeItem {...anime} key={anime.name} />;
+          return <HomeAnimeItem {...anime} key={anime.title} />;
         })
       : props.type === 'search' ?
         props.anime.map(anime => {
@@ -37,16 +37,18 @@ export const AnimeGrid = (props: AnimeGridProps) => {
 };
 
 const HomeAnimeItem = async ({
-  name,
+  title: name,
+  lastEpisode: episode,
   image,
-  episode,
-  url,
+  slug,
 }: {
-  name: string;
+  title: string;
   image: string;
-  episode: number | string;
-  url: string;
+  lastEpisode: number | string | null;
+  slug: string;
 }) => {
+  const url = `/anime/${slug}/episodes/${episode}`;
+
   return (
     <li className="bg-background border-border group rounded-md border p-2">
       <a href={`${url}`} className="flex h-full flex-col gap-3">

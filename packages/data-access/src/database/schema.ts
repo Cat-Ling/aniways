@@ -5,6 +5,7 @@ import {
   pgEnum,
   pgTable,
   text,
+  timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
@@ -50,6 +51,8 @@ export const anime = pgTable(
     year: numeric('year').notNull(),
     status: AnimeStatus('status').notNull(),
     slug: text('slug').notNull(),
+    lastEpisode: numeric('last_episode'),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
     malAnimeId: varchar('mal_anime_id', { length: 25 }).references(
       (): AnyPgColumn => malAnime.id
     ),
@@ -132,10 +135,10 @@ export const video = pgTable(
     animeId: varchar('anime_id', { length: 25 })
       .notNull()
       .references((): AnyPgColumn => anime.id),
-    title: text('title'),
-    url: text('url').notNull(),
     episode: numeric('episode').notNull(),
-    image: text('image'),
+    slug: text('slug').notNull(),
+    title: text('title'),
+    createdAt: timestamp('created_at').defaultNow(),
   },
   table => ({
     animeIdx: index('video_anime_idx').on(table.animeId),

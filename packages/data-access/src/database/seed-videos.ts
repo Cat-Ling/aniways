@@ -1,45 +1,10 @@
 import { getRecentlyReleasedAnime } from '../anime';
 import db from '.';
-import { video } from './schema';
+import { anime, video } from './schema';
 
-import parse from 'node-html-parser';
-import { createId } from '@paralleldrive/cuid2';
-import { readFile, writeFile } from 'fs/promises';
 import { chunk } from 'lodash';
-
-const URLS = [
-  {
-    url: 'https://anitaku.to',
-  },
-  {
-    url: 'https://embtaku.pro/videos',
-  },
-  {
-    url: 'https://gogoanime3.co',
-  },
-] as const;
-
-async function getVideoSourceUrl(name: string, episode: number | string) {
-  const videoUrls = await Promise.all(
-    URLS.map(async ({ url }) => {
-      console.log('Fetching', `${url}/${name}-episode-${episode}`);
-      const iframe = await fetch(`${url}/${name}-episode-${episode}`)
-        .then(res => res.text())
-        .then(html => parse(html))
-        .then(dom => dom.querySelector('iframe')?.getAttribute('src'));
-      console.log(
-        'Fetched',
-        iframe,
-        'from',
-        `${url}/${name}-episode-${episode}`
-      );
-
-      return iframe;
-    })
-  );
-
-  return videoUrls.filter(v => v !== undefined) as string[];
-}
+import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
 
 export const seedVideos = async () => {
   await db.delete(video).execute();
@@ -86,7 +51,7 @@ export const seedVideos = async () => {
     ];
   };
 
-  const recentlyReleasedAnime = await fetchRecentlyReleased(1);
+  const recentlyReleasedAnime = (await fetchRecentlyReleased(1)).reverse();
 
   console.log(
     'Fetched',
@@ -98,67 +63,56 @@ export const seedVideos = async () => {
   const allAnimes = await db.query.anime.findMany();
   console.log('Fetched', allAnimes.length, 'animes from db');
 
-  console.log('Started fetching videos');
-
-  let videos = 0;
-
-  for (const c of chunk(recentlyReleasedAnime, 100)) {
+  const insertValues = (
     await Promise.all(
-      c.map(async a => {
-        console.log('Fetching videos from', a.name);
-        const animeFromDb = allAnimes.find(anime => anime.slug === a.slug);
-        console.log('Found anime from db', animeFromDb?.title);
-        if (!animeFromDb) return Promise.resolve(undefined);
-        const episodes = Array.from({ length: a.episode < 1 ? 1 : a.episode })
-          .map((_, i) => a.episode - i)
-          .reverse();
-        console.log(
-          'Fetching',
-          episodes.length,
-          'episodes from',
-          a.name,
-          `(${a.slug})`
-        );
-        const videoUrls = await Promise.all(
-          episodes.map(async ep => ({
-            urls: await getVideoSourceUrl(a.slug, ep),
-            ep,
-          }))
-        );
-        console.log('Fetched', videoUrls.length, 'episodes from', a.name);
-        const insertValues = videoUrls
-          .map(({ urls, ep }) => {
-            return urls.map(url => ({
-              id: createId(),
-              animeId: animeFromDb.id,
-              episode: String(ep),
-              url: url,
-            }));
-          })
-          .flat();
-
-        videos += insertValues.length;
-
-        await writeFile(
-          `episodes/${a.slug}.json`,
-          JSON.stringify(insertValues, null, 2)
-        );
-
-        const file = await readFile(`episodes/${a.slug}.json`);
-
-        console.log('Wrote', file.byteLength, 'bytes to', a.slug);
+      chunk(recentlyReleasedAnime, 1000).map(async chunk => {
+        return (
+          await Promise.all(
+            chunk.map(async a => {
+              const animeFromDb = allAnimes.find(
+                anime => anime.slug === a.slug
+              );
+              if (!animeFromDb) return Promise.resolve(undefined);
+              await db
+                .update(anime)
+                .set({
+                  lastEpisode: String(a.episode),
+                  updatedAt: new Date(),
+                })
+                .where(eq(anime.id, animeFromDb.id))
+                .execute();
+              const episodes = Array.from({
+                length: a.episode < 1 ? 1 : a.episode,
+              })
+                .map((_, i) => a.episode - i)
+                .reverse();
+              return episodes.map(ep => ({
+                id: createId(),
+                animeId: animeFromDb.id,
+                episode: String(ep),
+                slug: `${a.slug}-episode-${ep}`,
+                createdAt: new Date(),
+              }));
+            })
+          )
+        ).flat();
       })
-    );
+    )
+  )
+    .flat()
+    .filter(val => val !== undefined) as {
+    id: string;
+    animeId: string;
+    episode: string;
+    slug: string;
+    createdAt: Date;
+  }[];
+
+  for (const c of chunk(insertValues, 1000)) {
+    console.log('Inserting', c.length, 'Videos');
+    await db.insert(video).values(c).execute();
+    console.log('Inserted', c.length, 'Videos');
   }
 
-  console.log('Fetched', videos, 'videos');
-
-  // await Promise.all(
-  //   chunk(insertValues, 1000).map(async values => {
-  //     console.log('Inserting', values.length, 'Videos');
-  //     return db.insert(video).values(values).execute();
-  //   })
-  // );
-
-  console.log('done inserting videos');
+  console.log('done inserting', insertValues.length, 'videos');
 };
