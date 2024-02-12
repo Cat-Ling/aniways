@@ -32,6 +32,9 @@ jobs:
           node-version: 18
           cache: pnpm
 
+      - name: Create .env file
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+
       - name: Install dependencies
         run: pnpm i
 
