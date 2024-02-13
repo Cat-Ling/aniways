@@ -4,7 +4,6 @@ import { AnimeGridLoader } from './anime-grid-loader';
 import { AnimeGrid } from './anime-grid';
 import { PaginationLoader } from './pagination-loader';
 import { getRecentlyReleasedFromDB } from '@aniways/data-access';
-import { unstable_cache } from 'next/cache';
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
