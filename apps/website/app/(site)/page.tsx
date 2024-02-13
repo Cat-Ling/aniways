@@ -10,8 +10,8 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 
   return (
     <>
-      <div className="mb-5 flex w-full flex-row items-center justify-between">
-        <h1 className="text-xl font-bold md:text-2xl">Recently Released</h1>
+      <div className="mb-2 flex w-full flex-col justify-between gap-2 md:mb-5 md:flex-row md:items-center md:gap-0">
+        <h1 className="text-lg font-bold md:text-2xl">Recently Released</h1>
         <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
           <PaginationWrapper page={page} />
         </Suspense>

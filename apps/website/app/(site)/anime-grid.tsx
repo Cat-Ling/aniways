@@ -45,10 +45,10 @@ export const AnimeGrid = (props: AnimeGridProps) => {
                 </div>
               </div>
               <div className="flex flex-1 flex-col justify-between">
-                <p className="group-hover:text-primary line-clamp-2 text-sm transition">
+                <p className="group-hover:text-primary line-clamp-2 text-xs transition md:text-sm">
                   {title}
                 </p>
-                <p className="text-muted-foreground mt-1 text-sm">
+                <p className="text-muted-foreground mt-1 text-xs md:text-sm">
                   {type === 'home' ?
                     `Episode ${lastEpisode}`
                   : `${lastEpisode} episodes`}

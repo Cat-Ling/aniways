@@ -26,7 +26,7 @@ const SearchPage = async ({
 
   return (
     <>
-      <div className="mb-5 flex w-full items-center justify-between">
+      <div className="mb-2 flex w-full flex-col justify-between gap-2 md:mb-5 md:flex-row md:items-center">
         <div>
           <h1 className="text-2xl font-bold">Search</h1>
           <p className="text-muted-foreground">

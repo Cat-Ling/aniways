@@ -12,8 +12,8 @@ export const Navbar = async () => {
 
   return (
     <nav className="bg-background border-border border-b">
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-6">
+      <div className="container mx-auto flex flex-col justify-between px-3 md:container md:flex-row md:items-center">
+        <div className="flex flex-col md:flex-row md:items-center md:gap-6">
           <Link href="/" className="flex items-center">
             <Image
               src="/logo.png"
@@ -24,17 +24,24 @@ export const Navbar = async () => {
             />
             <h1 className="text-2xl font-bold">AniWays</h1>
           </Link>
-          <SearchBar />
+          <div className="hidden md:block">
+            <SearchBar />
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {user ?
-            <>
-              <Button asChild>
-                <Link href="/anime-list">Anime List</Link>
-              </Button>
-              <LogoutModal />
-            </>
-          : <LoginModal />}
+        <div className="mb-3 flex flex-col gap-3 md:m-0 md:flex-row md:items-center">
+          <div className="block md:hidden">
+            <SearchBar />
+          </div>
+          <div className="flex gap-3">
+            {user ?
+              <>
+                <Button asChild>
+                  <Link href="/anime-list">Anime List</Link>
+                </Button>
+                <LogoutModal />
+              </>
+            : <LoginModal />}
+          </div>
         </div>
       </div>
     </nav>

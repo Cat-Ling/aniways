@@ -30,7 +30,7 @@ export const SearchBar = () => {
       <Input
         ref={ref}
         placeholder="Search for anime"
-        className={cn('w-[264px] pl-9 focus:w-[500px]')}
+        className={cn('w-full pl-9 md:w-[264px] md:focus:w-[500px]')}
         defaultValue={query}
         onChange={e => setQuery(e.target.value)}
       />
