@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon',
   },
+  metadataBase: new URL('https://aniways.vercel.app'),
 };
 
 export default async function RootLayout({

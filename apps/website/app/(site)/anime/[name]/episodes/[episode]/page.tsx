@@ -1,6 +1,9 @@
-import { getAnimeDetails, getVideoSourceUrl } from '@data/anime';
 import { Metadata } from 'next';
 import { unstable_cache } from 'next/cache';
+import { db, getAnimeDetails, getVideoSourceUrl } from '@aniways/data-access';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import { Skeleton } from '@ui/components/ui/skeleton';
 
 const FIFTEEN_MINUTES_IN_SECONDS = 60 * 15;
 
@@ -30,13 +33,33 @@ export const generateMetadata = async ({
     episode: string;
   };
 }): Promise<Metadata> => {
-  const data = await cachedGetVideoSourceUrl(name, episode);
+  const data = await db.query.anime.findFirst({
+    where: ({ slug: slugColumn }, { eq }) => eq(slugColumn, name),
+    with: {
+      genres: true,
+      malAnime: true,
+      videos: true,
+    },
+  });
 
-  if (!data || !data.name) return {};
+  if (!data || !data.title) return {};
 
   return {
-    title: `${data.name} - Episode ${episode}`,
-    description: `Watch ${data.name} episode ${episode} online for free.`,
+    title: `${data.title} - Episode ${episode}`,
+    description: `Watch ${data.title} episode ${episode} online for free.`,
+    openGraph: {
+      title: `${data.title} - Episode ${episode}`,
+      description: `Watch ${data.title} episode ${episode} online for free.`,
+      type: 'video.episode',
+      url: `https://aniways.com/${data.slug}/episodes/${episode}`,
+      siteName: 'Aniways',
+      images: [
+        {
+          url: data.image,
+          alt: `${data.title} - Episode ${episode}`,
+        },
+      ],
+    },
   };
 };
 
@@ -48,37 +71,62 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
-  const iframe = await cachedGetVideoSourceUrl(name, episode);
-  const decodedNameFromUrl = decodeURIComponent(name).split('-').join(' ');
-  const details = await cachedGetAnimeDetails(
-    iframe?.name || decodedNameFromUrl,
-    Number(episode)
-  );
+  const anime = await db.query.anime.findFirst({
+    where: ({ slug: slugColumn }, { eq }) => eq(slugColumn, name),
+    with: {
+      genres: true,
+      malAnime: true,
+      videos: true,
+    },
+  });
+
+  if (!anime) notFound();
 
   return (
     <>
       <h1 className="mb-3 text-xl font-bold">
-        {iframe && iframe.name ?
-          iframe.name
-        : <span className="capitalize">{decodedNameFromUrl}</span>}{' '}
-        -{' '}
+        {anime.title}-{' '}
         <span className="text-muted-foreground font-normal">
           Episode {episode}
         </span>
       </h1>
-      {iframe && iframe.url ?
-        <iframe
-          src={iframe.url}
-          className="aspect-video w-full overflow-hidden"
-          frameBorder="0"
-          scrolling="no"
-          allowFullScreen
-        />
-      : <p className="text-red-500">
-          Sorry, we couldn't find the episode you're looking for. Please try
-          again later.
-        </p>
-      }
+      <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
+        <VideoFrame anime={anime} episode={episode} slug={name} />
+      </Suspense>
+    </>
+  );
+};
+
+type VideoFrameProps = {
+  anime: {
+    title: string;
+  };
+  episode: string;
+  slug: string;
+};
+
+const VideoFrame = async ({ anime, episode, slug }: VideoFrameProps) => {
+  let [details, iframe] = await Promise.all([
+    cachedGetAnimeDetails(anime.title, Number(episode)),
+    cachedGetVideoSourceUrl(slug, episode),
+  ]);
+
+  if (!details) notFound();
+
+  if (!iframe) {
+    iframe = await getVideoSourceUrl(slug, 'movie');
+    if (!iframe) notFound();
+  }
+
+  return (
+    <>
+      <iframe
+        src={iframe}
+        className="aspect-video w-full overflow-hidden"
+        frameBorder="0"
+        scrolling="no"
+        allowFullScreen
+      />
       <div className="mt-6 w-full">
         <pre className="bg-muted border-border w-full rounded-md border">
           {JSON.stringify(details, null, 2)}

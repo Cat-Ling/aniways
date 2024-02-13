@@ -5,24 +5,28 @@ export default async function getAnimeDetails(name: string, episode?: number) {
 
   console.log('searching for anime', name);
 
+  const leven = (await import('leven')).default;
+
   const data = (
     await Jikan4.animeSearch({
       q: name,
       sfw: true,
     })
-  ).data.filter(
-    anime =>
-      name.toLowerCase().includes('tv') || // ensure anime like "Fate/stay night" is not confused with previous seasons
-      anime.title?.toLowerCase() === name?.toLowerCase() ||
-      anime.title_english?.toLowerCase() === name?.toLowerCase() ||
-      anime.title_japanese?.toLowerCase() === name?.toLowerCase() ||
-      anime.title_synonyms
-        ?.map(title => title.toLowerCase())
-        ?.includes(name?.toLowerCase())
-  )[0];
+  ).data
+    .map(anime => ({
+      ...anime,
+      distance: Math.min(
+        leven(name, anime.title ?? ''),
+        leven(name, anime.title_english ?? ''),
+        leven(name, anime.title_japanese ?? ''),
+        ...(anime.title_synonyms?.map(syn => leven(name, syn)) ?? [])
+      ),
+    }))
+    .sort((a, b) => a.distance - b.distance)
+    .shift();
 
   if (!data || !data.mal_id) {
-    throw new Error('Anime not found');
+    return undefined;
   }
 
   const anime = Jikan4.anime(data.mal_id);

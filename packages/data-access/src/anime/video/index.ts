@@ -1,27 +1,9 @@
 import parse from 'node-html-parser';
 
 const URLS = [
-  {
-    url: 'https://anitaku.to',
-    // eslint-disable-next-line no-undef
-    fetchName: (dom: any) => {
-      return dom.querySelector('.anime-info a[title]')?.innerHTML;
-    },
-  },
-  {
-    url: 'https://embtaku.pro/videos',
-    // eslint-disable-next-line no-undef
-    fetchName: (dom: any) => {
-      return dom.querySelector('video-info-left h1')?.innerHTML;
-    },
-  },
-  {
-    url: 'https://gogoanime3.co',
-    // eslint-disable-next-line no-undef
-    fetchName: (dom: any) => {
-      return dom.querySelector('.anime-info a[title]')?.innerHTML;
-    },
-  },
+  'https://anitaku.to',
+  'https://embtaku.pro/videos',
+  'https://gogoanime3.co',
 ] as const;
 
 export default async function getVideoSourceUrl(
@@ -29,49 +11,45 @@ export default async function getVideoSourceUrl(
   episode: number | string
 ) {
   const getUrl = async (
-    name: string,
-    episode: number | string,
     url: string,
     // eslint-disable-next-line
-    fetchName: (dom: HTMLElement) => string | null,
     index: number
-  ): Promise<{
-    url: string | null;
-    name: string | null;
-  } | null> => {
-    let done = false;
+  ): Promise<string | null> => {
     try {
-      new Promise((_, reject) => {
-        setTimeout(() => {
-          if (!done) reject('Timeout');
-        }, 2000);
-      });
-      const iframe = await fetch(`${url}/${name}-episode-${episode}`)
-        .then(res => res.text())
+      const controller = new AbortController();
+      const timeout = setTimeout(() => {
+        controller.abort(new Error(`Timeout for ${url}`));
+      }, 3000);
+      const iframe = await fetch(url, {
+        signal: controller.signal,
+      })
+        .then(res => {
+          clearTimeout(timeout);
+          return res.text();
+        })
         .then(html => {
           const dom = parse(html);
-          const name = fetchName(dom as any);
-          return {
-            url: dom.querySelector('iframe')?.getAttribute('src') ?? null,
-            name: name ?? null,
-          };
+          return dom.querySelector('iframe')?.getAttribute('src') ?? null;
         });
-      if (!iframe.url || !iframe.name) {
-        throw new Error('Failed to fetch');
+      if (!iframe) {
+        throw new Error(`Failed to fetch ${url} video`);
       }
-      done = true;
       console.log(`Fetched ${url} video`);
       return iframe;
     } catch (e) {
-      done = true;
       console.error(`Failed to fetch ${url} video`, e);
       const nextUrl = URLS.at(index + 1);
       if (nextUrl) {
-        return getUrl(name, episode, nextUrl.url, nextUrl.fetchName, index + 1);
+        return getUrl(`${nextUrl}/${name}-episode-${episode}`, index + 1);
       }
       return null;
     }
   };
 
-  return getUrl(name, episode, URLS[0].url, URLS[0].fetchName, 0);
+  const slug =
+    episode === 'movie' ?
+      `${name}-camrip-episode-1`
+    : `${name}-episode-${episode}`;
+
+  return getUrl(`${URLS[0]}/${slug}`, 0);
 }
