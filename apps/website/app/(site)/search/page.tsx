@@ -56,7 +56,7 @@ const SearchResults = async ({
 }) => {
   const { animes } = await searchFromDB(query, page);
 
-  return <AnimeGrid anime={animes} type="search" />;
+  return <AnimeGrid animes={animes} type="search" />;
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {

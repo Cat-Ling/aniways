@@ -22,10 +22,7 @@ export default async function searchFromDB(query: string, page: number) {
   }
 
   return {
-    animes: animes.map(anime => ({
-      ...anime,
-      url: `/anime/${anime.slug}`,
-    })),
+    animes,
     hasNext,
   };
 }
