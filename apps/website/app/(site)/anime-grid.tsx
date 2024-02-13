@@ -15,7 +15,7 @@ export const AnimeGrid = (props: AnimeGridProps) => {
   const { animes, type } = props;
 
   return (
-    <ul className="grid h-full grid-cols-1 gap-3 md:grid-cols-5">
+    <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
       {animes.map(anime => {
         const { title, lastEpisode, image, slug } = anime;
 
