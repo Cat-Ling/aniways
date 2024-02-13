@@ -4,15 +4,7 @@ import { AnimeGrid } from '../anime-grid';
 import { searchFromDB } from '@aniways/data-access';
 import { Pagination } from '../pagination';
 import { PaginationLoader } from '../pagination-loader';
-import { unstable_cache } from 'next/cache';
 import { Metadata } from 'next';
-
-const ONE_HOUR_IN_SECONDS = 60 * 60;
-
-const cachedAnimeSearch = unstable_cache(searchFromDB, ['search'], {
-  tags: ['search'],
-  revalidate: ONE_HOUR_IN_SECONDS,
-});
 
 export const generateMetadata = async ({
   searchParams: { query },
@@ -62,14 +54,13 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  // const { animes } = await cachedAnimeSearch(query, page);
-  const { animes } = await cachedAnimeSearch(query, page);
+  const { animes } = await searchFromDB(query, page);
 
   return <AnimeGrid anime={animes} type="search" />;
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { hasNext } = await cachedAnimeSearch(props.query, props.page);
+  const { hasNext } = await searchFromDB(props.query, props.page);
 
   return <Pagination hasNext={hasNext} />;
 };
