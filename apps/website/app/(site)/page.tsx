@@ -6,14 +6,6 @@ import { PaginationLoader } from './pagination-loader';
 import { getRecentlyReleasedFromDB } from '@aniways/data-access';
 import { unstable_cache } from 'next/cache';
 
-const cachedGetRecentlyReleasedFromDB = unstable_cache(
-  getRecentlyReleasedFromDB,
-  ['recentlyReleasedDB'],
-  {
-    revalidate: 60 * 15,
-  }
-);
-
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
 
@@ -33,13 +25,13 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 };
 
 const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
-  const { recentlyReleased } = await cachedGetRecentlyReleasedFromDB(page);
+  const { recentlyReleased } = await getRecentlyReleasedFromDB(page);
 
   return <AnimeGrid anime={recentlyReleased} type="home" />;
 };
 
 const PaginationWrapper = async ({ page }: { page: number }) => {
-  const { hasNext } = await cachedGetRecentlyReleasedFromDB(page);
+  const { hasNext } = await getRecentlyReleasedFromDB(page);
 
   return <Pagination hasNext={hasNext} />;
 };
