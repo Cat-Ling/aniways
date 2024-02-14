@@ -16,13 +16,16 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
     redirect('/?login=true');
   }
 
-  const { accessToken } = user;
+  const {
+    accessToken,
+    user: { name },
+  } = user;
 
-  const animeList = await getAnimeList(accessToken, Number(page));
+  const animeList = await getAnimeList(accessToken, name, Number(page));
 
   return (
     <>
-      <h1>{user.user.name}'s Anime List</h1>
+      <h1>{name}'s Anime List</h1>
       <pre>{JSON.stringify(animeList, null, 2)}</pre>
     </>
   );
