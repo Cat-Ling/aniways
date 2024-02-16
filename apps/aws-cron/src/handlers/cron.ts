@@ -123,7 +123,7 @@ export const main: APIGatewayProxyHandler = async () => {
         const animeFromDb = allAnimes.find(anime => anime.slug === a.slug);
         let animeId = animeFromDb?.id;
         if (!animeFromDb) {
-          console.log('No anime found in db, fetching from anitaku');
+          console.log('No anime found in db, fetching from anitaku', a.slug);
           const animedata = await fetchAnimeDetailsFromAnitaku(a.slug);
           console.log('Fetched anime details from anitaku', animedata);
           if (
