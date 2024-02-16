@@ -115,7 +115,7 @@ export const main: APIGatewayProxyHandler = async () => {
 
   console.log('Fetched', allAnimes.length, 'animes from db');
 
-  console.log('Started inserting new animes');
+  console.log('Started inserting new episodes');
 
   const insertValues = (
     await Promise.all(
@@ -123,7 +123,9 @@ export const main: APIGatewayProxyHandler = async () => {
         const animeFromDb = allAnimes.find(anime => anime.slug === a.slug);
         let animeId = animeFromDb?.id;
         if (!animeFromDb) {
+          console.log('No anime found in db, fetching from anitaku');
           const animedata = await fetchAnimeDetailsFromAnitaku(a.slug);
+          console.log('Fetched anime details from anitaku', animedata);
           if (
             !animedata ||
             !animedata.title ||
@@ -162,6 +164,7 @@ export const main: APIGatewayProxyHandler = async () => {
               },
             ])
             .execute();
+          console.log('Inserted new anime', animedata.title, 'into db');
           await db
             .insert(animeGenre)
             .values(
@@ -172,6 +175,7 @@ export const main: APIGatewayProxyHandler = async () => {
               }))
             )
             .execute();
+          console.log('Inserted genres for', animedata.title);
         }
         await db
           .update(anime)
@@ -209,7 +213,7 @@ export const main: APIGatewayProxyHandler = async () => {
   }[];
 
   await db.insert(video).values(insertValues).execute();
-  console.log('Inserted', insertValues.length, 'new animes');
+  console.log('Inserted', insertValues.length, 'new episodes into db');
 
   return {
     statusCode: 200,
