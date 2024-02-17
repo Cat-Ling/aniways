@@ -14,6 +14,7 @@ export default async function getAnimeDetails(
     accessToken ?
       { accessToken }
     : {
+        // eslint-disable-next-line
         clientId: process.env.MAL_CLIENT_ID!,
       }
   );

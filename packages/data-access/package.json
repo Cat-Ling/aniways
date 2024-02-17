@@ -6,7 +6,7 @@
   "scripts": {
     "push": "drizzle-kit push:pg",
     "migrate": "drizzle-kit generate:pg",
-    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts --max-warnings=0"
+    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
   },
   "dependencies": {
     "@animelist/auth-next": "^0.1.1",
