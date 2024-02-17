@@ -20,7 +20,7 @@
       "dependsOn": ["^start"]
     },
     "package": {
-      "dependsOn": ["build", "lint"],
+      "dependsOn": ["lint"],
       "dotEnv": [".env"]
     },
     "deploy:prod": {
