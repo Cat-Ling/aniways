@@ -1,14 +1,13 @@
 import { Jikan4 } from 'node-myanimelist';
 import { MALClient } from '@animelist/client';
+import { Anime } from '../../database/schema';
 
 export default async function getAnimeDetails(
   accessToken: string | undefined,
-  name: string,
+  animeFromDB: Anime,
   episode?: number
 ) {
-  // TODO: add more sources, get from gogoanime, use the data to search on mal for more accurate data
-
-  console.log('searching for anime', name);
+  console.log('Getting anime details of', animeFromDB.title);
 
   const client = new MALClient(
     accessToken ?
@@ -19,9 +18,11 @@ export default async function getAnimeDetails(
       }
   );
 
+  const leven = (await import('leven')).default;
+
   const data = (
     await client.getAnimeList({
-      q: name,
+      q: animeFromDB.title.replace(/[^a-zA-Z0-9]/g, ' ').slice(0, 50),
       fields: [
         'id',
         'title',
@@ -56,7 +57,12 @@ export default async function getAnimeDetails(
       ],
     })
   ).data
-    .map(anime => anime.node)
+    .map(anime => ({
+      ...anime.node,
+      distance: leven(anime.node.title, animeFromDB.title),
+    }))
+    .filter(anime => String(animeFromDB.year) === anime.start_date?.slice(0, 4))
+    .sort((a, b) => a.distance - b.distance)
     .at(0);
 
   if (!data || !data.id) {

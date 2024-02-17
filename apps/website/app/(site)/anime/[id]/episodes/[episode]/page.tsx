@@ -1,6 +1,11 @@
 import { Metadata } from 'next';
 import { unstable_cache } from 'next/cache';
-import { db, getAnimeDetails, getVideoSourceUrl } from '@aniways/data-access';
+import {
+  schema,
+  db,
+  getAnimeDetails,
+  getVideoSourceUrl,
+} from '@aniways/data-access';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
@@ -108,9 +113,7 @@ const AnimeStreamingPage = async ({
 };
 
 type VideoFrameProps = {
-  anime: {
-    title: string;
-  };
+  anime: schema.Anime;
   episode: string;
   slug: string;
 };
@@ -119,7 +122,7 @@ const VideoFrame = async ({ anime, episode, slug }: VideoFrameProps) => {
   const user = await getUser(cookies());
 
   let [details, iframe] = await Promise.all([
-    cachedGetAnimeDetails(user?.accessToken, anime.title, Number(episode)),
+    cachedGetAnimeDetails(user?.accessToken, anime, Number(episode)),
     cachedGetVideoSourceUrl(slug, episode),
   ]);
 
