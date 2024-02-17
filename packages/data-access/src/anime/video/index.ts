@@ -7,11 +7,12 @@ const URLS = [
 ] as const;
 
 export default async function getVideoSourceUrl(
-  name: string,
-  episode: number | string
+  slug: string,
+  type: 'movie' | undefined = undefined
 ) {
   const getUrl = async (
     url: string,
+    slug: string,
     // eslint-disable-next-line
     index: number
   ): Promise<string | null> => {
@@ -40,16 +41,16 @@ export default async function getVideoSourceUrl(
       console.error(`Failed to fetch ${url} video`, e);
       const nextUrl = URLS.at(index + 1);
       if (nextUrl) {
-        return getUrl(`${nextUrl}/${name}-episode-${episode}`, index + 1);
+        return getUrl(`${nextUrl}/${slug}`, slug, index + 1);
       }
       return null;
     }
   };
 
-  const slug =
-    episode === 'movie' ?
-      `${name}-camrip-episode-1`
-    : `${name}-episode-${episode}`;
+  slug =
+    type === 'movie' ?
+      `${slug.split('-episode-').at(0)}-camrip-episode-1`
+    : slug;
 
-  return getUrl(`${URLS[0]}/${slug}`, 0);
+  return getUrl(`${URLS[0]}/${slug}`, slug, 0);
 }

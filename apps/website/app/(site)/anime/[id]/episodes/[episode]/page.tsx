@@ -1,36 +1,11 @@
 import { Metadata } from 'next';
-import { unstable_cache } from 'next/cache';
-import {
-  schema,
-  db,
-  getAnimeDetails,
-  getVideoSourceUrl,
-} from '@aniways/data-access';
+import { db, schema } from '@aniways/data-access';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import { getUser } from '@animelist/auth-next/server';
-import { cookies } from 'next/headers';
-
-const FIFTEEN_MINUTES_IN_SECONDS = 60 * 15;
-
-const cachedGetVideoSourceUrl = unstable_cache(
-  getVideoSourceUrl,
-  ['video-source-url-name'],
-  {
-    revalidate: FIFTEEN_MINUTES_IN_SECONDS,
-    tags: ['video-source-url-name'],
-  }
-);
-
-const cachedGetAnimeDetails = unstable_cache(
-  getAnimeDetails,
-  ['anime-details-name'],
-  {
-    revalidate: FIFTEEN_MINUTES_IN_SECONDS,
-    tags: ['anime-details-name'],
-  }
-);
+import { VideoFrame } from './video-frame';
+import { AnimeMetadata } from './anime-metadata';
+import { EpisodesSection } from './episodes-section';
 
 export const generateMetadata = async ({
   params: { id, episode },
@@ -93,6 +68,17 @@ const AnimeStreamingPage = async ({
 
   if (!anime || !currentVideo) notFound();
 
+  const episodes = anime.videos
+    .sort((a, b) => Number(a.episode) - Number(b.episode))
+    .map((video, i) => {
+      const nextvideo = anime.videos[i + 1];
+      if (nextvideo?.episode === video.episode) {
+        return undefined;
+      }
+      return video;
+    })
+    .filter(video => video !== undefined) as schema.Video[];
+
   return (
     <>
       <h1 className="mb-3 text-xl font-bold">
@@ -101,52 +87,27 @@ const AnimeStreamingPage = async ({
           Episode {episode}
         </span>
       </h1>
-      <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
-        <VideoFrame
+      <div className="mb-5 flex aspect-video w-full flex-col-reverse gap-2">
+        <EpisodesSection
           anime={anime}
-          episode={episode}
-          slug={currentVideo?.slug.split('-episode-').at(0) ?? anime.slug}
+          episodes={episodes}
+          currentEpisode={episode}
         />
-      </Suspense>
-    </>
-  );
-};
-
-type VideoFrameProps = {
-  anime: schema.Anime;
-  episode: string;
-  slug: string;
-};
-
-const VideoFrame = async ({ anime, episode, slug }: VideoFrameProps) => {
-  const user = await getUser(cookies());
-
-  let [details, iframe] = await Promise.all([
-    cachedGetAnimeDetails(user?.accessToken, anime, Number(episode)),
-    cachedGetVideoSourceUrl(slug, episode),
-  ]);
-
-  if (!details) notFound();
-
-  if (!iframe) {
-    iframe = await getVideoSourceUrl(slug, 'movie');
-    if (!iframe) notFound();
-  }
-
-  return (
-    <>
-      <iframe
-        src={iframe}
-        className="aspect-video w-full overflow-hidden"
-        frameBorder="0"
-        scrolling="no"
-        allowFullScreen
-      />
-      <div className="mt-6 w-full">
-        <pre className="bg-muted border-border w-full rounded-md border">
-          {JSON.stringify(details, null, 2)}
-        </pre>
+        <div className="flex-1">
+          <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
+            <VideoFrame
+              anime={anime}
+              slug={currentVideo.slug}
+              currentVideo={currentVideo}
+            />
+          </Suspense>
+        </div>
       </div>
+      <Suspense
+        fallback={<Skeleton className="w-full" style={{ height: '20rem' }} />}
+      >
+        <AnimeMetadata anime={anime} episode={Number(episode)} />
+      </Suspense>
     </>
   );
 };

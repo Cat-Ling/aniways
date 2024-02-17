@@ -81,6 +81,20 @@ const getSlug = async (url: string) => {
 };
 
 export const main: APIGatewayProxyHandler = async () => {
+  // eslint-disable-next-line
+  console.log('env variable: ', process.env.IS_OFFLINE, process.env.NODE_ENV);
+
+  // eslint-disable-next-line
+  if (process.env.IS_OFFLINE || process.env.NODE_ENV === 'development') {
+    console.log('Offline mode');
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Offline mode',
+      }),
+    };
+  }
+
   const lastUpdatedAnimes = await db.query.anime.findMany({
     orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
     limit: 100,

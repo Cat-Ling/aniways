@@ -1,3 +1,4 @@
+import { InferSelectModel, relations } from 'drizzle-orm';
 import {
   AnyPgColumn,
   index,
@@ -8,7 +9,6 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { InferSelectModel, relations } from 'drizzle-orm';
 
 export const AnimeSeason = pgEnum('anime_season', [
   'WINTER',
@@ -82,7 +82,7 @@ export const animeRelations = relations(anime, ({ many, one }) => ({
 export type AnimeWithRelations = Anime & {
   genres: AnimeGenre[];
   videos: Video[];
-  malAnime: MalAnime;
+  malAnime: MalAnime | null;
 };
 
 export const malAnime = pgTable(
@@ -159,6 +159,7 @@ export const video = pgTable(
     slug: text('slug').notNull(),
     title: text('title'),
     createdAt: timestamp('created_at').defaultNow(),
+    videoUrl: text('video_url'),
   },
   table => ({
     animeIdx: index('video_anime_idx').on(table.animeId),
