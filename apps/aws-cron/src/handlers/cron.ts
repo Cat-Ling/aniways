@@ -84,14 +84,13 @@ export const main: APIGatewayProxyHandler = async () => {
   const lastUpdatedAnimes = await db.query.anime.findMany({
     orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
     limit: 100,
+    with: {
+      videos: {
+        limit: 1,
+        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
+      },
+    },
   });
-
-  const lastUpdatedAnimeSlugs = lastUpdatedAnimes.map(
-    ({ slug, lastEpisode }) => ({
-      slug,
-      lastEpisode,
-    })
-  );
 
   const recentlyReleasedAnime = [
     ...(await getRecentlyReleasedAnime(1)).anime,
@@ -105,8 +104,10 @@ export const main: APIGatewayProxyHandler = async () => {
 
   const newAnimes = recentlyReleasedAnime.filter(
     a =>
-      lastUpdatedAnimeSlugs.find(
-        l => l.slug === a.slug && l.lastEpisode === String(a.episode)
+      lastUpdatedAnimes.find(
+        l =>
+          (l.slug === a.slug && l.lastEpisode === String(a.episode)) ||
+          a.slug === l.videos[0]?.slug
       ) === undefined
   );
 
