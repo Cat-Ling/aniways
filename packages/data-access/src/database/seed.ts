@@ -69,6 +69,7 @@ async function main() {
 
   let anime: Awaited<ReturnType<typeof getAnimeFromGogoAnime>> = [];
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     console.log(`Fetching page ${page}`);
     const animeList = await getAnimeFromGogoAnime(page);
