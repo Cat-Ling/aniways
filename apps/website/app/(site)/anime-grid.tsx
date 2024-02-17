@@ -1,6 +1,7 @@
 import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { schema } from '@aniways/data-access';
+import { Skeleton } from '@ui/components/ui/skeleton';
 import Image from 'next/image';
 
 type AnimeGridProps = {
@@ -28,13 +29,16 @@ export const AnimeGrid = (props: AnimeGridProps) => {
           >
             <Link href={url} className="flex h-full flex-col gap-3">
               <div className="relative">
-                <Image
-                  src={image}
-                  alt={title}
-                  width={450}
-                  height={650}
-                  className="aspect-[450/650] w-full rounded-md object-cover"
-                />
+                <div className="relative aspect-[450/650] w-full overflow-hidden rounded-md">
+                  <Skeleton className="absolute z-0 h-full w-full rounded-md" />
+                  <Image
+                    src={image}
+                    alt={title}
+                    width={450}
+                    height={650}
+                    className="absolute h-full w-full object-cover"
+                  />
+                </div>
                 <div className="bg-muted/70 pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
                   <Play className="text-primary h-8 w-8" />
                   <p className="text-foreground mt-2 text-lg font-bold">
