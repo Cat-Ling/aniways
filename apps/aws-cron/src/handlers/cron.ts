@@ -132,7 +132,9 @@ export const main: APIGatewayProxyHandler = async () => {
     await Promise.all(
       newAnimes.map(async a => {
         const slug =
-          (await getSlug(`https://anitaku.to/category/${a.slug}`)) || a.slug;
+          (await getSlug(
+            `https://anitaku.to/${a.slug}-episode-${a.episode}`
+          )) || a.slug;
         const animeFromDb = allAnimes.find(anime => anime.slug === slug);
         let animeId = animeFromDb?.id;
         if (!animeFromDb) {
