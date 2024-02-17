@@ -10,41 +10,59 @@ export default async function getAnimeDetails(
 
   console.log('searching for anime', name);
 
-  const leven = (await import('leven')).default;
+  const client = new MALClient(
+    accessToken ?
+      { accessToken }
+    : {
+        clientId: process.env.MAL_CLIENT_ID!,
+      }
+  );
 
   const data = (
-    await Jikan4.animeSearch({
+    await client.getAnimeList({
       q: name,
-      sfw: true,
+      fields: [
+        'id',
+        'title',
+        'media_type',
+        'status',
+        'start_date',
+        'end_date',
+        'start_season',
+        'synopsis',
+        'background',
+        'source',
+        'genres',
+        'alternative_titles',
+        'rating',
+        'rank',
+        'popularity',
+        'mean',
+        'average_episode_duration',
+        'num_episodes',
+        'num_list_users',
+        'num_scoring_users',
+        'my_list_status',
+        'recommendations',
+        'main_picture',
+        'pictures',
+        'broadcast',
+        'studios',
+        'nsfw',
+        'statistics',
+        'related_anime',
+        'related_manga',
+      ],
     })
   ).data
-    .map(anime => ({
-      ...anime,
-      distance: Math.min(
-        leven(name, anime.title ?? ''),
-        leven(name, anime.title_english ?? ''),
-        leven(name, anime.title_japanese ?? ''),
-        ...(anime.title_synonyms?.map(syn => leven(name, syn)) ?? [])
-      ),
-    }))
-    .sort((a, b) => a.distance - b.distance)
-    .shift();
+    .map(anime => anime.node)
+    .at(0);
 
-  if (!data || !data.mal_id) {
+  if (!data || !data.id) {
     return undefined;
   }
 
-  const {
-    data: [animeList],
-  } =
-    accessToken ?
-      await new MALClient({ accessToken }).getAnimeList({
-        q: data.title ?? data.title_english ?? data.title_japanese ?? name,
-        fields: ['my_list_status'],
-      })
-    : { data: [null] };
-
-  const anime = Jikan4.anime(data.mal_id);
+  const anime = Jikan4.anime(data.id);
 
   const episodes = await anime.episodes();
 
@@ -64,6 +82,5 @@ export default async function getAnimeDetails(
       ...ep,
       current: currentEpisode?.mal_id === ep.mal_id,
     })),
-    listStatus: animeList?.node?.my_list_status ?? null,
   };
 }

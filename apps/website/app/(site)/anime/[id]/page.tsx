@@ -1,5 +1,6 @@
 import { RedirectType, notFound, redirect } from 'next/navigation';
-import { db } from '@aniways/data-access';
+import { createId, db } from '@aniways/data-access';
+import { video } from '@data/database/schema';
 
 const AnimeDetailsPage = async ({
   params: { id },
@@ -18,8 +19,32 @@ const AnimeDetailsPage = async ({
 
   if (!anime) notFound();
 
+  if (anime.lastEpisode && anime.videos.length === 0) {
+    const episodes = Array.from({
+      length: Number(anime.lastEpisode),
+    })
+      .map((_, i) => Number(anime.lastEpisode) - i)
+      .reverse();
+    if (episodes.length === 0) notFound();
+    const result = await db
+      .insert(video)
+      .values(
+        episodes.map(ep => ({
+          id: createId(),
+          animeId: anime.id,
+          episode: String(ep),
+          slug: `${anime.slug}-episode-${ep}`,
+          createdAt: new Date(),
+        }))
+      )
+      .returning()
+      .execute();
+    if (result.length === 0) notFound();
+    anime.videos = result.sort((a, b) => Number(a.episode) - Number(b.episode));
+  }
+
   redirect(
-    `/anime/${id}/episodes/${anime.videos[0].episode}`,
+    `/anime/${id}/episodes/${anime.videos.at(0)?.episode ?? 1}`,
     RedirectType.replace
   );
 };

@@ -6,6 +6,7 @@ import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { Navbar } from './navbar';
 import { MyAnimeListAuthProvider } from './providers';
+import { revalidatePath } from 'next/cache';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getUser(cookies());
+
+  // eslint-disable-next-line turbo/no-undeclared-env-vars
+  if (process.env.NODE_ENV === 'development') {
+    revalidatePath('/', 'layout');
+  }
 
   return (
     <html lang="en" className="dark">
