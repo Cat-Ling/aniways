@@ -230,6 +230,16 @@ export const main: APIGatewayProxyHandler = async () => {
     createdAt: Date;
   }[];
 
+  if (insertValues.length === 0) {
+    console.log('No new episodes to insert');
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'No new episodes to insert',
+      }),
+    };
+  }
+
   await db.insert(video).values(insertValues).execute();
   console.log('Inserted', insertValues.length, 'new episodes into db');
 
