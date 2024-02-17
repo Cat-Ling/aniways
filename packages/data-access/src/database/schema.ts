@@ -8,7 +8,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { InferSelectModel, relations } from 'drizzle-orm';
 
 export const AnimeSeason = pgEnum('anime_season', [
   'WINTER',
@@ -63,6 +63,8 @@ export const anime = pgTable(
   })
 );
 
+export type Anime = InferSelectModel<typeof anime>;
+
 export const animeRelations = relations(anime, ({ many, one }) => ({
   genres: many(animeGenre, {
     relationName: 'anime-genres',
@@ -76,6 +78,12 @@ export const animeRelations = relations(anime, ({ many, one }) => ({
     references: [malAnime.id],
   }),
 }));
+
+export type AnimeWithRelations = Anime & {
+  genres: AnimeGenre[];
+  videos: Video[];
+  malAnime: MalAnime;
+};
 
 export const malAnime = pgTable(
   'mal_anime',
@@ -104,6 +112,8 @@ export const malAnime = pgTable(
   })
 );
 
+export type MalAnime = InferSelectModel<typeof malAnime>;
+
 export const malAnimeRelations = relations(malAnime, ({ one }) => ({
   anime: one(anime, {
     relationName: 'mal-anime',
@@ -111,6 +121,10 @@ export const malAnimeRelations = relations(malAnime, ({ one }) => ({
     references: [anime.id],
   }),
 }));
+
+export type MalAnimeWithRelations = MalAnime & {
+  anime: Anime;
+};
 
 export const animeGenre = pgTable('anime_genre', {
   id: varchar('id', { length: 25 }).primaryKey(),
@@ -120,6 +134,8 @@ export const animeGenre = pgTable('anime_genre', {
   genre: text('genre').notNull(),
 });
 
+export type AnimeGenre = InferSelectModel<typeof animeGenre>;
+
 export const genreRelations = relations(animeGenre, ({ one }) => ({
   anime: one(anime, {
     relationName: 'anime-genres',
@@ -127,6 +143,10 @@ export const genreRelations = relations(animeGenre, ({ one }) => ({
     references: [anime.id],
   }),
 }));
+
+export type AnimeGenreWithRelations = AnimeGenre & {
+  anime: Anime;
+};
 
 export const video = pgTable(
   'video',
@@ -145,6 +165,8 @@ export const video = pgTable(
   })
 );
 
+export type Video = InferSelectModel<typeof video>;
+
 export const videoRelations = relations(video, ({ one }) => ({
   anime: one(anime, {
     relationName: 'anime-videos',
@@ -152,3 +174,7 @@ export const videoRelations = relations(video, ({ one }) => ({
     references: [anime.id],
   }),
 }));
+
+export type VideoWithRelations = Video & {
+  anime: Anime;
+};

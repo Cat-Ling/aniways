@@ -26,15 +26,15 @@ const cachedGetAnimeDetails = unstable_cache(
 );
 
 export const generateMetadata = async ({
-  params: { name, episode },
+  params: { id, episode },
 }: {
   params: {
-    name: string;
+    id: string;
     episode: string;
   };
 }): Promise<Metadata> => {
   const data = await db.query.anime.findFirst({
-    where: ({ slug: slugColumn }, { eq }) => eq(slugColumn, name),
+    where: (fields, actions) => actions.eq(fields.id, id),
     with: {
       genres: true,
       malAnime: true,
@@ -64,15 +64,15 @@ export const generateMetadata = async ({
 };
 
 const AnimeStreamingPage = async ({
-  params: { name, episode },
+  params: { id, episode },
 }: {
   params: {
-    name: string;
+    id: string;
     episode: string;
   };
 }) => {
   const anime = await db.query.anime.findFirst({
-    where: ({ slug: slugColumn }, { eq }) => eq(slugColumn, name),
+    where: (fields, actions) => actions.eq(fields.id, id),
     with: {
       genres: true,
       malAnime: true,
@@ -80,7 +80,11 @@ const AnimeStreamingPage = async ({
     },
   });
 
-  if (!anime) notFound();
+  const currentVideo = anime?.videos.find(
+    video => Number(video.episode) === Number(episode)
+  );
+
+  if (!anime || !currentVideo) notFound();
 
   return (
     <>
@@ -91,7 +95,11 @@ const AnimeStreamingPage = async ({
         </span>
       </h1>
       <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
-        <VideoFrame anime={anime} episode={episode} slug={name} />
+        <VideoFrame
+          anime={anime}
+          episode={episode}
+          slug={currentVideo?.slug.split('-episode-').at(0) ?? anime.slug}
+        />
       </Suspense>
     </>
   );

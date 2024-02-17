@@ -1,14 +1,10 @@
 import { Play } from 'lucide-react';
 import Link from 'next/link';
+import { schema } from '@aniways/data-access';
 
 type AnimeGridProps = {
   type: 'home' | 'search';
-  animes: {
-    title: string;
-    image: string;
-    lastEpisode: string | null;
-    slug: string;
-  }[];
+  animes: schema.Anime[];
 };
 
 export const AnimeGrid = (props: AnimeGridProps) => {
@@ -17,12 +13,12 @@ export const AnimeGrid = (props: AnimeGridProps) => {
   return (
     <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
       {animes.map(anime => {
-        const { title, lastEpisode, image, slug } = anime;
+        const { title, lastEpisode, image, id } = anime;
 
         const url =
           type === 'home' ?
-            `/anime/${slug}/episodes/${lastEpisode}`
-          : `/anime/${slug}`;
+            `/anime/${id}/episodes/${lastEpisode}`
+          : `/anime/${id}`;
 
         return (
           <li
