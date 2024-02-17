@@ -107,18 +107,11 @@ export const main: APIGatewayProxyHandler = async () => {
       lastUpdatedAnimes.find(
         l =>
           (l.slug === a.slug && l.lastEpisode === String(a.episode)) ||
-          a.slug === l.videos[0]?.slug
+          a.slug === l.videos[0]?.slug.split('-episode-').shift()
       ) === undefined
   );
 
-  console.log(
-    'New anime episodes',
-    newAnimes.map(a => ({
-      title: a.name,
-      episode: a.episode,
-      slug: a.slug,
-    }))
-  );
+  console.log('New anime episodes', newAnimes);
 
   if (newAnimes.length === 0) {
     console.log('No new animes');
