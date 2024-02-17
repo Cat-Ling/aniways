@@ -150,7 +150,6 @@ export const main: APIGatewayProxyHandler = async () => {
             !animedata.image ||
             !animedata.released ||
             !animedata.status ||
-            !animedata.description ||
             !animedata.genres
           ) {
             return Promise.resolve(undefined);
@@ -164,7 +163,7 @@ export const main: APIGatewayProxyHandler = async () => {
                 title: animedata.title,
                 image: animedata.image,
                 year: animedata.released,
-                description: animedata.description,
+                description: animedata.description ?? '',
                 slug: slug,
                 status:
                   ({
