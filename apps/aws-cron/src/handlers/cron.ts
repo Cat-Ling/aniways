@@ -69,6 +69,17 @@ const fetchAnimeDetailsFromAnitaku = async (slug: string) => {
     });
 };
 
+const getSlug = async (url: string) => {
+  const response = await fetch(url).then(res => res.text());
+  const dom = parse(response);
+  const slug = dom
+    .querySelector('.anime-info a')
+    ?.getAttribute('href')
+    ?.split('/')
+    .pop();
+  return slug || null;
+};
+
 export const main: APIGatewayProxyHandler = async () => {
   const lastUpdatedAnimes = await db.query.anime.findMany({
     orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
@@ -120,11 +131,13 @@ export const main: APIGatewayProxyHandler = async () => {
   const insertValues = (
     await Promise.all(
       newAnimes.map(async a => {
-        const animeFromDb = allAnimes.find(anime => anime.slug === a.slug);
+        const slug =
+          (await getSlug(`https://anitaku.to/category/${a.slug}`)) || a.slug;
+        const animeFromDb = allAnimes.find(anime => anime.slug === slug);
         let animeId = animeFromDb?.id;
         if (!animeFromDb) {
           console.log('No anime found in db, fetching from anitaku', a.slug);
-          const animedata = await fetchAnimeDetailsFromAnitaku(a.slug);
+          const animedata = await fetchAnimeDetailsFromAnitaku(slug);
           console.log('Fetched anime details from anitaku', animedata);
           if (
             !animedata ||
@@ -147,7 +160,7 @@ export const main: APIGatewayProxyHandler = async () => {
                 image: animedata.image,
                 year: animedata.released,
                 description: animedata.description,
-                slug: a.slug,
+                slug: slug,
                 status:
                   ({
                     Upcoming: 'NOT_YET_AIRED',
