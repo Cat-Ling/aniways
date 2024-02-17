@@ -111,6 +111,15 @@ export const main: APIGatewayProxyHandler = async () => {
       ) === undefined
   );
 
+  console.log(
+    'New anime episodes',
+    newAnimes.map(a => ({
+      title: a.name,
+      episode: a.episode,
+      slug: a.slug,
+    }))
+  );
+
   if (newAnimes.length === 0) {
     console.log('No new animes');
     return {
