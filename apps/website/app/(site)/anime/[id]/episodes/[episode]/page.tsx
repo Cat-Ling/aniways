@@ -4,6 +4,8 @@ import { db, getAnimeDetails, getVideoSourceUrl } from '@aniways/data-access';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
+import { getUser } from '@animelist/auth-next/server';
+import { cookies } from 'next/headers';
 
 const FIFTEEN_MINUTES_IN_SECONDS = 60 * 15;
 
@@ -114,8 +116,10 @@ type VideoFrameProps = {
 };
 
 const VideoFrame = async ({ anime, episode, slug }: VideoFrameProps) => {
+  const user = await getUser(cookies());
+
   let [details, iframe] = await Promise.all([
-    cachedGetAnimeDetails(anime.title, Number(episode)),
+    cachedGetAnimeDetails(user?.accessToken, anime.title, Number(episode)),
     cachedGetVideoSourceUrl(slug, episode),
   ]);
 

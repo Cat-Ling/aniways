@@ -1,6 +1,11 @@
 import { Jikan4 } from 'node-myanimelist';
+import { MALClient } from '@animelist/client';
 
-export default async function getAnimeDetails(name: string, episode?: number) {
+export default async function getAnimeDetails(
+  accessToken: string | undefined,
+  name: string,
+  episode?: number
+) {
   // TODO: add more sources, get from gogoanime, use the data to search on mal for more accurate data
 
   console.log('searching for anime', name);
@@ -29,6 +34,16 @@ export default async function getAnimeDetails(name: string, episode?: number) {
     return undefined;
   }
 
+  const {
+    data: [animeList],
+  } =
+    accessToken ?
+      await new MALClient({ accessToken }).getAnimeList({
+        q: data.title ?? data.title_english ?? data.title_japanese ?? name,
+        fields: ['my_list_status'],
+      })
+    : { data: [null] };
+
   const anime = Jikan4.anime(data.mal_id);
 
   const episodes = await anime.episodes();
@@ -49,5 +64,6 @@ export default async function getAnimeDetails(name: string, episode?: number) {
       ...ep,
       current: currentEpisode?.mal_id === ep.mal_id,
     })),
+    listStatus: animeList?.node?.my_list_status ?? null,
   };
 }
