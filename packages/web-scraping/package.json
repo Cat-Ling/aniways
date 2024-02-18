@@ -7,7 +7,6 @@
     "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
   },
   "dependencies": {
-    "leven": "^4.0.0",
     "lodash": "^4.17.21",
     "node-html-parser": "^6.1.12"
   },

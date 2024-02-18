@@ -1,12 +1,13 @@
-import '@aniways/ui/globals.css';
 import { getUser } from '@animelist/auth-next/server';
+import '@aniways/ui/globals.css';
 import { cn } from '@aniways/ui/lib/utils';
+import { Toaster } from '@ui/components/ui/sonner';
 import type { Metadata } from 'next';
+import { revalidatePath } from 'next/cache';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { Navbar } from './navbar';
-import { MyAnimeListAuthProvider } from './providers';
-import { revalidatePath } from 'next/cache';
+import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -37,10 +38,11 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={cn('min-h-screen', inter.className)}>
-        <MyAnimeListAuthProvider session={session}>
+        <Providers session={session}>
           <Navbar />
           {children}
-        </MyAnimeListAuthProvider>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

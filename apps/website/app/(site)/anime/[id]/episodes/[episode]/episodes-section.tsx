@@ -37,7 +37,7 @@ export const EpisodesSection = ({
   }, [sidebarRef, currentVideoRef, currentEpisode]);
 
   return (
-    <div>
+    <div className="mt-3">
       <div className="mb-6 flex w-full justify-between">
         {Number(currentEpisode) > 1 ?
           <Button className="flex items-center gap-2" asChild>

@@ -1,4 +1,5 @@
 import { InferSelectModel, relations } from 'drizzle-orm';
+import { integer } from 'drizzle-orm/pg-core';
 import {
   AnyPgColumn,
   index,
@@ -53,9 +54,7 @@ export const anime = pgTable(
     slug: text('slug').notNull(),
     lastEpisode: numeric('last_episode'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    malAnimeId: varchar('mal_anime_id', { length: 25 }).references(
-      (): AnyPgColumn => malAnime.id
-    ),
+    malAnimeId: integer('mal_anime_id'),
   },
   table => ({
     malAnimeIdx: index('anime_mal_anime_idx').on(table.malAnimeId),
@@ -65,65 +64,18 @@ export const anime = pgTable(
 
 export type Anime = InferSelectModel<typeof anime>;
 
-export const animeRelations = relations(anime, ({ many, one }) => ({
+export const animeRelations = relations(anime, ({ many }) => ({
   genres: many(animeGenre, {
     relationName: 'anime-genres',
   }),
   videos: many(video, {
     relationName: 'anime-videos',
   }),
-  malAnime: one(malAnime, {
-    relationName: 'mal-anime',
-    fields: [anime.malAnimeId],
-    references: [malAnime.id],
-  }),
 }));
 
 export type AnimeWithRelations = Anime & {
   genres: AnimeGenre[];
   videos: Video[];
-  malAnime: MalAnime | null;
-};
-
-export const malAnime = pgTable(
-  'mal_anime',
-  {
-    id: varchar('id', { length: 25 }).primaryKey(),
-    malId: numeric('mal_id').notNull(),
-    year: numeric('year').notNull(),
-    season: AnimeSeason('season').notNull(),
-    type: AnimeType('type').notNull(),
-    status: AnimeStatus('status').notNull(),
-    totalEpisodes: numeric('total_episodes').notNull(),
-    duration: text('duration').notNull(),
-    ageRating: AnimeAgeRating('age_rating').notNull(),
-    malUrl: text('mal_url').notNull(),
-    titles: text('titles').notNull(),
-    score: numeric('score').notNull(),
-    scoredBy: numeric('scored_by').notNull(),
-    airedStart: text('aired_start').notNull(),
-    airedEnd: text('aired_end'),
-    animeId: varchar('anime_id', { length: 25 })
-      .notNull()
-      .references((): AnyPgColumn => anime.id),
-  },
-  table => ({
-    animeIdx: index('mal_anime_anime_idx').on(table.animeId),
-  })
-);
-
-export type MalAnime = InferSelectModel<typeof malAnime>;
-
-export const malAnimeRelations = relations(malAnime, ({ one }) => ({
-  anime: one(anime, {
-    relationName: 'mal-anime',
-    fields: [malAnime.animeId],
-    references: [anime.id],
-  }),
-}));
-
-export type MalAnimeWithRelations = MalAnime & {
-  anime: Anime;
 };
 
 export const animeGenre = pgTable('anime_genre', {

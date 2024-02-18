@@ -19,7 +19,6 @@ export const generateMetadata = async ({
     where: (fields, actions) => actions.eq(fields.id, id),
     with: {
       genres: true,
-      malAnime: true,
       videos: true,
     },
   });
@@ -57,7 +56,6 @@ const AnimeStreamingPage = async ({
     where: (fields, actions) => actions.eq(fields.id, id),
     with: {
       genres: true,
-      malAnime: true,
       videos: true,
     },
   });
@@ -106,7 +104,7 @@ const AnimeStreamingPage = async ({
       <Suspense
         fallback={<Skeleton className="w-full" style={{ height: '20rem' }} />}
       >
-        <AnimeMetadata anime={anime} episode={Number(episode)} />
+        <AnimeMetadata anime={anime} />
       </Suspense>
     </>
   );

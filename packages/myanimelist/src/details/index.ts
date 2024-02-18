@@ -1,12 +1,20 @@
 import { Jikan4 } from 'node-myanimelist';
 import { MALClient } from '@animelist/client';
+import { LevenshteinDistance } from 'natural';
 
-export default async function getAnimeDetails(
-  accessToken: string | undefined,
-  title: string,
-  episode?: number
-) {
-  console.log('Getting anime details of', title);
+type Args = {
+  accessToken: string | undefined;
+} & (
+  | {
+      title: string;
+    }
+  | {
+      malId: number;
+    }
+);
+
+export default async function getAnimeDetails(args: Args) {
+  const { accessToken } = args;
 
   const client = new MALClient(
     accessToken ?
@@ -17,67 +25,37 @@ export default async function getAnimeDetails(
       }
   );
 
-  const data = (
-    await client.getAnimeList({
-      q: title.split(' ').join('').slice(0, 60),
-      fields: [
-        'id',
-        'title',
-        'media_type',
-        'status',
-        'start_date',
-        'end_date',
-        'start_season',
-        'synopsis',
-        'background',
-        'source',
-        'genres',
-        'alternative_titles',
-        'rating',
-        'rank',
-        'popularity',
-        'mean',
-        'average_episode_duration',
-        'num_episodes',
-        'num_list_users',
-        'num_scoring_users',
-        'my_list_status',
-        'recommendations',
-        'main_picture',
-        'pictures',
-        'broadcast',
-        'studios',
-        'nsfw',
-        'statistics',
-        'related_anime',
-        'related_manga',
-      ],
-    })
-  ).data.at(0)?.node;
+  if ('malId' in args) {
+    console.log('Getting anime details of', args.malId);
 
-  if (!data || !data.id) {
-    return undefined;
+    return {
+      ...(await Jikan4.anime(args.malId)
+        .info()
+        .then(res => res.data)),
+      listStatus: await client
+        .getAnimeDetails(args.malId, { fields: ['my_list_status'] })
+        .then(res => res?.my_list_status),
+    };
   }
 
-  const anime = Jikan4.anime(data.id);
+  console.log('Getting anime details of', args.title);
 
-  const episodes = await anime.episodes();
+  const data = (await Jikan4.animeSearch({ q: args.title })).data
+    .map(anime => ({
+      ...anime,
+      distance: LevenshteinDistance(anime.title ?? '', args.title),
+    }))
+    .sort((a, b) => a.distance - b.distance)
+    .at(0);
 
-  const currentEpisode = episode ? (await anime.episode(episode)).data : null;
-
-  if (
-    episodes.data.length &&
-    currentEpisode &&
-    episodes.data.every(ep => ep.mal_id !== currentEpisode.mal_id)
-  ) {
-    episodes.data.push(currentEpisode);
+  if (!data || !data.mal_id) {
+    return undefined;
   }
 
   return {
     ...data,
-    episodes: episodes.data.map(ep => ({
-      ...ep,
-      current: currentEpisode?.mal_id === ep.mal_id,
-    })),
+    listStatus: await client
+      .getAnimeDetails(data.mal_id, { fields: ['my_list_status'] })
+      .then(res => res?.my_list_status),
   };
 }
