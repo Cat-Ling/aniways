@@ -9,7 +9,7 @@
     "paths": {
       "@/*": ["../../apps/website/*"],
       "@ui/*": ["../../packages/ui/src/*"],
-      "@data/*": ["../../packages/data-access/src/*"],
+      "@myanimelist/*": ["../../packages/myanimelist/src/*"],
     },
   },
   "include": [

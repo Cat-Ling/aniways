@@ -1,6 +1,6 @@
 'use client';
 
-import { schema } from '@data/database';
+import { schema } from '@aniways/database';
 import { Button } from '@ui/components/ui/button';
 import { cn } from '@ui/lib/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';

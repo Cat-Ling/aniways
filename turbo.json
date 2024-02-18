@@ -5,7 +5,7 @@
     "build": {
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "dotEnv": [".env"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["lint", "^build"]
     },
     "lint": {
       "dependsOn": ["^lint"]

@@ -1,0 +1,25 @@
+{
+  "name": "@aniways/database",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "push": "drizzle-kit push:pg",
+    "migrate": "drizzle-kit generate:pg",
+    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
+  },
+  "dependencies": {
+    "@aniways/web-scraping": "workspace:*",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "dotenv": "^16.4.1",
+    "drizzle-orm": "^0.29.3",
+    "lodash": "^4.17.21",
+    "postgres": "^3.4.3"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*",
+    "@types/lodash": "^4.14.202",
+    "drizzle-kit": "^0.20.14"
+  }
+}

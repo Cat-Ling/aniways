@@ -9,8 +9,8 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ui:add": "pnpm --filter @aniways/ui ui:add",
-    "db:push": "dotenv -- pnpm --filter @aniways/data-access push",
-    "db:migrate": "pnpm --filter @aniways/data-access migrate",
+    "db:push": "dotenv -- pnpm --filter @aniways/database push",
+    "db:migrate": "pnpm --filter @aniways/database migrate",
     "deploy:prod": "dotenv -- turbo deploy:prod",
     "package": "dotenv -- turbo package",
     "workspace:generate": "pnpm turbo gen workspace --name"
@@ -18,18 +18,19 @@
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
+    "@types/node": "^20.11.17",
     "dotenv-cli": "^7.3.0",
     "pre-commit": "^1.2.2",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
-    "turbo": "^1.12.2"
+    "turbo": "^1.12.2",
+    "typescript": "^5.3.3"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
-    "@types/node": "^20.11.17",
     "zod": "^3.22.4"
   }
 }

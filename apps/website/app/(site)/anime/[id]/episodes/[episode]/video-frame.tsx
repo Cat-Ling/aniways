@@ -1,4 +1,5 @@
-import { db, getVideoSourceUrl, orm, schema } from '@aniways/data-access';
+import { db, orm, schema } from '@aniways/database';
+import { scrapeVideoSource } from '@aniways/web-scraping';
 import { notFound } from 'next/navigation';
 
 type VideoFrameProps = {
@@ -18,8 +19,8 @@ export const VideoFrame = async ({
       .update(schema.video)
       .set({
         videoUrl:
-          (await getVideoSourceUrl(slug)) ||
-          (await getVideoSourceUrl(slug, 'movie')),
+          (await scrapeVideoSource(slug)) ||
+          (await scrapeVideoSource(slug, 'movie')),
       })
       .where(
         orm.and(

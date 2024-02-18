@@ -1,7 +1,7 @@
 import { getUser } from '@animelist/auth-next/server';
-import { getAnimeList } from '@data/anime';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getAnimeListFromMyAnimeList } from '@aniways/myanimelist';
 
 type AnimeListPageProps = {
   searchParams: { page?: string };
@@ -21,7 +21,11 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
     user: { name },
   } = user;
 
-  const animeList = await getAnimeList(accessToken, name, Number(page));
+  const animeList = await getAnimeListFromMyAnimeList(
+    accessToken,
+    name,
+    Number(page)
+  );
 
   return (
     <>

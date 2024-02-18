@@ -1,10 +1,10 @@
+import { retreiveAnimeByQuery } from '@aniways/database';
+import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { AnimeGridLoader } from '../anime-grid-loader';
 import { AnimeGrid } from '../anime-grid';
-import { searchFromDB } from '@aniways/data-access';
+import { AnimeGridLoader } from '../anime-grid-loader';
 import { Pagination } from '../pagination';
 import { PaginationLoader } from '../pagination-loader';
-import { Metadata } from 'next';
 
 export const generateMetadata = async ({
   searchParams: { query },
@@ -54,13 +54,13 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  const { animes } = await searchFromDB(query, page);
+  const { animes } = await retreiveAnimeByQuery(query, page);
 
   return <AnimeGrid animes={animes} type="search" />;
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { hasNext } = await searchFromDB(props.query, props.page);
+  const { hasNext } = await retreiveAnimeByQuery(props.query, props.page);
 
   return <Pagination hasNext={hasNext} />;
 };

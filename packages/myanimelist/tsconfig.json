@@ -6,6 +6,6 @@
       "@myanimelist/*": ["../../packages/myanimelist/src/*"],
     },
   },
-  "include": ["src"],
-  "exclude": ["node_modules", ".serverless", ".build", ".webpack"],
+  "include": ["src", "drizzle.config.ts"],
+  "exclude": ["node_modules"],
 }

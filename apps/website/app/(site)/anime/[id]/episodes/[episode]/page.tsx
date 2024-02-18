@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { db, schema } from '@aniways/data-access';
+import { db, schema } from '@aniways/database';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';

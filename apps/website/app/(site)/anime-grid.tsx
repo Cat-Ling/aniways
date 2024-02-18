@@ -1,6 +1,6 @@
 import { Play } from 'lucide-react';
 import Link from 'next/link';
-import { schema } from '@aniways/data-access';
+import { schema } from '@aniways/database';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import Image from 'next/image';
 

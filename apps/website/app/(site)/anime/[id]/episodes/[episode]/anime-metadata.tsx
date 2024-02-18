@@ -1,5 +1,6 @@
-import { schema, getAnimeDetails } from '@aniways/data-access';
 import { getUser } from '@animelist/auth-next/server';
+import { schema } from '@aniways/database';
+import { getAnimeDetailsFromMyAnimeList } from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
 
 type AnimeMetadataProps = {
@@ -10,7 +11,11 @@ type AnimeMetadataProps = {
 export const AnimeMetadata = async ({ anime, episode }: AnimeMetadataProps) => {
   const user = await getUser(cookies());
 
-  const details = await getAnimeDetails(user?.accessToken, anime, episode);
+  const details = await getAnimeDetailsFromMyAnimeList(
+    user?.accessToken,
+    anime.title,
+    episode
+  );
 
   return (
     <div className="mt-3">

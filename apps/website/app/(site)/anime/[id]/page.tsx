@@ -1,6 +1,7 @@
 import { RedirectType, notFound, redirect } from 'next/navigation';
-import { createId, db } from '@aniways/data-access';
-import { video } from '@data/database/schema';
+import { createId, db, schema } from '@aniways/database';
+
+const { video } = schema;
 
 const AnimeDetailsPage = async ({
   params: { id },

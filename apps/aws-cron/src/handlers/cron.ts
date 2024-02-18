@@ -1,87 +1,16 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import { orm, schema, db, createId } from '@aniways/database';
 import {
-  getRecentlyReleasedAnime,
-  db,
-  schema,
-  orm,
-} from '@aniways/data-access';
-import { createId } from '@paralleldrive/cuid2';
-import { parse } from 'node-html-parser';
+  scrapeRecentlyReleasedAnime,
+  scrapeSlugFromEpisodeSlug,
+  scrapeDetailsOfAnime,
+} from '@aniways/web-scraping';
 
 const { anime, video, animeGenre } = schema;
 const { eq } = orm;
 
 const logger = (...args: any[]) => {
   console.log('[Aniways]', '{cron}', ...args);
-};
-
-const fetchAnimeDetailsFromAnitaku = async (slug: string) => {
-  return await fetch(`https://anitaku.to/category/${slug}`)
-    .then(res => res.text())
-    .then(html => parse(html))
-    .then(dom => {
-      const title = dom
-        .querySelector('.anime_info_body_bg h1')
-        ?.innerText.trim();
-      const image = dom
-        .querySelector('.anime_info_body_bg img')
-        ?.getAttribute('src');
-      const released = dom
-        .querySelectorAll('.type')
-        .map(a =>
-          a.innerText.includes('Released') ?
-            a.innerText.replace('Released: ', '').trim()
-          : null
-        )
-        .filter(year => year !== null)
-        .at(0);
-      const status = dom
-        .querySelectorAll('.type')
-        .map(a =>
-          a.innerText.includes('Status') ?
-            a.innerText.replace('Status: ', '').trim()
-          : null
-        )
-        .filter(status => status !== null)
-        .at(0);
-      const description = dom
-        .querySelectorAll('.type')
-        .map(a =>
-          a.innerText.includes('Plot Summary') ?
-            a.innerText.replace('Plot Summary: ', '').trim()
-          : null
-        )
-        .filter(status => status !== null)
-        .at(0);
-      const genres = dom
-        .querySelectorAll('.type')
-        .map(a =>
-          a.innerText.includes('Genre') ?
-            a.innerText.replace('Genre: ', '').trim()
-          : null
-        )
-        .filter(status => status !== null)
-        .at(0);
-      return {
-        title,
-        image,
-        released,
-        status,
-        description,
-        genres,
-      };
-    });
-};
-
-const getSlug = async (url: string) => {
-  const response = await fetch(url).then(res => res.text());
-  const dom = parse(response);
-  const slug = dom
-    .querySelector('.anime-info a')
-    ?.getAttribute('href')
-    ?.split('/')
-    .pop();
-  return slug || null;
 };
 
 export const main: APIGatewayProxyHandler = async event => {
@@ -116,8 +45,8 @@ export const main: APIGatewayProxyHandler = async event => {
   logger('Started fetching recently released anime from anitaku');
 
   const recentlyReleasedAnime = [
-    ...(await getRecentlyReleasedAnime(1)).anime,
-    ...(await getRecentlyReleasedAnime(2)).anime,
+    ...(await scrapeRecentlyReleasedAnime(1)).anime,
+    ...(await scrapeRecentlyReleasedAnime(2)).anime,
   ]
     .reverse()
     .map(a => ({
@@ -166,26 +95,23 @@ export const main: APIGatewayProxyHandler = async event => {
     await Promise.all(
       newAnimes.map(async a => {
         const slug =
-          (await getSlug(
-            `https://anitaku.to/${a.slug}-episode-${a.episode}`
-          )) || a.slug;
+          (await scrapeSlugFromEpisodeSlug(`${a.slug}-episode-${a.episode}`)) ||
+          a.slug;
+
         const animeFromDb = allAnimes.find(anime => anime.slug === slug);
         let animeId = animeFromDb?.id;
+
         if (!animeFromDb) {
           logger('No anime found in db, fetching from anitaku', a.slug);
-          const animedata = await fetchAnimeDetailsFromAnitaku(slug);
+          const animedata = await scrapeDetailsOfAnime(slug);
           logger('Fetched anime details from anitaku', animedata);
-          if (
-            !animedata ||
-            !animedata.title ||
-            !animedata.image ||
-            !animedata.released ||
-            !animedata.status ||
-            !animedata.genres
-          ) {
+
+          if (!animedata) {
             return Promise.resolve(undefined);
           }
+
           animeId = createId();
+
           await db
             .insert(anime)
             .values([
@@ -193,7 +119,7 @@ export const main: APIGatewayProxyHandler = async event => {
                 id: animeId,
                 title: animedata.title,
                 image: animedata.image,
-                year: animedata.released,
+                year: animedata.released ?? '',
                 description: animedata.description ?? '',
                 slug: slug,
                 status:
@@ -213,16 +139,18 @@ export const main: APIGatewayProxyHandler = async event => {
             ])
             .execute();
           logger('Inserted new anime', animedata.title, 'into db');
-          await db
-            .insert(animeGenre)
-            .values(
-              animedata.genres.split(',').map((genre: string) => ({
-                id: createId(),
-                animeId: animeId!,
-                genre: genre.trim(),
-              }))
-            )
-            .execute();
+          if (animedata.genres) {
+            await db
+              .insert(animeGenre)
+              .values(
+                animedata.genres.split(',').map((genre: string) => ({
+                  id: createId(),
+                  animeId: animeId!,
+                  genre: genre.trim(),
+                }))
+              )
+              .execute();
+          }
           logger('Inserted genres for', animedata.title);
         }
         await db

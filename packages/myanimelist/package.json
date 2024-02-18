@@ -1,0 +1,20 @@
+{
+  "name": "@aniways/myanimelist",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
+  },
+  "dependencies": {
+    "@animelist/auth-next": "^0.1.1",
+    "@animelist/client": "^0.1.0",
+    "leven": "^4.0.0",
+    "node-html-parser": "^6.1.12",
+    "node-myanimelist": "^4.1.2"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*"
+  }
+}

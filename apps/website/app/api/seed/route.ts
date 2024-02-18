@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import { seed } from '@aniways/data-access/src/database/seed';
-import { seedVideos } from '@aniways/data-access/src/database/seed-videos';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { seed } from '@aniways/database/src/database/seeding/seed';
+import { seedVideos } from '@aniways/database/src/database/seeding/seed-videos';
 
 const schema = z.object({
   type: z.enum(['anime', 'video']),
