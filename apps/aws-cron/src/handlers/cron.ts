@@ -82,10 +82,7 @@ const getSlug = async (url: string) => {
 
 export const main: APIGatewayProxyHandler = async () => {
   // eslint-disable-next-line
-  console.log('env variable: ', process.env.IS_OFFLINE, process.env.NODE_ENV);
-
-  // eslint-disable-next-line
-  if (process.env.IS_OFFLINE || process.env.NODE_ENV === 'development') {
+  if (process.env.IS_OFFLINE) {
     console.log('Offline mode');
     return {
       statusCode: 200,
@@ -121,7 +118,8 @@ export const main: APIGatewayProxyHandler = async () => {
       lastUpdatedAnimes.find(
         l =>
           (l.slug === a.slug && l.lastEpisode === String(a.episode)) ||
-          a.slug === l.videos[0]?.slug.split('-episode-').shift()
+          (a.slug === l.videos[0]?.slug.split('-episode-').shift() &&
+            l.videos[0]?.episode === String(a.episode))
       ) === undefined
   );
 

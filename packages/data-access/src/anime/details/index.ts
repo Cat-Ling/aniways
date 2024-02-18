@@ -18,11 +18,9 @@ export default async function getAnimeDetails(
       }
   );
 
-  const leven = (await import('leven')).default;
-
   const data = (
     await client.getAnimeList({
-      q: animeFromDB.title.replace(/[^a-zA-Z0-9]/g, ' ').slice(0, 50),
+      q: animeFromDB.title.split(' ').join('').slice(0, 60),
       fields: [
         'id',
         'title',
@@ -56,14 +54,7 @@ export default async function getAnimeDetails(
         'related_manga',
       ],
     })
-  ).data
-    .map(anime => ({
-      ...anime.node,
-      distance: leven(anime.node.title, animeFromDB.title),
-    }))
-    .filter(anime => String(animeFromDB.year) === anime.start_date?.slice(0, 4))
-    .sort((a, b) => a.distance - b.distance)
-    .at(0);
+  ).data.at(0)?.node;
 
   if (!data || !data.id) {
     return undefined;

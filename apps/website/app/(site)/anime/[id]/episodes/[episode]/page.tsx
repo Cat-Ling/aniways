@@ -82,7 +82,7 @@ const AnimeStreamingPage = async ({
   return (
     <>
       <h1 className="mb-3 text-xl font-bold">
-        {anime.title}-{' '}
+        {anime.title} -{' '}
         <span className="text-muted-foreground font-normal">
           Episode {episode}
         </span>
