@@ -40,6 +40,7 @@ export default async function getRecentlyReleasedAnime(page: number) {
   }> => {
     try {
       let done = false;
+      console.log(`Fetching ${name} anime`);
       new Promise((_, reject) => {
         setTimeout(() => {
           if (!done) reject('Timeout');

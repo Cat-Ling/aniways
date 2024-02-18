@@ -92,6 +92,8 @@ export const main: APIGatewayProxyHandler = async () => {
     };
   }
 
+  console.log('Started fetching last updated animes from db');
+
   const lastUpdatedAnimes = await db.query.anime.findMany({
     orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
     limit: 100,
@@ -103,6 +105,10 @@ export const main: APIGatewayProxyHandler = async () => {
     },
   });
 
+  console.log('Fetched last updated animes from db', lastUpdatedAnimes.length);
+
+  console.log('Started fetching recently released anime from anitaku');
+
   const recentlyReleasedAnime = [
     ...(await getRecentlyReleasedAnime(1)).anime,
     ...(await getRecentlyReleasedAnime(2)).anime,
@@ -112,6 +118,13 @@ export const main: APIGatewayProxyHandler = async () => {
       ...a,
       slug: a.url.replace('/anime/', '').split('/')[0]!,
     }));
+
+  console.log(
+    'Fetched recently released anime from anitaku',
+    recentlyReleasedAnime.length
+  );
+
+  console.log('Started filtering new animes');
 
   const newAnimes = recentlyReleasedAnime.filter(
     a =>
