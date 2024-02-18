@@ -25,7 +25,7 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
   });
 
   if (isError) {
-    return <div>Something went wrong</div>;
+    return <div>Something went wrong. Please try again later.</div>;
   }
 
   if (isLoading) {
@@ -57,7 +57,7 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
               alt={anime.title ?? ''}
               width={100}
               height={100 * (650 / 450)}
-              className="bg-muted aspect-[450/650] h-auto w-[100px] rounded-md object-contain"
+              className="bg-muted border-border aspect-[450/650] h-auto w-[100px] rounded-md border object-contain"
             />
             <div className="flex h-full flex-col justify-center gap-2">
               <h2 className="font-bold">{anime.title}</h2>

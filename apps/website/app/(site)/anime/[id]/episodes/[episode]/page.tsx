@@ -85,12 +85,7 @@ const AnimeStreamingPage = async ({
           Episode {episode}
         </span>
       </h1>
-      <div className="mb-5 flex aspect-video w-full flex-col-reverse gap-2">
-        <EpisodesSection
-          anime={anime}
-          episodes={episodes}
-          currentEpisode={episode}
-        />
+      <div className="mb-5 flex aspect-video w-full flex-col gap-2">
         <div className="flex-1">
           <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
             <VideoFrame
@@ -100,10 +95,13 @@ const AnimeStreamingPage = async ({
             />
           </Suspense>
         </div>
+        <EpisodesSection
+          anime={anime}
+          episodes={episodes}
+          currentEpisode={episode}
+        />
       </div>
-      <Suspense
-        fallback={<Skeleton className="w-full" style={{ height: '20rem' }} />}
-      >
+      <Suspense fallback={<Skeleton className="mb-6 h-[500px] w-full" />}>
         <AnimeMetadata anime={anime} />
       </Suspense>
     </>
