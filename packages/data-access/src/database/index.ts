@@ -13,7 +13,7 @@ const globalForDrizzle = globalThis as unknown as {
 
 const db =
   globalForDrizzle.db ??
-  drizzle(postgres(connectionString), {
+  drizzle(postgres(connectionString, { prepare: false }), {
     schema,
   });
 
