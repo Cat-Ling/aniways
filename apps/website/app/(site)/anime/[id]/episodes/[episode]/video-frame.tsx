@@ -37,7 +37,7 @@ export const VideoFrame = async ({
   return (
     <iframe
       src={iframe}
-      className="aspect-video w-full md:overflow-hidden"
+      className="min-h-[260px] w-full md:aspect-video md:min-h-0"
       frameBorder="0"
       scrolling="no"
       allowFullScreen

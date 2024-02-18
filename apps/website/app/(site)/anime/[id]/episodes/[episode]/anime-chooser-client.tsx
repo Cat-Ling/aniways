@@ -57,22 +57,23 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
               alt={anime.title ?? ''}
               width={100}
               height={100 * (650 / 450)}
-              className="bg-muted border-border aspect-[450/650] h-auto w-[100px] rounded-md border object-contain"
+              className="bg-muted border-border hidden aspect-[450/650] h-auto w-[100px] rounded-md border object-contain md:block"
             />
             <div className="flex h-full flex-col justify-center gap-2">
-              <h2 className="font-bold">{anime.title}</h2>
-              <p className="text-muted-foreground text-sm">
+              <h2 className="text-sm font-bold md:text-base">{anime.title}</h2>
+              <p className="text-muted-foreground text-xs md:text-sm">
                 {anime.title_english}
               </p>
               <div className="flex items-center gap-2">
-                <p className="bg-muted text-primary w-fit rounded-md p-2 text-sm">
+                <p className="bg-muted text-primary w-fit rounded-md p-2 text-xs md:text-sm">
                   {anime.type}
                 </p>
-                <p className="bg-muted text-primary w-fit rounded-md p-2 text-sm">
+                <p className="bg-muted text-primary w-fit rounded-md p-2 text-xs md:text-sm">
                   {anime.status}
                 </p>
-                <p className="bg-muted text-primary w-fit rounded-md p-2 text-sm">
-                  {anime.episodes} episodes
+                <p className="bg-muted text-primary w-fit rounded-md p-2 text-xs md:text-sm">
+                  {anime.episodes ?? '?'}{' '}
+                  <span className="hidden md:block">episodes</span>
                 </p>
               </div>
             </div>
