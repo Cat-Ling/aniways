@@ -11,6 +11,10 @@ import { parse } from 'node-html-parser';
 const { anime, video, animeGenre } = schema;
 const { eq } = orm;
 
+const logger = (...args: any[]) => {
+  console.log('[Aniways]', '{cron}', ...args);
+};
+
 const fetchAnimeDetailsFromAnitaku = async (slug: string) => {
   return await fetch(`https://anitaku.to/category/${slug}`)
     .then(res => res.text())
@@ -80,10 +84,10 @@ const getSlug = async (url: string) => {
   return slug || null;
 };
 
-export const main: APIGatewayProxyHandler = async () => {
+export const main: APIGatewayProxyHandler = async event => {
   // eslint-disable-next-line
-  if (process.env.IS_OFFLINE) {
-    console.log('Offline mode');
+  if (process.env.IS_OFFLINE && !event?.httpMethod) {
+    logger('Offline mode');
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -92,22 +96,24 @@ export const main: APIGatewayProxyHandler = async () => {
     };
   }
 
-  console.log('Started fetching last updated animes from db');
+  logger('Started fetching last updated animes from db');
 
-  const lastUpdatedAnimes = await db.query.anime.findMany({
-    orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
-    limit: 100,
-    with: {
-      videos: {
-        limit: 1,
-        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
+  const lastUpdatedAnimes = await db.query.anime
+    .findMany({
+      orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
+      limit: 100,
+      with: {
+        videos: {
+          limit: 1,
+          orderBy: ({ createdAt }, { desc }) => desc(createdAt),
+        },
       },
-    },
-  });
+    })
+    .execute();
 
-  console.log('Fetched last updated animes from db', lastUpdatedAnimes.length);
+  logger('Fetched last updated animes from db', lastUpdatedAnimes.length);
 
-  console.log('Started fetching recently released anime from anitaku');
+  logger('Started fetching recently released anime from anitaku');
 
   const recentlyReleasedAnime = [
     ...(await getRecentlyReleasedAnime(1)).anime,
@@ -119,12 +125,12 @@ export const main: APIGatewayProxyHandler = async () => {
       slug: a.url.replace('/anime/', '').split('/')[0]!,
     }));
 
-  console.log(
+  logger(
     'Fetched recently released anime from anitaku',
     recentlyReleasedAnime.length
   );
 
-  console.log('Started filtering new animes');
+  logger('Started filtering new animes');
 
   const newAnimes = recentlyReleasedAnime.filter(
     a =>
@@ -136,10 +142,10 @@ export const main: APIGatewayProxyHandler = async () => {
       ) === undefined
   );
 
-  console.log('New anime episodes', newAnimes);
+  logger('New anime episodes', newAnimes);
 
   if (newAnimes.length === 0) {
-    console.log('No new animes');
+    logger('No new animes');
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -148,13 +154,13 @@ export const main: APIGatewayProxyHandler = async () => {
     };
   }
 
-  console.log('Started fetching animes from DB');
+  logger('Started fetching animes from DB');
 
   const allAnimes = await db.query.anime.findMany();
 
-  console.log('Fetched', allAnimes.length, 'animes from db');
+  logger('Fetched', allAnimes.length, 'animes from db');
 
-  console.log('Started inserting new episodes');
+  logger('Started inserting new episodes');
 
   const insertValues = (
     await Promise.all(
@@ -166,9 +172,9 @@ export const main: APIGatewayProxyHandler = async () => {
         const animeFromDb = allAnimes.find(anime => anime.slug === slug);
         let animeId = animeFromDb?.id;
         if (!animeFromDb) {
-          console.log('No anime found in db, fetching from anitaku', a.slug);
+          logger('No anime found in db, fetching from anitaku', a.slug);
           const animedata = await fetchAnimeDetailsFromAnitaku(slug);
-          console.log('Fetched anime details from anitaku', animedata);
+          logger('Fetched anime details from anitaku', animedata);
           if (
             !animedata ||
             !animedata.title ||
@@ -206,7 +212,7 @@ export const main: APIGatewayProxyHandler = async () => {
               },
             ])
             .execute();
-          console.log('Inserted new anime', animedata.title, 'into db');
+          logger('Inserted new anime', animedata.title, 'into db');
           await db
             .insert(animeGenre)
             .values(
@@ -217,7 +223,7 @@ export const main: APIGatewayProxyHandler = async () => {
               }))
             )
             .execute();
-          console.log('Inserted genres for', animedata.title);
+          logger('Inserted genres for', animedata.title);
         }
         await db
           .update(anime)
@@ -255,7 +261,7 @@ export const main: APIGatewayProxyHandler = async () => {
   }[];
 
   if (insertValues.length === 0) {
-    console.log('No new episodes to insert');
+    logger('No new episodes to insert');
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -265,7 +271,7 @@ export const main: APIGatewayProxyHandler = async () => {
   }
 
   await db.insert(video).values(insertValues).execute();
-  console.log('Inserted', insertValues.length, 'new episodes into db');
+  logger('Inserted', insertValues.length, 'new episodes into db');
 
   return {
     statusCode: 200,
