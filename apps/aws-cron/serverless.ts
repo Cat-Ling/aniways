@@ -13,6 +13,7 @@ const config: AWS = {
     environment: {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       DATABASE_URL: process.env.DATABASE_URL!,
+      MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
     },
   },
   package: {

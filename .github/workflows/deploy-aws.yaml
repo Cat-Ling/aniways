@@ -33,7 +33,7 @@ jobs:
           cache: pnpm
 
       - name: Create .env file
-        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}\nMAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" > .env
+        run: echo ${{ secrets.env }} > .env
 
       - name: Install dependencies
         run: pnpm i

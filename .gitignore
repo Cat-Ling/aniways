@@ -39,6 +39,7 @@ next-env.d.ts
 .turbo
 
 .env
+.env.prod
 
 *.d.ts
 *.d.ts.map
