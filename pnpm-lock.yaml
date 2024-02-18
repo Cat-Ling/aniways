@@ -18,12 +18,18 @@ importers:
       '@aniways/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
+      '@types/eslint':
+        specifier: ^8.56.1
+        version: 8.56.2
       '@types/node':
         specifier: ^20.11.17
         version: 20.11.17
       dotenv-cli:
         specifier: ^7.3.0
         version: 7.3.0
+      eslint:
+        specifier: ^8
+        version: 8.56.0
       pre-commit:
         specifier: ^1.2.2
         version: 1.2.2
@@ -48,12 +54,6 @@ importers:
       '@aniways/web-scraping':
         specifier: workspace:*
         version: link:../../packages/web-scraping
-      '@paralleldrive/cuid2':
-        specifier: ^2.2.2
-        version: 2.2.2
-      node-html-parser:
-        specifier: ^6.1.12
-        version: 6.1.12
     devDependencies:
       '@aniways/eslint-config':
         specifier: workspace:*
@@ -97,12 +97,6 @@ importers:
       '@aniways/web-scraping':
         specifier: workspace:*
         version: link:../../packages/web-scraping
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      clsx:
-        specifier: ^2.1.0
-        version: 2.1.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -112,21 +106,12 @@ importers:
       next:
         specifier: 14.1.1-canary.21
         version: 14.1.1-canary.21(react-dom@18.2.0)(react@18.2.0)
-      node-html-parser:
-        specifier: ^6.1.12
-        version: 6.1.12
       react:
         specifier: ^18
         version: 18.2.0
       react-dom:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
-      tailwind-merge:
-        specifier: ^2.2.1
-        version: 2.2.1
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -140,9 +125,6 @@ importers:
       '@next/eslint-plugin-next':
         specifier: ^14.0.4
         version: 14.1.0
-      '@types/eslint':
-        specifier: ^8.56.1
-        version: 8.56.2
       '@types/lodash':
         specifier: ^4.14.202
         version: 4.14.202
@@ -155,9 +137,6 @@ importers:
       autoprefixer:
         specifier: ^10.0.1
         version: 10.4.17(postcss@8.4.33)
-      eslint:
-        specifier: ^8
-        version: 8.56.0
       eslint-config-next:
         specifier: 14.1.0
         version: 14.1.0(eslint@8.56.0)(typescript@5.3.3)
@@ -234,12 +213,6 @@ importers:
       '@animelist/client':
         specifier: ^0.1.0
         version: 0.1.0
-      leven:
-        specifier: ^4.0.0
-        version: 4.0.0
-      node-html-parser:
-        specifier: ^6.1.12
-        version: 6.1.12
       node-myanimelist:
         specifier: ^4.1.2
         version: 4.1.2
@@ -301,12 +274,6 @@ importers:
 
   packages/web-scraping:
     dependencies:
-      '@animelist/auth-next':
-        specifier: ^0.1.1
-        version: 0.1.1
-      '@animelist/client':
-        specifier: ^0.1.0
-        version: 0.1.0
       leven:
         specifier: ^4.0.0
         version: 4.0.0
@@ -316,9 +283,6 @@ importers:
       node-html-parser:
         specifier: ^6.1.12
         version: 6.1.12
-      node-myanimelist:
-        specifier: ^4.1.2
-        version: 4.1.2
     devDependencies:
       '@aniways/eslint-config':
         specifier: workspace:*

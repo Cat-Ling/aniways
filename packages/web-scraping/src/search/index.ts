@@ -1,6 +1,5 @@
 import searchAnimeFromAnitaku from './anitaku';
 import searchAnimeFromGogo from './gogoanime';
-import searchAnimeFromJikan from './jikan';
 
 export default async function searchAnime(query: string, page: number) {
   const functions = [
@@ -11,10 +10,6 @@ export default async function searchAnime(query: string, page: number) {
     {
       fn: searchAnimeFromGogo,
       name: 'GogoAnime',
-    },
-    {
-      fn: searchAnimeFromJikan,
-      name: 'Jikan',
     },
   ] as const;
 
@@ -38,11 +33,6 @@ export default async function searchAnime(query: string, page: number) {
         }, 10000);
       });
       const anime = await fn(query, page);
-      if (name === 'Jikan') {
-        done = true;
-        console.log(`Fetched search ${name} anime`);
-        return anime as Awaited<ReturnType<typeof searchAnimeFromJikan>>;
-      }
       return {
         animes: anime as Awaited<ReturnType<typeof searchAnimeFromAnitaku>>,
         hasNext: await fn(query, page + 1).then(res => {
