@@ -1,6 +1,10 @@
 import type { AWS } from '@serverless/typescript';
 import functions from './src';
 
+if (!process.env.DATABASE_URL || !process.env.MAL_CLIENT_ID) {
+  throw new Error('DATABASE_URL and MAL_CLIENT_ID must be set');
+}
+
 const config: AWS = {
   service: 'aws-cron',
   frameworkVersion: '3',

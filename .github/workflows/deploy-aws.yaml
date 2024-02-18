@@ -16,6 +16,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
 
     steps:
       - name: Checkout code
@@ -31,9 +34,6 @@ jobs:
         with:
           node-version: 18
           cache: pnpm
-
-      - name: Create .env file
-        run: echo ${{ secrets.env }} > .env
 
       - name: Install dependencies
         run: pnpm i
