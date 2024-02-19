@@ -6,7 +6,79 @@ import { X } from 'lucide-react';
 
 import { cn } from '@ui/lib/utils';
 
-const Dialog = DialogPrimitive.Root;
+type DialogContextValue = {
+  isOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
+  setIsOpen: (value: boolean) => void;
+  open: () => void;
+  close: () => void;
+};
+
+const DialogContext = React.createContext<DialogContextValue | undefined>(
+  undefined
+);
+
+export const useDialogContext = () => {
+  const context = React.useContext(DialogContext);
+  if (!context) {
+    throw new Error('useDialogContext must be used within a DialogProvider');
+  }
+  return context;
+};
+
+const DialogProvider = ({
+  children,
+  defaultValues,
+}: {
+  children: React.ReactNode;
+  defaultValues?: Partial<DialogContextValue>;
+}) => {
+  const [open, setOpen] = React.useState(defaultValues?.isOpen ?? false);
+
+  React.useEffect(() => {
+    if (defaultValues?.isOpen !== undefined) {
+      setOpen(defaultValues.isOpen);
+    }
+  }, [defaultValues?.isOpen]);
+
+  return (
+    <DialogContext.Provider
+      value={{
+        isOpen: open,
+        setIsOpen: (value: boolean) => {
+          defaultValues?.setIsOpen?.(value);
+          setOpen(value);
+        },
+        open: () => {
+          defaultValues?.open?.();
+          setOpen(true);
+        },
+        close: () => {
+          defaultValues?.close?.();
+          setOpen(false);
+        },
+      }}
+    >
+      {children}
+    </DialogContext.Provider>
+  );
+};
+
+const Dialog: React.FC<DialogPrimitive.DialogProps> = props => {
+  return (
+    <DialogProvider>
+      <DialogRoot {...props} />
+    </DialogProvider>
+  );
+};
+
+const DialogRoot: React.FC<DialogPrimitive.DialogProps> = props => {
+  const { isOpen, setIsOpen } = useDialogContext();
+
+  return (
+    <DialogPrimitive.Root {...props} open={isOpen} onOpenChange={setIsOpen} />
+  );
+};
 
 const DialogTrigger = DialogPrimitive.Trigger;
 

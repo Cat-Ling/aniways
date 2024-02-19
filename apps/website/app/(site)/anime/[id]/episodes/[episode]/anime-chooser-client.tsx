@@ -2,7 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@ui/components/ui/button';
-import { DialogClose, DialogFooter } from '@ui/components/ui/dialog';
+import {
+  DialogClose,
+  DialogFooter,
+  useDialogContext,
+} from '@ui/components/ui/dialog';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -10,12 +14,73 @@ import { useState } from 'react';
 import { searchAnimeAction } from './search-anime-action';
 import { updateMalAnimeAction } from './update-mal-anime-action';
 import { toast } from '@ui/components/ui/sonner';
+import { Input } from '@ui/components/ui/input';
+import {
+  zod,
+  reactHookForm,
+  zodResolver,
+  Form,
+  FormField,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormDescription,
+  FormMessage,
+} from '@ui/components/ui/form';
+
+const { z } = zod;
+const { useForm } = reactHookForm;
 
 type AnimeChooserClientProps = {
   query: string;
 };
 
+const UpdateAnimeSchema = z.object({
+  malLink: z
+    .string({
+      required_error: 'Please enter a valid MAL link',
+    })
+    .min(1, 'Please enter a valid MAL link')
+    .url({
+      message: 'Please enter a valid MAL link',
+    })
+    .refine(
+      value => {
+        const { success } = z.string().url().safeParse(value);
+        if (!success) return false;
+        const url = new URL(value);
+        return (
+          url.hostname === 'myanimelist.net' &&
+          url.pathname.includes('/anime/') &&
+          url.pathname.split('/').length === 4
+        );
+      },
+      {
+        message: 'Please enter a valid MAL link',
+      }
+    )
+    .transform(value => {
+      const { success } = z.string().url().safeParse(value);
+      if (!success) return false;
+      const url = new URL(value);
+      return url.pathname.split('/')[2];
+    })
+    .refine(
+      value => {
+        return !isNaN(Number(value));
+      },
+      {
+        message: 'Please enter a valid MAL link',
+      }
+    )
+    .transform(value => Number(value)),
+});
+
 export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
+  const { close } = useDialogContext();
+  const form = useForm<zod.infer<typeof UpdateAnimeSchema>>({
+    resolver: zodResolver(UpdateAnimeSchema),
+  });
   const params = useParams();
   const [page, setPage] = useState(1);
 
@@ -32,8 +97,43 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
     return <Skeleton className="h-[480px] w-full" />;
   }
 
+  const onSubmit = form.handleSubmit(async data => {
+    const id = params.id;
+    if (!id || typeof id !== 'string') return;
+    await updateMalAnimeAction(id, data.malLink);
+    close();
+    toast('Anime updated successfully', {
+      description: 'Thanks for updating the anime!',
+    });
+  });
+
   return (
     <div className="flex w-full flex-col gap-2">
+      <Form {...form}>
+        <form className="px-4" onSubmit={onSubmit}>
+          <FormField
+            control={form.control}
+            name="malLink"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>MAL Url</FormLabel>
+                <FormDescription>
+                  If you are unable to find the anime, you can input the MAL
+                  link here
+                </FormDescription>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="https://myanimelist.net/anime/1/Cowboy_Bebop"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="mt-2">Submit</Button>
+        </form>
+      </Form>
       {data?.data?.map(anime => (
         <DialogClose
           key={anime.mal_id}
@@ -73,14 +173,14 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
                 </p>
                 <p className="bg-muted text-primary w-fit rounded-md p-2 text-xs md:text-sm">
                   {anime.episodes ?? '?'}{' '}
-                  <span className="hidden md:block">episodes</span>
                 </p>
               </div>
             </div>
           </Button>
         </DialogClose>
       ))}
-      <DialogFooter>
+
+      <DialogFooter className="px-4">
         <div className="flex w-full justify-between">
           {page > 1 ?
             <Button
