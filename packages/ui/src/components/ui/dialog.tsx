@@ -66,7 +66,14 @@ const DialogProvider = ({
 
 const Dialog: React.FC<DialogPrimitive.DialogProps> = props => {
   return (
-    <DialogProvider>
+    <DialogProvider
+      defaultValues={{
+        isOpen: props.open,
+        setIsOpen: props.onOpenChange,
+        open: props.onOpenChange?.bind(null, true),
+        close: props.onOpenChange?.bind(null, false),
+      }}
+    >
       <DialogRoot {...props} />
     </DialogProvider>
   );
