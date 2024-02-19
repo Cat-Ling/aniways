@@ -76,14 +76,28 @@ const UpdateAnimeSchema = z.object({
     .transform(value => Number(value)),
 });
 
+type Mode = 'search' | 'url';
+
 export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
-  const { close } = useDialogContext();
-  const form = useForm<zod.infer<typeof UpdateAnimeSchema>>({
-    resolver: zodResolver(UpdateAnimeSchema),
-  });
+  const [mode, setMode] = useState<Mode>('search');
+
+  return mode === 'search' ?
+      <AnimeChooserClientSelect query={query} setMode={setMode} />
+    : <AnimeChooserClientUrlForm setMode={setMode} />;
+};
+
+type AnimeChooserClientSelectProps = {
+  query: string;
+  // eslint-disable-next-line no-unused-vars
+  setMode: (mode: Mode) => void;
+};
+
+const AnimeChooserClientSelect = ({
+  query,
+  setMode,
+}: AnimeChooserClientSelectProps) => {
   const params = useParams();
   const [page, setPage] = useState(1);
-
   const { isLoading, data, isError } = useQuery({
     queryKey: ['searchAnime', query, page],
     queryFn: () => searchAnimeAction(query, page),
@@ -97,43 +111,8 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
     return <Skeleton className="h-[480px] w-full" />;
   }
 
-  const onSubmit = form.handleSubmit(async data => {
-    const id = params.id;
-    if (!id || typeof id !== 'string') return;
-    await updateMalAnimeAction(id, data.malLink);
-    close();
-    toast('Anime updated successfully', {
-      description: 'Thanks for updating the anime!',
-    });
-  });
-
   return (
     <div className="flex w-full flex-col gap-2">
-      <Form {...form}>
-        <form className="px-4" onSubmit={onSubmit}>
-          <FormField
-            control={form.control}
-            name="malLink"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>MAL Url</FormLabel>
-                <FormDescription>
-                  If you are unable to find the anime, you can input the MAL
-                  link here
-                </FormDescription>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="https://myanimelist.net/anime/1/Cowboy_Bebop"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="mt-2">Submit</Button>
-        </form>
-      </Form>
       {data?.data?.map(anime => (
         <DialogClose
           key={anime.mal_id}
@@ -182,24 +161,89 @@ export const AnimeChooserClient = ({ query }: AnimeChooserClientProps) => {
 
       <DialogFooter className="px-4">
         <div className="flex w-full justify-between">
-          {page > 1 ?
-            <Button
-              variant={'secondary'}
-              onClick={() => setPage(page => page - 1)}
-            >
-              Previous
-            </Button>
-          : <div></div>}
-          {data?.pagination.has_next_page ?
-            <Button
-              variant={'secondary'}
-              onClick={() => setPage(page => page + 1)}
-            >
-              Next
-            </Button>
-          : <div></div>}
+          <Button onClick={() => setMode('url')}>Can't find the anime?</Button>
+          <div className="flex gap-2">
+            {page > 1 ?
+              <Button
+                variant={'secondary'}
+                onClick={() => setPage(page => page - 1)}
+              >
+                Previous
+              </Button>
+            : null}
+            {data?.pagination.has_next_page ?
+              <Button
+                variant={'secondary'}
+                onClick={() => setPage(page => page + 1)}
+              >
+                Next
+              </Button>
+            : null}
+          </div>
         </div>
       </DialogFooter>
     </div>
+  );
+};
+
+type AnimeChooserClientUrlFormProps = {
+  // eslint-disable-next-line no-unused-vars
+  setMode: (mode: Mode) => void;
+};
+
+const AnimeChooserClientUrlForm = ({
+  setMode,
+}: AnimeChooserClientUrlFormProps) => {
+  const params = useParams();
+  const { close } = useDialogContext();
+  const form = useForm<zod.infer<typeof UpdateAnimeSchema>>({
+    resolver: zodResolver(UpdateAnimeSchema),
+  });
+
+  const onSubmit = form.handleSubmit(async data => {
+    const id = params.id;
+    if (!id || typeof id !== 'string') return;
+    await updateMalAnimeAction(id, data.malLink);
+    close();
+    toast('Anime updated successfully', {
+      description: 'Thanks for updating the anime!',
+    });
+  });
+
+  return (
+    <Form {...form}>
+      <form onSubmit={onSubmit}>
+        <FormField
+          control={form.control}
+          name="malLink"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>MAL Url</FormLabel>
+              <FormDescription>
+                If you are unable to find the anime, you can input the MAL link
+                here
+              </FormDescription>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="https://myanimelist.net/anime/1/Cowboy_Bebop"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <DialogFooter className="mt-6 flex w-full !justify-between">
+          <Button
+            variant={'secondary'}
+            type="button"
+            onClick={() => setMode('search')}
+          >
+            Return to search
+          </Button>
+          <Button>Submit</Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 };
