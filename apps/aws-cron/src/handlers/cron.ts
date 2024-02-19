@@ -61,18 +61,16 @@ export const main: APIGatewayProxyHandler = async event => {
 
   logger('Started filtering new animes');
 
-  const newAnimes = recentlyReleasedAnime.filter(
-    scrapedAnime =>
-      lastUpdatedAnimes.find(
-        dbAnime =>
-          (dbAnime.slug === scrapedAnime.slug &&
-            dbAnime.lastEpisode !== String(scrapedAnime.episode)) ||
-          (dbAnime.videos[0]?.slug !==
-            `${scrapedAnime.slug}-episode-${scrapedAnime.episode}` &&
-            dbAnime.videos[0]?.slug.split('-episode-')[1] !==
-              String(scrapedAnime.episode))
-      ) === undefined
-  );
+  const newAnimes = recentlyReleasedAnime.filter(a => {
+    const animeFromDB = lastUpdatedAnimes.find(
+      anime =>
+        anime.slug === a.slug ||
+        anime.videos[0]?.slug.split('-episode-')[0] === a.slug
+    );
+    if (!animeFromDB) return true;
+    if (animeFromDB.lastEpisode === String(a.episode)) return false;
+    return true;
+  });
 
   logger('New anime episodes', newAnimes);
 
