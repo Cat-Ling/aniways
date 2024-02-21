@@ -12,12 +12,17 @@ import {
   DialogTrigger,
 } from '@aniways/ui/components/ui/dialog';
 import { Button } from '@ui/components/ui/button';
+import { ReactNode } from 'react';
 
-export const LoginModal = () => {
+type LoginModalProps = {
+  children?: ReactNode;
+};
+
+export const LoginModal = ({ children }: LoginModalProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Login</Button>
+        <Button>{children ?? 'Login'}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

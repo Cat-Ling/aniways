@@ -14,6 +14,8 @@ import Image from 'next/image';
 import { AnimeChooser } from './anime-chooser';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
+import { AddToListButton } from './add-to-list-button';
+import { UpdateAnimeForm } from './update-anime-form';
 
 type AnimeMetadataProps = {
   anime: schema.AnimeWithRelations;
@@ -37,8 +39,6 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
   }
 
   if (!details) return null;
-
-  console.log(details.mal_id);
 
   return (
     <>
@@ -122,7 +122,24 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
                 ></iframe>
               </DialogContent>
             </Dialog>
-            <Button>Add To List</Button>
+            {!details.listStatus ?
+              <AddToListButton malId={details.mal_id!} />
+            : <Dialog>
+                <DialogTrigger asChild>
+                  <Button>Update Anime</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Update Anime - {details.title}</DialogTitle>
+                  <DialogDescription>
+                    Update the anime in your MyAnimeList Anime List
+                  </DialogDescription>
+                  <UpdateAnimeForm
+                    malId={details.mal_id!}
+                    listStatus={details.listStatus}
+                  />
+                </DialogContent>
+              </Dialog>
+            }
           </div>
         </div>
       </div>
