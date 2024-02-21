@@ -17,10 +17,6 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const data = await db.query.anime.findFirst({
     where: (fields, actions) => actions.eq(fields.id, id),
-    with: {
-      genres: true,
-      videos: true,
-    },
   });
 
   if (!data || !data.title) return {};
