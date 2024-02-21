@@ -44,10 +44,13 @@ export const main: APIGatewayProxyHandler = async event => {
 
   logger('Started fetching recently released anime from anitaku');
 
-  const recentlyReleasedAnime = [
-    ...(await scrapeRecentlyReleasedAnime(1)).anime,
-    ...(await scrapeRecentlyReleasedAnime(2)).anime,
-  ]
+  const recentlyReleasedAnime = (
+    await Promise.all([
+      scrapeRecentlyReleasedAnime(1).then(data => data.anime),
+      scrapeRecentlyReleasedAnime(2).then(data => data.anime),
+    ])
+  )
+    .reduce((acc, val) => acc.concat(val), [])
     .reverse()
     .map(a => ({
       ...a,
