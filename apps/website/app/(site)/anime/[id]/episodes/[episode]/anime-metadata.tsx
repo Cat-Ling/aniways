@@ -18,7 +18,7 @@ import { AddToListButton } from './add-to-list-button';
 import { UpdateAnimeForm } from './update-anime-form';
 
 type AnimeMetadataProps = {
-  anime: schema.AnimeWithRelations;
+  anime: schema.Anime;
 };
 
 export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {

@@ -4,17 +4,27 @@ import { notFound } from 'next/navigation';
 
 type VideoFrameProps = {
   anime: schema.Anime;
-  slug: string;
-  currentVideo: schema.Video;
+  currentEpisode: string;
 };
 
 export const VideoFrame = async ({
   anime,
-  slug,
-  currentVideo,
+  currentEpisode,
 }: VideoFrameProps) => {
+  const currentVideo = await db.query.video.findFirst({
+    where: (fields, actions) =>
+      actions.and(
+        actions.eq(fields.animeId, anime.id),
+        actions.eq(fields.episode, currentEpisode)
+      ),
+  });
+
+  if (!currentVideo) notFound();
+
+  const { videoUrl, slug } = currentVideo;
+
   const iframe =
-    currentVideo?.videoUrl ||
+    videoUrl ||
     (await db
       .update(schema.video)
       .set({

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { db, schema } from '@aniways/database';
+import { db } from '@aniways/database';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
@@ -50,52 +50,35 @@ const AnimeStreamingPage = async ({
 }) => {
   const anime = await db.query.anime.findFirst({
     where: (fields, actions) => actions.eq(fields.id, id),
-    with: {
-      genres: true,
-      videos: true,
-    },
   });
 
-  const currentVideo = anime?.videos.find(
-    video => Number(video.episode) === Number(episode)
-  );
-
-  if (!anime || !currentVideo) notFound();
-
-  const episodes = anime.videos
-    .sort((a, b) => Number(a.episode) - Number(b.episode))
-    .map((video, i) => {
-      const nextvideo = anime.videos[i + 1];
-      if (nextvideo?.episode === video.episode) {
-        return undefined;
-      }
-      return video;
-    })
-    .filter(video => video !== undefined) as schema.Video[];
+  if (!anime) notFound();
 
   return (
     <>
-      <h1 className="mb-3 text-xl font-bold">
-        {anime.title} -{' '}
-        <span className="text-muted-foreground font-normal">
+      <div className="mb-3">
+        <h1 className="text-xl font-bold">{anime.title}</h1>
+        <h2 className="text-muted-foreground text-lg font-normal">
           Episode {episode}
-        </span>
-      </h1>
+        </h2>
+      </div>
       <div className="mb-5 flex aspect-video w-full flex-col gap-2">
         <div className="flex-1">
           <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
-            <VideoFrame
-              anime={anime}
-              slug={currentVideo.slug}
-              currentVideo={currentVideo}
-            />
+            <VideoFrame anime={anime} currentEpisode={episode} />
           </Suspense>
         </div>
-        <EpisodesSection
-          anime={anime}
-          episodes={episodes}
-          currentEpisode={episode}
-        />
+        <Suspense
+          fallback={
+            <>
+              <Skeleton className="mb-6 mt-3 h-10 w-full" />
+              <h2 className="mb-3 text-lg font-semibold">Episodes</h2>
+              <Skeleton className="mb-6 h-10 w-full" />
+            </>
+          }
+        >
+          <EpisodesSection anime={anime} currentEpisode={episode} />
+        </Suspense>
       </div>
       <Suspense fallback={<Skeleton className="mb-6 h-[500px] w-full" />}>
         <AnimeMetadata anime={anime} />
