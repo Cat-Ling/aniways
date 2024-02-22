@@ -29,7 +29,7 @@ import { z } from 'zod';
 import {
   deleteAnimeInListAction,
   updateAnimeInListAction,
-} from './myanimelist-actions.ts';
+} from './myanimelist-actions';
 
 const status = [
   'watching',
