@@ -71,17 +71,25 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
                 {details.status}
               </div>
             </div>
-            <div className="mt-2">
-              <div className="text-muted-foreground text-sm">
-                <span className="text-foreground">Genres: </span>
+            <div className="mt-2 grid w-1/2 grid-cols-2">
+              <div className="text-sm">
+                <span className="text-muted-foreground">Genres: </span>
                 {details.genres.map(genre => genre.name).join(', ')}
               </div>
-              <div className="text-muted-foreground text-sm">
-                <span className="text-foreground">Total Episodes: </span>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Total Episodes: </span>
                 {details.episodes ?? '???'}
               </div>
-              <div className="text-muted-foreground text-sm">
-                <span className="text-foreground">Score: </span>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Studios: </span>
+                {details.studios.map(studio => studio.name).join(', ')}
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Rank: </span>
+                {details.rank}
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Score: </span>
                 <span className="font-bold">
                   {Intl.NumberFormat('en-US', {
                     minimumSignificantDigits: 3,
@@ -89,6 +97,31 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
                 </span>{' '}
                 ({Intl.NumberFormat('en-US').format(details.scored_by ?? 0)}{' '}
                 users)
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Popularity: </span>
+                {details.popularity}
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Aired: </span>
+                {(details.aired as any).string}
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Source: </span>
+                {details.source}
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Status: </span>
+                {details.listStatus ?
+                  details.listStatus?.status.charAt(0).toUpperCase() +
+                  details.listStatus?.status.slice(1).replace(/_/g, ' ')
+                : 'Not in list'}
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">
+                  Watched Episodes:{' '}
+                </span>
+                {details.listStatus?.num_episodes_watched ?? 0}
               </div>
             </div>
           </div>
