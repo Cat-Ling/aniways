@@ -1,6 +1,6 @@
 import { Jikan4 } from 'node-myanimelist';
 import { MALClient } from '@animelist/client';
-import { LevenshteinDistance } from 'natural';
+import { distance } from 'fastest-levenshtein';
 
 type Args = {
   accessToken: string | undefined;
@@ -43,7 +43,7 @@ export default async function getAnimeDetails(args: Args) {
   const data = (await Jikan4.animeSearch({ q: args.title })).data
     .map(anime => ({
       ...anime,
-      distance: LevenshteinDistance(anime.title ?? '', args.title),
+      distance: distance(anime.title ?? '', args.title),
     }))
     .sort((a, b) => a.distance - b.distance)
     .at(0);
