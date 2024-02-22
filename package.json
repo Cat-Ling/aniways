@@ -13,7 +13,8 @@
     "db:migrate": "pnpm --filter @aniways/database migrate",
     "deploy:prod": "dotenv -- turbo deploy:prod",
     "package": "dotenv -- turbo package",
-    "workspace:generate": "pnpm turbo gen workspace --name"
+    "workspace:generate": "pnpm turbo gen workspace --name",
+    "delete": "pnpm npkill"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
@@ -22,6 +23,7 @@
     "@types/node": "^20.11.17",
     "dotenv-cli": "^7.3.0",
     "eslint": "^8",
+    "npkill": "^0.11.3",
     "pre-commit": "^1.2.2",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
@@ -31,8 +33,5 @@
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
-  },
-  "dependencies": {
-    "zod": "^3.22.4"
   }
 }
