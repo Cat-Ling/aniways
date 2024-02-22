@@ -1,11 +1,11 @@
-import { Metadata } from 'next';
 import { db } from '@aniways/database';
+import { Skeleton } from '@ui/components/ui/skeleton';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { AnimeMetadata } from './_metadata';
+import { EpisodesSection } from './_episodes';
 import { VideoFrame } from './video-frame';
-import { AnimeMetadata } from './anime-metadata';
-import { EpisodesSection } from './episodes-section';
 
 export const generateMetadata = async ({
   params: { id, episode },

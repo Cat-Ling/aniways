@@ -24,10 +24,12 @@ import {
 } from '@aniways/ui/components/ui/select';
 import { toast } from '@aniways/ui/components/ui/sonner';
 import { Loader2, MinusIcon, PlusIcon } from 'lucide-react';
-import { z } from 'zod';
-import { updateAnimeInListAction } from './update-anime-in-list-action';
 import { useState } from 'react';
-import { deleteAnimeInListAction } from './delete-anime-in-list-action';
+import { z } from 'zod';
+import {
+  deleteAnimeInListAction,
+  updateAnimeInListAction,
+} from './myanimelist-actions.ts';
 
 const status = [
   'watching',

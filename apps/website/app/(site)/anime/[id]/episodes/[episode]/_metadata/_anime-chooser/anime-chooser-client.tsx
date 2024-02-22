@@ -7,74 +7,30 @@ import {
   DialogFooter,
   useDialogContext,
 } from '@ui/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  reactHookForm,
+  zodResolver,
+  zod,
+} from '@ui/components/ui/form';
+import { Input } from '@ui/components/ui/input';
 import { Skeleton } from '@ui/components/ui/skeleton';
+import { toast } from '@ui/components/ui/sonner';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { searchAnimeAction } from './search-anime-action';
 import { updateMalAnimeAction } from './update-mal-anime-action';
-import { toast } from '@ui/components/ui/sonner';
-import { Input } from '@ui/components/ui/input';
-import {
-  zod,
-  reactHookForm,
-  zodResolver,
-  Form,
-  FormField,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormDescription,
-  FormMessage,
-} from '@ui/components/ui/form';
-
-const { z } = zod;
-const { useForm } = reactHookForm;
 
 type AnimeChooserClientProps = {
   query: string;
 };
-
-const UpdateAnimeSchema = z.object({
-  malLink: z
-    .string({
-      required_error: 'Please enter a valid MAL link',
-    })
-    .min(1, 'Please enter a valid MAL link')
-    .url({
-      message: 'Please enter a valid MAL link',
-    })
-    .refine(
-      value => {
-        const { success } = z.string().url().safeParse(value);
-        if (!success) return false;
-        const url = new URL(value);
-        return (
-          url.hostname === 'myanimelist.net' &&
-          url.pathname.includes('/anime/') &&
-          url.pathname.split('/').length === 4
-        );
-      },
-      {
-        message: 'Please enter a valid MAL link',
-      }
-    )
-    .transform(value => {
-      const { success } = z.string().url().safeParse(value);
-      if (!success) return false;
-      const url = new URL(value);
-      return url.pathname.split('/')[2];
-    })
-    .refine(
-      value => {
-        return !isNaN(Number(value));
-      },
-      {
-        message: 'Please enter a valid MAL link',
-      }
-    )
-    .transform(value => Number(value)),
-});
 
 type Mode = 'search' | 'url';
 
@@ -191,6 +147,47 @@ type AnimeChooserClientUrlFormProps = {
   setMode: (mode: Mode) => void;
 };
 
+const UpdateAnimeSchema = z.object({
+  malLink: z
+    .string({
+      required_error: 'Please enter a valid MAL link',
+    })
+    .min(1, 'Please enter a valid MAL link')
+    .url({
+      message: 'Please enter a valid MAL link',
+    })
+    .refine(
+      value => {
+        const { success } = z.string().url().safeParse(value);
+        if (!success) return false;
+        const url = new URL(value);
+        return (
+          url.hostname === 'myanimelist.net' &&
+          url.pathname.includes('/anime/') &&
+          url.pathname.split('/').length === 4
+        );
+      },
+      {
+        message: 'Please enter a valid MAL link',
+      }
+    )
+    .transform(value => {
+      const { success } = z.string().url().safeParse(value);
+      if (!success) return false;
+      const url = new URL(value);
+      return url.pathname.split('/')[2];
+    })
+    .refine(
+      value => {
+        return !isNaN(Number(value));
+      },
+      {
+        message: 'Please enter a valid MAL link',
+      }
+    )
+    .transform(value => Number(value)),
+});
+
 const AnimeChooserClientUrlForm = ({
   setMode,
 }: AnimeChooserClientUrlFormProps) => {
@@ -203,7 +200,8 @@ const AnimeChooserClientUrlForm = ({
   const onSubmit = form.handleSubmit(async data => {
     const id = params.id;
     if (!id || typeof id !== 'string') return;
-    await updateMalAnimeAction(id, data.malLink);
+    if (isNan(Number(data.malLink))) return;
+    await updateMalAnimeAction(id, Number(data.malLink));
     close();
     toast('Anime updated successfully', {
       description: 'Thanks for updating the anime!',

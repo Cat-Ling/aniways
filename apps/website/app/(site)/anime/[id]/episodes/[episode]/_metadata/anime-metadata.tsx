@@ -11,11 +11,11 @@ import {
 } from '@ui/components/ui/dialog';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
-import { AnimeChooser } from './anime-chooser';
+import { AnimeChooser } from './_anime-chooser';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import { AddToListButton } from './add-to-list-button';
-import { UpdateAnimeForm } from './update-anime-form';
+import { AddToListButton } from './_myanimelist-button/add-to-list-button';
+import { UpdateAnimeForm } from './_myanimelist-button/update-anime-form';
 
 type AnimeMetadataProps = {
   anime: schema.Anime;

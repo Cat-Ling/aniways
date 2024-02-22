@@ -43,7 +43,7 @@ importers:
         specifier: ^1.12.2
         version: 1.12.2
       typescript:
-        specifier: ^5.3.3
+        specifier: 5.3.3
         version: 5.3.3
 
   apps/aws-cron:
@@ -116,7 +116,7 @@ importers:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
       zod:
-        specifier: ^3.22.4
+        specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@aniways/eslint-config':
@@ -238,7 +238,7 @@ importers:
   packages/ui:
     dependencies:
       '@hookform/resolvers':
-        specifier: ^3.3.4
+        specifier: 3.3.4
         version: 3.3.4(react-hook-form@7.50.1)
       '@radix-ui/react-dialog':
         specifier: ^1.0.5
@@ -280,7 +280,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.1)
       zod:
-        specifier: ^3.22.4
+        specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@aniways/eslint-config':

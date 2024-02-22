@@ -3,10 +3,10 @@
 import { Button } from '@ui/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { addToListAction } from './add-to-list-action';
+import { addToListAction } from './myanimelist-actions';
 import { toast } from '@aniways/ui/components/ui/sonner';
 import { useSession } from '@animelist/auth-next/client';
-import { LoginModal } from '../../../../../login-modal';
+import { LoginModal } from '@/app/login-modal';
 
 type AddToListButtonProps = {
   malId: number;
