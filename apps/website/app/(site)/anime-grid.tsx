@@ -2,7 +2,7 @@ import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { schema } from '@aniways/database';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import { Image } from '@aniways/ui/components/ui/image';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 type AnimeGridProps = {
   type: 'home' | 'search';
