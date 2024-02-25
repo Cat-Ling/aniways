@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@ui/components/ui/dialog';
 import { cookies } from 'next/headers';
-import Image from 'next/image';
+import { Image } from '@aniways/ui/components/ui/image';
 import { AnimeChooser } from './_anime-chooser';
 import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';

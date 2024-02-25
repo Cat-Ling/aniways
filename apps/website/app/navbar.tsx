@@ -1,5 +1,5 @@
 import { Button } from '@aniways/ui/components/ui/button';
-import Image from 'next/image';
+import { Image } from '@aniways/ui/components/ui/image';
 import Link from 'next/link';
 import { SearchBar } from './search-bar';
 import { getServerSession } from '@animelist/auth-next/server';

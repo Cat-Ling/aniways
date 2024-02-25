@@ -8,7 +8,7 @@ import {
   useDialogContext,
 } from '@ui/components/ui/dialog';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import Image from 'next/image';
+import { Image } from '@aniways/ui/components/ui/image';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { searchAnimeAction } from './search-anime-action';
