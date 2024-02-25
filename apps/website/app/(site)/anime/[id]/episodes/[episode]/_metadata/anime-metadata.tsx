@@ -16,6 +16,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { AddToListButton } from './_myanimelist-button/add-to-list-button';
 import { UpdateAnimeForm } from './_myanimelist-button/update-anime-form';
+import Link from 'next/link';
 
 type AnimeMetadataProps = {
   anime: schema.Anime;
@@ -139,6 +140,18 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
                 </Suspense>
               </DialogContent>
             </Dialog>
+            <Button variant={'secondary'} asChild>
+              <Link
+                className="w-fit"
+                href={
+                  details.url ??
+                  `https://myanimelist.net/anime/${details.mal_id}`
+                }
+                target="_blank"
+              >
+                MyAnimeList
+              </Link>
+            </Button>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant={'secondary'}>View Trailer</Button>
