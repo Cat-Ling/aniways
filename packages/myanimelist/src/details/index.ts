@@ -40,7 +40,7 @@ export default async function getAnimeDetails(args: Args) {
 
   console.log('Getting anime details of', args.title);
 
-  const data = (await Jikan4.animeSearch({ q: args.title })).data
+  const data = (await Jikan4.animeSearch({ q: encodeURI(args.title) })).data
     .map(anime => ({
       ...anime,
       distance: distance(anime.title ?? '', args.title),
