@@ -1,7 +1,18 @@
-import { HTMLProps } from 'react';
+'use client';
+
+import { cn } from '@ui/lib/utils';
+import { HTMLProps, useState } from 'react';
 
 type ImageProps = HTMLProps<HTMLImageElement>;
 
 export const Image = (props: ImageProps) => {
-  return <img {...props} />;
+  const [error, setError] = useState(false);
+
+  return (
+    <img
+      {...props}
+      onError={setError.bind(null, true)}
+      className={cn(props.className, error && 'bg-background')}
+    />
+  );
 };
