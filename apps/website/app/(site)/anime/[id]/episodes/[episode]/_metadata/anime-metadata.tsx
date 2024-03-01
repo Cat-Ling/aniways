@@ -72,7 +72,7 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
                 {details.status}
               </div>
             </div>
-            <div className="mt-2 grid w-1/2 grid-cols-2">
+            <div className="mt-2 grid w-full grid-cols-2 md:w-1/2">
               <div className="text-sm">
                 <span className="text-muted-foreground">Genres: </span>
                 {details.genres.map(genre => genre.name).join(', ')}
