@@ -142,7 +142,7 @@ export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
             </Dialog>
             <Button variant={'secondary'} asChild>
               <Link
-                className="w-fit"
+                className="w-full md:w-fit"
                 href={
                   details.url ??
                   `https://myanimelist.net/anime/${details.mal_id}`

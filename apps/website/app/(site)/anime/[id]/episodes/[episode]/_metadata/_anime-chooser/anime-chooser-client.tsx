@@ -233,7 +233,7 @@ const AnimeChooserClientUrlForm = ({
             </FormItem>
           )}
         />
-        <DialogFooter className="mt-6 flex w-full !justify-between">
+        <DialogFooter className="mt-6 flex w-full !justify-between gap-2">
           <Button
             variant={'secondary'}
             type="button"

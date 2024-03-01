@@ -32,7 +32,7 @@ export const LoginModal = ({ children }: LoginModalProps) => {
             well as sync your progress.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <DialogClose asChild>
             <Button variant={'secondary'}>Cancel</Button>
           </DialogClose>

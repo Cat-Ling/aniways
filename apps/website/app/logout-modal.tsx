@@ -26,7 +26,7 @@ export const LogoutModal = () => {
             You will be logged out of your account.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <DialogClose asChild>
             <Button variant={'secondary'}>Cancel</Button>
           </DialogClose>
