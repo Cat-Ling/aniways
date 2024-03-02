@@ -63,7 +63,7 @@ export const EpisodesSectionClient = ({
       <h3 className="mb-3 text-lg font-semibold">Episodes</h3>
       <div
         ref={sidebarRef}
-        className="grid h-fit max-h-[500px] w-full grid-cols-3 gap-2 overflow-scroll rounded-md md:grid-cols-12"
+        className="grid h-fit max-h-[500px] w-full grid-cols-3 gap-2 overflow-scroll rounded-md sm:grid-cols-6 md:grid-cols-12"
       >
         {episodes.map(video => {
           const isCurrentVideo =
