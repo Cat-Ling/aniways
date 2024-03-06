@@ -1,1 +1,0 @@
-{"kind":"FETCH","data":{"headers":{},"body":"{\"animes\":[{\"name\":\"Naruto\",\"image\":\"https://cdn.myanimelist.net/images/anime/1565/111305.jpg\",\"url\":\"/anime/naruto\",\"episodes\":220}],\"hasNext\":false}","status":200,"url":""},"revalidate":3600000,"tags":["search"]}
