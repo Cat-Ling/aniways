@@ -26,6 +26,10 @@
     "deploy:prod": {
       "dependsOn": ["package"],
       "dotEnv": [".env"]
+    },
+    "deploy:dev": {
+      "dependsOn": ["build"],
+      "dotEnv": [".env"]
     }
   }
 }

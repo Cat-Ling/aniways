@@ -12,6 +12,7 @@
     "db:push": "dotenv -- pnpm --filter @aniways/database push",
     "db:migrate": "pnpm --filter @aniways/database migrate",
     "deploy:prod": "dotenv -- turbo deploy:prod",
+    "deploy:dev": "dotenv -- turbo deploy:dev",
     "package": "dotenv -- turbo package",
     "workspace:generate": "pnpm turbo gen workspace --name",
     "delete": "pnpm npkill"
