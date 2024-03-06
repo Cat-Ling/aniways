@@ -1,0 +1,1 @@
+{"kind":"FETCH","data":{"headers":{},"body":"{\"animes\":[{\"name\":\"Naruto\",\"image\":\"/logo.png\",\"url\":\"/naruto\",\"total\":220}],\"hasNext\":false}","status":200,"url":""},"revalidate":3600000,"tags":["search"]}

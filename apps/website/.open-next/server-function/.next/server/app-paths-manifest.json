@@ -1,0 +1,12 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/api/[...myanimelist]/route": "app/api/[...myanimelist]/route.js",
+  "/favicon/route": "app/favicon/route.js",
+  "/api/anime/revalidate/route": "app/api/anime/revalidate/route.js",
+  "/api/seed/route": "app/api/seed/route.js",
+  "/(site)/page": "app/(site)/page.js",
+  "/(site)/anime-list/page": "app/(site)/anime-list/page.js",
+  "/(site)/anime/[id]/page": "app/(site)/anime/[id]/page.js",
+  "/(site)/anime/[id]/episodes/[episode]/page": "app/(site)/anime/[id]/episodes/[episode]/page.js",
+  "/(site)/search/page": "app/(site)/search/page.js"
+}
