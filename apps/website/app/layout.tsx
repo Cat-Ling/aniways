@@ -8,6 +8,7 @@ import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { Navbar } from './navbar';
 import { Providers } from './providers';
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -38,6 +39,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={cn('min-h-screen', inter.className)}>
+        <NextTopLoader showSpinner={false} color="#e11d48" />
         <Providers session={session}>
           <Navbar />
           {children}
