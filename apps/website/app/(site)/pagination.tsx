@@ -1,5 +1,4 @@
 'use client';
-
 import { Button } from '@aniways/ui/components/ui/button';
 import {
   Tooltip,
@@ -29,7 +28,10 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
   };
 
   return (
-    <div className="grid grid-cols-3 place-items-center items-center">
+    <div
+      id={'recently-released'}
+      className="grid grid-cols-3 place-items-center items-center"
+    >
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -40,7 +42,9 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
               className={cn(page === 1 && 'pointer-events-none opacity-50')}
               asChild
             >
-              <Link href={`${pathname}?${getParams(page - 1)}`}>
+              <Link
+                href={`${pathname}?${getParams(page - 1)}#${'recently-released'}`}
+              >
                 <ArrowLeft />
               </Link>
             </Button>
@@ -59,7 +63,9 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
               className={cn(!hasNext && 'pointer-events-none opacity-50')}
               asChild
             >
-              <Link href={`${pathname}?${getParams(page + 1)}`}>
+              <Link
+                href={`${pathname}?${getParams(page + 1)}#${'recently-released'}`}
+              >
                 <ArrowRight />
               </Link>
             </Button>
