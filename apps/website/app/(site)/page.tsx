@@ -9,15 +9,23 @@ import { AnimeGrid } from './anime-grid';
 import { AnimeGridLoader } from './anime-grid-loader';
 import { Pagination } from './pagination';
 import { PaginationLoader } from './pagination-loader';
-import { auth, getAnimeList } from '@aniways/myanimelist';
+import {
+  auth,
+  getAnimeList,
+  getCurrentAnimeSeason,
+} from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
 import { Skeleton } from '@ui/components/ui/skeleton';
+import { AnimeCarousel } from './carousel';
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
 
   return (
     <>
+      <Suspense fallback={<Skeleton className="mb-2 h-[32px] md:mb-5" />}>
+        <SeasonalAnimeCarousel />
+      </Suspense>
       <Suspense
         fallback={
           <>
@@ -43,6 +51,33 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
       </div>
     </>
   );
+};
+
+const SeasonalAnimeCarousel = async () => {
+  const seasonalAnime = await getCurrentAnimeSeason().then(({ data }) =>
+    data.slice(0, 5)
+  );
+
+  const animes = await db
+    .select()
+    .from(schema.anime)
+    .where(
+      orm.inArray(
+        schema.anime.malAnimeId,
+        seasonalAnime.map(anime => anime.mal_id!)
+      )
+    );
+
+  const animeMap = animes.reduce(
+    (acc, anime) => {
+      if (!anime.malAnimeId) return acc;
+      acc[anime.malAnimeId] = anime;
+      return acc;
+    },
+    {} as Record<number, (typeof animes)[number]>
+  );
+
+  return <AnimeCarousel seasonalAnime={seasonalAnime} animeMap={animeMap} />;
 };
 
 const CurrentlyWatchingAnime = async () => {
