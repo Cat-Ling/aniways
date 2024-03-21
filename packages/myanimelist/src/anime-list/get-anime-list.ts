@@ -1,10 +1,11 @@
-import { MALClient } from '@animelist/client';
+import { MALClient, WatchStatus } from '@animelist/client';
 
 export default async function getAnimeList(
   accessToken: string,
   username: string,
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
+  status: WatchStatus | undefined = undefined
 ) {
   const client = new MALClient({ accessToken });
   const animeList = await client.getUserAnimeList(username, {
@@ -17,6 +18,7 @@ export default async function getAnimeList(
       'my_list_status',
       'synopsis',
     ],
+    status,
   });
   return animeList;
 }

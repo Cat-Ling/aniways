@@ -1,13 +1,121 @@
-import { retreiveRecentlyReleasedAnime } from '@aniways/database';
+import {
+  db,
+  orm,
+  retreiveRecentlyReleasedAnime,
+  schema,
+} from '@aniways/database';
 import { Suspense } from 'react';
 import { AnimeGrid } from './anime-grid';
 import { AnimeGridLoader } from './anime-grid-loader';
 import { Pagination } from './pagination';
 import { PaginationLoader } from './pagination-loader';
+import { auth, getAnimeList } from '@aniways/myanimelist';
+import { cookies } from 'next/headers';
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
 
+  return (
+    <>
+      <CurrentlyWatchingAnimeSection />
+      <RecentlyReleasedAnimeSection page={page} />
+    </>
+  );
+};
+
+const CurrentlyWatchingAnimeSection = async () => {
+  const user = await auth(cookies());
+
+  if (!user) return undefined;
+
+  return (
+    <>
+      <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
+        Continue Watching
+      </h1>
+      <div className="mb-12">
+        <Suspense fallback={<AnimeGridLoader length={5} />}>
+          <CurrentlyWatchingAnime
+            username={user.user.name}
+            accessToken={user.accessToken}
+          />
+        </Suspense>
+      </div>
+    </>
+  );
+};
+
+const CurrentlyWatchingAnime = async ({
+  username,
+  accessToken,
+}: {
+  username: string;
+  accessToken: string;
+}) => {
+  const animeList = await getAnimeList(
+    accessToken,
+    username,
+    1,
+    50,
+    'watching'
+  );
+
+  const currentlyWatchingAnime = await db
+    .select()
+    .from(schema.anime)
+    .where(
+      orm.inArray(
+        schema.anime.malAnimeId,
+        animeList.data.map(({ node }) => node.id)
+      )
+    );
+
+  const animeListMap = animeList.data.reduce(
+    (acc, { node }) => {
+      acc[node.id] = node;
+      return acc;
+    },
+    {} as Record<number, (typeof animeList)['data'][number]['node']>
+  );
+
+  const newReleases = currentlyWatchingAnime
+    .filter(
+      anime =>
+        anime.malAnimeId &&
+        Number(anime.lastEpisode) !==
+          animeListMap[anime.malAnimeId]?.my_list_status?.num_episodes_watched
+    )
+    .map(anime => {
+      const episodesWatched =
+        animeListMap[anime.malAnimeId!]?.my_list_status?.num_episodes_watched;
+
+      const lastEpisode = String(
+        episodesWatched ? episodesWatched + 1 : anime.lastEpisode
+      );
+
+      return {
+        ...anime,
+        lastEpisode,
+      };
+    })
+    .sort((a, b) => {
+      const aLastUpdated =
+        animeListMap[a.malAnimeId!]?.my_list_status?.updated_at;
+      const bLastUpdated =
+        animeListMap[b.malAnimeId!]?.my_list_status?.updated_at;
+
+      if (aLastUpdated && bLastUpdated) {
+        return new Date(aLastUpdated) > new Date(bLastUpdated) ? -1 : 1;
+      }
+
+      return 0;
+    })
+    .slice(0, 10);
+
+  return <AnimeGrid animes={newReleases} type="home" />;
+};
+
+const RecentlyReleasedAnimeSection = ({ page }: { page: number }) => {
   return (
     <>
       <div className="mb-2 flex w-full flex-col justify-between gap-2 md:mb-5 md:flex-row md:items-center md:gap-0">
@@ -16,9 +124,11 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
           <PaginationWrapper page={page} />
         </Suspense>
       </div>
-      <Suspense key={page} fallback={<AnimeGridLoader />}>
-        <RecentlyReleasedAnimeGrid page={page} />
-      </Suspense>
+      <div className="mb-12">
+        <Suspense key={page} fallback={<AnimeGridLoader />}>
+          <RecentlyReleasedAnimeGrid page={page} />
+        </Suspense>
+      </div>
     </>
   );
 };
