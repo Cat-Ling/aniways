@@ -11,47 +11,50 @@ import { Pagination } from './pagination';
 import { PaginationLoader } from './pagination-loader';
 import { auth, getAnimeList } from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
+import { Skeleton } from '@ui/components/ui/skeleton';
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
 
   return (
     <>
-      <CurrentlyWatchingAnimeSection />
-      <RecentlyReleasedAnimeSection page={page} />
-    </>
-  );
-};
-
-const CurrentlyWatchingAnimeSection = async () => {
-  const user = await auth(cookies());
-
-  if (!user) return undefined;
-
-  return (
-    <>
-      <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
-        Continue Watching
-      </h1>
+      <Suspense
+        fallback={
+          <>
+            <Skeleton className="mb-2 h-[32px] md:mb-5" />
+            <div className="mb-12">
+              <AnimeGridLoader length={5} />
+            </div>
+          </>
+        }
+      >
+        <CurrentlyWatchingAnime />
+      </Suspense>
+      <div className="mb-2 flex w-full flex-col justify-between gap-2 md:mb-5 md:flex-row md:items-center md:gap-0">
+        <h1 className="text-lg font-bold md:text-2xl">Recently Released</h1>
+        <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
+          <PaginationWrapper page={page} />
+        </Suspense>
+      </div>
       <div className="mb-12">
-        <Suspense fallback={<AnimeGridLoader length={5} />}>
-          <CurrentlyWatchingAnime
-            username={user.user.name}
-            accessToken={user.accessToken}
-          />
+        <Suspense key={page} fallback={<AnimeGridLoader />}>
+          <RecentlyReleasedAnimeGrid page={page} />
         </Suspense>
       </div>
     </>
   );
 };
 
-const CurrentlyWatchingAnime = async ({
-  username,
-  accessToken,
-}: {
-  username: string;
-  accessToken: string;
-}) => {
+const CurrentlyWatchingAnime = async () => {
+  const user = await auth(cookies());
+
+  if (!user) return undefined;
+
+  const {
+    accessToken,
+    user: { name: username },
+  } = user;
+
   const animeList = await getAnimeList(
     accessToken,
     username,
@@ -112,22 +115,15 @@ const CurrentlyWatchingAnime = async ({
     })
     .slice(0, 10);
 
-  return <AnimeGrid animes={newReleases} type="home" />;
-};
+  if (!newReleases.length) return undefined;
 
-const RecentlyReleasedAnimeSection = ({ page }: { page: number }) => {
   return (
     <>
-      <div className="mb-2 flex w-full flex-col justify-between gap-2 md:mb-5 md:flex-row md:items-center md:gap-0">
-        <h1 className="text-lg font-bold md:text-2xl">Recently Released</h1>
-        <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
-          <PaginationWrapper page={page} />
-        </Suspense>
-      </div>
+      <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
+        Continue Watching
+      </h1>
       <div className="mb-12">
-        <Suspense key={page} fallback={<AnimeGridLoader />}>
-          <RecentlyReleasedAnimeGrid page={page} />
-        </Suspense>
+        <AnimeGrid animes={newReleases} type="home" />
       </div>
     </>
   );

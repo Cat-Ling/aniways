@@ -1,4 +1,3 @@
-import { Button } from '@aniways/ui/components/ui/button';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 import Link from 'next/link';
 import { SearchBar } from './search-bar';
@@ -34,12 +33,7 @@ export const Navbar = async () => {
           </div>
           <div className="flex gap-3">
             {user ?
-              <>
-                <Button asChild>
-                  <Link href="/anime-list">Anime List</Link>
-                </Button>
-                <LogoutModal />
-              </>
+              <LogoutModal />
             : <LoginModal />}
           </div>
         </div>
