@@ -100,9 +100,9 @@ export const AnimeCarousel = ({
                     </Link>
                   </Button>
                 </div>
-                <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md p-2">
+                <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md p-3">
                   <div
-                    className="absolute bottom-0 left-0 right-0 top-0 -m-2 h-full w-full bg-cover bg-no-repeat blur-xl"
+                    className="absolute bottom-0 left-0 right-0 top-0 -m-3 h-full w-full bg-cover bg-center bg-no-repeat blur-sm"
                     style={{
                       backgroundImage: `url(${anime.images.webp.large_image_url})`,
                     }}
@@ -121,7 +121,7 @@ export const AnimeCarousel = ({
           );
         })}
       </CarouselContent>
-      <div className="absolute bottom-0 left-0 m-2">
+      <div className="bottom-0 left-0 m-2 mt-6 flex w-full justify-center md:absolute md:m-2 md:w-fit">
         {Array.from({ length: count }).map((_, i) => (
           <Button
             key={i}
