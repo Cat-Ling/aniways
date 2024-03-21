@@ -1,6 +1,6 @@
 'use client';
 
-import { signIn } from '@animelist/auth-next/client';
+import { signIn } from '@aniways/myanimelist';
 import {
   Dialog,
   DialogClose,

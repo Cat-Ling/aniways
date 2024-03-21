@@ -1,20 +1,17 @@
 'use client';
 
-import {
-  SessionProvider,
-  SessionProviderProps,
-} from '@animelist/auth-next/client';
+import { AuthProvider, AuthProviderProps } from '@aniways/myanimelist';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { useState, FC } from 'react';
 
-type ProvidersProps = SessionProviderProps;
+type ProvidersProps = AuthProviderProps;
 
 export const Providers: FC<ProvidersProps> = props => {
   const [client] = useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={client}>
-      <SessionProvider {...props} />
+      <AuthProvider {...props} />
     </QueryClientProvider>
   );
 };

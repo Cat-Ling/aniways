@@ -1,5 +1,3 @@
-import { createMyAnimeListFetchHandler } from '@animelist/auth-next/server';
+import { authRouteHandler } from '@aniways/myanimelist';
 
-const handler = createMyAnimeListFetchHandler();
-
-export { handler as GET, handler as POST, handler as PATCH, handler as DELETE };
+export const { GET, POST, PATCH, DELETE } = authRouteHandler;

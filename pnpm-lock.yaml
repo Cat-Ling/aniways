@@ -81,9 +81,6 @@ importers:
 
   apps/website:
     dependencies:
-      '@animelist/auth-next':
-        specifier: ^0.1.1
-        version: 0.1.1
       '@aniways/database':
         specifier: workspace:*
         version: link:../../packages/database

@@ -2,13 +2,13 @@ import { Button } from '@aniways/ui/components/ui/button';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 import Link from 'next/link';
 import { SearchBar } from './search-bar';
-import { getServerSession } from '@animelist/auth-next/server';
+import { auth } from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
 import { LoginModal } from './login-modal';
 import { LogoutModal } from './logout-modal';
 
 export const Navbar = async () => {
-  const user = await getServerSession(cookies());
+  const user = await auth(cookies());
 
   return (
     <nav className="bg-background border-border border-b">

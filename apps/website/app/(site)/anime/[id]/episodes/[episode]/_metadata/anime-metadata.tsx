@@ -1,4 +1,4 @@
-import { getUser } from '@animelist/auth-next/server';
+import { auth } from '@aniways/myanimelist';
 import { db, schema, orm } from '@aniways/database';
 import { getAnimeDetailsFromMyAnimeList } from '@aniways/myanimelist';
 import { Button } from '@ui/components/ui/button';
@@ -23,7 +23,7 @@ type AnimeMetadataProps = {
 };
 
 export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
-  const user = await getUser(cookies());
+  const user = await auth(cookies());
 
   const details = await getAnimeDetailsFromMyAnimeList({
     accessToken: user?.accessToken,

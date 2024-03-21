@@ -1,6 +1,6 @@
 'use server';
 
-import { getUser } from '@animelist/auth-next/server';
+import { auth } from '@aniways/myanimelist';
 import {
   addToAnimeList,
   deleteFromAnimeList,
@@ -11,7 +11,7 @@ import { cookies } from 'next/headers';
 
 export const addToListAction = async (malId: number) => {
   try {
-    const user = await getUser(cookies());
+    const user = await auth(cookies());
 
     if (!user) {
       throw new Error('Must be logged in to add to list');
@@ -37,7 +37,7 @@ export const addToListAction = async (malId: number) => {
 
 export const deleteAnimeInListAction = async (malId: number) => {
   try {
-    const user = await getUser(cookies());
+    const user = await auth(cookies());
 
     if (!user) {
       throw new Error('Must be logged in to delete from list');
@@ -69,7 +69,7 @@ export const updateAnimeInListAction = async (
   score: number
 ) => {
   try {
-    const user = await getUser(cookies());
+    const user = await auth(cookies());
 
     if (!user) {
       throw new Error('Must be logged in to update list');

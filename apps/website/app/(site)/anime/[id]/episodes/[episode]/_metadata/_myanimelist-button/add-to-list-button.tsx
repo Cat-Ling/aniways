@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { addToListAction } from './myanimelist-actions';
 import { toast } from '@aniways/ui/components/ui/sonner';
-import { useSession } from '@animelist/auth-next/client';
+import { useAuth } from '@aniways/myanimelist';
 import { LoginModal } from '@/app/login-modal';
 
 type AddToListButtonProps = {
@@ -13,7 +13,7 @@ type AddToListButtonProps = {
 };
 
 export const AddToListButton = ({ malId }: AddToListButtonProps) => {
-  const session = useSession();
+  const session = useAuth();
   const [loading, setLoading] = useState(false);
 
   if (!session.user) {

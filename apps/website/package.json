@@ -9,7 +9,6 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@animelist/auth-next": "^0.1.1",
     "@aniways/database": "workspace:*",
     "@aniways/myanimelist": "workspace:*",
     "@aniways/ui": "workspace:*",

@@ -1,5 +1,4 @@
-import { getUser } from '@animelist/auth-next/server';
-import '@aniways/ui/globals.css';
+import { auth } from '@aniways/myanimelist';
 import { cn } from '@aniways/ui/lib/utils';
 import { Toaster } from '@ui/components/ui/sonner';
 import type { Metadata } from 'next';
@@ -8,6 +7,7 @@ import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { Navbar } from './navbar';
 import { Providers } from './providers';
+import '@aniways/ui/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,7 +28,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getUser(cookies());
+  const session = await auth(cookies());
 
   // eslint-disable-next-line turbo/no-undeclared-env-vars
   if (process.env.NODE_ENV === 'development') {

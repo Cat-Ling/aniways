@@ -1,4 +1,4 @@
-import { getUser } from '@animelist/auth-next/server';
+import { auth } from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
 import { RedirectType, redirect } from 'next/navigation';
 import { getAnimeList } from '@aniways/myanimelist';
@@ -15,7 +15,7 @@ type AnimeListPageProps = {
 const AnimeListPage = async (props: AnimeListPageProps) => {
   const { page = '1' } = props.searchParams;
 
-  const user = await getUser(cookies());
+  const user = await auth(cookies());
 
   if (!user) {
     redirect('/', RedirectType.replace);
