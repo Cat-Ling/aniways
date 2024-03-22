@@ -17,8 +17,11 @@ export default async function getAnimeList(
       'genres',
       'my_list_status',
       'synopsis',
+      'num_episodes',
     ],
     status,
+    nsfw: true,
+    sort: 'anime_title',
   });
   return animeList;
 }

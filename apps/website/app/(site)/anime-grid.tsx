@@ -34,7 +34,7 @@ export const AnimeGrid = (props: AnimeGridProps) => {
 
         return (
           <li
-            key={anime.title + anime.lastEpisode + anime.slug}
+            key={anime.id}
             className="bg-background border-border group rounded-md border p-2"
           >
             <Link href={url} className="flex h-full flex-col gap-3">
