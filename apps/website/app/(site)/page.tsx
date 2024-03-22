@@ -23,7 +23,7 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 
   return (
     <>
-      <Suspense fallback={<Skeleton className="mb-2 h-[32px] md:mb-5" />}>
+      <Suspense fallback={<Skeleton className="mb-2 h-[430px] md:mb-5" />}>
         <SeasonalAnimeCarousel />
       </Suspense>
       <Suspense

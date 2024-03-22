@@ -1,11 +1,10 @@
 import { db } from '@aniways/database';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { AnimeMetadata } from './_metadata';
 import { EpisodesSection } from './_episodes';
 import { VideoFrame } from './video-frame';
+import { Metadata } from 'next';
 
 export const generateMetadata = async ({
   params: { id, episode },
@@ -65,7 +64,7 @@ const AnimeStreamingPage = async ({
       <div className="mb-5 flex aspect-video w-full flex-col gap-2">
         <div className="flex-1">
           <Suspense fallback={<Skeleton className="aspect-video w-full" />}>
-            <VideoFrame anime={anime} currentEpisode={episode} />
+            <VideoFrame animeId={id} currentEpisode={episode} />
           </Suspense>
         </div>
         <Suspense
@@ -77,12 +76,9 @@ const AnimeStreamingPage = async ({
             </>
           }
         >
-          <EpisodesSection anime={anime} currentEpisode={episode} />
+          <EpisodesSection animeId={id} currentEpisode={episode} />
         </Suspense>
       </div>
-      <Suspense fallback={<Skeleton className="mb-6 h-[500px] w-full" />}>
-        <AnimeMetadata anime={anime} />
-      </Suspense>
     </>
   );
 };

@@ -27,6 +27,7 @@ import {
   FormDescription,
   FormMessage,
 } from '@ui/components/ui/form';
+import { useMetadata } from '../metadata-provider';
 
 const { z } = zod;
 const { useForm } = reactHookForm;
@@ -96,6 +97,7 @@ const AnimeChooserClientSelect = ({
   query,
   setMode,
 }: AnimeChooserClientSelectProps) => {
+  const [, setMetadata] = useMetadata();
   const params = useParams();
   const [page, setPage] = useState(1);
   const { isLoading, data, isError } = useQuery({
@@ -120,7 +122,10 @@ const AnimeChooserClientSelect = ({
             const id = params.id;
             if (!id || typeof id !== 'string') return;
             if (!anime.mal_id) return;
-            await updateMalAnimeAction(id, anime.mal_id);
+
+            const metadata = await updateMalAnimeAction(id, anime.mal_id);
+            if (metadata) setMetadata(metadata);
+
             toast('Anime updated successfully', {
               description: 'Thanks for updating the anime!',
             });
@@ -194,6 +199,7 @@ type AnimeChooserClientUrlFormProps = {
 const AnimeChooserClientUrlForm = ({
   setMode,
 }: AnimeChooserClientUrlFormProps) => {
+  const [, setMetadata] = useMetadata();
   const params = useParams();
   const { close } = useDialogContext();
   const form = useForm<zod.infer<typeof UpdateAnimeSchema>>({
@@ -203,8 +209,12 @@ const AnimeChooserClientUrlForm = ({
   const onSubmit = form.handleSubmit(async data => {
     const id = params.id;
     if (!id || typeof id !== 'string') return;
-    await updateMalAnimeAction(id, data.malLink);
+
+    const metadata = await updateMalAnimeAction(id, data.malLink);
+    if (metadata) setMetadata(metadata);
+
     close();
+
     toast('Anime updated successfully', {
       description: 'Thanks for updating the anime!',
     });

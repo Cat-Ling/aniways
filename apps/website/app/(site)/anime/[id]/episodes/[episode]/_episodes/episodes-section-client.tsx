@@ -8,13 +8,13 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
 type EpisodesSidbarProps = {
-  anime: schema.Anime;
+  animeId: string;
   episodes: schema.Video[];
   currentEpisode: string;
 };
 
 export const EpisodesSectionClient = ({
-  anime,
+  animeId,
   episodes,
   currentEpisode,
 }: EpisodesSidbarProps) => {
@@ -42,7 +42,7 @@ export const EpisodesSectionClient = ({
         {Number(currentEpisode) > 1 ?
           <Button className="flex items-center gap-2" asChild>
             <Link
-              href={`/anime/${anime.id}/episodes/${Number(currentEpisode) - 1}`}
+              href={`/anime/${animeId}/episodes/${Number(currentEpisode) - 1}`}
             >
               <ChevronLeftIcon className="h-5 w-5" />
               Previous
@@ -52,7 +52,7 @@ export const EpisodesSectionClient = ({
         {Number(currentEpisode) < episodes.length && (
           <Button className="flex items-center gap-2" asChild>
             <Link
-              href={`/anime/${anime.id}/episodes/${Number(currentEpisode) + 1}`}
+              href={`/anime/${animeId}/episodes/${Number(currentEpisode) + 1}`}
             >
               Next
               <ChevronRightIcon className="h-5 w-5" />
@@ -80,7 +80,7 @@ export const EpisodesSectionClient = ({
             >
               {isCurrentVideo ?
                 `Episode ${video.episode}`
-              : <Link href={`/anime/${anime.id}/episodes/${video.episode}`}>
+              : <Link href={`/anime/${animeId}/episodes/${video.episode}`}>
                   Episode {video.episode}
                 </Link>
               }

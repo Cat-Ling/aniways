@@ -2,23 +2,23 @@ import { db, orm, schema } from '@aniways/database';
 import { EpisodesSectionClient } from './episodes-section-client';
 
 type EpisodesSidbarProps = {
-  anime: schema.Anime;
+  animeId: string;
   currentEpisode: string;
 };
 
 export const EpisodesSection = async ({
-  anime,
+  animeId,
   currentEpisode,
 }: EpisodesSidbarProps) => {
   const videos = await db
     .selectDistinctOn([schema.video.episode])
     .from(schema.video)
-    .where(orm.eq(schema.video.animeId, anime.id))
+    .where(orm.eq(schema.video.animeId, animeId))
     .orderBy(orm.asc(schema.video.episode));
 
   return (
     <EpisodesSectionClient
-      anime={anime}
+      animeId={animeId}
       episodes={videos}
       currentEpisode={currentEpisode}
     />

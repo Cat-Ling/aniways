@@ -7,13 +7,17 @@ import { addToListAction } from './myanimelist-actions';
 import { toast } from '@aniways/ui/components/ui/sonner';
 import { useAuth } from '@aniways/myanimelist';
 import { LoginModal } from '@/app/login-modal';
+import { useParams } from 'next/navigation';
+import { useMetadata } from '../metadata-provider';
 
 type AddToListButtonProps = {
   malId: number;
 };
 
 export const AddToListButton = ({ malId }: AddToListButtonProps) => {
+  const [, setMetadata] = useMetadata();
   const session = useAuth();
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
 
   if (!session.user) {
@@ -26,11 +30,16 @@ export const AddToListButton = ({ malId }: AddToListButtonProps) => {
         setLoading(true);
 
         try {
-          const { error, success } = await addToListAction(malId);
+          const { error, details } = await addToListAction(
+            malId,
+            `/anime/${id}`
+          );
 
-          if (error || !success) {
+          if (error || !details) {
             throw new Error('Failed to add to list');
           }
+
+          setMetadata(details);
 
           toast('Added to list', {
             description: 'Anime has been added to your list',

@@ -2,13 +2,12 @@ import { auth } from '@aniways/myanimelist';
 import { cn } from '@aniways/ui/lib/utils';
 import { Toaster } from '@ui/components/ui/sonner';
 import type { Metadata } from 'next';
-import { revalidatePath } from 'next/cache';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
+import NextTopLoader from 'nextjs-toploader';
 import { Navbar } from './navbar';
 import { Providers } from './providers';
 import '@aniways/ui/globals.css';
-import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,11 +29,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth(cookies());
-
-  // eslint-disable-next-line turbo/no-undeclared-env-vars
-  if (process.env.NODE_ENV === 'development') {
-    revalidatePath('/', 'layout');
-  }
 
   return (
     <html lang="en" className="dark">

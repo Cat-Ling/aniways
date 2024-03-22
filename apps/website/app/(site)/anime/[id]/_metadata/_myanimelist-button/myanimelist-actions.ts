@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@aniways/myanimelist';
+import { auth, getAnimeDetailsFromMyAnimeList } from '@aniways/myanimelist';
 import {
   addToAnimeList,
   deleteFromAnimeList,
@@ -9,7 +9,7 @@ import {
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
-export const addToListAction = async (malId: number) => {
+export const addToListAction = async (malId: number, pathname: string) => {
   try {
     const user = await auth(cookies());
 
@@ -19,10 +19,15 @@ export const addToListAction = async (malId: number) => {
 
     await addToAnimeList(user.accessToken, malId);
 
-    revalidatePath('/', 'layout');
+    const details = await getAnimeDetailsFromMyAnimeList({
+      accessToken: user.accessToken,
+      malId,
+    });
+
+    revalidatePath(pathname, 'layout');
 
     return {
-      success: true,
+      details,
     };
   } catch (e) {
     console.error(e);
@@ -35,7 +40,10 @@ export const addToListAction = async (malId: number) => {
   }
 };
 
-export const deleteAnimeInListAction = async (malId: number) => {
+export const deleteAnimeInListAction = async (
+  malId: number,
+  pathname: string
+) => {
   try {
     const user = await auth(cookies());
 
@@ -45,10 +53,15 @@ export const deleteAnimeInListAction = async (malId: number) => {
 
     await deleteFromAnimeList(user.accessToken, malId);
 
-    revalidatePath('/', 'layout');
+    const details = await getAnimeDetailsFromMyAnimeList({
+      accessToken: user.accessToken,
+      malId,
+    });
+
+    revalidatePath(pathname, 'layout');
 
     return {
-      success: true,
+      details,
     };
   } catch (e) {
     console.error(e);
@@ -66,7 +79,8 @@ export const updateAnimeInListAction = async (
   malId: number,
   status: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch',
   episodesWatched: number,
-  score: number
+  score: number,
+  pathname: string
 ) => {
   try {
     const user = await auth(cookies());
@@ -83,10 +97,15 @@ export const updateAnimeInListAction = async (
       score
     );
 
-    revalidatePath('/', 'layout');
+    const details = await getAnimeDetailsFromMyAnimeList({
+      accessToken: user.accessToken,
+      malId,
+    });
+
+    revalidatePath(pathname, 'layout');
 
     return {
-      success: true,
+      details,
     };
   } catch (e) {
     console.error(e);

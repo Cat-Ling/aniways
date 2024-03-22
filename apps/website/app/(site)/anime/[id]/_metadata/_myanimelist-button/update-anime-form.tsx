@@ -30,6 +30,8 @@ import {
   deleteAnimeInListAction,
   updateAnimeInListAction,
 } from './myanimelist-actions';
+import { useParams } from 'next/navigation';
+import { useMetadata } from '../metadata-provider';
 
 const status = [
   'watching',
@@ -86,8 +88,10 @@ export const UpdateAnimeForm = ({
   malId,
   listStatus,
 }: UpdateAnimeFormProps) => {
+  const { id } = useParams();
   const [isDeleting, setIsDeleting] = useState(false);
   const { close } = useDialogContext();
+  const [, setMetadata] = useMetadata();
 
   const form = reactHookForm.useForm<z.infer<typeof UpdateAnimeSchema>>({
     resolver: zodResolver(UpdateAnimeSchema),
@@ -100,16 +104,19 @@ export const UpdateAnimeForm = ({
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      const { error, success } = await updateAnimeInListAction(
+      const { error, details } = await updateAnimeInListAction(
         malId,
         data.status,
         data.episodesWatched,
-        data.score ?? 0
+        data.score ?? 0,
+        `/anime/${id}`
       );
 
-      if (error || !success) {
+      if (error || !details) {
         throw new Error(error);
       }
+
+      setMetadata(details);
 
       toast('List updated', {
         description: 'Your list has been updated',
@@ -233,12 +240,16 @@ export const UpdateAnimeForm = ({
               onClick={async () => {
                 setIsDeleting(true);
                 try {
-                  const { success, error } =
-                    await deleteAnimeInListAction(malId);
+                  const { details, error } = await deleteAnimeInListAction(
+                    malId,
+                    `/anime/${id}`
+                  );
 
-                  if (error || !success) {
+                  if (error || !details) {
                     throw new Error('Failed to delete anime');
                   }
+
+                  setMetadata(details);
 
                   toast('Anime deleted', {
                     description: 'Anime has been removed from your list',

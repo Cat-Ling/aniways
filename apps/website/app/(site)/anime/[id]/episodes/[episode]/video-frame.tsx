@@ -3,18 +3,18 @@ import { scrapeVideoSource } from '@aniways/web-scraping';
 import { notFound } from 'next/navigation';
 
 type VideoFrameProps = {
-  anime: schema.Anime;
   currentEpisode: string;
+  animeId: string;
 };
 
 export const VideoFrame = async ({
-  anime,
+  animeId,
   currentEpisode,
 }: VideoFrameProps) => {
   const currentVideo = await db.query.video.findFirst({
     where: (fields, actions) =>
       actions.and(
-        actions.eq(fields.animeId, anime.id),
+        actions.eq(fields.animeId, animeId),
         actions.eq(fields.episode, currentEpisode)
       ),
   });
@@ -34,7 +34,7 @@ export const VideoFrame = async ({
       })
       .where(
         orm.and(
-          orm.eq(schema.video.animeId, anime.id),
+          orm.eq(schema.video.animeId, animeId),
           orm.eq(schema.video.slug, slug)
         )
       )
