@@ -43,6 +43,7 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
                 href={`${pathname}?${getParams(page - 1)}#${'recently-released'}`}
               >
                 <ArrowLeft />
+                <span className="sr-only">Previous Page</span>
               </Link>
             </Button>
           </TooltipTrigger>
@@ -64,6 +65,7 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
                 href={`${pathname}?${getParams(page + 1)}#${'recently-released'}`}
               >
                 <ArrowRight />
+                <span className="sr-only">Next Page</span>
               </Link>
             </Button>
           </TooltipTrigger>
