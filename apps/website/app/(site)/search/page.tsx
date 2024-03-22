@@ -1,10 +1,8 @@
 import { retreiveAnimeByQuery } from '@aniways/database';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { AnimeGrid } from '../anime-grid';
-import { AnimeGridLoader } from '../anime-grid-loader';
-import { Pagination } from '../pagination';
-import { PaginationLoader } from '../pagination-loader';
+import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
+import { Pagination, PaginationLoader } from '../pagination';
 
 export const generateMetadata = async ({
   searchParams: { query },

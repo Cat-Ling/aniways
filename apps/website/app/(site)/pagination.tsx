@@ -1,4 +1,5 @@
 'use client';
+
 import { Button } from '@aniways/ui/components/ui/button';
 import {
   Tooltip,
@@ -10,6 +11,17 @@ import { cn } from '@ui/lib/utils';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
+
+export const PaginationLoader = () => {
+  return (
+    <div className="grid h-[40px] w-full grid-cols-3 items-center md:w-[120px]">
+      <Skeleton className="h-full w-full" />
+      <Skeleton className="h-full w-full" />
+      <Skeleton className="h-full w-full" />
+    </div>
+  );
+};
 
 export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
   const searchParams = useSearchParams();
@@ -39,9 +51,7 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
               className={cn(page === 1 && 'pointer-events-none opacity-50')}
               asChild
             >
-              <Link
-                href={`${pathname}?${getParams(page - 1)}#${'recently-released'}`}
-              >
+              <Link href={`${pathname}?${getParams(page - 1)}`}>
                 <ArrowLeft />
                 <span className="sr-only">Previous Page</span>
               </Link>
@@ -61,9 +71,7 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
               className={cn(!hasNext && 'pointer-events-none opacity-50')}
               asChild
             >
-              <Link
-                href={`${pathname}?${getParams(page + 1)}#${'recently-released'}`}
-              >
+              <Link href={`${pathname}?${getParams(page + 1)}`}>
                 <ArrowRight />
                 <span className="sr-only">Next Page</span>
               </Link>

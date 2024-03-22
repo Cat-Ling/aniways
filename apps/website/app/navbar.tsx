@@ -13,7 +13,7 @@ export const Navbar = async () => {
     <nav className="bg-background border-border border-b">
       <div className="container mx-auto flex flex-col justify-between px-3 md:container md:flex-row md:items-center">
         <div className="flex flex-col md:flex-row md:items-center md:gap-6">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center" scroll={false}>
             <Image
               src="/logo.png"
               width={80}

@@ -1,26 +1,20 @@
-import {
-  db,
-  orm,
-  retreiveRecentlyReleasedAnime,
-  schema,
-} from '@aniways/database';
-import { Suspense } from 'react';
-import { AnimeGrid } from './anime-grid';
-import { AnimeGridLoader } from './anime-grid-loader';
-import { Pagination } from './pagination';
-import { PaginationLoader } from './pagination-loader';
+import { db, orm, schema } from '@aniways/database';
 import {
   auth,
   getAnimeList,
   getCurrentAnimeSeason,
 } from '@aniways/myanimelist';
-import { cookies } from 'next/headers';
 import { Skeleton } from '@ui/components/ui/skeleton';
+import { cookies } from 'next/headers';
+import { ReactNode, Suspense } from 'react';
+import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { AnimeCarousel } from './carousel';
 
-const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
-  const page = Number(searchParams.page || '1');
+type HomeLayoutProps = {
+  children: ReactNode;
+};
 
+export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <>
       <Suspense fallback={<Skeleton className="mb-2 h-[430px] md:mb-5" />}>
@@ -38,23 +32,10 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
       >
         <CurrentlyWatchingAnime />
       </Suspense>
-      <div
-        id={'recently-released'}
-        className="mb-2 flex w-full flex-col justify-between gap-2 pt-6 md:mb-5 md:flex-row md:items-center md:gap-0"
-      >
-        <h1 className="text-lg font-bold md:text-2xl">Recently Released</h1>
-        <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
-          <PaginationWrapper page={page} />
-        </Suspense>
-      </div>
-      <div className="mb-12">
-        <Suspense key={page} fallback={<AnimeGridLoader />}>
-          <RecentlyReleasedAnimeGrid page={page} />
-        </Suspense>
-      </div>
+      {children}
     </>
   );
-};
+}
 
 const SeasonalAnimeCarousel = async () => {
   const seasonalAnime = await getCurrentAnimeSeason().then(({ data }) =>
@@ -131,7 +112,7 @@ const CurrentlyWatchingAnime = async () => {
         animeListMap[anime.malAnimeId!]?.my_list_status?.num_episodes_watched;
 
       const lastEpisode = String(
-        episodesWatched ? episodesWatched + 1 : anime.lastEpisode
+        episodesWatched !== undefined ? episodesWatched + 1 : anime.lastEpisode
       );
 
       return {
@@ -166,17 +147,3 @@ const CurrentlyWatchingAnime = async () => {
     </>
   );
 };
-
-const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
-  const { recentlyReleased } = await retreiveRecentlyReleasedAnime(page);
-
-  return <AnimeGrid animes={recentlyReleased} type="home" />;
-};
-
-const PaginationWrapper = async ({ page }: { page: number }) => {
-  const { hasNext } = await retreiveRecentlyReleasedAnime(page);
-
-  return <Pagination hasNext={hasNext} />;
-};
-
-export default Home;

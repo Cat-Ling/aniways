@@ -1,12 +1,22 @@
 import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { schema } from '@aniways/database';
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 type AnimeGridProps = {
   type: 'home' | 'search';
   animes: schema.Anime[];
+};
+
+export const AnimeGridLoader = ({ length = 20 }: { length?: number }) => {
+  return (
+    <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
+      {Array.from({ length }).map((_, i) => (
+        <Skeleton key={i} className="h-[262px] md:h-[440px]" />
+      ))}
+    </ul>
+  );
 };
 
 export const AnimeGrid = (props: AnimeGridProps) => {
