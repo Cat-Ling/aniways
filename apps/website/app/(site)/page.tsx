@@ -38,7 +38,10 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
       >
         <CurrentlyWatchingAnime />
       </Suspense>
-      <div className="mb-2 flex w-full flex-col justify-between gap-2 md:mb-5 md:flex-row md:items-center md:gap-0">
+      <div
+        id={'recently-released'}
+        className="mb-2 flex w-full flex-col justify-between gap-2 pt-6 md:mb-5 md:flex-row md:items-center md:gap-0"
+      >
         <h1 className="text-lg font-bold md:text-2xl">Recently Released</h1>
         <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
           <PaginationWrapper page={page} />
@@ -157,7 +160,7 @@ const CurrentlyWatchingAnime = async () => {
       <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
         Continue Watching
       </h1>
-      <div className="mb-12">
+      <div className="mb-6">
         <AnimeGrid animes={newReleases} type="home" />
       </div>
     </>

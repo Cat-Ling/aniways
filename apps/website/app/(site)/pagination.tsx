@@ -28,10 +28,7 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
   };
 
   return (
-    <div
-      id={'recently-released'}
-      className="grid grid-cols-3 place-items-center items-center"
-    >
+    <div className="grid grid-cols-3 place-items-center items-center">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
