@@ -10,13 +10,13 @@ import {
   DialogTrigger,
 } from '@ui/components/ui/dialog';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { AnimeChooser } from './_anime-chooser';
 import { AddToListButton } from './_myanimelist-button/add-to-list-button';
 import { UpdateAnimeForm } from './_myanimelist-button/update-anime-form';
 import { useMetadata } from './metadata-provider';
+import { Image } from '@ui/components/ui/aniways-image';
 
 type AnimeMetadataClientProps = {
   anime: schema.Anime;

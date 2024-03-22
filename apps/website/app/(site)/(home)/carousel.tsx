@@ -12,6 +12,7 @@ import { PlayIcon } from 'lucide-react';
 import Link from 'next/link';
 import { getCurrentAnimeSeason } from '@aniways/myanimelist';
 import { useEffect, useState } from 'react';
+import { Image } from '@ui/components/ui/aniways-image';
 
 type AnimeCarouselProps = {
   seasonalAnime: Awaited<ReturnType<typeof getCurrentAnimeSeason>>['data'];
@@ -108,8 +109,7 @@ export const AnimeCarousel = ({
                     }}
                   />
                   <div className="relative z-10 flex aspect-video h-full w-full items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={anime.images.webp.large_image_url}
                       alt={anime.title}
                       className="h-full rounded-lg object-contain shadow-lg"
