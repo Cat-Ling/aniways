@@ -44,7 +44,13 @@ export const ProfileDropdown = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOut}>
+        <DropdownMenuItem
+          onClick={() => {
+            signOut({
+              redirectUrl: window.location.href,
+            });
+          }}
+        >
           <LogOut className="mr-2 h-5 w-5" />
           Log Out
         </DropdownMenuItem>

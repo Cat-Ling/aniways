@@ -36,7 +36,13 @@ export const LoginModal = ({ children }: LoginModalProps) => {
           <DialogClose asChild>
             <Button variant={'secondary'}>Cancel</Button>
           </DialogClose>
-          <Button onClick={signIn}>Log in with MyAnimeList</Button>
+          <Button
+            onClick={() => {
+              signIn({ redirectUrl: window.location.href });
+            }}
+          >
+            Log in with MyAnimeList
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

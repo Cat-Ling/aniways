@@ -7,7 +7,10 @@ type AuthRouteHandler = Record<
   ReturnType<typeof createMyAnimeListFetchHandler>
 >;
 
-const handler = createMyAnimeListFetchHandler();
+const handler = createMyAnimeListFetchHandler({
+  redirectAfterSignOutUrl: '/api/myanimelist/auth/redirect',
+  redirectAfterSignInUrl: '/api/myanimelist/auth/redirect',
+});
 
 export const authRouteHandler: AuthRouteHandler = {
   GET: handler,
