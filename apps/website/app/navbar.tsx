@@ -4,15 +4,15 @@ import { SearchBar } from './search-bar';
 import { auth } from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
 import { LoginModal } from './login-modal';
-import { LogoutModal } from './logout-modal';
+import { ProfileDropdown } from './profile-dropdown';
 
 export const Navbar = async () => {
   const user = await auth(cookies());
 
   return (
     <nav className="bg-background border-border border-b">
-      <div className="container mx-auto flex flex-col justify-between px-3 md:container md:flex-row md:items-center">
-        <div className="flex flex-col md:flex-row md:items-center md:gap-6">
+      <div className="container mx-auto flex justify-between px-3 md:container md:items-center">
+        <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center" scroll={false}>
             <Image
               src="/logo.png"
@@ -27,16 +27,16 @@ export const Navbar = async () => {
             <SearchBar />
           </div>
         </div>
-        <div className="mb-3 flex flex-col gap-3 md:m-0 md:flex-row md:items-center">
-          <div className="block md:hidden">
-            <SearchBar />
-          </div>
+        <div className="flex items-center gap-3">
           <div className="flex gap-3">
             {user ?
-              <LogoutModal />
+              <ProfileDropdown />
             : <LoginModal />}
           </div>
         </div>
+      </div>
+      <div className="mb-3 block px-3 md:hidden">
+        <SearchBar />
       </div>
     </nav>
   );

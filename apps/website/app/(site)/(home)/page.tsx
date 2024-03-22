@@ -22,6 +22,11 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
           <RecentlyReleasedAnimeGrid page={page} />
         </Suspense>
       </div>
+      <div className="-mt-6">
+        <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
+          <PaginationWrapper page={page} />
+        </Suspense>
+      </div>
     </>
   );
 };

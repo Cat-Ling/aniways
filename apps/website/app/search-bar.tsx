@@ -15,7 +15,10 @@ export const SearchBar = () => {
   const query = searchParams.get('query') || '';
 
   const setQuery = debounce((query: string) => {
-    if (query === '') return router.push('/');
+    if (query === '')
+      return router.push('/', {
+        scroll: false,
+      });
     router.push(`/search?query=${query}`);
   }, 500);
 
@@ -30,7 +33,7 @@ export const SearchBar = () => {
       <Input
         ref={ref}
         placeholder="Search for anime"
-        className={cn('w-full pl-9 md:w-[264px] md:focus:w-[500px]')}
+        className={cn('w-full pl-9')}
         defaultValue={query}
         onChange={e => setQuery(e.target.value)}
       />
