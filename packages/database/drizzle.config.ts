@@ -5,7 +5,7 @@ export default defineConfig({
   driver: 'pg',
   dbCredentials: {
     // eslint-disable-next-line turbo/no-undeclared-env-vars
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: process.env.DATABASE_MIGRATION_URL!,
   },
   verbose: true,
   strict: true,
