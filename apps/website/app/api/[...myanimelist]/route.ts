@@ -2,7 +2,9 @@ import { authRouteHandler } from '@aniways/myanimelist';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const { GET: authGet, POST, PATCH, DELETE } = authRouteHandler;
+export const { POST, PATCH, DELETE } = authRouteHandler;
+
+const authGet = authRouteHandler.GET;
 
 export const GET = async (req: NextRequest) => {
   if (req.nextUrl.pathname === '/api/myanimelist/auth/redirect') {
