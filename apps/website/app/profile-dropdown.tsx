@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@aniways/ui/components/ui/dropdown-menu';
-import { List, LogOut, User } from 'lucide-react';
+import { List, LogOut } from 'lucide-react';
 import { signOut, useAuth } from '@myanimelist/auth';
 
 export const ProfileDropdown = () => {
@@ -35,12 +35,6 @@ export const ProfileDropdown = () => {
           <Link href={'/anime-list'}>
             <List className="mr-2 h-5 w-5" />
             Anime List
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={'/profile'}>
-            <User className="mr-2 h-5 w-5" />
-            Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
