@@ -37,7 +37,7 @@ export default async function RootLayout({
         <Providers session={session}>
           <Navbar />
           {children}
-          <Toaster />
+          <Toaster richColors={true} />
         </Providers>
       </body>
     </html>

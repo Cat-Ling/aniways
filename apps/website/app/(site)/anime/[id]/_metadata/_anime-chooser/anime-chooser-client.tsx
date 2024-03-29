@@ -126,7 +126,7 @@ const AnimeChooserClientSelect = ({
             const metadata = await updateMalAnimeAction(id, anime.mal_id);
             if (metadata) setMetadata(metadata);
 
-            toast('Anime updated successfully', {
+            toast.success('Anime updated successfully', {
               description: 'Thanks for updating the anime!',
             });
           }}
@@ -215,7 +215,7 @@ const AnimeChooserClientUrlForm = ({
 
     close();
 
-    toast('Anime updated successfully', {
+    toast.success('Anime updated successfully', {
       description: 'Thanks for updating the anime!',
     });
   });

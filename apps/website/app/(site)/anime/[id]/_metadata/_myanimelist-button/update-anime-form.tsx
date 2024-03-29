@@ -118,7 +118,7 @@ export const UpdateAnimeForm = ({
 
       setMetadata(details);
 
-      toast('List updated', {
+      toast.success('List updated', {
         description: 'Your list has been updated',
       });
 
@@ -128,7 +128,7 @@ export const UpdateAnimeForm = ({
 
       const error = e instanceof Error ? e : new Error('Failed to update list');
 
-      toast(error.message, {
+      toast.error(error.message, {
         description: 'Please try again later',
       });
     }
@@ -251,7 +251,7 @@ export const UpdateAnimeForm = ({
 
                   setMetadata(details);
 
-                  toast('Anime deleted', {
+                  toast.success('Anime deleted', {
                     description: 'Anime has been removed from your list',
                   });
                   close();
@@ -263,7 +263,7 @@ export const UpdateAnimeForm = ({
                       new Error('Failed to delete anime')
                     );
 
-                  toast(error.message, {
+                  toast.error(error.message, {
                     description: 'Please try again later',
                   });
                 } finally {

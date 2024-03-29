@@ -41,14 +41,14 @@ export const AddToListButton = ({ malId }: AddToListButtonProps) => {
 
           setMetadata(details);
 
-          toast('Added to list', {
+          toast.success('Added to list', {
             description: 'Anime has been added to your list',
           });
         } catch (e) {
           const error =
             e instanceof Error ? e : new Error('Failed to add to list');
 
-          toast('Failed to add to list', {
+          toast.error('Failed to add to list', {
             description: error.message,
           });
         } finally {
