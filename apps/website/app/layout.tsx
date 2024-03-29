@@ -1,5 +1,4 @@
 import { auth } from '@aniways/myanimelist';
-import { cn } from '@aniways/ui/lib/utils';
 import { Toaster } from '@ui/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -8,6 +7,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { Navbar } from './navbar';
 import { Providers } from './providers';
 import '@aniways/ui/globals.css';
+import { Footer } from './footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,13 +32,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="dark">
-      <body className={cn('min-h-screen', inter.className)}>
-        <NextTopLoader showSpinner={false} color="#e11d48" />
-        <Providers session={session}>
-          <Navbar />
-          {children}
-          <Toaster richColors={true} />
-        </Providers>
+      <body className={inter.className}>
+        <div className="min-h-screen">
+          <NextTopLoader showSpinner={false} color="#e11d48" />
+          <Providers session={session}>
+            <Navbar />
+            {children}
+            <Toaster richColors={true} />
+          </Providers>
+        </div>
+        <Footer />
       </body>
     </html>
   );
