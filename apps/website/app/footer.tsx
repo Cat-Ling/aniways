@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
