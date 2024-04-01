@@ -131,8 +131,7 @@ const CurrentlyWatchingAnime = async () => {
       }
 
       return 0;
-    })
-    .slice(0, 10);
+    });
 
   if (!newReleases.length) return undefined;
 
