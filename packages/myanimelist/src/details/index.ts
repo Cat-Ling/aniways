@@ -13,9 +13,10 @@ type Args = {
     }
 );
 
-export default async function getAnimeDetails(args: Args) {
-  const { accessToken } = args;
-
+const getListStatusAndRelatedAnimeFromMAL = (
+  malId: number,
+  accessToken: string | undefined
+) => {
   const client = new MALClient(
     accessToken ?
       { accessToken }
@@ -25,6 +26,19 @@ export default async function getAnimeDetails(args: Args) {
       }
   );
 
+  return client
+    .getAnimeDetails(malId, {
+      fields: ['my_list_status', 'related_anime'],
+    })
+    .then(async res => ({
+      listStatus: res?.my_list_status,
+      relatedAnime: res?.related_anime ?? [],
+    }));
+};
+
+export default async function getAnimeDetails(args: Args) {
+  const { accessToken } = args;
+
   if ('malId' in args) {
     console.log('Getting anime details of', args.malId);
 
@@ -32,9 +46,7 @@ export default async function getAnimeDetails(args: Args) {
       ...(await Jikan4.anime(args.malId)
         .info()
         .then(res => res.data)),
-      listStatus: await client
-        .getAnimeDetails(args.malId, { fields: ['my_list_status'] })
-        .then(res => res?.my_list_status),
+      ...(await getListStatusAndRelatedAnimeFromMAL(args.malId, accessToken)),
     };
   }
 
@@ -54,8 +66,6 @@ export default async function getAnimeDetails(args: Args) {
 
   return {
     ...data,
-    listStatus: await client
-      .getAnimeDetails(data.mal_id, { fields: ['my_list_status'] })
-      .then(res => res?.my_list_status),
+    ...(await getListStatusAndRelatedAnimeFromMAL(data.mal_id, accessToken)),
   };
 }
