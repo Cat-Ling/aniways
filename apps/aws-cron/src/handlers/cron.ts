@@ -6,7 +6,7 @@ import {
   scrapeDetailsOfAnime,
 } from '@aniways/web-scraping';
 
-const { anime, video, animeGenre } = schema;
+const { anime, video, animeGenre, animeTitle } = schema;
 const { eq } = orm;
 
 const logger = (...args: any[]) => {
@@ -116,33 +116,33 @@ export const main: APIGatewayProxyHandler = async event => {
 
           animeId = createId();
 
-          await db
-            .insert(anime)
-            .values([
-              {
-                id: animeId,
-                title: animedata.title,
-                image: animedata.image,
-                year: animedata.released ?? '',
-                description: animedata.description ?? '',
-                slug: slug,
-                status:
-                  ({
-                    Upcoming: 'NOT_YET_AIRED',
-                    Ongoing: 'CURRENTLY_AIRING',
-                    Completed: 'FINISHED_AIRING',
-                  }[
-                    anime.status as unknown as
-                      | 'Upcoming'
-                      | 'Ongoing'
-                      | 'Completed'
-                  ]! as any) ?? 'NOT_YET_AIRED',
-                lastEpisode: String(a.episode),
-                updatedAt: new Date(),
-              },
-            ])
-            .execute();
+          await db.insert(anime).values({
+            id: animeId,
+            title: animedata.title,
+            image: animedata.image,
+            year: animedata.released ?? '',
+            description: animedata.description ?? '',
+            slug: slug,
+            status:
+              ({
+                Upcoming: 'NOT_YET_AIRED',
+                Ongoing: 'CURRENTLY_AIRING',
+                Completed: 'FINISHED_AIRING',
+              }[
+                anime.status as unknown as 'Upcoming' | 'Ongoing' | 'Completed'
+              ]! as any) ?? 'NOT_YET_AIRED',
+            lastEpisode: String(a.episode),
+            updatedAt: new Date(),
+          });
+
           logger('Inserted new anime', animedata.title, 'into db');
+
+          await db.insert(animeTitle).values({
+            id: createId(),
+            animeId: animeId!,
+            title: animedata.title,
+          });
+
           if (animedata.genres) {
             await db
               .insert(animeGenre)

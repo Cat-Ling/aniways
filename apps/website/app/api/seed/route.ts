@@ -2,10 +2,11 @@ import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { seed } from '@aniways/database/src/database/seeding/seed';
+import { seed as seedTitles } from '@aniways/database/src/database/seeding/seed-titles';
 import { seedVideos } from '@aniways/database/src/database/seeding/seed-videos';
 
 const schema = z.object({
-  type: z.enum(['anime', 'video']),
+  type: z.enum(['anime', 'video', 'title']),
 });
 
 export const POST = async (req: NextRequest) => {
@@ -14,15 +15,21 @@ export const POST = async (req: NextRequest) => {
     notFound();
   }
 
-  const body = await req.json();
+  const body = req.nextUrl.searchParams.get('type');
 
-  const { type } = schema.parse(body);
+  const { type } = schema.parse({
+    type: body,
+  });
 
   if (type === 'anime') {
     seed();
-  } else {
+  } else if (type === 'video') {
     seedVideos();
+  } else {
+    seedTitles();
   }
 
   return NextResponse.json({ message: 'Started seeding database' });
 };
+
+export const GET = POST;

@@ -1,5 +1,4 @@
 import { InferSelectModel, relations } from 'drizzle-orm';
-import { integer } from 'drizzle-orm/pg-core';
 import {
   AnyPgColumn,
   index,
@@ -42,6 +41,28 @@ export const AnimeAgeRating = pgEnum('anime_rating', [
   'RX',
 ]);
 
+export const animeTitle = pgTable('anime_title', {
+  id: varchar('id', { length: 25 }).primaryKey(),
+  title: text('title').notNull(),
+  animeId: varchar('anime_id', { length: 25 })
+    .notNull()
+    .references(() => anime.id),
+});
+
+export type AnimeTitle = InferSelectModel<typeof animeTitle>;
+
+export const animeTitleRelations = relations(animeTitle, ({ one }) => ({
+  anime: one(anime, {
+    relationName: 'titles',
+    fields: [animeTitle.animeId],
+    references: [anime.id],
+  }),
+}));
+
+export type AnimeTitleWithRelations = AnimeTitle & {
+  anime: Anime;
+};
+
 export const anime = pgTable(
   'anime',
   {
@@ -54,7 +75,7 @@ export const anime = pgTable(
     slug: text('slug').notNull(),
     lastEpisode: numeric('last_episode'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    malAnimeId: integer('mal_anime_id'),
+    malAnimeId: numeric('mal_anime_id'),
   },
   table => ({
     malAnimeIdx: index('anime_mal_anime_idx').on(table.malAnimeId),
@@ -70,6 +91,9 @@ export const animeRelations = relations(anime, ({ many }) => ({
   }),
   videos: many(video, {
     relationName: 'anime-videos',
+  }),
+  titles: many(animeTitle, {
+    relationName: 'titles',
   }),
 }));
 
