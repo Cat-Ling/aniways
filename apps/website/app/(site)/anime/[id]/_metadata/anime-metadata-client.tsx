@@ -46,14 +46,17 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
               details.rating,
               details.duration,
               details.status,
-            ].map((info, index) => (
-              <div
-                key={index}
-                className="bg-muted text-primary rounded-md p-2 text-sm"
-              >
-                {info}
-              </div>
-            ))}
+            ].map(
+              (info, index) =>
+                info && (
+                  <div
+                    key={index}
+                    className="bg-muted text-primary rounded-md p-2 text-sm"
+                  >
+                    {info}
+                  </div>
+                )
+            )}
           </div>
           <div className="mt-2 grid w-full grid-cols-2 md:w-1/2">
             <div className="text-sm">
