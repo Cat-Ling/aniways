@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   varchar,
+  integer,
 } from 'drizzle-orm/pg-core';
 
 export const AnimeSeason = pgEnum('anime_season', [
@@ -75,7 +76,7 @@ export const anime = pgTable(
     slug: text('slug').notNull(),
     lastEpisode: numeric('last_episode'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    malAnimeId: numeric('mal_anime_id'),
+    malAnimeId: integer('mal_anime_id'),
   },
   table => ({
     malAnimeIdx: index('anime_mal_anime_idx').on(table.malAnimeId),
