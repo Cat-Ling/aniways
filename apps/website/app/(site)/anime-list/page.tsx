@@ -203,7 +203,7 @@ const AnimeList = async ({
                   </p>
                   <p className="text-muted-foreground mt-1 text-xs md:text-sm">
                     {anime.my_list_status?.num_episodes_watched ?? 0} of{' '}
-                    {anime.num_episodes ?? '???'}ep
+                    {anime.num_episodes || '???'}ep
                   </p>
                 </div>
               </div>
