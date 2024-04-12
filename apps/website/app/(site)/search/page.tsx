@@ -31,10 +31,7 @@ const SearchPage = async ({
             Showing results for <span className="text-foreground">{query}</span>
           </p>
         </div>
-        <Suspense
-          key={query + page + '-pagination'}
-          fallback={<PaginationLoader />}
-        >
+        <Suspense fallback={<PaginationLoader />}>
           <PaginationWrapper page={page} query={query} />
         </Suspense>
       </div>

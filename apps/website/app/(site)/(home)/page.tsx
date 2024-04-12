@@ -23,7 +23,7 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
         </Suspense>
       </div>
       <div className="-mt-6">
-        <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
+        <Suspense fallback={<PaginationLoader />}>
           <PaginationWrapper page={page} />
         </Suspense>
       </div>
