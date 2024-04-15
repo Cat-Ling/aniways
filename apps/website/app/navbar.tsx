@@ -1,14 +1,28 @@
+'use client';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 import Link from 'next/link';
 import { SearchBar } from './search-bar';
-import { auth } from '@aniways/myanimelist';
-import { cookies } from 'next/headers';
+import { useAuth } from '@aniways/myanimelist';
 import { LoginModal } from './login-modal';
 import { ProfileDropdown } from './profile-dropdown';
+import { Skeleton } from '@ui/components/ui/skeleton';
+import { Suspense } from 'react';
 
-export const Navbar = async () => {
-  const user = await auth(cookies());
+const UserButtons = () => {
+  const { user, isLoading } = useAuth();
 
+  if (isLoading) {
+    return <Skeleton className="size-8" />;
+  }
+
+  if (user) {
+    return <ProfileDropdown />;
+  }
+
+  return <LoginModal />;
+};
+
+export const Navbar = () => {
   return (
     <nav className="bg-background border-border border-b">
       <div className="container mx-auto flex justify-between px-3 md:container md:items-center">
@@ -24,19 +38,21 @@ export const Navbar = async () => {
             <h1 className="text-2xl font-bold">AniWays</h1>
           </Link>
           <div className="hidden md:block">
-            <SearchBar />
+            <Suspense>
+              <SearchBar />
+            </Suspense>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex gap-3">
-            {user ?
-              <ProfileDropdown />
-            : <LoginModal />}
+            <UserButtons />
           </div>
         </div>
       </div>
       <div className="mb-3 block px-3 md:hidden">
-        <SearchBar />
+        <Suspense>
+          <SearchBar />
+        </Suspense>
       </div>
     </nav>
   );
