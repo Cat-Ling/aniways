@@ -12,7 +12,7 @@ const UserButtons = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <Skeleton className="size-8" />;
+    return <Skeleton className="size-12 rounded-full" />;
   }
 
   if (user) {
