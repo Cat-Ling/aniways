@@ -1,7 +1,5 @@
 import { ImageResponse } from 'next/og';
 
-export const dynamic = 'force-static';
-
 export const GET = (req: Request) => {
   const response = new ImageResponse(
     (
