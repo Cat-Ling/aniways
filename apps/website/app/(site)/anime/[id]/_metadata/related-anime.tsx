@@ -1,4 +1,4 @@
-import { db } from '@aniways/database';
+import { transformRelatedAnime } from '@aniways/data';
 import { getAnimeDetailsFromMyAnimeList } from '@aniways/myanimelist';
 import { Image } from '@ui/components/ui/aniways-image';
 import { Skeleton } from '@ui/components/ui/skeleton';
@@ -13,29 +13,7 @@ type RelatedAnimeProps = {
 export const RelatedAnime: FC<RelatedAnimeProps> = async props => {
   const { details } = props;
 
-  if (!details || !details.relatedAnime) return null;
-
-  const relatedAnime = (
-    await Promise.all(
-      details.relatedAnime.map(async anime => ({
-        ...anime,
-        id: await db.query.anime
-          .findFirst({
-            where: (fields, actions) => {
-              return actions.eq(fields.malAnimeId, anime.node.id);
-            },
-            columns: {
-              id: true,
-            },
-          })
-          .then(data => data?.id),
-      }))
-    )
-  ).sort((a, b) => {
-    if (a.relation_type === 'side_story') return 1;
-    if (b.relation_type === 'side_story') return -1;
-    return 0;
-  });
+  const relatedAnime = await transformRelatedAnime(details);
 
   if (relatedAnime.length === 0) return null;
 
