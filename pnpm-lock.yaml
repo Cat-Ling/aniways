@@ -149,6 +149,25 @@ importers:
         specifier: ^3.3.0
         version: 3.4.1
 
+  packages/data:
+    dependencies:
+      '@aniways/database':
+        specifier: workspace:*
+        version: link:../database
+      '@aniways/myanimelist':
+        specifier: workspace:*
+        version: link:../myanimelist
+      '@aniways/web-scraping':
+        specifier: workspace:*
+        version: link:../web-scraping
+    devDependencies:
+      '@aniways/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@aniways/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
   packages/database:
     dependencies:
       '@aniways/web-scraping':
