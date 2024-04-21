@@ -6,7 +6,7 @@ import { SearchBar, SearchBarFallback } from './search-bar';
 import { useAuth } from '@aniways/auth';
 import { LoginModal } from './login-modal';
 import { ProfileDropdown } from './profile-dropdown';
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { Suspense } from 'react';
 
 const UserButtons = () => {

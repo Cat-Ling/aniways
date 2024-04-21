@@ -1,8 +1,8 @@
 import { getAnimeListOfUser } from '@aniways/data';
 import { auth } from '@aniways/auth';
-import { Image } from '@ui/components/ui/aniways-image';
-import { Skeleton } from '@ui/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@ui/components/ui/tabs';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@aniways/ui/components/ui/tabs';
 import { Play, Shell } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';

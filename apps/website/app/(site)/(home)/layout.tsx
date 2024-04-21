@@ -1,6 +1,6 @@
 import { getContinueWatchingAnime, getCurrentAnimeSeason } from '@aniways/data';
 import { auth } from '@aniways/auth';
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';

@@ -1,7 +1,7 @@
 import { transformRelatedAnime } from '@aniways/data';
 import { getAnimeMetadataFromMAL } from '@aniways/data';
-import { Image } from '@ui/components/ui/aniways-image';
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';

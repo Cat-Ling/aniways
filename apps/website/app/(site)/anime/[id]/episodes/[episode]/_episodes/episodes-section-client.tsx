@@ -1,8 +1,8 @@
 'use client';
 
 import { Schema } from '@aniways/data';
-import { Button } from '@ui/components/ui/button';
-import { cn } from '@ui/lib/utils';
+import { Button } from '@aniways/ui/components/ui/button';
+import { cn } from '@aniways/ui/lib/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';

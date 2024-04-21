@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@aniways/ui/components/ui/tooltip';
-import { cn } from '@ui/lib/utils';
+import { cn } from '@aniways/ui/lib/utils';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';

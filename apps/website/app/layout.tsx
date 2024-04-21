@@ -1,5 +1,5 @@
 import '@aniways/ui/globals.css';
-import { Toaster } from '@ui/components/ui/sonner';
+import { Toaster } from '@aniways/ui/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';

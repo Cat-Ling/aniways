@@ -2,9 +2,6 @@
   "extends": "@aniways/typescript-config/base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@myanimelist/*": ["../../packages/myanimelist/src/*"],
-    },
   },
   "include": ["src"],
   "exclude": ["node_modules"],

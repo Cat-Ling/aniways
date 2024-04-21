@@ -1,20 +1,20 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@ui/components/ui/button';
+import { Button } from '@aniways/ui/components/ui/button';
 import {
   DialogClose,
   DialogFooter,
   useDialogContext,
-} from '@ui/components/ui/dialog';
-import { Skeleton } from '@ui/components/ui/skeleton';
+} from '@aniways/ui/components/ui/dialog';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { searchAnimeAction } from './search-anime-action';
 import { updateMalAnimeAction } from './update-mal-anime-action';
-import { toast } from '@ui/components/ui/sonner';
-import { Input } from '@ui/components/ui/input';
+import { toast } from '@aniways/ui/components/ui/sonner';
+import { Input } from '@aniways/ui/components/ui/input';
 import {
   zod,
   reactHookForm,
@@ -26,7 +26,7 @@ import {
   FormLabel,
   FormDescription,
   FormMessage,
-} from '@ui/components/ui/form';
+} from '@aniways/ui/components/ui/form';
 import { useMetadata } from '../metadata-provider';
 
 const { z } = zod;

@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@aniways/ui/components/ui/dialog';
-import { Button } from '@ui/components/ui/button';
+import { Button } from '@aniways/ui/components/ui/button';
 import { ReactNode } from 'react';
 
 type LoginModalProps = {

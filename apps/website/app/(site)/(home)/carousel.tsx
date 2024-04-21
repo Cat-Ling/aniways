@@ -1,16 +1,16 @@
 'use client';
 
-import { Button } from '@ui/components/ui/button';
+import { Button } from '@aniways/ui/components/ui/button';
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
-} from '@ui/components/ui/carousel';
+} from '@aniways/ui/components/ui/carousel';
 import { PlayIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Image } from '@ui/components/ui/aniways-image';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
 import { CurrentSeasonAnime } from '@aniways/data';
 
 type AnimeCarouselProps = {

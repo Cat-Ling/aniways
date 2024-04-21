@@ -1,4 +1,4 @@
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { EpisodesSection } from './_episodes';

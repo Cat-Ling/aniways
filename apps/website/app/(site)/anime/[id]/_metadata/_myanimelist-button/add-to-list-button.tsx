@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@ui/components/ui/button';
+import { Button } from '@aniways/ui/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { addToListAction } from './myanimelist-actions';

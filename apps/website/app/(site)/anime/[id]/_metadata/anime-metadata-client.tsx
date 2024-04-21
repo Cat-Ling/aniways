@@ -1,22 +1,22 @@
 'use client';
 
 import { Schema } from '@aniways/data';
-import { Button } from '@ui/components/ui/button';
+import { Button } from '@aniways/ui/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from '@ui/components/ui/dialog';
-import { Skeleton } from '@ui/components/ui/skeleton';
+} from '@aniways/ui/components/ui/dialog';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { AnimeChooser } from './_anime-chooser';
 import { AddToListButton } from './_myanimelist-button/add-to-list-button';
 import { UpdateAnimeForm } from './_myanimelist-button/update-anime-form';
 import { useMetadata } from './metadata-provider';
-import { Image } from '@ui/components/ui/aniways-image';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 type AnimeMetadataClientProps = {
   anime: Schema.Anime;

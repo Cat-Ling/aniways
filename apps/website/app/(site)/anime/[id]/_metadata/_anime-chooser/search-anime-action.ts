@@ -2,6 +2,11 @@
 
 import { searchAnimeFromMAL } from '@aniways/data';
 
-export const searchAnimeAction = async (query: string, page: number) => {
+type SearchResults = ReturnType<typeof searchAnimeFromMAL>;
+
+export const searchAnimeAction = async (
+  query: string,
+  page: number
+): SearchResults => {
   return await searchAnimeFromMAL(query, page);
 };

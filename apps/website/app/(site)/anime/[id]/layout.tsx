@@ -1,4 +1,4 @@
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { ReactNode, Suspense } from 'react';
 import { AnimeMetadata } from './_metadata';
 
