@@ -40,12 +40,12 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
   return (
     <div className="flex flex-col gap-3">
       <Tabs defaultValue={status}>
-        <div className="mb-3 flex w-full flex-col gap-6">
+        <div className="flex w-full flex-col gap-6 md:mb-3">
           <h1 className="text-2xl">
             <span className="font-bold">{name}'s</span> Anime List
           </h1>
-          <div className="flex w-full justify-between">
-            <TabsList>
+          <div className="flex flex-col gap-3 md:flex-row md:justify-between">
+            <TabsList className="flex h-fit max-w-full flex-wrap">
               <TabsTrigger value="all" asChild>
                 <Link href="?status=all">All</Link>
               </TabsTrigger>
