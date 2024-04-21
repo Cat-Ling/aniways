@@ -1,5 +1,4 @@
-import { db, orm, schema } from '@aniways/database';
-import { scrapeVideoSource } from '@aniways/web-scraping';
+import { getVideoUrlByAnimeAndEpisode } from '@aniways/data';
 import { notFound } from 'next/navigation';
 
 type VideoFrameProps = {
@@ -11,38 +10,13 @@ export const VideoFrame = async ({
   animeId,
   currentEpisode,
 }: VideoFrameProps) => {
-  const currentVideo = await db.query.video.findFirst({
-    where: (fields, actions) =>
-      actions.and(
-        actions.eq(fields.animeId, animeId),
-        actions.eq(fields.episode, currentEpisode)
-      ),
+  const iframe = await getVideoUrlByAnimeAndEpisode(
+    animeId,
+    currentEpisode
+  ).catch(err => {
+    if (err === getVideoUrlByAnimeAndEpisode.NOT_FOUND) notFound();
+    throw err;
   });
-
-  if (!currentVideo) notFound();
-
-  const { videoUrl, slug } = currentVideo;
-
-  const iframe =
-    videoUrl ||
-    (await db
-      .update(schema.video)
-      .set({
-        videoUrl:
-          (await scrapeVideoSource(slug)) ||
-          (await scrapeVideoSource(slug, 'movie')),
-      })
-      .where(
-        orm.and(
-          orm.eq(schema.video.animeId, animeId),
-          orm.eq(schema.video.slug, slug)
-        )
-      )
-      .returning()
-      .execute()
-      .then(updatedValues => updatedValues[0].videoUrl));
-
-  if (!iframe) notFound();
 
   return (
     <iframe

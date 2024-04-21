@@ -8,3 +8,4 @@ export * from './seed-missing-anime-episodes';
 export * from './get-anime-metadata-from-mal';
 export * from './transform-related-anime';
 export * from './update-anime-metadata';
+export * from './get-video-url-by-anime-and-episode';

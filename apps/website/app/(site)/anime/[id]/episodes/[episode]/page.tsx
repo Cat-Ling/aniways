@@ -1,10 +1,10 @@
-import { db } from '@aniways/database';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { EpisodesSection } from './_episodes';
 import { VideoFrame } from './video-frame';
 import { Metadata } from 'next';
+import { getAnimeById } from '@aniways/data';
 
 export const generateMetadata = async ({
   params: { id, episode },
@@ -14,9 +14,7 @@ export const generateMetadata = async ({
     episode: string;
   };
 }): Promise<Metadata> => {
-  const data = await db.query.anime.findFirst({
-    where: (fields, actions) => actions.eq(fields.id, id),
-  });
+  const data = await getAnimeById(id);
 
   if (!data || !data.title) return {};
 
@@ -47,9 +45,7 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
-  const anime = await db.query.anime.findFirst({
-    where: (fields, actions) => actions.eq(fields.id, id),
-  });
+  const anime = await getAnimeById(id);
 
   if (!anime) notFound();
 
