@@ -81,6 +81,9 @@ importers:
 
   apps/website:
     dependencies:
+      '@aniways/data':
+        specifier: workspace:*
+        version: link:../../packages/data
       '@aniways/database':
         specifier: workspace:*
         version: link:../../packages/database

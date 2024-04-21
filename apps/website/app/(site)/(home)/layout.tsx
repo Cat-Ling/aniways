@@ -1,9 +1,6 @@
 import { db, orm, schema } from '@aniways/database';
-import {
-  auth,
-  getAnimeList,
-  getCurrentAnimeSeason,
-} from '@aniways/myanimelist';
+import { getCurrentAnimeSeason } from '@aniways/data';
+import { auth, getAnimeList } from '@aniways/myanimelist';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';
@@ -41,30 +38,9 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
 const SeasonalAnimeCarousel = async () => {
   unstable_noStore();
 
-  const seasonalAnime = await getCurrentAnimeSeason().then(({ data }) =>
-    data.slice(0, 5)
-  );
+  const seasonalAnime = await getCurrentAnimeSeason();
 
-  const animes = await db
-    .select()
-    .from(schema.anime)
-    .where(
-      orm.inArray(
-        schema.anime.malAnimeId,
-        seasonalAnime.map(anime => anime.mal_id!)
-      )
-    );
-
-  const animeMap = animes.reduce(
-    (acc, anime) => {
-      if (!anime.malAnimeId) return acc;
-      acc[anime.malAnimeId] = anime;
-      return acc;
-    },
-    {} as Record<number, (typeof animes)[number]>
-  );
-
-  return <AnimeCarousel seasonalAnime={seasonalAnime} animeMap={animeMap} />;
+  return <AnimeCarousel seasonalAnime={seasonalAnime} />;
 };
 
 const CurrentlyWatchingAnime = async () => {

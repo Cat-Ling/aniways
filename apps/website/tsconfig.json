@@ -9,9 +9,6 @@
     "paths": {
       "@/*": ["../../apps/website/*"],
       "@ui/*": ["../../packages/ui/src/*"],
-      "@myanimelist/*": ["../../packages/myanimelist/src/*"],
-      "@data/*": ["../../packages/data/src/*"],
-      "@database/*": ["../../packages/database/src/*"],
     },
   },
   "include": [

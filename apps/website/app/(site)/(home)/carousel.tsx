@@ -1,6 +1,5 @@
 'use client';
 
-import { schema } from '@aniways/database';
 import { Button } from '@ui/components/ui/button';
 import {
   Carousel,
@@ -10,19 +9,15 @@ import {
 } from '@ui/components/ui/carousel';
 import { PlayIcon } from 'lucide-react';
 import Link from 'next/link';
-import { getCurrentAnimeSeason } from '@aniways/myanimelist';
 import { useEffect, useState } from 'react';
 import { Image } from '@ui/components/ui/aniways-image';
+import { CurrentSeasonAnime } from '@aniways/data';
 
 type AnimeCarouselProps = {
-  seasonalAnime: Awaited<ReturnType<typeof getCurrentAnimeSeason>>['data'];
-  animeMap: Record<number, schema.Anime>;
+  seasonalAnime: CurrentSeasonAnime[];
 };
 
-export const AnimeCarousel = ({
-  seasonalAnime,
-  animeMap,
-}: AnimeCarouselProps) => {
+export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -66,7 +61,7 @@ export const AnimeCarousel = ({
     >
       <CarouselContent>
         {seasonalAnime.map(anime => {
-          const animeFromDB = animeMap[anime.mal_id!];
+          const { anime: animeFromDB } = anime;
 
           const url =
             animeFromDB ?
