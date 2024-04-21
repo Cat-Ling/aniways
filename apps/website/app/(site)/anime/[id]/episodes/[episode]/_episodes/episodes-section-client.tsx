@@ -1,6 +1,6 @@
 'use client';
 
-import { schema } from '@aniways/database';
+import { Schema } from '@aniways/data';
 import { Button } from '@ui/components/ui/button';
 import { cn } from '@ui/lib/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react';
 
 type EpisodesSidbarProps = {
   animeId: string;
-  episodes: schema.Video[];
+  episodes: Schema.Video[];
   currentEpisode: string;
 };
 

@@ -16,3 +16,4 @@ export * from './seed-missing-anime-episodes';
 export * from './transform-related-anime';
 export * from './update-anime-in-mal';
 export * from './update-anime-metadata';
+export * from './types';

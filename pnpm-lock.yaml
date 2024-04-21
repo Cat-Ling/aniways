@@ -87,18 +87,9 @@ importers:
       '@aniways/data':
         specifier: workspace:*
         version: link:../../packages/data
-      '@aniways/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      '@aniways/myanimelist':
-        specifier: workspace:*
-        version: link:../../packages/myanimelist
       '@aniways/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@aniways/web-scraping':
-        specifier: workspace:*
-        version: link:../../packages/web-scraping
       '@tanstack/react-query':
         specifier: ^5.21.7
         version: 5.21.7(react@18.2.0)
@@ -157,9 +148,9 @@ importers:
 
   packages/auth:
     dependencies:
-      '@aniways/myanimelist':
-        specifier: workspace:*
-        version: link:../myanimelist
+      '@animelist/auth-next':
+        specifier: ^0.1.1
+        version: 0.1.1
     devDependencies:
       '@aniways/eslint-config':
         specifier: workspace:*
@@ -247,9 +238,6 @@ importers:
 
   packages/myanimelist:
     dependencies:
-      '@animelist/auth-next':
-        specifier: ^0.1.1
-        version: 0.1.1
       '@animelist/client':
         specifier: ^0.1.0
         version: 0.1.0

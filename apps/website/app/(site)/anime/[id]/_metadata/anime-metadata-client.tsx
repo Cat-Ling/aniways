@@ -1,6 +1,6 @@
 'use client';
 
-import { schema } from '@aniways/database';
+import { Schema } from '@aniways/data';
 import { Button } from '@ui/components/ui/button';
 import {
   Dialog,
@@ -19,7 +19,7 @@ import { useMetadata } from './metadata-provider';
 import { Image } from '@ui/components/ui/aniways-image';
 
 type AnimeMetadataClientProps = {
-  anime: schema.Anime;
+  anime: Schema.Anime;
 };
 
 export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {

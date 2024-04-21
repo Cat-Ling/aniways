@@ -1,4 +1,4 @@
-import { retreiveAnimeByQuery } from '@aniways/database';
+import { searchAnimeFromDB } from '@aniways/data';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
@@ -55,7 +55,7 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  const { animes } = await retreiveAnimeByQuery(query, page);
+  const { animes } = await searchAnimeFromDB(query, page);
 
   if (!animes.length) {
     return (
@@ -73,10 +73,7 @@ const SearchResults = async ({
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { hasNext, animes } = await retreiveAnimeByQuery(
-    props.query,
-    props.page
-  );
+  const { hasNext, animes } = await searchAnimeFromDB(props.query, props.page);
 
   if (!animes.length) {
     return null;
