@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@ui/components/ui/tabs';
 import { Pagination, PaginationLoader } from '../pagination';
 import Link from 'next/link';
-import { Play } from 'lucide-react';
+import { Play, Shell } from 'lucide-react';
 import { db, orm, schema } from '@aniways/database';
 
 type Status =
@@ -18,6 +18,23 @@ type Status =
   | 'on_hold'
   | 'dropped'
   | 'plan_to_watch';
+
+type ReadableStatus =
+  | 'All'
+  | 'Watching'
+  | 'Completed'
+  | 'On Hold'
+  | 'Dropped'
+  | 'Plan to Watch';
+
+const statusMap: Record<Status, ReadableStatus> = {
+  all: 'All',
+  watching: 'Watching',
+  completed: 'Completed',
+  on_hold: 'On Hold',
+  dropped: 'Dropped',
+  plan_to_watch: 'Plan to Watch',
+};
 
 type AnimeListPageProps = {
   searchParams: { page?: string; status?: Status };
@@ -46,24 +63,11 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
           </h1>
           <div className="flex flex-col gap-6 md:flex-row md:justify-between">
             <TabsList className="flex h-fit max-w-full flex-wrap">
-              <TabsTrigger value="all" asChild>
-                <Link href="?status=all">All</Link>
-              </TabsTrigger>
-              <TabsTrigger value="watching" asChild>
-                <Link href="?status=watching">Watching</Link>
-              </TabsTrigger>
-              <TabsTrigger value="completed" asChild>
-                <Link href="?status=completed">Completed</Link>
-              </TabsTrigger>
-              <TabsTrigger value="on_hold" asChild>
-                <Link href="?status=on_hold">On Hold</Link>
-              </TabsTrigger>
-              <TabsTrigger value="dropped" asChild>
-                <Link href="?status=dropped">Dropped</Link>
-              </TabsTrigger>
-              <TabsTrigger value="plan_to_watch" asChild>
-                <Link href="?status=plan_to_watch">Plan to Watch</Link>
-              </TabsTrigger>
+              {Object.entries(statusMap).map(([key, value]) => (
+                <TabsTrigger key={key} value={key} asChild>
+                  <Link href={`?status=${key}`}>{value}</Link>
+                </TabsTrigger>
+              ))}
             </TabsList>
             <Suspense key={status} fallback={<PaginationLoader />}>
               <PaginationWrapper
@@ -128,6 +132,8 @@ const PaginationWrapper = async ({
     status !== 'all' ? status : undefined
   );
 
+  if (!animeList.data.length) return null;
+
   return <Pagination hasNext={!!animeList.paging.next} />;
 };
 
@@ -145,7 +151,19 @@ const AnimeList = async ({
     status !== 'all' ? status : undefined
   );
 
-  if (!animeList.data.length) return <p>No anime found</p>;
+  if (!animeList.data.length) {
+    return (
+      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 p-3">
+        <Shell className="text-primary" size={128} />
+        <h2 className="text-3xl font-bold">No Anime {statusMap[status]}</h2>
+        <p className="text-muted-foreground text-center">
+          There are no anime in your list with the status{' '}
+          <span className="text-foreground">{statusMap[status]}</span>. Try
+          changing the status or adding some anime to your list.
+        </p>
+      </div>
+    );
+  }
 
   const dbAnimes = await db
     .select()
