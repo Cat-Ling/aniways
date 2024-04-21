@@ -1,5 +1,5 @@
 import { transformRelatedAnime } from '@aniways/data';
-import { getAnimeDetailsFromMyAnimeList } from '@aniways/myanimelist';
+import { getAnimeMetadataFromMAL } from '@aniways/data';
 import { Image } from '@ui/components/ui/aniways-image';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { Play } from 'lucide-react';
@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 type RelatedAnimeProps = {
-  details: Awaited<ReturnType<typeof getAnimeDetailsFromMyAnimeList>>;
+  details: Awaited<ReturnType<typeof getAnimeMetadataFromMAL>>;
 };
 
 export const RelatedAnime: FC<RelatedAnimeProps> = async props => {

@@ -9,10 +9,11 @@ export type Status =
   | 'plan_to_watch'
   | 'all';
 
-type AnimeListNode = Awaited<
-  ReturnType<typeof getAnimeList>
->['data'][number]['node'] & {
-  dbAnime?: schema.Anime;
+type AnimeList = {
+  anime: (Awaited<ReturnType<typeof getAnimeList>>['data'][number]['node'] & {
+    dbAnime?: schema.Anime;
+  })[];
+  hasNext: boolean;
 };
 
 export async function getAnimeListOfUser(
@@ -20,7 +21,7 @@ export async function getAnimeListOfUser(
   username: string,
   page: number,
   status: Status
-): Promise<AnimeListNode[]> {
+): Promise<AnimeList> {
   const animeList = await getAnimeList(
     accessToken,
     username,
@@ -29,7 +30,11 @@ export async function getAnimeListOfUser(
     status !== 'all' ? status : undefined
   );
 
-  if (!animeList.data.length) return [];
+  if (!animeList.data.length)
+    return {
+      anime: [],
+      hasNext: false,
+    };
 
   const dbAnimes = await db
     .select()
@@ -50,12 +55,15 @@ export async function getAnimeListOfUser(
     {} as Record<number, schema.Anime>
   );
 
-  return animeList.data.map(anime => {
-    const dbAnime = animeMap[anime.node.id];
+  return {
+    anime: animeList.data.map(anime => {
+      const dbAnime = animeMap[anime.node.id];
 
-    return {
-      ...anime.node,
-      dbAnime: dbAnime,
-    };
-  });
+      return {
+        ...anime.node,
+        dbAnime: dbAnime,
+      };
+    }),
+    hasNext: !!animeList.paging.next,
+  };
 }

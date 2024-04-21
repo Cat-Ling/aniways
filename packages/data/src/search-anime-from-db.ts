@@ -1,6 +1,6 @@
 import { db } from '@aniways/database';
 
-export async function searchAnime(query: string, page: number) {
+export async function searchAnimeFromDB(query: string, page: number) {
   const animes = await db.query.anime.findMany({
     where: ({ title, lastEpisode }, { sql }) => {
       return sql`SIMILARITY(${title}, ${query}) > 0.2 AND ${title} NOT LIKE '%Dub%' AND ${title} NOT LIKE '%dub%' AND ${lastEpisode} IS NOT NULL`;

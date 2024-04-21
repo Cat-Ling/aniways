@@ -1,6 +1,6 @@
 'use client';
 
-import { getAnimeDetailsFromMyAnimeList } from '@aniways/myanimelist';
+import { getAnimeMetadataFromMAL } from '@aniways/data';
 import {
   Dispatch,
   FC,
@@ -12,7 +12,7 @@ import {
 } from 'react';
 
 type Metadata = Exclude<
-  Awaited<ReturnType<typeof getAnimeDetailsFromMyAnimeList>>,
+  Awaited<ReturnType<typeof getAnimeMetadataFromMAL>>,
   undefined
 >;
 

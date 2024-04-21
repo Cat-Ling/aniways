@@ -1,7 +1,7 @@
 'use server';
 
-import { searchAnimeFromMyAnimeList } from '@aniways/myanimelist';
+import { searchAnimeFromMAL } from '@aniways/data';
 
 export const searchAnimeAction = async (query: string, page: number) => {
-  return await searchAnimeFromMyAnimeList(query, page, 3);
+  return await searchAnimeFromMAL(query, page);
 };

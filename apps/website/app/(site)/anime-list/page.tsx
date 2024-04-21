@@ -1,15 +1,14 @@
+import { getAnimeListOfUser } from '@aniways/data';
 import { auth } from '@aniways/myanimelist';
-import { cookies } from 'next/headers';
-import { RedirectType, redirect } from 'next/navigation';
-import { getAnimeList } from '@aniways/myanimelist';
 import { Image } from '@ui/components/ui/aniways-image';
 import { Skeleton } from '@ui/components/ui/skeleton';
-import { Suspense } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@ui/components/ui/tabs';
-import { Pagination, PaginationLoader } from '../pagination';
-import Link from 'next/link';
 import { Play, Shell } from 'lucide-react';
-import { getAnimeListOfUser } from '@aniways/data';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { RedirectType, redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { Pagination, PaginationLoader } from '../pagination';
 
 type Status =
   | 'all'
@@ -124,17 +123,16 @@ const PaginationWrapper = async ({
   username,
   status,
 }: AnimeListProps) => {
-  const animeList = await getAnimeList(
+  const animeList = await getAnimeListOfUser(
     accessToken,
     username,
     page,
-    20,
-    status !== 'all' ? status : undefined
+    status
   );
 
-  if (!animeList.data.length) return null;
+  if (!animeList.anime.length) return null;
 
-  return <Pagination hasNext={!!animeList.paging.next} />;
+  return <Pagination hasNext={animeList.hasNext} />;
 };
 
 const AnimeList = async ({
@@ -150,7 +148,7 @@ const AnimeList = async ({
     status
   );
 
-  if (!animeList.length) {
+  if (!animeList.anime.length) {
     return (
       <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 p-3">
         <Shell className="text-primary" size={128} />
@@ -166,7 +164,7 @@ const AnimeList = async ({
 
   return (
     <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
-      {animeList.map(anime => {
+      {animeList.anime.map(anime => {
         const animeFromDB = anime.dbAnime;
 
         const url =
