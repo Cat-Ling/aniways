@@ -1,7 +1,7 @@
 'use client';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 import Link from 'next/link';
-import { SearchBar } from './search-bar';
+import { SearchBar, SearchBarFallback } from './search-bar';
 import { useAuth } from '@aniways/myanimelist';
 import { LoginModal } from './login-modal';
 import { ProfileDropdown } from './profile-dropdown';
@@ -38,19 +38,15 @@ export const Navbar = () => {
             <h1 className="text-2xl font-bold">AniWays</h1>
           </Link>
           <div className="hidden md:block">
-            <Suspense>
+            <Suspense fallback={<SearchBarFallback />}>
               <SearchBar />
             </Suspense>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex gap-3">
-            <UserButtons />
-          </div>
-        </div>
+        <UserButtons />
       </div>
       <div className="mb-3 block px-3 md:hidden">
-        <Suspense>
+        <Suspense fallback={<SearchBarFallback />}>
           <SearchBar />
         </Suspense>
       </div>

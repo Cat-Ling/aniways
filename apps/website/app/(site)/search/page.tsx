@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { Pagination, PaginationLoader } from '../pagination';
+import { HeartCrack } from 'lucide-react';
 
 export const generateMetadata = async ({
   searchParams: { query },
@@ -50,6 +51,18 @@ const SearchResults = async ({
   page: number;
 }) => {
   const { animes } = await retreiveAnimeByQuery(query, page);
+
+  if (!animes.length) {
+    return (
+      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 p-3">
+        <HeartCrack className="text-primary" size={128} />
+        <h2 className="text-3xl font-bold">Oops, no results found</h2>
+        <p className="text-muted-foreground text-center">
+          Sorry, we couldn't find any results matching your query.
+        </p>
+      </div>
+    );
+  }
 
   return <AnimeGrid animes={animes} type="search" />;
 };
