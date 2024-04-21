@@ -5,3 +5,4 @@ export * from './get-continue-watching-anime';
 export * from './get-anime-by-id';
 export * from './get-anime-by-id-with-videos';
 export * from './seed-missing-anime-episodes';
+export * from './get-anime-metadata-from-mal';
