@@ -10,10 +10,10 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
     <>
       <div
         id={'recently-released'}
-        className="mb-2 flex w-full flex-col justify-between gap-2 pt-6 md:mb-5 md:flex-row md:items-center md:gap-0"
+        className="mb-6 flex w-full flex-col justify-between gap-3 pt-6 md:mb-5 md:flex-row md:items-center md:gap-0"
       >
         <h1 className="text-lg font-bold md:text-2xl">Recently Released</h1>
-        <Suspense key={page + '-pagination'} fallback={<PaginationLoader />}>
+        <Suspense fallback={<PaginationLoader />}>
           <PaginationWrapper page={page} />
         </Suspense>
       </div>
@@ -22,7 +22,7 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
           <RecentlyReleasedAnimeGrid page={page} />
         </Suspense>
       </div>
-      <div className="-mt-6">
+      <div className="-my-6">
         <Suspense fallback={<PaginationLoader />}>
           <PaginationWrapper page={page} />
         </Suspense>

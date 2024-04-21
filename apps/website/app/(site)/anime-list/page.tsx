@@ -38,13 +38,13 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
   } = user;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-6">
       <Tabs defaultValue={status}>
         <div className="flex w-full flex-col gap-6 md:mb-3">
           <h1 className="text-2xl">
             <span className="font-bold">{name}'s</span> Anime List
           </h1>
-          <div className="flex flex-col gap-3 md:flex-row md:justify-between">
+          <div className="flex flex-col gap-6 md:flex-row md:justify-between">
             <TabsList className="flex h-fit max-w-full flex-wrap">
               <TabsTrigger value="all" asChild>
                 <Link href="?status=all">All</Link>
@@ -65,10 +65,7 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
                 <Link href="?status=plan_to_watch">Plan to Watch</Link>
               </TabsTrigger>
             </TabsList>
-            <Suspense
-              key={page + status + 'pagination'}
-              fallback={<PaginationLoader />}
-            >
+            <Suspense key={status} fallback={<PaginationLoader />}>
               <PaginationWrapper
                 page={Number(page)}
                 accessToken={accessToken}
@@ -87,6 +84,16 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
           status={status}
         />
       </Suspense>
+      <div className="-mb-6">
+        <Suspense key={status} fallback={<PaginationLoader />}>
+          <PaginationWrapper
+            page={Number(page)}
+            accessToken={accessToken}
+            username={name}
+            status={status}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 };
@@ -217,21 +224,18 @@ const AnimeList = async ({
 
 const AnimeListLoader = () => {
   return (
-    <>
-      <Skeleton className="mb-3 mr-auto h-10 w-full" />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {Array(20)
-          .fill(null)
-          .map((_, index) => (
-            <div key={index}>
-              <div className="relative h-96 w-full overflow-hidden rounded-lg">
-                <Skeleton className="absolute h-full w-full" />
-              </div>
-              <Skeleton className="w-3/4" />
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      {Array(20)
+        .fill(null)
+        .map((_, index) => (
+          <div key={index}>
+            <div className="relative h-96 w-full overflow-hidden rounded-lg">
+              <Skeleton className="absolute h-full w-full" />
             </div>
-          ))}
-      </div>
-    </>
+            <Skeleton className="w-3/4" />
+          </div>
+        ))}
+    </div>
   );
 };
 

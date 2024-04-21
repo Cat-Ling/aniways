@@ -25,7 +25,7 @@ const UserButtons = () => {
 export const Navbar = () => {
   return (
     <nav className="bg-background border-border border-b">
-      <div className="container mx-auto flex justify-between px-3 md:container md:items-center">
+      <div className="container mx-auto flex items-center justify-between px-3 md:container">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center" scroll={false}>
             <Image
