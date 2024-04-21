@@ -1,8 +1,8 @@
-import { db } from '@aniways/database';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { notFound } from 'next/navigation';
 import { ReactNode, Suspense } from 'react';
 import { AnimeMetadata } from './_metadata';
+import { getAnimeById } from '@aniways/data';
 
 type AnimePageLayoutProps = {
   children: ReactNode;
@@ -15,9 +15,7 @@ const AnimePageLayout = async ({
   children,
   params: { id },
 }: AnimePageLayoutProps) => {
-  const anime = await db.query.anime.findFirst({
-    where: (fields, actions) => actions.eq(fields.id, id),
-  });
+  const anime = await getAnimeById(id);
 
   if (!anime) notFound();
 

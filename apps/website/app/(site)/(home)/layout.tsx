@@ -1,6 +1,5 @@
-import { db, orm, schema } from '@aniways/database';
-import { getCurrentAnimeSeason } from '@aniways/data';
-import { auth, getAnimeList } from '@aniways/myanimelist';
+import { getContinueWatchingAnime, getCurrentAnimeSeason } from '@aniways/data';
+import { auth } from '@aniways/myanimelist';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';
@@ -53,64 +52,7 @@ const CurrentlyWatchingAnime = async () => {
     user: { name: username },
   } = user;
 
-  const animeList = await getAnimeList(
-    accessToken,
-    username,
-    1,
-    50,
-    'watching'
-  );
-
-  const currentlyWatchingAnime = await db
-    .select()
-    .from(schema.anime)
-    .where(
-      orm.inArray(
-        schema.anime.malAnimeId,
-        animeList.data.map(({ node }) => node.id)
-      )
-    );
-
-  const animeListMap = animeList.data.reduce(
-    (acc, { node }) => {
-      acc[node.id] = node;
-      return acc;
-    },
-    {} as Record<number, (typeof animeList)['data'][number]['node']>
-  );
-
-  const newReleases = currentlyWatchingAnime
-    .filter(
-      anime =>
-        anime.malAnimeId &&
-        Number(anime.lastEpisode) !==
-          animeListMap[anime.malAnimeId]?.my_list_status?.num_episodes_watched
-    )
-    .map(anime => {
-      const episodesWatched =
-        animeListMap[anime.malAnimeId!]?.my_list_status?.num_episodes_watched;
-
-      const lastEpisode = String(
-        episodesWatched !== undefined ? episodesWatched + 1 : anime.lastEpisode
-      );
-
-      return {
-        ...anime,
-        lastEpisode,
-      };
-    })
-    .sort((a, b) => {
-      const aLastUpdated =
-        animeListMap[a.malAnimeId!]?.my_list_status?.updated_at;
-      const bLastUpdated =
-        animeListMap[b.malAnimeId!]?.my_list_status?.updated_at;
-
-      if (aLastUpdated && bLastUpdated) {
-        return new Date(aLastUpdated) > new Date(bLastUpdated) ? -1 : 1;
-      }
-
-      return 0;
-    });
+  const newReleases = await getContinueWatchingAnime(accessToken, username);
 
   if (!newReleases.length) return undefined;
 
