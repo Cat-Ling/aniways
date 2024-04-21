@@ -1,5 +1,5 @@
 import { getAnimeListOfUser } from '@aniways/data';
-import { auth } from '@aniways/myanimelist';
+import { auth } from '@aniways/auth';
 import { Image } from '@ui/components/ui/aniways-image';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@ui/components/ui/tabs';

@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@aniways/ui/components/ui/dropdown-menu';
 import { List, LogOut } from 'lucide-react';
-import { signOut, useAuth } from '@aniways/myanimelist';
+import { signOut, useAuth } from '@aniways/auth';
 
 export const ProfileDropdown = () => {
   const user = useAuth();

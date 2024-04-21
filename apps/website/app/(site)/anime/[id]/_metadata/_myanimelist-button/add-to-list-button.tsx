@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { addToListAction } from './myanimelist-actions';
 import { toast } from '@aniways/ui/components/ui/sonner';
-import { useAuth } from '@aniways/myanimelist';
+import { useAuth } from '@aniways/auth';
 import { LoginModal } from '@/app/login-modal';
 import { useParams } from 'next/navigation';
 import { useMetadata } from '../metadata-provider';

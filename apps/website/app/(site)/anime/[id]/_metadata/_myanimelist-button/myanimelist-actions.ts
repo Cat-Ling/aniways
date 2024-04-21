@@ -1,7 +1,7 @@
 'use server';
 
 import { addToMAL, deleteFromMAL, updateAnimeInMAL } from '@aniways/data';
-import { auth } from '@aniways/myanimelist';
+import { auth } from '@aniways/auth';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 

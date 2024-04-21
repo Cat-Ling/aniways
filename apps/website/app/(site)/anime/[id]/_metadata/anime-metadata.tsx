@@ -1,4 +1,4 @@
-import { auth } from '@aniways/myanimelist';
+import { auth } from '@aniways/auth';
 import { cookies } from 'next/headers';
 import { MetadataProvider } from './metadata-provider';
 import { AnimeMetadataClient } from './anime-metadata-client';

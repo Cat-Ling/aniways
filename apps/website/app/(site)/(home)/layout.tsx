@@ -1,5 +1,5 @@
 import { getContinueWatchingAnime, getCurrentAnimeSeason } from '@aniways/data';
-import { auth } from '@aniways/myanimelist';
+import { auth } from '@aniways/auth';
 import { Skeleton } from '@ui/components/ui/skeleton';
 import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';

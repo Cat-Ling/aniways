@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { auth } from '@aniways/myanimelist';
+import { auth } from '@aniways/auth';
 import { cookies } from 'next/headers';
 import { updateAnimeMetadata } from '@aniways/data';
 

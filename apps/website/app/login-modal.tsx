@@ -1,6 +1,6 @@
 'use client';
 
-import { signIn } from '@aniways/myanimelist';
+import { signIn } from '@aniways/auth';
 import {
   Dialog,
   DialogClose,

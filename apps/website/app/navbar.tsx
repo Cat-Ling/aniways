@@ -1,8 +1,9 @@
 'use client';
+
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 import Link from 'next/link';
 import { SearchBar, SearchBarFallback } from './search-bar';
-import { useAuth } from '@aniways/myanimelist';
+import { useAuth } from '@aniways/auth';
 import { LoginModal } from './login-modal';
 import { ProfileDropdown } from './profile-dropdown';
 import { Skeleton } from '@ui/components/ui/skeleton';

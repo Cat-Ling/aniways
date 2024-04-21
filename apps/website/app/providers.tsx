@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthProvider, AuthProviderProps } from '@aniways/myanimelist';
+import { AuthProvider, AuthProviderProps } from '@aniways/auth';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { useState, FC } from 'react';
 
