@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from '@ui/components/ui/tabs';
 import { Pagination, PaginationLoader } from '../pagination';
 import Link from 'next/link';
 import { Play, Shell } from 'lucide-react';
-import { db, orm, schema } from '@aniways/database';
+import { getAnimeListOfUser } from '@aniways/data';
 
 type Status =
   | 'all'
@@ -143,15 +143,14 @@ const AnimeList = async ({
   username,
   status,
 }: AnimeListProps) => {
-  const animeList = await getAnimeList(
+  const animeList = await getAnimeListOfUser(
     accessToken,
     username,
     page,
-    20,
-    status !== 'all' ? status : undefined
+    status
   );
 
-  if (!animeList.data.length) {
+  if (!animeList.length) {
     return (
       <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 p-3">
         <Shell className="text-primary" size={128} />
@@ -165,29 +164,10 @@ const AnimeList = async ({
     );
   }
 
-  const dbAnimes = await db
-    .select()
-    .from(schema.anime)
-    .where(
-      orm.inArray(
-        schema.anime.malAnimeId,
-        animeList.data.map(({ node: anime }) => anime.id)
-      )
-    );
-
-  const animeMap = dbAnimes.reduce(
-    (acc, anime) => {
-      if (!anime.malAnimeId) return acc;
-      acc[anime.malAnimeId] = anime;
-      return acc;
-    },
-    {} as Record<number, schema.Anime>
-  );
-
   return (
     <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
-      {animeList.data.map(({ node: anime }) => {
-        const animeFromDB = animeMap[anime.id];
+      {animeList.map(anime => {
+        const animeFromDB = anime.dbAnime;
 
         const url =
           animeFromDB ?
