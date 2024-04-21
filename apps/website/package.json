@@ -9,6 +9,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@aniways/auth": "workspace:*",
     "@aniways/data": "workspace:*",
     "@aniways/database": "workspace:*",
     "@aniways/myanimelist": "workspace:*",

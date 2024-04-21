@@ -81,6 +81,9 @@ importers:
 
   apps/website:
     dependencies:
+      '@aniways/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@aniways/data':
         specifier: workspace:*
         version: link:../../packages/data
@@ -151,6 +154,19 @@ importers:
       tailwindcss:
         specifier: ^3.3.0
         version: 3.4.1
+
+  packages/auth:
+    dependencies:
+      '@aniways/myanimelist':
+        specifier: workspace:*
+        version: link:../myanimelist
+    devDependencies:
+      '@aniways/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@aniways/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/data:
     dependencies:

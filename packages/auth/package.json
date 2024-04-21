@@ -1,0 +1,16 @@
+{
+  "name": "@aniways/auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
+  },
+  "dependencies": {
+    "@aniways/myanimelist": "workspace:*"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*"
+  }
+}

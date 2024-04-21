@@ -1,11 +1,11 @@
+import '@aniways/ui/globals.css';
 import { Toaster } from '@ui/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
+import { Footer } from './footer';
 import { Navbar } from './navbar';
 import { Providers } from './providers';
-import '@aniways/ui/globals.css';
-import { Footer } from './footer';
 
 const inter = Inter({ subsets: ['latin'] });
 

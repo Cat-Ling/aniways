@@ -2,10 +2,10 @@ import { createMyAnimeListFetchHandler } from '@animelist/auth-next/server';
 
 type Routes = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-type AuthRouteHandler = Record<
-  Routes,
-  ReturnType<typeof createMyAnimeListFetchHandler>
->;
+// eslint-disable-next-line no-unused-vars
+type Handler = (request: Request) => Promise<Response>;
+
+export type AuthRouteHandler = Record<Routes, Handler>;
 
 const handler = createMyAnimeListFetchHandler({
   redirectAfterSignOutUrl: '/api/myanimelist/auth/redirect',
