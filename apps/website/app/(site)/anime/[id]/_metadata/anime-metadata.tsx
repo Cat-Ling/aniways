@@ -7,12 +7,18 @@ import { AnimeMetadataClient } from './anime-metadata-client';
 import { Suspense } from 'react';
 import { AnimeGridLoader } from '../../../anime-grid';
 import { RelatedAnime } from './related-anime';
+import { getAnimeById } from '@aniways/data';
+import { notFound } from 'next/navigation';
 
 type AnimeMetadataProps = {
-  anime: schema.Anime;
+  id: string;
 };
 
-export const AnimeMetadata = async ({ anime }: AnimeMetadataProps) => {
+export const AnimeMetadata = async ({ id }: AnimeMetadataProps) => {
+  const anime = await getAnimeById(id);
+
+  if (!anime) notFound();
+
   const user = await auth(cookies());
 
   const details = await getAnimeDetailsFromMyAnimeList({

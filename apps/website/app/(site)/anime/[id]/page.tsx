@@ -1,47 +1,23 @@
 import { RedirectType, notFound, redirect } from 'next/navigation';
-import { createId, db, schema } from '@aniways/database';
-
-const { video } = schema;
+import {
+  getAnimeByIdWithVideos,
+  seedMissingAnimeEpisodes,
+} from '@aniways/data';
 
 const AnimeDetailsPage = async ({
   params: { id },
 }: {
   params: { id: string };
 }) => {
-  const anime = await db.query.anime.findFirst({
-    where: (fields, actions) => actions.eq(fields.id, id),
-    with: {
-      videos: {
-        orderBy: (fields, actions) => actions.asc(fields.episode),
-        limit: 1,
-      },
-    },
-  });
+  const anime = await getAnimeByIdWithVideos(id);
 
   if (!anime) notFound();
 
-  if (anime.lastEpisode && anime.videos.length === 0) {
-    const episodes = Array.from({
-      length: Number(anime.lastEpisode),
-    })
-      .map((_, i) => Number(anime.lastEpisode) - i)
-      .reverse();
-    if (episodes.length === 0) notFound();
-    const result = await db
-      .insert(video)
-      .values(
-        episodes.map(ep => ({
-          id: createId(),
-          animeId: anime.id,
-          episode: String(ep),
-          slug: `${anime.slug}-episode-${ep}`,
-          createdAt: new Date(),
-        }))
-      )
-      .returning()
-      .execute();
-    if (result.length === 0) notFound();
-    anime.videos = result.sort((a, b) => Number(a.episode) - Number(b.episode));
+  try {
+    anime.videos = await seedMissingAnimeEpisodes(anime);
+  } catch (e) {
+    if (e === seedMissingAnimeEpisodes.error) notFound();
+    throw e;
   }
 
   redirect(
