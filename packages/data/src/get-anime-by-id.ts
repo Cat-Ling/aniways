@@ -1,9 +1,16 @@
-import { db, orm, schema } from '@aniways/database';
+import { db, orm } from '@aniways/database';
 
-export async function getAnimeById(id: string) {
-  return db
-    .select()
-    .from(schema.anime)
-    .where(orm.eq(schema.anime.id, id))
-    .then(([anime]) => anime);
+export async function getAnimeById(id: string, withVideos: boolean = false) {
+  return db.query.anime.findFirst({
+    where: fields => orm.eq(fields.id, id),
+    ...(withVideos ?
+      {
+        with: {
+          videos: {
+            orderBy: fields => orm.asc(fields.episode),
+          },
+        },
+      }
+    : {}),
+  });
 }

@@ -10,7 +10,7 @@ import {
   syncAndGetAnimeMetadataFromMAL,
   updateAnimeInMAL,
 } from './functions';
-import { syncAnimeMetadataFromMAL } from './functions/sync-anime-metadata-from-mal';
+import { syncAnimeMetadataFromMAL } from './functions/mutations/sync-anime-metadata-from-mal';
 
 export namespace MyAnimeListService {
   export type GetAnimeMetadataFromMyAnimeList = typeof getAnimeMetadataFromMAL;

@@ -3,10 +3,7 @@ import { scrapeVideoSource } from '@aniways/web-scraping';
 
 const NOT_FOUND = 'not-found' as const;
 
-export async function _getVideoUrlByAnimeAndEpisode(
-  animeId: string,
-  currentEpisode: string
-) {
+export async function _getEpisodeUrl(animeId: string, currentEpisode: string) {
   const video = await db
     .select()
     .from(schema.video)
@@ -49,7 +46,6 @@ export async function _getVideoUrlByAnimeAndEpisode(
   return videoUrl;
 }
 
-export const getVideoUrlByAnimeAndEpisode = Object.assign(
-  _getVideoUrlByAnimeAndEpisode,
-  { NOT_FOUND }
-);
+export const getEpisodeUrl = Object.assign(_getEpisodeUrl, {
+  NOT_FOUND,
+});

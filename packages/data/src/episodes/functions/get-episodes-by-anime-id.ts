@@ -1,6 +1,6 @@
 import { db, orm, schema } from '@aniways/database';
 
-export async function getVideosByAnimeId(animeId: string) {
+export async function getEpisodesByAnimeId(animeId: string) {
   return await db
     .selectDistinctOn([schema.video.episode])
     .from(schema.video)

@@ -2,8 +2,8 @@ import { db, orm, schema } from '@aniways/database';
 import {
   getAnimeMetadataFromMAL,
   GetAnimeMetadataOptions,
-} from './get-anime-metadata-from-mal';
-import { syncAnimeMetadataFromMAL } from './sync-anime-metadata-from-mal';
+} from './queries/get-anime-metadata-from-mal';
+import { syncAnimeMetadataFromMAL } from './mutations/sync-anime-metadata-from-mal';
 
 const NOT_FOUND = 'not-found' as const;
 

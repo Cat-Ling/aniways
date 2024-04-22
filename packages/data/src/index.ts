@@ -1,5 +1,4 @@
 export * from './get-anime-by-id';
-export * from './get-anime-by-id-with-videos';
 export * from './get-anime-list-of-user';
 export * from './get-continue-watching-anime';
 export * from './get-current-anime-season';

@@ -1,5 +1,5 @@
 import { db, orm, schema } from '@aniways/database';
-import { getAnimeMetadataFromMAL } from './get-anime-metadata-from-mal';
+import { getAnimeMetadataFromMAL } from '../queries/get-anime-metadata-from-mal';
 
 const NOT_FOUND = 'not-found' as const;
 
