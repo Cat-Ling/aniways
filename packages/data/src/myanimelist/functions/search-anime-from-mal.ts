@@ -1,11 +1,12 @@
-import { searchAnimeFromMyAnimeList } from '@aniways/myanimelist';
-
-type SearchResults = ReturnType<typeof searchAnimeFromMyAnimeList>;
+import {
+  searchAnimeFromMyAnimeList,
+  SearchResults,
+} from '@aniways/myanimelist';
 
 export async function searchAnimeFromMAL(
   query: string,
   page: number,
   limit: number = 3
-): SearchResults {
+): Promise<SearchResults> {
   return await searchAnimeFromMyAnimeList(query, page, limit);
 }

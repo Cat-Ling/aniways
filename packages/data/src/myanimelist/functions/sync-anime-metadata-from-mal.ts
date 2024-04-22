@@ -3,11 +3,12 @@ import { getAnimeMetadataFromMAL } from './get-anime-metadata-from-mal';
 
 const NOT_FOUND = 'not-found' as const;
 
-async function _updateAnimeMetadata(
+async function _syncAnimeMetadataFromMAL(
   accessToken: string | undefined,
   id: string,
-  malId: number
-): ReturnType<typeof getAnimeMetadataFromMAL> {
+  malId: number,
+  returning: boolean = true
+) {
   const anime = await db
     .update(schema.anime)
     .set({
@@ -19,9 +20,14 @@ async function _updateAnimeMetadata(
 
   if (!anime) throw NOT_FOUND;
 
+  if (!returning) return;
+
   return await getAnimeMetadataFromMAL(accessToken, anime);
 }
 
-export const updateAnimeMetadata = Object.assign(_updateAnimeMetadata, {
-  NOT_FOUND,
-});
+export const syncAnimeMetadataFromMAL = Object.assign(
+  _syncAnimeMetadataFromMAL,
+  {
+    NOT_FOUND,
+  }
+);

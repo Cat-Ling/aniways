@@ -1,5 +1,5 @@
 import { Jikan4 } from 'node-myanimelist';
-import { MALClient } from '@animelist/client';
+import { MALClient, MyListStatus, RelatedAnime } from '@animelist/client';
 import { distance } from 'fastest-levenshtein';
 
 type Args = {
@@ -36,18 +36,27 @@ const getListStatusAndRelatedAnimeFromMAL = (
     }));
 };
 
-export default async function getAnimeDetails(args: Args) {
+export type AnimeDetails = Jikan4.Types.Anime & {
+  listStatus: MyListStatus | undefined;
+  relatedAnime: RelatedAnime[];
+};
+
+export default async function getAnimeDetails(
+  args: Args
+): Promise<AnimeDetails | undefined> {
   const { accessToken } = args;
 
   if ('malId' in args) {
     console.log('Getting anime details of', args.malId);
 
-    return {
-      ...(await Jikan4.anime(args.malId)
-        .info()
-        .then(res => res.data)),
-      ...(await getListStatusAndRelatedAnimeFromMAL(args.malId, accessToken)),
-    };
+    const data = await Jikan4.anime(args.malId)
+      .info()
+      .then(res => res.data);
+
+    const { listStatus, relatedAnime } =
+      await getListStatusAndRelatedAnimeFromMAL(args.malId, accessToken);
+
+    return Object.assign(data, { listStatus, relatedAnime });
   }
 
   console.log('Getting anime details of', args.title);

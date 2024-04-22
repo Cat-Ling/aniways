@@ -1,9 +1,9 @@
-import { MALClient, WatchStatus } from '@animelist/client';
+import { MALClient, WatchStatus as _WatchStatus } from '@animelist/client';
 
 export default async function updateAnimeList(
   accessToken: string,
   malId: number,
-  status: WatchStatus,
+  status: _WatchStatus,
   numWatchedEpisodes: number,
   score: number
 ) {
@@ -16,4 +16,9 @@ export default async function updateAnimeList(
   });
 
   return anime;
+}
+
+export namespace UpdateAnimeList {
+  export type WatchStatus = _WatchStatus;
+  export type UpdateAnimeListArguments = Parameters<typeof updateAnimeList>;
 }

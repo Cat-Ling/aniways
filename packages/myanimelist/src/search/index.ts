@@ -1,5 +1,7 @@
 import { Jikan4 } from 'node-myanimelist';
 
+export type SearchResults = Jikan4.Types.AnimeSearch & {};
+
 export default async function searchAnimeFromMyAnimeList(
   query: string,
   page: number,
