@@ -1,7 +1,21 @@
-import { getRecentlyReleasedAnime } from '@aniways/data';
+import { createAnimeService } from '@aniways/data';
 import { Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { Pagination, PaginationLoader } from '../pagination';
+import { unstable_cache } from 'next/cache';
+
+const service = createAnimeService();
+
+const getRecentlyReleasedAnime = unstable_cache(
+  (page: number) => {
+    return service.getRecentlyReleasedAnimes(page);
+  },
+  ['recently-released'],
+  {
+    revalidate: 60, // 1 minute
+    tags: ['recently-released'],
+  }
+);
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');

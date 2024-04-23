@@ -1,4 +1,4 @@
-import { getContinueWatchingAnime, getCurrentAnimeSeason } from '@aniways/data';
+import { createAnimeService, createMyAnimeListService } from '@aniways/data';
 import { auth } from '@aniways/auth';
 import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { cookies } from 'next/headers';
@@ -37,7 +37,9 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
 const SeasonalAnimeCarousel = async () => {
   unstable_noStore();
 
-  const seasonalAnime = await getCurrentAnimeSeason();
+  const service = createMyAnimeListService();
+
+  const seasonalAnime = await service.getCurrentSeasonAnimes();
 
   return <AnimeCarousel seasonalAnime={seasonalAnime} />;
 };
@@ -52,7 +54,9 @@ const CurrentlyWatchingAnime = async () => {
     user: { name: username },
   } = user;
 
-  const newReleases = await getContinueWatchingAnime(accessToken, username);
+  const { getContinueWatchingAnimes } = createAnimeService();
+
+  const newReleases = await getContinueWatchingAnimes(accessToken, username);
 
   if (!newReleases.length) return undefined;
 

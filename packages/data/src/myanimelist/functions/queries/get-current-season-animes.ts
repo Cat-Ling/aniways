@@ -1,14 +1,13 @@
 import { db, orm, schema } from '@aniways/database';
-import {
-  getCurrentAnimeSeason,
-  CurrentAnimeSeason,
-} from '@aniways/myanimelist';
+import { getCurrentAnimeSeason } from '@aniways/myanimelist';
 
-type GetCurrentSeasonAnimesReturn = (CurrentAnimeSeason['data'][number] & {
-  anime: schema.Anime | undefined;
-})[];
+export type CurrentAnimeSeason = Awaited<
+  ReturnType<typeof getCurrentAnimeSeason>
+>['data'][number] & {
+  anime?: schema.Anime;
+};
 
-export async function getCurrentSeasonAnimes(): Promise<GetCurrentSeasonAnimesReturn> {
+export async function getCurrentSeasonAnimes(): Promise<CurrentAnimeSeason[]> {
   const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
     data.slice(0, 5)
   );

@@ -13,6 +13,7 @@ import {
   syncAndGetAnimeMetadataFromMAL,
   syncAnimeMetadataFromMAL,
   updateAnimeInMAL,
+  CurrentAnimeSeason,
 } from './functions';
 
 // prettier-ignore
@@ -29,6 +30,7 @@ export namespace MyAnimeListService {
   export type DeleteAnimeFromMyList = typeof deleteFromMAL;
   export type AnimeMetadata = AnimeDetails;
   export type SearchResults = MALSearchResults;
+  export type AnimeSeason = CurrentAnimeSeason;
 }
 
 class MyAnimeListService {

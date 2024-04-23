@@ -1,9 +1,17 @@
-import { searchAnimeFromDB } from '@aniways/data';
+import { createAnimeService } from '@aniways/data';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { Pagination, PaginationLoader } from '../pagination';
 import { HeartCrack } from 'lucide-react';
+import { unstable_cache } from 'next/cache';
+
+const service = createAnimeService();
+
+const searchAnime = unstable_cache(service.searchAnime, ['search-anime'], {
+  revalidate: 60, // 1 minute
+  tags: ['search-anime'],
+});
 
 export const generateMetadata = async ({
   searchParams: { query },
@@ -55,7 +63,7 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  const { animes } = await searchAnimeFromDB(query, page);
+  const { animes } = await searchAnime(query, page);
 
   if (!animes.length) {
     return (
@@ -73,7 +81,7 @@ const SearchResults = async ({
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { hasNext, animes } = await searchAnimeFromDB(props.query, props.page);
+  const { hasNext, animes } = await searchAnime(props.query, props.page);
 
   if (!animes.length) {
     return null;
