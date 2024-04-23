@@ -91,7 +91,7 @@ export const UpdateAnimeForm = ({
   const { id } = useParams();
   const [isDeleting, setIsDeleting] = useState(false);
   const { close } = useDialogContext();
-  const [, setMetadata] = useMetadata();
+  const [metadata, setMetadata] = useMetadata();
 
   const form = reactHookForm.useForm<z.infer<typeof UpdateAnimeSchema>>({
     resolver: zodResolver(UpdateAnimeSchema),
@@ -104,7 +104,7 @@ export const UpdateAnimeForm = ({
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      const { error, details } = await updateAnimeInListAction(
+      const { error, success } = await updateAnimeInListAction(
         malId,
         data.status,
         data.episodesWatched,
@@ -112,11 +112,19 @@ export const UpdateAnimeForm = ({
         `/anime/${id}`
       );
 
-      if (error || !details) {
+      if (error || !success) {
         throw new Error(error);
       }
 
-      setMetadata(details);
+      setMetadata({
+        ...metadata,
+        listStatus: metadata.listStatus && {
+          ...metadata.listStatus,
+          status: data.status,
+          num_episodes_watched: data.episodesWatched,
+          score: data.score ?? 0,
+        },
+      });
 
       toast.success('List updated', {
         description: 'Your list has been updated',
@@ -240,16 +248,16 @@ export const UpdateAnimeForm = ({
               onClick={async () => {
                 setIsDeleting(true);
                 try {
-                  const { details, error } = await deleteAnimeInListAction(
+                  const { success, error } = await deleteAnimeInListAction(
                     malId,
                     `/anime/${id}`
                   );
 
-                  if (error || !details) {
+                  if (error || !success) {
                     throw new Error('Failed to delete anime');
                   }
 
-                  setMetadata(details);
+                  setMetadata({ ...metadata, listStatus: undefined });
 
                   toast.success('Anime deleted', {
                     description: 'Anime has been removed from your list',

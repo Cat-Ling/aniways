@@ -13,15 +13,16 @@ export const addToListAction = async (malId: number, pathname: string) => {
       throw new Error('Must be logged in to add to list');
     }
 
-    const { addAnimeToMyList } = createMyAnimeListService(user.accessToken);
+    const { addAnimeToMyList, getAnimeMetadataFromMyAnimeList } =
+      createMyAnimeListService(user.accessToken);
 
-    const details = await addAnimeToMyList(malId);
+    await addAnimeToMyList(malId);
 
     revalidatePath(pathname, 'layout');
 
-    return {
-      details,
-    };
+    const details = await getAnimeMetadataFromMyAnimeList(malId);
+
+    return { details };
   } catch (e) {
     console.error(e);
 
@@ -48,13 +49,11 @@ export const deleteAnimeInListAction = async (
       user.accessToken
     );
 
-    const details = await deleteAnimeFromMyList(malId);
+    await deleteAnimeFromMyList(malId);
 
     revalidatePath(pathname, 'layout');
 
-    return {
-      details,
-    };
+    return { success: true };
   } catch (e) {
     console.error(e);
 
@@ -83,18 +82,11 @@ export const updateAnimeInListAction = async (
 
     const { updateAnimeInMyList } = createMyAnimeListService(user.accessToken);
 
-    const details = await updateAnimeInMyList(
-      malId,
-      status,
-      episodesWatched,
-      score
-    );
+    await updateAnimeInMyList(malId, status, episodesWatched, score);
 
     revalidatePath(pathname, 'layout');
 
-    return {
-      details,
-    };
+    return { success: true };
   } catch (e) {
     console.error(e);
 
