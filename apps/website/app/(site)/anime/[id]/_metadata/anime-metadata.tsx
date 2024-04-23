@@ -5,7 +5,11 @@ import { AnimeMetadataClient } from './anime-metadata-client';
 import { Suspense } from 'react';
 import { AnimeGridLoader } from '../../../anime-grid';
 import { RelatedAnime } from './related-anime';
-import { getAnimeById, getAnimeMetadataFromMAL } from '@aniways/data';
+import {
+  MyAnimeListService,
+  createAnimeService,
+  createMyAnimeListService,
+} from '@aniways/data';
 import { notFound } from 'next/navigation';
 
 type AnimeMetadataProps = {
@@ -13,15 +17,21 @@ type AnimeMetadataProps = {
 };
 
 export const AnimeMetadata = async ({ id }: AnimeMetadataProps) => {
+  const { getAnimeById } = createAnimeService();
+
   const anime = await getAnimeById(id);
 
   if (!anime) notFound();
 
   const user = await auth(cookies());
 
-  const details = await getAnimeMetadataFromMAL(user?.accessToken, anime).catch(
+  const { syncAndGetAnimeMetadataFromMyAnimeList } = createMyAnimeListService(
+    user?.accessToken
+  );
+
+  const details = await syncAndGetAnimeMetadataFromMyAnimeList(anime).catch(
     err => {
-      if (err === getAnimeMetadataFromMAL.NOT_FOUND) notFound();
+      if (err === MyAnimeListService.NOT_FOUND) notFound();
       throw err;
     }
   );

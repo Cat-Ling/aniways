@@ -1,16 +1,20 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { auth } from '@aniways/auth';
+import { MyAnimeListService, createMyAnimeListService } from '@aniways/data';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { updateAnimeMetadata } from '@aniways/data';
 
 export const updateMalAnimeAction = async (id: string, malId: number) => {
   const user = await auth(cookies());
 
-  const details = await updateAnimeMetadata(user?.accessToken, id, malId).catch(
+  const { syncAnimeMetadataFromMyAnimeList } = createMyAnimeListService(
+    user?.accessToken
+  );
+
+  const details = await syncAnimeMetadataFromMyAnimeList(id, malId).catch(
     err => {
-      if (err === updateAnimeMetadata.NOT_FOUND) return null;
+      if (err === MyAnimeListService.NOT_FOUND) return null;
       throw err;
     }
   );

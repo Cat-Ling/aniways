@@ -5,7 +5,14 @@ import {
   searchAnimeFromDB,
 } from './functions';
 
-class AnimeService {
+export namespace AnimeServiceTypes {
+  export type GetAnimeById = typeof getAnimeById;
+  export type GetContinueWatchingAnime = typeof getContinueWatchingAnime;
+  export type GetRecentlyReleasedAnime = typeof getRecentlyReleasedAnime;
+  export type SearchAnime = typeof searchAnimeFromDB;
+}
+
+export class AnimeService {
   getAnimeById = getAnimeById;
   getContinueWatchingAnimes = getContinueWatchingAnime;
   getRecentlyReleasedAnimes = getRecentlyReleasedAnime;

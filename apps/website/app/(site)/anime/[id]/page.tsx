@@ -6,7 +6,9 @@ const AnimeDetailsPage = async ({
 }: {
   params: { id: string };
 }) => {
-  const anime = await createAnimeService().getAnimeById(id, true);
+  const { getAnimeById } = createAnimeService();
+
+  const anime = await getAnimeById(id, true);
 
   if (!anime) notFound();
 

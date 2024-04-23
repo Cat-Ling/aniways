@@ -4,13 +4,15 @@ import {
   seedMissingAnimeEpisodes,
 } from './functions';
 
-export namespace EpisodeService {
+export namespace EpisodeServiceTypes {
   export type GetEpisodeUrl = typeof getEpisodeUrl;
   export type GetEpisodesByAnimeId = typeof getEpisodesByAnimeId;
   export type SeedMissingEpisodes = typeof seedMissingAnimeEpisodes;
 }
 
-class EpisodeService {
+export class EpisodeService {
+  static NOT_FOUND = 'not-found' as const;
+
   getEpisodeUrl = getEpisodeUrl;
   getEpisodesByAnimeId = getEpisodesByAnimeId;
   seedMissingEpisodes = seedMissingAnimeEpisodes;

@@ -11,10 +11,10 @@ import { PlayIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
-import { MyAnimeListService } from '@aniways/data';
+import { MyAnimeListServiceTypes } from '@aniways/data';
 
 type AnimeCarouselProps = {
-  seasonalAnime: MyAnimeListService.AnimeSeason[];
+  seasonalAnime: MyAnimeListServiceTypes.AnimeSeason[];
 };
 
 export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {

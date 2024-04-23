@@ -4,7 +4,15 @@ import { Suspense } from 'react';
 import { EpisodesSection } from './_episodes';
 import { VideoFrame } from './video-frame';
 import { Metadata } from 'next';
-import { getAnimeById } from '@aniways/data';
+import { createAnimeService } from '@aniways/data';
+import { unstable_cache } from 'next/cache';
+
+const service = createAnimeService();
+
+const getAnimeById = unstable_cache(service.getAnimeById, ['anime-by-id'], {
+  revalidate: 60, // 1 minute
+  tags: ['anime-by-id'],
+});
 
 export const generateMetadata = async ({
   params: { id, episode },

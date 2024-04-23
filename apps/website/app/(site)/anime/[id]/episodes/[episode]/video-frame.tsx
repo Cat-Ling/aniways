@@ -1,4 +1,4 @@
-import { getVideoUrlByAnimeAndEpisode } from '@aniways/data';
+import { EpisodeService, createEpisodeService } from '@aniways/data';
 import { notFound } from 'next/navigation';
 
 type VideoFrameProps = {
@@ -10,11 +10,10 @@ export const VideoFrame = async ({
   animeId,
   currentEpisode,
 }: VideoFrameProps) => {
-  const iframe = await getVideoUrlByAnimeAndEpisode(
-    animeId,
-    currentEpisode
-  ).catch(err => {
-    if (err === getVideoUrlByAnimeAndEpisode.NOT_FOUND) notFound();
+  const { getEpisodeUrl } = createEpisodeService();
+
+  const iframe = await getEpisodeUrl(animeId, currentEpisode).catch(err => {
+    if (err === EpisodeService.NOT_FOUND) notFound();
     throw err;
   });
 

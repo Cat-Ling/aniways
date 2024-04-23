@@ -1,12 +1,9 @@
 'use server';
 
-import { searchAnimeFromMAL } from '@aniways/data';
+import { createMyAnimeListService } from '@aniways/data';
 
-type SearchResults = ReturnType<typeof searchAnimeFromMAL>;
+export const searchAnimeAction = async (query: string, page: number) => {
+  const { searchAnimeOnMyAnimeList } = createMyAnimeListService();
 
-export const searchAnimeAction = async (
-  query: string,
-  page: number
-): SearchResults => {
-  return await searchAnimeFromMAL(query, page);
+  return await searchAnimeOnMyAnimeList(query, page);
 };

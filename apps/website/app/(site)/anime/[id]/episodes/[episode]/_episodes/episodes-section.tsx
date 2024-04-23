@@ -1,5 +1,5 @@
 import { EpisodesSectionClient } from './episodes-section-client';
-import { getVideosByAnimeId } from '@aniways/data';
+import { createEpisodeService } from '@aniways/data';
 
 type EpisodesSidbarProps = {
   animeId: string;
@@ -10,7 +10,9 @@ export const EpisodesSection = async ({
   animeId,
   currentEpisode,
 }: EpisodesSidbarProps) => {
-  const videos = await getVideosByAnimeId(animeId);
+  const { getEpisodesByAnimeId } = createEpisodeService();
+
+  const videos = await getEpisodesByAnimeId(animeId);
 
   return (
     <EpisodesSectionClient

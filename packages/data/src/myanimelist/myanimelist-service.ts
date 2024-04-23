@@ -17,7 +17,7 @@ import {
 } from './functions';
 
 // prettier-ignore
-export namespace MyAnimeListService {
+export namespace MyAnimeListServiceTypes {
   export type GetAnimeListOfUser = typeof getAnimeListOfUser;
   export type GetCurrentSeasonAnimes = typeof getCurrentSeasonAnimes;
   export type GetAnimeMetadataFromMyAnimeList = typeof getAnimeMetadataFromMAL;
@@ -33,14 +33,16 @@ export namespace MyAnimeListService {
   export type AnimeSeason = CurrentAnimeSeason;
 }
 
-class MyAnimeListService {
+export class MyAnimeListService {
+  static NOT_FOUND = 'not-found' as const;
+
   private accessToken: string | undefined = undefined;
 
   constructor(acessToken: string | undefined) {
     this.accessToken = acessToken;
   }
 
-  private ensureAccessToken<T extends Function>(
+  private ensureAccessToken<T>(
     // eslint-disable-next-line no-unused-vars
     fn: (accessToken: string) => T
   ) {

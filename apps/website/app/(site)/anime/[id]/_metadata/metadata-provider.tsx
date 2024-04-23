@@ -1,6 +1,6 @@
 'use client';
 
-import { getAnimeMetadataFromMAL } from '@aniways/data';
+import { MyAnimeListServiceTypes } from '@aniways/data';
 import {
   Dispatch,
   FC,
@@ -11,10 +11,7 @@ import {
   useOptimistic,
 } from 'react';
 
-type Metadata = Exclude<
-  Awaited<ReturnType<typeof getAnimeMetadataFromMAL>>,
-  undefined
->;
+type Metadata = MyAnimeListServiceTypes.AnimeMetadata;
 
 type SetMetadata = Dispatch<SetStateAction<Metadata>>;
 

@@ -1,7 +1,7 @@
 'use server';
 
-import { addToMAL, deleteFromMAL, updateAnimeInMAL } from '@aniways/data';
 import { auth } from '@aniways/auth';
+import { createMyAnimeListService } from '@aniways/data';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
@@ -13,7 +13,9 @@ export const addToListAction = async (malId: number, pathname: string) => {
       throw new Error('Must be logged in to add to list');
     }
 
-    const details = await addToMAL(user.accessToken, malId);
+    const { addAnimeToMyList } = createMyAnimeListService(user.accessToken);
+
+    const details = await addAnimeToMyList(malId);
 
     revalidatePath(pathname, 'layout');
 
@@ -42,7 +44,11 @@ export const deleteAnimeInListAction = async (
       throw new Error('Must be logged in to delete from list');
     }
 
-    const details = await deleteFromMAL(user.accessToken, malId);
+    const { deleteAnimeFromMyList } = createMyAnimeListService(
+      user.accessToken
+    );
+
+    const details = await deleteAnimeFromMyList(malId);
 
     revalidatePath(pathname, 'layout');
 
@@ -75,8 +81,9 @@ export const updateAnimeInListAction = async (
       throw new Error('Must be logged in to update list');
     }
 
-    const details = await updateAnimeInMAL(
-      user.accessToken,
+    const { updateAnimeInMyList } = createMyAnimeListService(user.accessToken);
+
+    const details = await updateAnimeInMyList(
       malId,
       status,
       episodesWatched,
