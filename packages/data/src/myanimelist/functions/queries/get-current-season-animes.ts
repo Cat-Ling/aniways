@@ -1,14 +1,15 @@
-import { getCurrentAnimeSeason as getCurrentSeason } from '@aniways/myanimelist';
-import { db, schema, orm } from '@aniways/database';
+import { db, orm, schema } from '@aniways/database';
+import {
+  getCurrentAnimeSeason,
+  CurrentAnimeSeason,
+} from '@aniways/myanimelist';
 
-export type CurrentSeasonAnime = Awaited<
-  ReturnType<typeof getCurrentSeason>
->['data'][number] & {
-  anime?: schema.Anime;
-};
+type GetCurrentSeasonAnimesReturn = (CurrentAnimeSeason['data'][number] & {
+  anime: schema.Anime | undefined;
+})[];
 
-export async function getCurrentAnimeSeason(): Promise<CurrentSeasonAnime[]> {
-  const currentSeasonAnime = await getCurrentSeason().then(({ data }) =>
+export async function getCurrentSeasonAnimes(): Promise<GetCurrentSeasonAnimesReturn> {
+  const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
     data.slice(0, 5)
   );
 

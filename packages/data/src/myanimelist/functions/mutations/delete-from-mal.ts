@@ -1,5 +1,5 @@
 import { deleteFromAnimeList } from '@aniways/myanimelist';
-import { getAnimeMetadataFromMAL } from './get-anime-metadata-from-mal';
+import { getAnimeMetadataFromMAL } from '../queries';
 
 export async function deleteFromMAL(accessToken: string, malId: number) {
   await deleteFromAnimeList(accessToken, malId);

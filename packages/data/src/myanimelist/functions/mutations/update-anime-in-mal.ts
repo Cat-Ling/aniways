@@ -1,5 +1,5 @@
 import { updateAnimeList } from '@aniways/myanimelist';
-import { getAnimeMetadataFromMAL } from './get-anime-metadata-from-mal';
+import { getAnimeMetadataFromMAL } from '../queries';
 
 export type UpdateAnimeInMALArguments = Parameters<typeof updateAnimeList>;
 
