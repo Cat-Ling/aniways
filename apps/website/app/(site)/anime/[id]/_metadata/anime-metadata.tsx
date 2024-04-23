@@ -25,16 +25,15 @@ export const AnimeMetadata = async ({ id }: AnimeMetadataProps) => {
 
   const user = await auth(cookies());
 
-  const { syncAndGetAnimeMetadataFromMyAnimeList } = createMyAnimeListService(
-    user?.accessToken
-  );
+  const { syncAndGetAnimeMetadataFromMyAnimeList } = createMyAnimeListService();
 
-  const details = await syncAndGetAnimeMetadataFromMyAnimeList(anime).catch(
-    err => {
-      if (err === MyAnimeListService.NOT_FOUND) notFound();
-      throw err;
-    }
-  );
+  const details = await syncAndGetAnimeMetadataFromMyAnimeList(
+    user?.accessToken,
+    anime
+  ).catch(err => {
+    if (err === MyAnimeListService.NOT_FOUND) notFound();
+    throw err;
+  });
 
   return (
     <MetadataProvider metadata={details}>

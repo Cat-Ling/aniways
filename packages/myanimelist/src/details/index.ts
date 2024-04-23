@@ -56,7 +56,11 @@ export default async function getAnimeDetails(
     const { listStatus, relatedAnime } =
       await getListStatusAndRelatedAnimeFromMAL(args.malId, accessToken);
 
-    return Object.assign(data, { listStatus, relatedAnime });
+    return {
+      ...data,
+      listStatus,
+      relatedAnime,
+    };
   }
 
   console.log('Getting anime details of', args.title);

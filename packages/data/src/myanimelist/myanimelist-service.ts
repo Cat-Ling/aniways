@@ -36,60 +36,27 @@ export namespace MyAnimeListServiceTypes {
 export class MyAnimeListService {
   static NOT_FOUND = 'not-found' as const;
 
-  private accessToken: string | undefined = undefined;
-
-  constructor(acessToken: string | undefined) {
-    this.accessToken = acessToken;
-  }
-
-  private ensureAccessToken<T>(
-    // eslint-disable-next-line no-unused-vars
-    fn: (accessToken: string) => T
-  ) {
-    if (!this.accessToken) {
-      throw new Error('Access token is required to use this function');
-    }
-
-    return fn(this.accessToken);
-  }
-
-  getAnimeListOfUser = this.ensureAccessToken(token =>
-    getAnimeListOfUser.bind(null, token)
-  );
+  getAnimeListOfUser = getAnimeListOfUser;
 
   getCurrentSeasonAnimes = getCurrentSeasonAnimes;
 
-  getAnimeMetadataFromMyAnimeList = async (malId: number) => {
-    return await getAnimeMetadataFromMAL(this.accessToken, { malId });
-  };
+  getAnimeMetadataFromMyAnimeList = getAnimeMetadataFromMAL;
 
-  syncAndGetAnimeMetadataFromMyAnimeList = syncAndGetAnimeMetadataFromMAL.bind(
-    null,
-    this.accessToken
-  );
+  syncAndGetAnimeMetadataFromMyAnimeList = syncAndGetAnimeMetadataFromMAL;
 
-  syncAnimeMetadataFromMyAnimeList = syncAnimeMetadataFromMAL.bind(
-    null,
-    this.accessToken
-  );
+  syncAnimeMetadataFromMyAnimeList = syncAnimeMetadataFromMAL;
 
   getRelatedAnimeFromDetails = getRelatedAnime;
 
   searchAnimeOnMyAnimeList = searchAnimeFromMAL;
 
-  addAnimeToMyList = this.ensureAccessToken(token =>
-    addToMAL.bind(null, token)
-  );
+  addAnimeToMyList = addToMAL;
 
-  updateAnimeInMyList = this.ensureAccessToken(token =>
-    updateAnimeInMAL.bind(null, token)
-  );
+  updateAnimeInMyList = updateAnimeInMAL;
 
-  deleteAnimeFromMyList = this.ensureAccessToken(token =>
-    deleteFromMAL.bind(null, token)
-  );
+  deleteAnimeFromMyList = deleteFromMAL;
 }
 
-export const createMyAnimeListService = (accessToken?: string) => {
-  return new MyAnimeListService(accessToken);
+export const createMyAnimeListService = () => {
+  return new MyAnimeListService();
 };

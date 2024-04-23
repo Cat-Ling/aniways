@@ -33,6 +33,8 @@ async function _syncAndGetAnimeMetadataFromMAL(
 
   if (!details || !details.mal_id) throw NOT_FOUND;
 
+  console.log('details =====>', details);
+
   return details;
 }
 

@@ -13,9 +13,9 @@ import { unstable_cache } from 'next/cache';
 
 const getAnimeListOfUser = unstable_cache(
   (accessToken: string, username: string, page: number, status: Status) => {
-    const { getAnimeListOfUser } = createMyAnimeListService(accessToken);
+    const { getAnimeListOfUser } = createMyAnimeListService();
 
-    return getAnimeListOfUser(username, page, status);
+    return getAnimeListOfUser(accessToken, username, page, status);
   },
   ['get-anime-list'],
   {
