@@ -15,9 +15,11 @@ const globalForDrizzle = globalThis as unknown as {
   db?: PostgresJsDatabase<typeof schema>;
 };
 
+const client = postgres(connectionString, { prepare: false });
+
 const db =
   globalForDrizzle.db ??
-  drizzle(postgres(connectionString, { prepare: false }), {
+  drizzle(client, {
     schema,
   });
 
@@ -28,4 +30,4 @@ if (process.env.NODE_ENV === 'development') {
 
 export default db;
 
-export { db, orm, schema };
+export { db, orm, schema, client };

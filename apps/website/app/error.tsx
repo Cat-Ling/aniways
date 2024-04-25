@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertCircle, Cog } from 'lucide-react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 type ErrorPageProps = {
   error: Error;
@@ -26,7 +26,7 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
 
   if (isMaintenance) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 text-center">
+      <div className="container flex flex-col items-center justify-center gap-4 text-center">
         <Cog
           className="text-muted-foreground size-48 animate-spin"
           style={{
@@ -40,13 +40,14 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 text-center">
+    <div className="container flex flex-col items-center justify-center gap-4 text-center">
       <AlertCircle className="text-destructive size-48" />
       <h1 className="text-4xl font-bold">An error occurred</h1>
       <p className="text-muted-foreground text-lg">
-        {error.message || 'An unknown error occurred'}
-        <br />
-        Please try again later
+        {/* eslint-disable-next-line turbo/no-undeclared-env-vars */}
+        {process.env.NODE_ENV === 'development' ?
+          error.message ?? 'An unknown error occurred'
+        : 'Please try again later'}
       </p>
     </div>
   );

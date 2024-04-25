@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { orm, schema, db, createId } from '@aniways/database';
+import { orm, schema, db, createId, client } from '@aniways/database';
 import {
   scrapeRecentlyReleasedAnime,
   scrapeSlugFromEpisodeSlug,
@@ -204,6 +204,8 @@ export const main: APIGatewayProxyHandler = async event => {
 
   await db.insert(video).values(insertValues).execute();
   logger('Inserted', insertValues.length, 'new episodes into db');
+
+  await client.end(); // Close the connection
 
   return {
     statusCode: 200,
