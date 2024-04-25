@@ -1,28 +1,31 @@
 'use client';
 
 import { AlertCircle, Cog } from 'lucide-react';
-import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { z } from 'zod';
 
 type ErrorPageProps = {
   error: Error;
 };
 
+const HealthcheckResponseSchema = z.object({
+  message: z.string(),
+  success: z.boolean(),
+  dependencies: z.object({
+    myAnimeList: z.boolean(),
+  }),
+});
+
 const ErrorPage = ({ error }: ErrorPageProps) => {
-  const isMaintenance = useMemo(() => {
-    let json;
-
-    try {
-      json = JSON.parse(error.message);
-    } catch (e) {
-      return false;
-    }
-
-    if (!(json instanceof Object)) return false;
-
-    if (!('error' in json)) return false;
-
-    return json.error === 'maintenance';
-  }, [error]);
+  const { data: isMaintenance } = useQuery({
+    queryKey: ['error'],
+    queryFn: () => {
+      return fetch('https://healthcheck.aniways.xyz/healthcheck')
+        .then(res => res.json())
+        .then(HealthcheckResponseSchema.parse)
+        .then(({ dependencies }) => dependencies.myAnimeList === false);
+    },
+  });
 
   if (isMaintenance) {
     return (

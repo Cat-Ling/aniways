@@ -12,7 +12,7 @@ const config: AWS = {
   useDotenv: true,
   provider: {
     name: 'aws',
-    runtime: 'nodejs18.x',
+    runtime: 'nodejs20.x',
     region: 'ap-southeast-1',
     environment: {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
