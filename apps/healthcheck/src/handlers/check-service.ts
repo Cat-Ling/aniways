@@ -4,7 +4,6 @@ import {
   createEpisodeService,
   createAnimeService,
 } from '@aniways/data';
-import { client } from '../../../../packages/database/src';
 
 async function checkIfMyAnimeListIsDown() {
   const service = createMyAnimeListService();
@@ -52,8 +51,6 @@ async function checkIfEpisodeServiceIsDown() {
 export const healthCheck: APIGatewayProxyHandler = async () => {
   const isMyAnimeListDown = await checkIfMyAnimeListIsDown();
   const isEpisodeServiceDown = await checkIfEpisodeServiceIsDown();
-
-  await client.end();
 
   if (isMyAnimeListDown || isEpisodeServiceDown) {
     return {
