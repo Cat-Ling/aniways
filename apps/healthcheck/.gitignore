@@ -1,0 +1,7 @@
+node_modules
+.serverless
+.webpack
+
+# generated .d.ts files
+*.d.ts
+*.d.ts.map

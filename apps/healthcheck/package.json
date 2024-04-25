@@ -1,0 +1,24 @@
+{
+  "name": "@aniways/healthcheck",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "serverless offline start --httpPort 8081 --lambdaPort 3003 --reloadHandler",
+    "deploy:prod": "dotenv -- serverless deploy --stage prod",
+    "lint": "eslint . --ext .ts",
+    "package": "serverless package"
+  },
+  "dependencies": {
+    "@aniways/data": "workspace:*"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*",
+    "@serverless/typescript": "^3.38.0",
+    "@types/aws-lambda": "^8.10.133",
+    "serverless-offline": "13.3.3",
+    "serverless-webpack": "5.13.0",
+    "ts-loader": "9.5.1",
+    "webpack": "5.90.1"
+  }
+}
