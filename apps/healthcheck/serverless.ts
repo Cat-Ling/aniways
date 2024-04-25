@@ -6,7 +6,7 @@ if (!process.env.DATABASE_URL || !process.env.MAL_CLIENT_ID) {
 }
 
 const config: AWS = {
-  service: 'aws-cron',
+  service: 'healthcheck',
   frameworkVersion: '3',
   plugins: ['serverless-webpack', 'serverless-offline'],
   useDotenv: true,
