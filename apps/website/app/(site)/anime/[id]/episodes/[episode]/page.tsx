@@ -5,14 +5,6 @@ import { EpisodesSection } from './_episodes';
 import { VideoFrame } from './video-frame';
 import { Metadata } from 'next';
 import { createAnimeService } from '@aniways/data';
-import { unstable_cache } from 'next/cache';
-
-const service = createAnimeService();
-
-const getAnimeById = unstable_cache(service.getAnimeById, ['anime-by-id'], {
-  revalidate: 60, // 1 minute
-  tags: ['anime-by-id'],
-});
 
 export const generateMetadata = async ({
   params: { id, episode },
@@ -22,7 +14,9 @@ export const generateMetadata = async ({
     episode: string;
   };
 }): Promise<Metadata> => {
-  const data = await getAnimeById(id);
+  const service = createAnimeService();
+
+  const data = await service.getAnimeById(id);
 
   if (!data || !data.title) return {};
 
@@ -53,7 +47,9 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
-  const anime = await getAnimeById(id);
+  const service = createAnimeService();
+
+  const anime = await service.getAnimeById(id);
 
   if (!anime) notFound();
 

@@ -9,20 +9,6 @@ import { RedirectType, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { Pagination, PaginationLoader } from '../pagination';
 import { createMyAnimeListService } from '@aniways/data';
-import { unstable_cache } from 'next/cache';
-
-const getAnimeListOfUser = unstable_cache(
-  (accessToken: string, username: string, page: number, status: Status) => {
-    const { getAnimeListOfUser } = createMyAnimeListService();
-
-    return getAnimeListOfUser(accessToken, username, page, status);
-  },
-  ['get-anime-list'],
-  {
-    revalidate: 60, // 1 minute
-    tags: ['get-anime-list'],
-  }
-);
 
 type Status =
   | 'all'
@@ -137,6 +123,8 @@ const PaginationWrapper = async ({
   username,
   status,
 }: AnimeListProps) => {
+  const { getAnimeListOfUser } = createMyAnimeListService();
+
   const animeList = await getAnimeListOfUser(
     accessToken,
     username,
@@ -155,6 +143,8 @@ const AnimeList = async ({
   username,
   status,
 }: AnimeListProps) => {
+  const { getAnimeListOfUser } = createMyAnimeListService();
+
   const animeList = await getAnimeListOfUser(
     accessToken,
     username,
