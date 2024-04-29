@@ -1,4 +1,5 @@
 import {
+  getEpisodeHTML,
   getEpisodesByAnimeId,
   getEpisodeUrl,
   seedMissingAnimeEpisodes,
@@ -8,6 +9,7 @@ export namespace EpisodeServiceTypes {
   export type GetEpisodeUrl = typeof getEpisodeUrl;
   export type GetEpisodesByAnimeId = typeof getEpisodesByAnimeId;
   export type SeedMissingEpisodes = typeof seedMissingAnimeEpisodes;
+  export type GetEpisodeHTML = typeof getEpisodeHTML;
 }
 
 export class EpisodeService {
@@ -16,6 +18,7 @@ export class EpisodeService {
   getEpisodeUrl = getEpisodeUrl;
   getEpisodesByAnimeId = getEpisodesByAnimeId;
   seedMissingEpisodes = seedMissingAnimeEpisodes;
+  getEpisodeHTML = getEpisodeHTML;
 }
 
 export const createEpisodeService = () => new EpisodeService();

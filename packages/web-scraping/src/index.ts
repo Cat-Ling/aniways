@@ -4,3 +4,4 @@ export { default as scrapeAnimeByQuery } from './search';
 export { default as scrapeVideoSource } from './video-source';
 export { default as scrapeSlugFromEpisodeSlug } from './slug';
 export { default as scrapeDetailsOfAnime } from './details';
+export { default as scrapeVideoHTML } from './video-html';
