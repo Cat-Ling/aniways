@@ -64,6 +64,7 @@ export const home: APIGatewayProxyHandler = async () => {
             font-size: 1.5rem;
             line-height: 2rem;
             font-weight: bold;
+            cursor: pointer;
           }
 
           section {
