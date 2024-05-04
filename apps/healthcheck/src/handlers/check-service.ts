@@ -65,11 +65,14 @@ async function checkIfWebsiteIsDown() {
 }
 
 export const healthCheck: APIGatewayProxyHandler = async () => {
-  const isMyAnimeListDown = await checkIfMyAnimeListIsDown();
-  const isEpisodeServiceDown = await checkIfEpisodeServiceIsDown();
-  const isWebsiteDown = await checkIfWebsiteIsDown();
+  const [isMyAnimeListDown, isEpisodeServiceDown, isWebsiteDown] =
+    await Promise.all([
+      checkIfMyAnimeListIsDown(),
+      checkIfEpisodeServiceIsDown(),
+      checkIfWebsiteIsDown(),
+    ]);
 
-  if (isMyAnimeListDown || isEpisodeServiceDown) {
+  if (isMyAnimeListDown || isEpisodeServiceDown || isWebsiteDown) {
     return {
       statusCode: 500,
       body: JSON.stringify({
