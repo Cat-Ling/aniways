@@ -48,9 +48,26 @@ async function checkIfEpisodeServiceIsDown() {
   return isDown;
 }
 
+async function checkIfWebsiteIsDown() {
+  let isDown = false;
+
+  try {
+    const response = await fetch('https://aniways.xyz');
+
+    if (!response.ok) {
+      isDown = true;
+    }
+  } catch (error) {
+    isDown = true;
+  }
+
+  return isDown;
+}
+
 export const healthCheck: APIGatewayProxyHandler = async () => {
   const isMyAnimeListDown = await checkIfMyAnimeListIsDown();
   const isEpisodeServiceDown = await checkIfEpisodeServiceIsDown();
+  const isWebsiteDown = await checkIfWebsiteIsDown();
 
   if (isMyAnimeListDown || isEpisodeServiceDown) {
     return {
@@ -61,6 +78,7 @@ export const healthCheck: APIGatewayProxyHandler = async () => {
         dependencies: {
           myAnimeList: !isMyAnimeListDown,
           episodeService: !isEpisodeServiceDown,
+          website: !isWebsiteDown,
         },
       }),
     };
@@ -74,6 +92,7 @@ export const healthCheck: APIGatewayProxyHandler = async () => {
       dependencies: {
         myAnimeList: !isMyAnimeListDown,
         episodeService: !isEpisodeServiceDown,
+        website: !isWebsiteDown,
       },
     }),
   };

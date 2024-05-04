@@ -100,7 +100,7 @@ export const home: APIGatewayProxyHandler = async () => {
             background-color: hsl(240 3.7% 15.9%);
           }
 
-          td#myanimelist, td#episode {
+          td#myanimelist, td#episode, td#website {
             width: 50%;
           }
         </style>
@@ -127,6 +127,12 @@ export const home: APIGatewayProxyHandler = async () => {
               </tr>
             </thead>
             <tbody>
+            <tr>
+              <td>Website</td>
+              <td id="website">
+                Loading...
+              </td>
+            </tr>
               <tr>
                 <td>MyAnimeList Service</td>
                 <td id="myanimelist">
@@ -147,6 +153,7 @@ export const home: APIGatewayProxyHandler = async () => {
           let basedata = JSON.parse(${JSON.stringify(response!.body)});
 
           const updateUI = (response) => {
+            document.getElementById('website').innerHTML = response.dependencies.website ? '✅' : '❌';
             document.getElementById('myanimelist').innerHTML = response.dependencies.myAnimeList ? '✅' : '❌';
             document.getElementById('episode').innerHTML = response.dependencies.episodeService ? '✅' : '❌';
             lastFetched = new Date();
