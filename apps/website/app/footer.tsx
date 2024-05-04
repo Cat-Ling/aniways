@@ -24,6 +24,15 @@ export const Footer = () => {
               </Link>
             </li>
             <li>
+              <Link
+                href="https://healthcheck.aniways.xyz"
+                className="me-4 hover:underline md:me-6"
+                target="_blank"
+              >
+                Health Check
+              </Link>
+            </li>
+            <li>
               <Link href="/privacy" className="me-4 hover:underline md:me-6">
                 Privacy Policy
               </Link>
