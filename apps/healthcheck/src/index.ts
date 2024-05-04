@@ -12,4 +12,16 @@ export default {
       },
     ],
   },
+  home: {
+    handler: 'src/handlers/home.home',
+    timeout: 30, // in seconds
+    events: [
+      {
+        http: {
+          method: 'GET',
+          path: '/',
+        },
+      },
+    ],
+  },
 } satisfies AWS['functions'];
