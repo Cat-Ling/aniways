@@ -1,9 +1,15 @@
 import { createAnimeService } from '@aniways/data';
 import { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { Pagination, PaginationLoader } from '../pagination';
 import { HeartCrack } from 'lucide-react';
+
+const searchAnime = cache(async (query: string, page: number) => {
+  const service = createAnimeService();
+
+  return service.searchAnime(query, page);
+});
 
 export const generateMetadata = async ({
   searchParams: { query },
@@ -55,8 +61,6 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  const { searchAnime } = createAnimeService();
-
   const { animes } = await searchAnime(query, page);
 
   if (!animes.length) {
@@ -75,8 +79,6 @@ const SearchResults = async ({
 };
 
 const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { searchAnime } = createAnimeService();
-
   const { hasNext, animes } = await searchAnime(props.query, props.page);
 
   if (!animes.length) {

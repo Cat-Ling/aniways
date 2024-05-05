@@ -1,7 +1,13 @@
 import { createAnimeService } from '@aniways/data';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { Pagination, PaginationLoader } from '../pagination';
+
+const getRecentlyReleasedAnimes = cache(async (page: number) => {
+  const service = createAnimeService();
+
+  return service.getRecentlyReleasedAnimes(page);
+});
 
 const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page || '1');
@@ -32,17 +38,13 @@ const Home = async ({ searchParams }: { searchParams: { page: string } }) => {
 };
 
 const RecentlyReleasedAnimeGrid = async ({ page }: { page: number }) => {
-  const service = createAnimeService();
-
-  const { recentlyReleased } = await service.getRecentlyReleasedAnimes(page);
+  const { recentlyReleased } = await getRecentlyReleasedAnimes(page);
 
   return <AnimeGrid animes={recentlyReleased} type="home" />;
 };
 
 const PaginationWrapper = async ({ page }: { page: number }) => {
-  const service = createAnimeService();
-
-  const { hasNext } = await service.getRecentlyReleasedAnimes(page);
+  const { hasNext } = await getRecentlyReleasedAnimes(page);
 
   return <Pagination hasNext={hasNext} />;
 };

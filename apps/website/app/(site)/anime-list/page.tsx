@@ -6,7 +6,7 @@ import { Play, Shell } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { RedirectType, redirect } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { Pagination, PaginationLoader } from '../pagination';
 import { createMyAnimeListService } from '@aniways/data';
 
@@ -108,14 +108,18 @@ type AnimeListProps = {
   status: Status;
 };
 
-const StatusMap = {
-  all: 'All',
-  watching: 'Watching',
-  completed: 'Completed',
-  on_hold: 'On Hold',
-  dropped: 'Dropped',
-  plan_to_watch: 'Plan to Watch',
-};
+const getAnimeListOfUser = cache(
+  async (
+    accessToken: string,
+    username: string,
+    page: number,
+    status: Status
+  ) => {
+    const service = createMyAnimeListService();
+
+    return service.getAnimeListOfUser(accessToken, username, page, status);
+  }
+);
 
 const PaginationWrapper = async ({
   page,
@@ -123,8 +127,6 @@ const PaginationWrapper = async ({
   username,
   status,
 }: AnimeListProps) => {
-  const { getAnimeListOfUser } = createMyAnimeListService();
-
   const animeList = await getAnimeListOfUser(
     accessToken,
     username,
@@ -143,8 +145,6 @@ const AnimeList = async ({
   username,
   status,
 }: AnimeListProps) => {
-  const { getAnimeListOfUser } = createMyAnimeListService();
-
   const animeList = await getAnimeListOfUser(
     accessToken,
     username,
@@ -206,7 +206,7 @@ const AnimeList = async ({
                 </p>
                 <div className="flex w-full justify-between">
                   <p className="text-muted-foreground mt-1 text-xs md:text-sm">
-                    {StatusMap[anime.my_list_status?.status ?? 'plan_to_watch']}
+                    {statusMap[anime.my_list_status?.status ?? 'plan_to_watch']}
                   </p>
                   <p className="text-muted-foreground mt-1 text-xs md:text-sm">
                     {anime.my_list_status?.num_episodes_watched ?? 0} of{' '}
