@@ -5,11 +5,12 @@ import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { AnimeCarousel } from './carousel';
-import { unstable_noStore } from 'next/cache';
 
 type HomeLayoutProps = {
   children: ReactNode;
 };
+
+export const revalidate = 3600;
 
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
@@ -35,8 +36,6 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
 }
 
 const SeasonalAnimeCarousel = async () => {
-  unstable_noStore();
-
   const service = createMyAnimeListService();
 
   const seasonalAnime = await service.getCurrentSeasonAnimes();

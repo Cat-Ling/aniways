@@ -9,6 +9,8 @@ import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: {
     default: 'AniWays',
