@@ -10,8 +10,6 @@ type HomeLayoutProps = {
   children: ReactNode;
 };
 
-export const revalidate = 3600;
-
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <>
