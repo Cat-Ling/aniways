@@ -16,16 +16,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
       <Suspense fallback={<Skeleton className="mb-2 h-[430px] md:mb-5" />}>
         <SeasonalAnimeCarousel />
       </Suspense>
-      <Suspense
-        fallback={
-          <>
-            <Skeleton className="mb-2 h-[32px] md:mb-5" />
-            <div className="mb-12">
-              <AnimeGridLoader length={5} />
-            </div>
-          </>
-        }
-      >
+      <Suspense fallback={<CurrentlyWatchingAnimeLoader />}>
         <CurrentlyWatchingAnime />
       </Suspense>
       {children}
@@ -40,6 +31,15 @@ const SeasonalAnimeCarousel = async () => {
 
   return <AnimeCarousel seasonalAnime={seasonalAnime} />;
 };
+
+const CurrentlyWatchingAnimeLoader = () => (
+  <>
+    <Skeleton className="mb-2 h-[32px] md:mb-5" />
+    <div className="mb-12">
+      <AnimeGridLoader length={5} />
+    </div>
+  </>
+);
 
 const CurrentlyWatchingAnime = async () => {
   const user = await auth(cookies());
