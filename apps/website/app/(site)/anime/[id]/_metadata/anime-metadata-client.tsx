@@ -44,6 +44,7 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
             {[
               details.type,
               details.rating,
+              `${details.season} ${details.year}`,
               details.duration,
               details.status,
             ].map(
