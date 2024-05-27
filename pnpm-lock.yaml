@@ -115,6 +115,9 @@ importers:
       '@aniways/data':
         specifier: workspace:*
         version: link:../../packages/data
+      zod:
+        specifier: 3.22.4
+        version: 3.22.4
     devDependencies:
       '@aniways/eslint-config':
         specifier: workspace:*
