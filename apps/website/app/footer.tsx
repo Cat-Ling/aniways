@@ -6,13 +6,13 @@ export const Footer = () => {
 
   return (
     <footer className="bg-background border-border mt-12 border-t">
-      <div className="mx-auto w-full max-w-screen-xl p-4 md:py-8">
+      <div className="mx-auto w-full max-w-screen-xl p-4">
         <div className="sm:flex sm:items-center sm:justify-between">
           <Link
             href="/"
-            className="mb-4 flex items-center space-x-3 sm:mb-0 rtl:space-x-reverse"
+            className="mb-4 flex items-center sm:mb-0 rtl:space-x-reverse"
           >
-            <Image src="/logo" alt="Aniways Logo" width={32} height={32} />
+            <Image src="/logo.png" alt="Aniways Logo" width={64} height={64} />
             <span className="text-foreground self-center whitespace-nowrap text-2xl font-semibold">
               Aniways
             </span>
@@ -39,7 +39,7 @@ export const Footer = () => {
             </li>
           </ul>
         </div>
-        <hr className="border-border my-6 sm:mx-auto lg:my-8" />
+        <hr className="border-border mb-6 mt-4 sm:mx-auto" />
         <span className="text-muted-foreground mb-3 block text-xs sm:text-center">
           This site does not store any data. All data is provided by
           non-affiliated third parties.

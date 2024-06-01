@@ -18,7 +18,7 @@ export const home: APIGatewayProxyHandler = async () => {
           name="viewport"
           content="width=device-width, initial-scale=1.0"
         />
-        <link rel="icon" href="https://aniways.xyz/favicon" />
+        <link rel="icon" href="https://aniways.xyz/favicon.ico" />
         <title>Health Check | Aniways</title>
         <style>
           *, *::before, *::after {

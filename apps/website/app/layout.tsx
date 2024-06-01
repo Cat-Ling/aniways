@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   description: 'Another anime website but with a MyAnimeList Integration',
   icons: {
-    icon: '/favicon',
+    icon: '/favicon.ico',
   },
   metadataBase: new URL('https://aniways.vercel.app'),
 };
