@@ -51,7 +51,7 @@ jobs:
         run: pnpm install
 
       - name: Install serverless
-        run: pnpm add -g serverless
+        run: pnpm add -g serverless@3.34.0
 
       - name: Set up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
