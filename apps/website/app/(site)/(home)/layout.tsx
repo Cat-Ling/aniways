@@ -5,7 +5,6 @@ import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';
 import { AnimeGrid, AnimeGridLoader } from '../anime-grid';
 import { AnimeCarousel } from './carousel';
-import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 
 type HomeLayoutProps = {
   children: ReactNode;
@@ -14,13 +13,9 @@ type HomeLayoutProps = {
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <>
-      <ErrorBoundary
-        errorComponent={() => <Skeleton className="mb-2 h-[430px] md:mb-5" />}
-      >
-        <Suspense fallback={<Skeleton className="mb-2 h-[430px] md:mb-5" />}>
-          <SeasonalAnimeCarousel />
-        </Suspense>
-      </ErrorBoundary>
+      <Suspense fallback={<Skeleton className="mb-2 h-[430px] md:mb-5" />}>
+        <SeasonalAnimeCarousel />
+      </Suspense>
       <Suspense fallback={<CurrentlyWatchingAnimeLoader />}>
         <CurrentlyWatchingAnime />
       </Suspense>
