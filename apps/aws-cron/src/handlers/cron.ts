@@ -87,12 +87,6 @@ export const main: APIGatewayProxyHandler = async event => {
     };
   }
 
-  logger('Started fetching animes from DB');
-
-  const allAnimes = await db.query.anime.findMany();
-
-  logger('Fetched', allAnimes.length, 'animes from db');
-
   logger('Started inserting new episodes');
 
   const insertValues = (
@@ -102,7 +96,12 @@ export const main: APIGatewayProxyHandler = async event => {
           (await scrapeSlugFromEpisodeSlug(`${a.slug}-episode-${a.episode}`)) ||
           a.slug;
 
-        const animeFromDb = allAnimes.find(anime => anime.slug === slug);
+        const animeFromDb = await db
+          .select()
+          .from(anime)
+          .where(eq(anime.slug, slug))
+          .then(data => data[0]);
+
         let animeId = animeFromDb?.id;
 
         if (!animeFromDb) {
