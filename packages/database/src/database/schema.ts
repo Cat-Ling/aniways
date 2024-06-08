@@ -47,10 +47,7 @@ export const anime = pgTable(
   {
     id: varchar('id', { length: 25 }).primaryKey(),
     title: text('title').notNull(),
-    description: text('description').notNull(),
     image: text('image').notNull(),
-    year: numeric('year').notNull(),
-    status: AnimeStatus('status').notNull(),
     slug: text('slug').notNull(),
     lastEpisode: numeric('last_episode'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -59,6 +56,7 @@ export const anime = pgTable(
   table => ({
     malAnimeIdx: index('anime_mal_anime_idx').on(table.malAnimeId),
     slugIdx: index('anime_slug_idx').on(table.slug),
+    updatedAtIdx: index('anime_updated_at_idx').on(table.updatedAt),
   })
 );
 
@@ -91,6 +89,7 @@ export const video = pgTable(
     animeIdx: index('video_anime_idx').on(table.animeId),
     episodeIdx: index('video_episode_idx').on(table.episode),
     slugIdx: index('video_slug_idx').on(table.slug),
+    createdAtIdx: index('video_created_at_idx').on(table.createdAt),
   })
 );
 

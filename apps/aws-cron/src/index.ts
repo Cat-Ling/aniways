@@ -8,12 +8,6 @@ export default {
       {
         schedule: 'cron(0 * * * ? *)', // every hour
       },
-      {
-        http: {
-          method: 'post',
-          path: 'cron',
-        },
-      },
     ],
   },
 } satisfies AWS['functions'];

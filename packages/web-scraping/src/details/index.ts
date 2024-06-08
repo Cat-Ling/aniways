@@ -57,60 +57,8 @@ async function getDetails(url: string, slug: string, signal: AbortSignal) {
 
   if (image === undefined) return null;
 
-  const released = dom
-    .querySelectorAll('.type')
-    .map(a =>
-      a.innerText.includes('Released') ?
-        a.innerText.replace('Released: ', '').trim()
-      : null
-    )
-    .filter(year => year !== null)
-    .at(0);
-
-  if (released === undefined) return null;
-
-  const status = dom
-    .querySelectorAll('.type')
-    .map(a =>
-      a.innerText.includes('Status') ?
-        a.innerText.replace('Status: ', '').trim()
-      : null
-    )
-    .filter(status => status !== null)
-    .at(0);
-
-  if (status === undefined) return null;
-
-  const description = dom
-    .querySelectorAll('.type')
-    .map(a =>
-      a.innerText.includes('Plot Summary') ?
-        a.innerText.replace('Plot Summary: ', '').trim()
-      : null
-    )
-    .filter(status => status !== null)
-    .at(0);
-
-  if (description === undefined) return null;
-
-  const genres = dom
-    .querySelectorAll('.type')
-    .map(a =>
-      a.innerText.includes('Genre') ?
-        a.innerText.replace('Genre: ', '').trim()
-      : null
-    )
-    .filter(status => status !== null)
-    .at(0);
-
-  if (genres === undefined) return null;
-
   return {
     title,
     image,
-    released,
-    status,
-    description,
-    genres,
   };
 }

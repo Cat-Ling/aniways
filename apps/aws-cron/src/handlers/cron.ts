@@ -1,56 +1,29 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
 import { orm, schema, db, createId, client } from '@aniways/database';
 import {
   scrapeRecentlyReleasedAnime,
   scrapeSlugFromEpisodeSlug,
-  scrapeDetailsOfAnime,
 } from '@aniways/web-scraping';
 
 const { anime, video } = schema;
 const { eq } = orm;
 
-const logger = (...args: any[]) => {
-  console.log('[Aniways]', '{cron}', ...args);
+const logger = {
+  log(...args: any[]) {
+    console.log('[Aniways]', '{cron}', ...args);
+  },
 };
 
-export const main: APIGatewayProxyHandler = async event => {
+const checkIfOffline = () => {
   // eslint-disable-next-line
-  if (process.env.IS_OFFLINE && !event?.httpMethod) {
-    logger('Offline mode');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Offline mode',
-      }),
-    };
+  if (process.env.IS_OFFLINE) {
+    logger.log('Offline mode');
+    return true;
   }
+  return false;
+};
 
-  logger('Started fetching last updated animes from db');
-
-  const lastUpdatedAnimes = await db.query.anime.findMany({
-    columns: {
-      id: true,
-      slug: true,
-      lastEpisode: true,
-    },
-    orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
-    limit: 50,
-    with: {
-      videos: {
-        columns: {
-          slug: true,
-        },
-        limit: 1,
-        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
-      },
-    },
-  });
-
-  logger('Fetched last updated animes from db', lastUpdatedAnimes.length);
-
-  logger('Started fetching recently released anime from anitaku');
-
-  const recentlyReleasedAnime = (
+const getRecentlyReleasedAnimes = async () => {
+  return (
     await Promise.all([
       scrapeRecentlyReleasedAnime(1).then(data => data.anime),
       scrapeRecentlyReleasedAnime(2).then(data => data.anime),
@@ -62,144 +35,145 @@ export const main: APIGatewayProxyHandler = async event => {
       ...a,
       slug: a.url.replace('/anime/', '').split('/')[0]!,
     }));
+};
 
-  logger(
-    'Fetched recently released anime from anitaku',
-    recentlyReleasedAnime.length
-  );
+const filterNewAnimes = async (
+  animes: Awaited<ReturnType<typeof getRecentlyReleasedAnimes>>
+) => {
+  logger.log('Started fetching last updated animes from db');
 
-  logger('Started filtering new animes');
+  const lastUpdatedAnimes = await db.query.anime.findMany({
+    columns: {
+      id: true,
+      slug: true,
+      lastEpisode: true,
+    },
+    orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
+    limit: 60,
+    with: {
+      videos: {
+        columns: {
+          slug: true,
+        },
+        limit: 1,
+        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
+      },
+    },
+  });
 
-  const newAnimes = recentlyReleasedAnime.filter(a => {
+  logger.log('Fetched last updated animes from db', lastUpdatedAnimes.length);
+
+  return animes.filter(a => {
     const animeFromDB = lastUpdatedAnimes.find(
       anime =>
         anime.slug === a.slug ||
         anime.videos[0]?.slug.split('-episode-')[0] === a.slug
     );
-    if (!animeFromDB) return true;
-    if (animeFromDB.lastEpisode === String(a.episode)) return false;
-    return true;
-  });
 
-  logger('New anime episodes', newAnimes);
+    return !animeFromDB || animeFromDB.lastEpisode !== String(a.episode);
+  });
+};
+
+const constructIndividualInsertValues = async (
+  a: Awaited<ReturnType<typeof filterNewAnimes>>[number]
+) => {
+  const episodeSlug = `${a.slug}-episode-${a.episode}`;
+
+  const slug = await scrapeSlugFromEpisodeSlug(episodeSlug).then(
+    data => data || a.slug
+  );
+
+  const [animeFromDb] = await db
+    .select({
+      id: anime.id,
+      lastEpisode: anime.lastEpisode,
+    })
+    .from(anime)
+    .where(eq(anime.slug, slug));
+
+  const animeId = animeFromDb?.id ?? createId();
+
+  if (!animeFromDb) {
+    logger.log('No anime found in db, fetching from anitaku', a.slug);
+
+    await db.insert(anime).values({
+      id: animeId,
+      title: a.name,
+      image: a.image,
+      slug: slug,
+      lastEpisode: String(a.episode),
+      updatedAt: new Date(),
+    });
+
+    logger.log('Inserted new anime', a.name, 'into db');
+  }
+
+  await db
+    .update(anime)
+    .set({
+      lastEpisode: String(a.episode),
+      updatedAt: new Date(),
+    })
+    .where(eq(anime.id, animeId!));
+
+  const episodes = Array.from({
+    length: Math.max(a.episode - Number(animeFromDb?.lastEpisode ?? '0'), 1),
+  })
+    .map((_, i) => a.episode - i)
+    .reverse();
+
+  return episodes.map(ep => ({
+    id: createId(),
+    animeId: animeId!,
+    episode: String(ep),
+    slug: `${a.slug}-episode-${ep}`,
+    createdAt: new Date(),
+  }));
+};
+
+const constructInsertValues = async (
+  newAnimes: Awaited<ReturnType<typeof filterNewAnimes>>
+) => {
+  const insertValues = await Promise.all(
+    newAnimes.map(constructIndividualInsertValues)
+  );
+
+  return insertValues.flat();
+};
+
+export const main = async () => {
+  if (checkIfOffline()) throw new Error('Offline mode');
+
+  logger.log('Started fetching recently released anime from anitaku');
+
+  const recentlyReleasedAnime = await getRecentlyReleasedAnimes();
+
+  logger.log(
+    'Fetched recently released anime from anitaku',
+    recentlyReleasedAnime.length
+  );
+
+  logger.log('Started filtering new animes');
+
+  const newAnimes = await filterNewAnimes(recentlyReleasedAnime);
+
+  logger.log('New anime episodes', newAnimes);
 
   if (newAnimes.length === 0) {
-    logger('No new animes');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'No new animes',
-      }),
-    };
+    return logger.log('No new animes');
   }
 
-  logger('Started inserting new episodes');
-
-  const insertValues = (
-    await Promise.all(
-      newAnimes.map(async a => {
-        const slug =
-          (await scrapeSlugFromEpisodeSlug(`${a.slug}-episode-${a.episode}`)) ||
-          a.slug;
-
-        const animeFromDb = await db
-          .select({
-            id: anime.id,
-            lastEpisode: anime.lastEpisode,
-          })
-          .from(anime)
-          .where(eq(anime.slug, slug))
-          .then(data => data[0]);
-
-        let animeId = animeFromDb?.id;
-
-        if (!animeFromDb) {
-          logger('No anime found in db, fetching from anitaku', a.slug);
-          const animedata = await scrapeDetailsOfAnime(slug);
-          logger('Fetched anime details from anitaku', animedata);
-
-          if (!animedata) {
-            return Promise.resolve(undefined);
-          }
-
-          animeId = createId();
-
-          await db.insert(anime).values({
-            id: animeId,
-            title: animedata.title,
-            image: animedata.image,
-            year: animedata.released ?? '',
-            description: animedata.description ?? '',
-            slug: slug,
-            status:
-              ({
-                Upcoming: 'NOT_YET_AIRED',
-                Ongoing: 'CURRENTLY_AIRING',
-                Completed: 'FINISHED_AIRING',
-              }[
-                anime.status as unknown as 'Upcoming' | 'Ongoing' | 'Completed'
-              ]! as any) ?? 'NOT_YET_AIRED',
-            lastEpisode: String(a.episode),
-            updatedAt: new Date(),
-          });
-
-          logger('Inserted new anime', animedata.title, 'into db');
-        }
-        await db
-          .update(anime)
-          .set({
-            lastEpisode: String(a.episode),
-            updatedAt: new Date(),
-          })
-          .where(eq(anime.id, animeId!))
-          .execute();
-        const episodes = Array.from({
-          length:
-            a.episode < 1 ?
-              1
-            : a.episode - Number(animeFromDb?.lastEpisode ?? '0'),
-        })
-          .map((_, i) => a.episode - i)
-          .reverse();
-        return episodes.map(ep => ({
-          id: createId(),
-          animeId: animeId!,
-          episode: String(ep),
-          slug: `${a.slug}-episode-${ep}`,
-          createdAt: new Date(),
-        }));
-      })
-    )
-  )
-    .flat()
-    .filter(val => val !== undefined) as {
-    id: string;
-    animeId: string;
-    episode: string;
-    slug: string;
-    createdAt: Date;
-  }[];
+  const insertValues = await constructInsertValues(newAnimes);
 
   if (insertValues.length === 0) {
-    logger('No new episodes to insert');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'No new episodes to insert',
-      }),
-    };
+    return logger.log('No new episodes to insert');
   }
 
-  await db.insert(video).values(insertValues).execute();
-  logger('Inserted', insertValues.length, 'new episodes into db');
+  await db.insert(video).values(insertValues);
+
+  logger.log('Inserted', insertValues.length, 'new episodes into db');
 
   await client.end(); // Close the connection
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Inserted new animes',
-      newAnimes: insertValues,
-    }),
-  };
+  logger.log('Connection closed');
 };
