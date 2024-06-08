@@ -1,5 +1,5 @@
 import { RedirectType, notFound, redirect } from 'next/navigation';
-import { createAnimeService, createEpisodeService } from '@aniways/data';
+import { createAnimeService } from '@aniways/data';
 
 const AnimeDetailsPage = async ({
   params: { id },
@@ -8,21 +8,12 @@ const AnimeDetailsPage = async ({
 }) => {
   const { getAnimeById } = createAnimeService();
 
-  const anime = await getAnimeById(id, true);
+  const anime = await getAnimeById(id);
 
   if (!anime) notFound();
 
-  const { seedMissingEpisodes } = createEpisodeService();
-
-  try {
-    anime.videos = await seedMissingEpisodes(anime);
-  } catch (e) {
-    if (e === seedMissingEpisodes.error) notFound();
-    throw e;
-  }
-
   redirect(
-    `/anime/${id}/episodes/${anime.videos.at(0)?.episode ?? 1}`,
+    `/anime/${id}/episodes/${anime.firstEpisode ?? 1}`,
     RedirectType.replace
   );
 };

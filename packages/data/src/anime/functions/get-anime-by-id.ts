@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { db, orm, schema } from '@aniways/database';
 
-type Columns = {
-  [key in keyof schema.Anime]: boolean;
-};
-
-export const getAnimeById = async (id: string, withVideos: boolean = false) => {
+export const getAnimeById = async (
+  id: string,
+  withFirstEpisode: boolean = false
+) => {
   const anime = await db
     .select()
     .from(schema.anime)
@@ -13,19 +12,24 @@ export const getAnimeById = async (id: string, withVideos: boolean = false) => {
     .limit(1)
     .then(rows => rows[0]);
 
-  if (!anime) return undefined;
+  if (!anime) return null;
 
-  const videos =
-    withVideos ?
-      await db
-        .select()
-        .from(schema.video)
-        .where(orm.eq(schema.video.animeId, id))
-        .orderBy(orm.asc(schema.video.episode))
-    : [];
+  if (withFirstEpisode) {
+    const episodes = await db
+      .select({
+        episode: schema.video.episode,
+      })
+      .from(schema.video)
+      .where(orm.eq(schema.video.animeId, id))
+      .orderBy(orm.asc(schema.video.episode))
+      .limit(1)
+      .then(rows => rows[0]);
+
+    return { ...anime, firstEpisode: episodes?.episode ?? null };
+  }
 
   return {
     ...anime,
-    videos: videos,
+    firstEpisode: null,
   };
 };
