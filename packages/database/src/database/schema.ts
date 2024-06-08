@@ -42,28 +42,6 @@ export const AnimeAgeRating = pgEnum('anime_rating', [
   'RX',
 ]);
 
-export const animeTitle = pgTable('anime_title', {
-  id: varchar('id', { length: 25 }).primaryKey(),
-  title: text('title').notNull(),
-  animeId: varchar('anime_id', { length: 25 })
-    .notNull()
-    .references(() => anime.id),
-});
-
-export type AnimeTitle = InferSelectModel<typeof animeTitle>;
-
-export const animeTitleRelations = relations(animeTitle, ({ one }) => ({
-  anime: one(anime, {
-    relationName: 'titles',
-    fields: [animeTitle.animeId],
-    references: [anime.id],
-  }),
-}));
-
-export type AnimeTitleWithRelations = AnimeTitle & {
-  anime: Anime;
-};
-
 export const anime = pgTable(
   'anime',
   {
@@ -87,42 +65,13 @@ export const anime = pgTable(
 export type Anime = InferSelectModel<typeof anime>;
 
 export const animeRelations = relations(anime, ({ many }) => ({
-  genres: many(animeGenre, {
-    relationName: 'anime-genres',
-  }),
   videos: many(video, {
     relationName: 'anime-videos',
-  }),
-  titles: many(animeTitle, {
-    relationName: 'titles',
   }),
 }));
 
 export type AnimeWithRelations = Anime & {
-  genres: AnimeGenre[];
   videos: Video[];
-};
-
-export const animeGenre = pgTable('anime_genre', {
-  id: varchar('id', { length: 25 }).primaryKey(),
-  animeId: varchar('anime_id', { length: 25 })
-    .notNull()
-    .references((): AnyPgColumn => anime.id),
-  genre: text('genre').notNull(),
-});
-
-export type AnimeGenre = InferSelectModel<typeof animeGenre>;
-
-export const genreRelations = relations(animeGenre, ({ one }) => ({
-  anime: one(anime, {
-    relationName: 'anime-genres',
-    fields: [animeGenre.id],
-    references: [anime.id],
-  }),
-}));
-
-export type AnimeGenreWithRelations = AnimeGenre & {
-  anime: Anime;
 };
 
 export const video = pgTable(

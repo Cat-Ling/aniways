@@ -6,7 +6,7 @@ import {
   scrapeDetailsOfAnime,
 } from '@aniways/web-scraping';
 
-const { anime, video, animeGenre, animeTitle } = schema;
+const { anime, video } = schema;
 const { eq } = orm;
 
 const logger = (...args: any[]) => {
@@ -144,26 +144,6 @@ export const main: APIGatewayProxyHandler = async event => {
           });
 
           logger('Inserted new anime', animedata.title, 'into db');
-
-          await db.insert(animeTitle).values({
-            id: createId(),
-            animeId: animeId!,
-            title: animedata.title,
-          });
-
-          if (animedata.genres) {
-            await db
-              .insert(animeGenre)
-              .values(
-                animedata.genres.split(',').map((genre: string) => ({
-                  id: createId(),
-                  animeId: animeId!,
-                  genre: genre.trim(),
-                }))
-              )
-              .execute();
-          }
-          logger('Inserted genres for', animedata.title);
         }
         await db
           .update(anime)
