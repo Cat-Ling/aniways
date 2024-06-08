@@ -1,19 +1,25 @@
-import { db } from '@aniways/database';
+import { db, orm, schema } from '@aniways/database';
 
 export async function searchAnimeFromDB(query: string, page: number) {
-  const animes = await db.query.anime.findMany({
-    where: ({ title, lastEpisode }, { sql }) => {
-      return sql`SIMILARITY(${title}, ${query}) > 0.2 AND ${title} NOT LIKE '%Dub%' AND ${title} NOT LIKE '%dub%' AND ${lastEpisode} IS NOT NULL`;
-    },
-    orderBy: ({ title }, { sql }) => {
-      return sql`SIMILARITY(${title}, ${query}) DESC`;
-    },
-    limit: 21,
-    offset: (page - 1) * 20,
-    with: {
-      genres: true,
-    },
-  });
+  const animes = await db
+    .select({
+      id: schema.anime.id,
+      title: schema.anime.title,
+      image: schema.anime.image,
+      lastEpisode: schema.anime.lastEpisode,
+    })
+    .from(schema.anime)
+    .where(
+      orm.and(
+        orm.sql`SIMILARITY(${schema.anime.title}, ${query}) > 0.2`,
+        orm.notLike(schema.anime.title, '%Dub%'),
+        orm.notLike(schema.anime.title, '%dub%'),
+        orm.isNotNull(schema.anime.lastEpisode)
+      )
+    )
+    .orderBy(orm.sql`SIMILARITY(${schema.anime.title}, ${query}) DESC`)
+    .limit(21)
+    .offset((page - 1) * 20);
 
   const hasNext = animes.length > 20;
 

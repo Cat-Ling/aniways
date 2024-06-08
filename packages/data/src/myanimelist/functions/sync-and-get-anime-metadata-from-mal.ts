@@ -1,4 +1,3 @@
-import { schema } from '@aniways/database';
 import { syncAnimeMetadataFromMAL } from './mutations/sync-anime-metadata-from-mal';
 import {
   GetAnimeMetadataOptions,
@@ -9,7 +8,11 @@ const NOT_FOUND = 'not-found' as const;
 
 async function _syncAndGetAnimeMetadataFromMAL(
   accessToken: string | undefined,
-  anime: schema.Anime
+  anime: {
+    id: string;
+    title: string;
+    malAnimeId: number | null;
+  }
 ) {
   const options: GetAnimeMetadataOptions =
     anime.malAnimeId ?

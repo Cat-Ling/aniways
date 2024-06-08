@@ -14,7 +14,13 @@ export async function getContinueWatchingAnime(
   );
 
   const currentlyWatchingAnime = await db
-    .select()
+    .select({
+      id: schema.anime.id,
+      title: schema.anime.title,
+      image: schema.anime.image,
+      malAnimeId: schema.anime.malAnimeId,
+      lastEpisode: schema.anime.lastEpisode,
+    })
     .from(schema.anime)
     .where(
       orm.inArray(

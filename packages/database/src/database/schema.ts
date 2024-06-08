@@ -140,6 +140,8 @@ export const video = pgTable(
   },
   table => ({
     animeIdx: index('video_anime_idx').on(table.animeId),
+    episodeIdx: index('video_episode_idx').on(table.episode),
+    slugIdx: index('video_slug_idx').on(table.slug),
   })
 );
 

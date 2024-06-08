@@ -27,18 +27,24 @@ export const main: APIGatewayProxyHandler = async event => {
 
   logger('Started fetching last updated animes from db');
 
-  const lastUpdatedAnimes = await db.query.anime
-    .findMany({
-      orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
-      limit: 100,
-      with: {
-        videos: {
-          limit: 1,
-          orderBy: ({ createdAt }, { desc }) => desc(createdAt),
+  const lastUpdatedAnimes = await db.query.anime.findMany({
+    columns: {
+      id: true,
+      slug: true,
+      lastEpisode: true,
+    },
+    orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
+    limit: 50,
+    with: {
+      videos: {
+        columns: {
+          slug: true,
         },
+        limit: 1,
+        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
       },
-    })
-    .execute();
+    },
+  });
 
   logger('Fetched last updated animes from db', lastUpdatedAnimes.length);
 
@@ -97,7 +103,10 @@ export const main: APIGatewayProxyHandler = async event => {
           a.slug;
 
         const animeFromDb = await db
-          .select()
+          .select({
+            id: anime.id,
+            lastEpisode: anime.lastEpisode,
+          })
           .from(anime)
           .where(eq(anime.slug, slug))
           .then(data => data[0]);

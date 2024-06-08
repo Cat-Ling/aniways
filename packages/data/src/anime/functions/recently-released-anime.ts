@@ -1,21 +1,24 @@
-import { db } from '@aniways/database';
+import { db, orm, schema } from '@aniways/database';
 
 export async function getRecentlyReleasedAnime(page: number) {
-  const recentlyReleased = await db.query.anime.findMany({
-    where: ({ title, lastEpisode }, { notLike, and, isNotNull }) => {
-      return and(
-        isNotNull(lastEpisode),
-        notLike(title, `%dub%`),
-        notLike(title, '%Dub%')
-      );
-    },
-    orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
-    offset: (page - 1) * 20,
-    limit: 21,
-    with: {
-      videos: true,
-    },
-  });
+  const recentlyReleased = await db
+    .select({
+      id: schema.anime.id,
+      title: schema.anime.title,
+      image: schema.anime.image,
+      lastEpisode: schema.anime.lastEpisode,
+    })
+    .from(schema.anime)
+    .where(
+      orm.and(
+        orm.notLike(schema.anime.title, '%Dub%'),
+        orm.notLike(schema.anime.title, '%dub%'),
+        orm.isNotNull(schema.anime.lastEpisode)
+      )
+    )
+    .orderBy(orm.desc(schema.anime.updatedAt))
+    .limit(21)
+    .offset((page - 1) * 20);
 
   const hasNext = recentlyReleased.length > 20;
 

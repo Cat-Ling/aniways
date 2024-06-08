@@ -1,7 +1,5 @@
 import { createId, db, schema } from '@aniways/database';
 
-type AnimeWithVideo = schema.Anime & { videos: schema.Video[] };
-
 const NOT_FOUND = 'not-found' as const;
 
 export const seedMissingAnimeEpisodes = Object.assign(
@@ -9,7 +7,12 @@ export const seedMissingAnimeEpisodes = Object.assign(
   { error: NOT_FOUND }
 );
 
-async function _seedMissingAnimeEpisodes(anime: AnimeWithVideo) {
+async function _seedMissingAnimeEpisodes(anime: {
+  id: string;
+  lastEpisode: string | null;
+  slug: string;
+  videos: schema.Video[];
+}) {
   if (anime.lastEpisode === null || anime.videos.length > 0) {
     return anime.videos;
   }

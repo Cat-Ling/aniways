@@ -1,12 +1,16 @@
 import { Play } from 'lucide-react';
 import Link from 'next/link';
-import { Schema } from '@aniways/data';
 import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 type AnimeGridProps = {
   type: 'home' | 'search';
-  animes: Schema.Anime[];
+  animes: {
+    id: string;
+    title: string;
+    lastEpisode: string | null;
+    image: string;
+  }[];
 };
 
 export const AnimeGridLoader = ({ length = 20 }: { length?: number }) => {

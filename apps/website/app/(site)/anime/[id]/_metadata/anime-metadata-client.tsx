@@ -1,6 +1,5 @@
 'use client';
 
-import { Schema } from '@aniways/data';
 import { Button } from '@aniways/ui/components/ui/button';
 import {
   Dialog,
@@ -19,7 +18,9 @@ import { useMetadata } from './metadata-provider';
 import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 type AnimeMetadataClientProps = {
-  anime: Schema.Anime;
+  anime: {
+    title: string;
+  };
 };
 
 export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
@@ -28,7 +29,7 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
   return (
     <div className="mb-6 grid min-h-[400px] w-full grid-cols-1 gap-6 md:grid-cols-4">
       <Image
-        src={details.images.jpg.large_image_url ?? anime.image}
+        src={details.images.jpg.large_image_url}
         alt={anime.title}
         width={300}
         height={400}

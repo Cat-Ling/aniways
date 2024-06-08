@@ -32,7 +32,6 @@ export const generateMetadata = async ({
       title: `${data.title} - Episode ${episode}`,
       description: `Watch ${data.title} episode ${episode} online for free.`,
       type: 'video.episode',
-      url: `https://aniways.com/${data.slug}/episodes/${episode}`,
       siteName: 'Aniways',
       images: [
         {
