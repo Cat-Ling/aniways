@@ -11,6 +11,7 @@ export const Image = (props: ImageProps) => {
   return (
     <img
       {...props}
+      loading="lazy"
       onError={setError.bind(null, true)}
       className={cn(props.className, error && 'bg-background')}
     />
