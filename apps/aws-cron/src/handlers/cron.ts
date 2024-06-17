@@ -74,7 +74,7 @@ const filterNewAnimes = async (
 const constructIndividualInsertValues = async (
   newAnime: Awaited<ReturnType<typeof filterNewAnimes>>[number]
 ) => {
-  const episodeSlug = `${newAnime.slug}-episode-${newAnime.episode}`;
+  const episodeSlug = `${newAnime.slug}-episode-${newAnime.episode.toString().replace('.', '-')}`;
 
   const slug = await scrapeSlugFromEpisodeSlug(episodeSlug).then(
     scrapedSlug => scrapedSlug || newAnime.slug
