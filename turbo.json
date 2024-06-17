@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDotEnv": [".env"],
+  "pipeline": {
+    "build": {
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "dotEnv": [".env"],
+      "dependsOn": ["lint", "^build"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dotEnv": [".env"]
+    },
+    "start": {
+      "dotEnv": [".env"],
+      "dependsOn": ["^start"]
+    },
+    "package": {
+      "dependsOn": ["lint"],
+      "dotEnv": [".env"]
+    },
+    "deploy:prod": {
+      "dependsOn": ["package"],
+      "dotEnv": [".env"]
+    }
+  }
+}
