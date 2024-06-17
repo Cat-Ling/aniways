@@ -121,13 +121,24 @@ const constructIndividualInsertValues = async (
     .map((_, i) => newAnime.episode - i)
     .reverse();
 
-  return episodes.map(ep => ({
-    id: createId(),
-    animeId: animeId!,
-    episode: String(ep),
-    slug: `${newAnime.slug}-episode-${ep}`,
-    createdAt: new Date(),
-  }));
+  episodes.pop(); // Remove the last episode
+
+  return [
+    ...episodes.map(ep => ({
+      id: createId(),
+      animeId: animeId!,
+      episode: String(ep),
+      slug: `${newAnime.slug}-episode-${ep}`,
+      createdAt: new Date(),
+    })),
+    {
+      id: createId(),
+      animeId: animeId!,
+      episode: String(newAnime.episode),
+      slug: `${newAnime.slug}-episode-${newAnime.episode.toString().replace('.', '-')}`,
+      createdAt: new Date(),
+    },
+  ];
 };
 
 const constructInsertValues = async (
