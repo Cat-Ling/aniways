@@ -1,3 +1,4 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 import { SSTConfig } from 'sst';
 import { NextjsSite } from 'sst/constructs';
 
@@ -10,7 +11,14 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
-      const site = new NextjsSite(stack, 'site');
+      const site = new NextjsSite(stack, 'site', {
+        environment: {
+          DATABASE_URL: process.env.DATABASE_URL!,
+          MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
+          MAL_CLIENT_SECRET: process.env.MAL_CLIENT_SECRET!,
+          MAL_SECRET_KEY: process.env.MAL_SECRET_KEY!,
+        },
+      });
 
       stack.addOutputs({
         SiteUrl: site.url,
