@@ -5,7 +5,7 @@ import { Button } from '@aniways/ui/components/ui/button';
 import { cn } from '@aniways/ui/lib/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 type EpisodesSidbarProps = {
   animeId: string;
@@ -20,6 +20,22 @@ export const EpisodesSectionClient = ({
 }: EpisodesSidbarProps) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const currentVideoRef = useRef<HTMLButtonElement>(null);
+
+  const nextEpisode = useMemo(() => {
+    const currentIndex = episodes.findIndex(
+      video => video.episode === currentEpisode
+    );
+
+    return episodes.at(currentIndex + 1);
+  }, [currentEpisode, episodes]);
+
+  const prevEpisode = useMemo(() => {
+    const currentIndex = episodes.findIndex(
+      video => video.episode === currentEpisode
+    );
+
+    return episodes.at(currentIndex - 1);
+  }, [currentEpisode, episodes]);
 
   useEffect(() => {
     if (!currentVideoRef.current) return;
@@ -39,21 +55,17 @@ export const EpisodesSectionClient = ({
   return (
     <div className="mt-3">
       <div className="mb-6 flex w-full justify-between">
-        {Number(currentEpisode) > 1 ?
+        {prevEpisode ?
           <Button className="flex items-center gap-2" asChild>
-            <Link
-              href={`/anime/${animeId}/episodes/${Number(currentEpisode) - 1}`}
-            >
+            <Link href={`/anime/${animeId}/episodes/${prevEpisode?.episode}`}>
               <ChevronLeftIcon className="h-5 w-5" />
               Previous
             </Link>
           </Button>
         : <div></div>}
-        {Number(currentEpisode) < episodes.length && (
+        {nextEpisode && (
           <Button className="flex items-center gap-2" asChild>
-            <Link
-              href={`/anime/${animeId}/episodes/${Number(currentEpisode) + 1}`}
-            >
+            <Link href={`/anime/${animeId}/episodes/${nextEpisode?.episode}`}>
               Next
               <ChevronRightIcon className="h-5 w-5" />
             </Link>

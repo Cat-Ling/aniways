@@ -21,6 +21,8 @@ export const generateMetadata = async ({
     episode: string;
   };
 }): Promise<Metadata> => {
+  episode = episode.replace('-', '.');
+
   const data = await getAnimeById(id);
 
   if (!data || !data.title) return {};
@@ -51,6 +53,8 @@ const AnimeStreamingPage = async ({
     episode: string;
   };
 }) => {
+  episode = episode.replace('-', '.');
+
   const anime = await getAnimeById(id);
 
   if (!anime) notFound();

@@ -33,7 +33,7 @@ export const AnimeGrid = (props: AnimeGridProps) => {
 
         const url =
           type === 'home' ?
-            `/anime/${id}/episodes/${lastEpisode}`
+            `/anime/${id}/episodes/${lastEpisode?.replace('.', '-')}`
           : `/anime/${id}`;
 
         return (
