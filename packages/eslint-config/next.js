@@ -31,5 +31,16 @@ module.exports = {
     '.*.js',
     'node_modules/',
   ],
-  overrides: [{ files: ['*.js?(x)', '*.ts?(x)'] }],
+  overrides: [
+    {
+      files: ['*.js?(x)', '*.ts?(x)'],
+      '@typescript/no-unused-vars': [
+        'warn',
+        {
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+        },
+      ],
+    },
+  ],
 };
