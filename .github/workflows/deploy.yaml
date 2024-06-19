@@ -19,6 +19,8 @@ jobs:
       MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
       MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
       AWS_CERT_ARN: ${{ secrets.AWS_CERT_ARN }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
     steps:
       - name: Checkout code
