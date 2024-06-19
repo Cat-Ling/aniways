@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "push": "drizzle-kit push",
-    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts",
+    "lint": "eslint . --ext .ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

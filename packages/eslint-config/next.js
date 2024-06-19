@@ -30,6 +30,7 @@ module.exports = {
     // Ignore dotfiles
     '.*.js',
     'node_modules/',
+    'sst.config.ts',
   ],
   overrides: [{ files: ['*.js?(x)', '*.ts?(x)'] }],
 };

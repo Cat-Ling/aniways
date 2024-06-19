@@ -8,13 +8,13 @@
     "start": "dotenv -- turbo start",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "ui:add": "pnpm --filter @aniways/ui ui:add",
-    "db:push": "dotenv -- pnpm --filter @aniways/database push",
-    "db:studio": "dotenv -- pnpm --filter @aniways/database db:studio",
+    "ui:add": "bun --filter @aniways/ui ui:add",
+    "db:push": "dotenv -- bunx --filter @aniways/database push",
+    "db:studio": "dotenv -- bunx --filter @aniways/database db:studio",
     "deploy:prod": "dotenv -- turbo deploy:prod",
     "package": "dotenv -- turbo package",
-    "workspace:generate": "pnpm turbo gen workspace --name",
-    "delete": "pnpm npkill"
+    "workspace:generate": "bunx turbo gen workspace --name",
+    "delete": "bunx npkill"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
@@ -29,8 +29,12 @@
     "turbo": "^1.12.2",
     "typescript": "5.3.3"
   },
-  "packageManager": "pnpm@9.1.1",
+  "packageManager": "bun@1.1.14",
   "engines": {
     "node": ">=18"
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

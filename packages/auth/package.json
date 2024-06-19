@@ -4,7 +4,7 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "@animelist/auth-next": "^0.1.1"

@@ -4,7 +4,7 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "lint": "eslint . --ext .ts --ignore-pattern **.d.ts"
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "@aniways/database": "workspace:*",
