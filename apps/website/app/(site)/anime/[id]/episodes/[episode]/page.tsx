@@ -1,13 +1,10 @@
 import { createAnimeService } from '@aniways/data';
 import { Skeleton } from '@aniways/ui/components/ui/skeleton';
 import { Metadata } from 'next';
-import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import { notFound } from 'next/navigation';
 import { Suspense, cache } from 'react';
-import ErrorPage from '../../../../../error';
 import { EpisodesSection } from './_episodes';
 import { VideoFrame } from './video-frame';
-import { AnimeMetadata } from './_metadata';
 
 const getAnimeById = cache(async (id: string) => {
   const service = createAnimeService();
@@ -91,11 +88,6 @@ const AnimeStreamingPage = async ({
           <EpisodesSection animeId={id} currentEpisode={episode} />
         </Suspense>
       </div>
-      <ErrorBoundary errorComponent={ErrorPage}>
-        <Suspense fallback={<Skeleton className="mb-6 h-[500px] w-full" />}>
-          <AnimeMetadata id={id} />
-        </Suspense>
-      </ErrorBoundary>
     </>
   );
 };
