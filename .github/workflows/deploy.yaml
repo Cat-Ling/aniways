@@ -8,7 +8,6 @@ on:
 
 concurrency:
   group: aniways-aws-deploy
-  cancel-in-progress: true
 
 jobs:
   deploy:
