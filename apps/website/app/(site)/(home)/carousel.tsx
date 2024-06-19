@@ -71,7 +71,7 @@ export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
           return (
             <CarouselItem key={anime.mal_id}>
               <div className="flex w-full flex-col-reverse gap-3 md:grid md:grid-cols-5 md:gap-6">
-                <div className="col-span-2 flex flex-col justify-center">
+                <div className="col-span-2 flex select-none flex-col justify-center">
                   <h1 className="mb-2 text-2xl font-bold md:mb-5 md:text-5xl">
                     {anime.title}
                   </h1>

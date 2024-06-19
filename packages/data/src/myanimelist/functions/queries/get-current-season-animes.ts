@@ -9,7 +9,7 @@ export type CurrentAnimeSeason = Awaited<
 
 export async function getCurrentSeasonAnimes(): Promise<CurrentAnimeSeason[]> {
   const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
-    data.slice(0, 5)
+    data.slice(0, 10)
   );
 
   const animes = await db
