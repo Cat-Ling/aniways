@@ -66,9 +66,6 @@ const UpdateAnimeSchema = z.object({
     .number({
       required_error: 'Please enter the number of episodes watched',
     })
-    .int({
-      message: 'Please enter a valid episode number',
-    })
     .min(0, {
       message: 'Please enter a valid episode number',
     }),
