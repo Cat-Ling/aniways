@@ -24,14 +24,14 @@ import {
 } from '@aniways/ui/components/ui/select';
 import { toast } from '@aniways/ui/components/ui/sonner';
 import { Loader2, MinusIcon, PlusIcon } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
+import { useMetadata } from '../metadata-provider';
 import {
   deleteAnimeInListAction,
   updateAnimeInListAction,
 } from './myanimelist-actions';
-import { useParams } from 'next/navigation';
-import { useMetadata } from '../metadata-provider';
 
 const status = [
   'watching',

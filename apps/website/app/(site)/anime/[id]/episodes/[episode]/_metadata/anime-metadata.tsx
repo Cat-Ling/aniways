@@ -1,16 +1,16 @@
 import { auth } from '@aniways/auth';
-import { cookies } from 'next/headers';
-import { MetadataProvider } from './metadata-provider';
-import { AnimeMetadataClient } from './anime-metadata-client';
-import { Suspense } from 'react';
-import { AnimeGridLoader } from '../../../anime-grid';
-import { RelatedAnime } from './related-anime';
 import {
   MyAnimeListService,
   createAnimeService,
   createMyAnimeListService,
 } from '@aniways/data';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import { AnimeGridLoader } from '../../../../../anime-grid';
+import { AnimeMetadataClient } from './anime-metadata-client';
+import { MetadataProvider } from './metadata-provider';
+import { RelatedAnime } from './related-anime';
 
 type AnimeMetadataProps = {
   id: string;

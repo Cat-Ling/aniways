@@ -1,3 +1,4 @@
+import { Button } from '@aniways/ui/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -5,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@aniways/ui/components/ui/dialog';
-import { Button } from '@aniways/ui/components/ui/button';
 import { UpdateAnimeForm } from './update-anime-form';
 
 type UpdateAnimeButtonProps = {

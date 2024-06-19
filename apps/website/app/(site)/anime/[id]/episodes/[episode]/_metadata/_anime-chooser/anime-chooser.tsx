@@ -4,8 +4,8 @@ import {
   dehydrate,
 } from '@tanstack/react-query';
 import { FC } from 'react';
-import { searchAnimeAction } from './search-anime-action';
 import { AnimeChooserClient } from './anime-chooser-client';
+import { searchAnimeAction } from './search-anime-action';
 
 type AnimeChooserProps = {
   query: string;

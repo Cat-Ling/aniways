@@ -1,5 +1,6 @@
 'use client';
 
+import { Image } from '@aniways/ui/components/ui/aniways-image';
 import { Button } from '@aniways/ui/components/ui/button';
 import {
   Dialog,
@@ -15,7 +16,6 @@ import { AnimeChooser } from './_anime-chooser';
 import { AddToListButton } from './_myanimelist-button/add-to-list-button';
 import { UpdateAnimeForm } from './_myanimelist-button/update-anime-form';
 import { useMetadata } from './metadata-provider';
-import { Image } from '@aniways/ui/components/ui/aniways-image';
 
 type AnimeMetadataClientProps = {
   anime: {

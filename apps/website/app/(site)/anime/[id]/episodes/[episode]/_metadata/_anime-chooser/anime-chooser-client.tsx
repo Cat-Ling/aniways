@@ -1,33 +1,33 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { Image } from '@aniways/ui/components/ui/aniways-image';
 import { Button } from '@aniways/ui/components/ui/button';
 import {
   DialogClose,
   DialogFooter,
   useDialogContext,
 } from '@aniways/ui/components/ui/dialog';
-import { Skeleton } from '@aniways/ui/components/ui/skeleton';
-import { Image } from '@aniways/ui/components/ui/aniways-image';
-import { useParams } from 'next/navigation';
-import { useState } from 'react';
-import { searchAnimeAction } from './search-anime-action';
-import { updateMalAnimeAction } from './update-mal-anime-action';
-import { toast } from '@aniways/ui/components/ui/sonner';
-import { Input } from '@aniways/ui/components/ui/input';
 import {
-  zod,
-  reactHookForm,
-  zodResolver,
   Form,
-  FormField,
   FormControl,
+  FormDescription,
+  FormField,
   FormItem,
   FormLabel,
-  FormDescription,
   FormMessage,
+  reactHookForm,
+  zod,
+  zodResolver,
 } from '@aniways/ui/components/ui/form';
+import { Input } from '@aniways/ui/components/ui/input';
+import { Skeleton } from '@aniways/ui/components/ui/skeleton';
+import { toast } from '@aniways/ui/components/ui/sonner';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useMetadata } from '../metadata-provider';
+import { searchAnimeAction } from './search-anime-action';
+import { updateMalAnimeAction } from './update-mal-anime-action';
 
 const { z } = zod;
 const { useForm } = reactHookForm;

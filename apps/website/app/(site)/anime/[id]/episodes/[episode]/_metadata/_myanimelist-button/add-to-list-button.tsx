@@ -1,14 +1,14 @@
 'use client';
 
-import { Button } from '@aniways/ui/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
-import { addToListAction } from './myanimelist-actions';
-import { toast } from '@aniways/ui/components/ui/sonner';
-import { useAuth } from '@aniways/auth';
 import { LoginModal } from '@/app/login-modal';
+import { useAuth } from '@aniways/auth';
+import { Button } from '@aniways/ui/components/ui/button';
+import { toast } from '@aniways/ui/components/ui/sonner';
+import { Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useMetadata } from '../metadata-provider';
+import { addToListAction } from './myanimelist-actions';
 
 type AddToListButtonProps = {
   malId: number;
