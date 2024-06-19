@@ -4,7 +4,6 @@ import { Input } from '@aniways/ui/components/ui/input';
 import { cn } from '@aniways/ui/lib/utils';
 import { Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { debounce } from 'lodash';
 import { useEffect, useRef } from 'react';
 
 export const SearchBarFallback = () => {
@@ -30,14 +29,6 @@ export const SearchBar = () => {
   const router = useRouter();
   const query = searchParams.get('query') || '';
 
-  const setQuery = debounce((query: string) => {
-    if (query === '')
-      return router.push('/', {
-        scroll: false,
-      });
-    router.push(`/search?query=${query}`);
-  }, 500);
-
   useEffect(() => {
     if (pathname === '/search') return;
     if (!ref.current) return;
@@ -46,13 +37,26 @@ export const SearchBar = () => {
 
   return (
     <div className="group relative">
-      <Input
-        ref={ref}
-        placeholder="Search for anime"
-        className={cn('w-full pl-9')}
-        defaultValue={query}
-        onChange={e => setQuery(e.target.value)}
-      />
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target as HTMLFormElement);
+          const query = formData.get('query') as string;
+
+          if (query === '') return router.push('/', { scroll: false });
+
+          router.push(`/search?query=${query}`);
+        }}
+      >
+        <Input
+          ref={ref}
+          name="query"
+          placeholder="Search for anime"
+          className={cn('w-full pl-9')}
+          defaultValue={query}
+        />
+      </form>
       <Search
         className="text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 transform"
         size={18}
