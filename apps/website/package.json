@@ -7,8 +7,8 @@
     "sst:dev": "sst bind next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings 0 --ignore-pattern sst.config.ts",
-    "deploy:prod": "pnpm sst deploy --stage prod"
+    "lint": "eslint . --max-warnings 0",
+    "deploy:prod": "bunx sst deploy --stage prod"
   },
   "dependencies": {
     "@aniways/auth": "workspace:*",
