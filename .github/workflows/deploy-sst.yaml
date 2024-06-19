@@ -18,6 +18,7 @@ jobs:
       MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
       MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
       MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
+      AWS_CERT_ARN: ${{ secrets.AWS_CERT_ARN }}
 
     steps:
       - name: Checkout code
