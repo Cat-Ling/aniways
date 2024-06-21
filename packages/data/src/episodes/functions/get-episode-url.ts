@@ -1,7 +1,8 @@
-import { db, orm, schema } from '@aniways/db';
-import { scrapeVideoSource } from '@aniways/web-scraping';
+/* eslint-disable @typescript-eslint/only-throw-error */
+import { db, orm, schema } from "@aniways/db";
+import { scrapeVideoSource } from "@aniways/web-scraping";
 
-const NOT_FOUND = 'not-found' as const;
+const NOT_FOUND = "not-found";
 
 export async function _getEpisodeUrl(animeId: string, currentEpisode: string) {
   const video = await db
@@ -10,8 +11,8 @@ export async function _getEpisodeUrl(animeId: string, currentEpisode: string) {
     .where(
       orm.and(
         orm.eq(schema.video.animeId, animeId),
-        orm.eq(schema.video.episode, currentEpisode)
-      )
+        orm.eq(schema.video.episode, currentEpisode),
+      ),
     )
     .then(([data]) => data);
 
@@ -21,8 +22,8 @@ export async function _getEpisodeUrl(animeId: string, currentEpisode: string) {
 
   if (!videoUrl) {
     const scrapedUrl =
-      (await scrapeVideoSource(slug)) ||
-      (await scrapeVideoSource(slug, 'movie'));
+      (await scrapeVideoSource(slug)) ??
+      (await scrapeVideoSource(slug, "movie"));
 
     const result = await db
       .update(schema.video)
@@ -32,13 +33,13 @@ export async function _getEpisodeUrl(animeId: string, currentEpisode: string) {
       .where(
         orm.and(
           orm.eq(schema.video.animeId, animeId),
-          orm.eq(schema.video.slug, slug)
-        )
+          orm.eq(schema.video.slug, slug),
+        ),
       )
       .returning()
       .then(([updatedValues]) => updatedValues);
 
-    if (!result || !result.videoUrl) throw NOT_FOUND;
+    if (!result?.videoUrl) throw NOT_FOUND;
 
     return result.videoUrl;
   }

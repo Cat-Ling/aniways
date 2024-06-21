@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/db';
+import { db, orm, schema } from "@aniways/db";
 
 export async function getRecentlyReleasedAnime(page: number) {
   const recentlyReleased = await db
@@ -11,10 +11,10 @@ export async function getRecentlyReleasedAnime(page: number) {
     .from(schema.anime)
     .where(
       orm.and(
-        orm.notLike(schema.anime.title, '%Dub%'),
-        orm.notLike(schema.anime.title, '%dub%'),
-        orm.isNotNull(schema.anime.lastEpisode)
-      )
+        orm.notLike(schema.anime.title, "%Dub%"),
+        orm.notLike(schema.anime.title, "%dub%"),
+        orm.isNotNull(schema.anime.lastEpisode),
+      ),
     )
     .orderBy(orm.desc(schema.anime.updatedAt))
     .limit(21)

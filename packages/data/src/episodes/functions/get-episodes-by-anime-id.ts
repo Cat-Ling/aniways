@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/db';
+import { db, orm, schema } from "@aniways/db";
 
 export async function getEpisodesByAnimeId(animeId: string) {
   return await db

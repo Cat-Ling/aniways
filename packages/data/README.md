@@ -1,1 +1,0 @@
-# `@aniways/data`

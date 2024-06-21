@@ -1,10 +1,11 @@
-import { createId, db, schema } from '@aniways/db';
+/* eslint-disable @typescript-eslint/only-throw-error */
+import { createId, db, schema } from "@aniways/db";
 
-const NOT_FOUND = 'not-found' as const;
+const NOT_FOUND = "not-found";
 
 export const seedMissingAnimeEpisodes = Object.assign(
   _seedMissingAnimeEpisodes,
-  { error: NOT_FOUND }
+  { error: NOT_FOUND },
 );
 
 async function _seedMissingAnimeEpisodes(anime: {
@@ -28,13 +29,13 @@ async function _seedMissingAnimeEpisodes(anime: {
   const result = await db
     .insert(schema.video)
     .values(
-      episodes.map(ep => ({
+      episodes.map((ep) => ({
         id: createId(),
         animeId: anime.id,
         episode: String(ep),
         slug: `${anime.slug}-episode-${ep}`,
         createdAt: new Date(),
-      }))
+      })),
     )
     .returning();
 

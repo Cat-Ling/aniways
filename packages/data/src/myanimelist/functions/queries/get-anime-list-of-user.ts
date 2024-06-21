@@ -1,33 +1,33 @@
-import { db, orm, schema } from '@aniways/db';
-import { getAnimeList } from '@aniways/myanimelist';
+import { db, orm, schema } from "@aniways/db";
+import { getAnimeList } from "@aniways/myanimelist";
 
 export type Status =
-  | 'watching'
-  | 'completed'
-  | 'on_hold'
-  | 'dropped'
-  | 'plan_to_watch'
-  | 'all';
+  | "watching"
+  | "completed"
+  | "on_hold"
+  | "dropped"
+  | "plan_to_watch"
+  | "all";
 
-type AnimeList = {
-  anime: (Awaited<ReturnType<typeof getAnimeList>>['data'][number]['node'] & {
+interface AnimeList {
+  anime: (Awaited<ReturnType<typeof getAnimeList>>["data"][number]["node"] & {
     dbAnime?: schema.Anime;
   })[];
   hasNext: boolean;
-};
+}
 
 export async function getAnimeListOfUser(
   accessToken: string,
   username: string,
   page: number,
-  status: Status
+  status: Status,
 ): Promise<AnimeList> {
   const animeList = await getAnimeList(
     accessToken,
     username,
     page,
     20,
-    status !== 'all' ? status : undefined
+    status !== "all" ? status : undefined,
   );
 
   if (!animeList.data.length)
@@ -42,8 +42,8 @@ export async function getAnimeListOfUser(
     .where(
       orm.inArray(
         schema.anime.malAnimeId,
-        animeList.data.map(({ node: anime }) => anime.id)
-      )
+        animeList.data.map(({ node: anime }) => anime.id),
+      ),
     );
 
   const animeMap = dbAnimes.reduce(
@@ -52,11 +52,11 @@ export async function getAnimeListOfUser(
       acc[anime.malAnimeId] = anime;
       return acc;
     },
-    {} as Record<number, schema.Anime>
+    {} as Record<number, schema.Anime>,
   );
 
   return {
-    anime: animeList.data.map(anime => {
+    anime: animeList.data.map((anime) => {
       const dbAnime = animeMap[anime.node.id];
 
       return {

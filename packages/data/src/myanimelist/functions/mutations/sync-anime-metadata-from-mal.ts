@@ -1,13 +1,15 @@
-import { db, orm, schema } from '@aniways/db';
-import { getAnimeMetadataFromMAL } from '../queries';
+/* eslint-disable @typescript-eslint/only-throw-error */
+import { db, orm, schema } from "@aniways/db";
 
-const NOT_FOUND = 'not-found' as const;
+import { getAnimeMetadataFromMAL } from "../queries";
+
+const NOT_FOUND = "not-found";
 
 async function _syncAnimeMetadataFromMAL(
   accessToken: string | undefined,
   id: string,
   malId: number,
-  returning: boolean = true
+  returning = true,
 ) {
   const anime = await db
     .update(schema.anime)
@@ -29,5 +31,5 @@ export const syncAnimeMetadataFromMAL = Object.assign(
   _syncAnimeMetadataFromMAL,
   {
     NOT_FOUND,
-  }
+  },
 );

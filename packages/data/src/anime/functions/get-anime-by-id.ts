@@ -1,10 +1,6 @@
-/* eslint-disable no-unused-vars */
-import { db, orm, schema } from '@aniways/db';
+import { db, orm, schema } from "@aniways/db";
 
-export const getAnimeById = async (
-  id: string,
-  withFirstEpisode: boolean = false
-) => {
+export const getAnimeById = async (id: string, withFirstEpisode = false) => {
   const [anime] = await db
     .select()
     .from(schema.anime)

@@ -1,4 +1,4 @@
-import { updateAnimeList } from '@aniways/myanimelist';
+import { updateAnimeList } from "@aniways/myanimelist";
 
 export type UpdateAnimeInMALArguments = Parameters<typeof updateAnimeList>;
 

@@ -1,5 +1,6 @@
-import { type schema } from '@aniways/db';
+import type { schema } from "@aniways/db";
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
   export type Anime = schema.Anime;
   export type AnimeWithRelations = schema.AnimeWithRelations;
