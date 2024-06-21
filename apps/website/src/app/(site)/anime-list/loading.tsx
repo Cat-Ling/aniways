@@ -1,4 +1,4 @@
-import { AnimeGridLoader } from '../anime-grid';
+import { AnimeGridLoader } from "../anime-grid";
 
 const AnimeListLoading = () => {
   return <AnimeGridLoader />;

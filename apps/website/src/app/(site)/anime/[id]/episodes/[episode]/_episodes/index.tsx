@@ -1,1 +1,1 @@
-export { EpisodesSection } from './episodes-section';
+export { EpisodesSection } from "./episodes-section";

@@ -1,1 +1,1 @@
-export * from './anime-chooser';
+export * from "./anime-chooser";

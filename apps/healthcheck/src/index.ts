@@ -1,27 +1,27 @@
-import type { AWS } from '@serverless/typescript';
+import type { AWS } from "@serverless/typescript";
 
 export default {
   healthCheck: {
-    handler: 'src/handlers/check-service.healthCheck',
+    handler: "src/handlers/check-service.healthCheck",
     events: [
       {
         http: {
-          method: 'GET',
-          path: 'healthcheck',
+          method: "GET",
+          path: "healthcheck",
         },
       },
     ],
   },
   home: {
-    handler: 'src/handlers/home.home',
+    handler: "src/handlers/home.home",
     timeout: 30, // in seconds
     events: [
       {
         http: {
-          method: 'GET',
-          path: '/',
+          method: "GET",
+          path: "/",
         },
       },
     ],
   },
-} satisfies AWS['functions'];
+} satisfies AWS["functions"];

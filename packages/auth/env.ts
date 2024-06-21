@@ -11,8 +11,8 @@ export const env = createEnv({
     MAL_SECRET_KEY: z.string().base64().length(44),
     MAL_REQUEST_DEBUG:
       process.env.NODE_ENV === "development"
-        ? z.literal(true).optional()
-        : z.boolean().optional(),
+        ? z.literal("true").optional()
+        : z.coerce.boolean().optional(),
   },
   client: {},
   experimental__runtimeEnv: {},

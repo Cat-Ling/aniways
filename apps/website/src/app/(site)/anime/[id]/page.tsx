@@ -1,5 +1,6 @@
-import { RedirectType, notFound, redirect } from 'next/navigation';
-import { createAnimeService } from '@aniways/data';
+import { notFound, redirect, RedirectType } from "next/navigation";
+
+import { createAnimeService } from "@aniways/data";
 
 const AnimeDetailsPage = async ({
   params: { id },
@@ -14,7 +15,7 @@ const AnimeDetailsPage = async ({
 
   redirect(
     `/anime/${id}/episodes/${anime.firstEpisode ?? 1}`,
-    RedirectType.replace
+    RedirectType.replace,
   );
 };
 

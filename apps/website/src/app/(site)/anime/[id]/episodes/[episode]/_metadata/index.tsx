@@ -1,1 +1,1 @@
-export { AnimeMetadata } from './anime-metadata';
+export { AnimeMetadata } from "./anime-metadata";

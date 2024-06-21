@@ -1,6 +1,6 @@
-'use server';
+"use server";
 
-import { createMyAnimeListService } from '@aniways/data';
+import { createMyAnimeListService } from "@aniways/data";
 
 export const searchAnimeAction = async (query: string, page: number) => {
   const { searchAnimeOnMyAnimeList } = createMyAnimeListService();
