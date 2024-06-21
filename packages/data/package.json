@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
-    "@aniways/database": "workspace:*",
+    "@aniways/db": "workspace:*",
     "@aniways/myanimelist": "workspace:*",
     "@aniways/web-scraping": "workspace:*"
   },

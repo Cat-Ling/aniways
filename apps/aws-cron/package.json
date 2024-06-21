@@ -9,7 +9,7 @@
     "package": "serverless package"
   },
   "dependencies": {
-    "@aniways/database": "workspace:*",
+    "@aniways/db": "workspace:*",
     "@aniways/web-scraping": "workspace:*"
   },
   "devDependencies": {

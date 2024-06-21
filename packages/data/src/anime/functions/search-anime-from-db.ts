@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/database';
+import { db, orm, schema } from '@aniways/db';
 
 export async function searchAnimeFromDB(query: string, page: number) {
   const animes = await db

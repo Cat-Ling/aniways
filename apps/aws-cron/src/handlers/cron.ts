@@ -1,4 +1,4 @@
-import { orm, schema, db, createId, client } from '@aniways/database';
+import { orm, schema, db, createId, client } from '@aniways/db';
 import {
   scrapeRecentlyReleasedAnime,
   scrapeSlugFromEpisodeSlug,

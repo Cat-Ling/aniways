@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/database';
+import { db, orm, schema } from '@aniways/db';
 import { getAnimeList } from '@aniways/myanimelist';
 
 export async function getContinueWatchingAnime(

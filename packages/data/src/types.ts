@@ -1,4 +1,4 @@
-import { type schema } from '@aniways/database';
+import { type schema } from '@aniways/db';
 
 export namespace Schema {
   export type Anime = schema.Anime;

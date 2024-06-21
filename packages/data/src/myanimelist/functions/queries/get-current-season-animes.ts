@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/database';
+import { db, orm, schema } from '@aniways/db';
 import { getCurrentAnimeSeason } from '@aniways/myanimelist';
 
 export type CurrentAnimeSeason = Awaited<

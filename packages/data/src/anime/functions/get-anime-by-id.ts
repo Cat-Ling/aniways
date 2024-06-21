@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { db, orm, schema } from '@aniways/database';
+import { db, orm, schema } from '@aniways/db';
 
 export const getAnimeById = async (
   id: string,

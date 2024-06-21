@@ -1,31 +1,62 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDotEnv": [".env"],
-  "pipeline": {
-    "build": {
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "dotEnv": [".env"],
-      "dependsOn": ["lint", "^build"]
+  "ui": "tui",
+  "tasks": {
+    "topo": {
+      "dependsOn": ["^topo"]
     },
-    "lint": {
-      "dependsOn": ["^lint"]
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**"]
     },
     "dev": {
-      "cache": false,
       "persistent": true,
-      "dotEnv": [".env"]
+      "cache": false
     },
-    "start": {
-      "dotEnv": [".env"],
-      "dependsOn": ["^start"]
+    "format": {
+      "outputs": ["node_modules/.cache/.prettiercache"],
+      "outputLogs": "new-only"
+    },
+    "lint": {
+      "dependsOn": ["^topo", "^build", "^package"],
+      "outputs": ["node_modules/.cache/.eslintcache"]
+    },
+    "typecheck": {
+      "dependsOn": ["^topo", "^build"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "//#clean": {
+      "cache": false
+    },
+    "push": {
+      "cache": false,
+      "interactive": true
+    },
+    "studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "ui:add": {
+      "cache": false,
+      "interactive": true
     },
     "package": {
-      "dependsOn": ["lint"],
-      "dotEnv": [".env"]
+      "dependsOn": ["^lint"],
+      "outputs": [".serverless/**", "dist/**", ".webpack/**"]
     },
     "deploy:prod": {
-      "dependsOn": ["package"],
-      "dotEnv": [".env"]
+      "dependsOn": ["package"]
     }
-  }
+  },
+  "globalEnv": [
+    "DATABASE_URL",
+    "MAL_CLIENT_ID",
+    "MAL_CLIENT_SECRET",
+    "MAL_SECRET_KEY",
+    "AWS_CERT_ARN"
+  ],
+  "globalPassThroughEnv": ["NODE_ENV", "CI", "npm_lifecycle_event"]
 }

@@ -1,4 +1,4 @@
-import { createId, db, schema } from '@aniways/database';
+import { createId, db, schema } from '@aniways/db';
 
 const NOT_FOUND = 'not-found' as const;
 

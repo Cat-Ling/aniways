@@ -43,3 +43,5 @@ next-env.d.ts
 
 *.d.ts
 *.d.ts.map
+
+dist

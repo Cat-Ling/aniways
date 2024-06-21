@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/database';
+import { db, orm, schema } from '@aniways/db';
 import { AnimeDetails } from '@aniways/myanimelist';
 
 export const getRelatedAnime = async (animeMetadata: AnimeDetails) => {
