@@ -28,7 +28,7 @@
     "ui:add": "turbo run ui:add",
     "deploy:prod": "turbo deploy:prod",
     "package": "turbo run package",
-    "workspace:generate": "turbo gen workspace --name"
+    "workspace:generate": "turbo gen init"
   },
   "devDependencies": {
     "@aniways/prettier-config": "workspace:*",
