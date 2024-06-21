@@ -1,19 +1,19 @@
-import parse from 'node-html-parser';
+import parse from "node-html-parser";
 
 const URLS = [
-  'https://anitaku.to/category',
-  'https://gogoanime3.co/category',
+  "https://anitaku.to/category",
+  "https://gogoanime3.co/category",
 ] as const;
 
 export default async function scrapeDetailsOfAnime(slug: string) {
   const scrapeDetails = async (
-    url: (typeof URLS)[number]
+    url: (typeof URLS)[number],
   ): ReturnType<typeof getDetails> => {
     try {
       const abortController = new AbortController();
 
       const timeout = setTimeout(() => {
-        abortController.abort(new Error('Timeout ' + url + ' ' + slug));
+        abortController.abort(new Error("Timeout " + url + " " + slug));
       }, 5000);
 
       const details = await getDetails(url, slug, abortController.signal);
@@ -21,7 +21,7 @@ export default async function scrapeDetailsOfAnime(slug: string) {
       clearTimeout(timeout);
 
       if (!details) {
-        throw new Error('Details not found ' + url + ' ' + slug);
+        throw new Error("Details not found " + url + " " + slug);
       }
 
       return details;
@@ -41,19 +41,19 @@ export default async function scrapeDetailsOfAnime(slug: string) {
 }
 
 async function getDetails(url: string, slug: string, signal: AbortSignal) {
-  const html = await fetch(`${url}/${slug}`, { signal }).then(res =>
-    res.text()
+  const html = await fetch(`${url}/${slug}`, { signal }).then((res) =>
+    res.text(),
   );
 
   const dom = parse(html);
 
-  const title = dom.querySelector('.anime_info_body_bg h1')?.innerText.trim();
+  const title = dom.querySelector(".anime_info_body_bg h1")?.innerText.trim();
 
   if (title === undefined) return null;
 
   const image = dom
-    .querySelector('.anime_info_body_bg img')
-    ?.getAttribute('src');
+    .querySelector(".anime_info_body_bg img")
+    ?.getAttribute("src");
 
   if (image === undefined) return null;
 
