@@ -82,7 +82,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           // execSync("bun dlx sherif@latest --fix", {
           //   stdio: "inherit",
           // });
-          execSync("bun i", { stdio: "inherit" });
+          execSync("bun install", { stdio: "inherit" });
           execSync(
             `bun prettier --write packages/${answers.name}/** --list-different`,
           );
