@@ -1,1 +1,5 @@
-module.exports = require('@aniways/ui/postcss.config');
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+  },
+};
