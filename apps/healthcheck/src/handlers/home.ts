@@ -1,13 +1,15 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import { healthCheck } from './check-service';
+import type { APIGatewayProxyHandler } from "aws-lambda";
+
+import { healthCheck } from "./check-service";
 
 export const home: APIGatewayProxyHandler = async () => {
   const baseUrl =
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    process.env.IS_OFFLINE ?
-      'http://localhost:8081/dev'
-    : 'https://healthcheck.aniways.xyz';
+    // eslint-disable-next-line turbo/no-undeclared-env-vars, no-restricted-properties
+    process.env.IS_OFFLINE
+      ? "http://localhost:8081/dev"
+      : "https://healthcheck.aniways.xyz";
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
   const response = await healthCheck(null as any, null as any, null as any);
 
   const html = `
@@ -150,7 +152,7 @@ export const home: APIGatewayProxyHandler = async () => {
         </section>
         <script>
           let lastFetched = new Date(${new Date().getTime()});
-          let basedata = JSON.parse(${JSON.stringify(response!.body)});
+          let basedata = JSON.parse(${JSON.stringify(response?.body)});
 
           const updateUI = (response) => {
             document.getElementById('website').innerHTML = response.dependencies.website ? '✅' : '❌';
@@ -185,9 +187,9 @@ export const home: APIGatewayProxyHandler = async () => {
   return {
     statusCode: 200,
     headers: {
-      'content-type': 'text/html',
+      "content-type": "text/html",
       // enable cache for 3 minutes
-      'cache-control': 'public, max-age=180',
+      "cache-control": "public, max-age=180",
     },
     body: html,
   };

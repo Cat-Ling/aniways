@@ -1,9 +1,10 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
+import type { APIGatewayProxyHandler } from "aws-lambda";
+
 import {
-  createMyAnimeListService,
-  createEpisodeService,
   createAnimeService,
-} from '@aniways/data';
+  createEpisodeService,
+  createMyAnimeListService,
+} from "@aniways/data";
 
 async function checkIfMyAnimeListIsDown() {
   const service = createMyAnimeListService();
@@ -11,7 +12,7 @@ async function checkIfMyAnimeListIsDown() {
   let isDown = false;
 
   try {
-    const anime = await service.searchAnimeOnMyAnimeList('naruto', 1);
+    const anime = await service.searchAnimeOnMyAnimeList("naruto", 1);
 
     if (!anime.data.length) {
       isDown = true;
@@ -20,7 +21,7 @@ async function checkIfMyAnimeListIsDown() {
     await service.getAnimeMetadataFromMyAnimeList(undefined, {
       malId: anime.data[0]?.mal_id ?? 0,
     });
-  } catch (error) {
+  } catch {
     isDown = true;
   }
 
@@ -36,12 +37,12 @@ async function checkIfEpisodeServiceIsDown() {
     const { recentlyReleased } =
       await createAnimeService().getRecentlyReleasedAnimes(1);
 
-    const anime = recentlyReleased.find(anime => anime.lastEpisode !== null);
+    const anime = recentlyReleased.find((anime) => anime.lastEpisode !== null);
 
-    if (!anime) throw new Error('No anime found');
+    if (!anime?.lastEpisode) throw new Error("No anime found");
 
-    await service.getEpisodeUrl(anime.id, anime.lastEpisode!);
-  } catch (error) {
+    await service.getEpisodeUrl(anime.id, anime.lastEpisode);
+  } catch {
     isDown = true;
   }
 
@@ -52,12 +53,12 @@ async function checkIfWebsiteIsDown() {
   let isDown = false;
 
   try {
-    const response = await fetch('https://aniways.xyz');
+    const response = await fetch("https://aniways.xyz");
 
     if (!response.ok) {
       isDown = true;
     }
-  } catch (error) {
+  } catch {
     isDown = true;
   }
 
@@ -76,7 +77,7 @@ export const healthCheck: APIGatewayProxyHandler = async () => {
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: 'Services are down',
+        message: "Services are down",
         success: false,
         dependencies: {
           myAnimeList: !isMyAnimeListDown,
@@ -90,7 +91,7 @@ export const healthCheck: APIGatewayProxyHandler = async () => {
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: 'All Services are running',
+      message: "All Services are running",
       success: true,
       dependencies: {
         myAnimeList: !isMyAnimeListDown,

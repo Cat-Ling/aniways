@@ -1,8 +1,8 @@
 {
   "extends": "@aniways/typescript-config/base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["src"],
-  "exclude": ["node_modules", ".serverless", ".build", ".webpack"],
+  "include": ["src", "*.ts"],
+  "exclude": ["node_modules", ".serverless", ".build", ".webpack"]
 }

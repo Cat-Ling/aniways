@@ -1,19 +1,19 @@
-import { orm, schema, db, createId, client } from '@aniways/db';
+import { client, createId, db, orm, schema } from "@aniways/db";
 import {
   scrapeRecentlyReleasedAnime,
   scrapeSlugFromEpisodeSlug,
-} from '@aniways/web-scraping';
+} from "@aniways/web-scraping";
 
 const logger = {
-  log(...args: any[]) {
-    console.log('[Aniways]', '{cron}', ...args);
+  log(...args: Parameters<typeof console.log>) {
+    console.log("[Aniways]", "{cron}", ...args);
   },
 };
 
 const checkIfOffline = () => {
   // eslint-disable-next-line
   if (process.env.IS_OFFLINE) {
-    logger.log('Offline mode');
+    logger.log("Offline mode");
     return true;
   }
   return false;
@@ -22,22 +22,23 @@ const checkIfOffline = () => {
 const getRecentlyReleasedAnimes = async () => {
   return (
     await Promise.all([
-      scrapeRecentlyReleasedAnime(1).then(data => data.anime),
-      scrapeRecentlyReleasedAnime(2).then(data => data.anime),
+      scrapeRecentlyReleasedAnime(1).then((data) => data.anime),
+      scrapeRecentlyReleasedAnime(2).then((data) => data.anime),
     ])
   )
     .reduce((acc, val) => acc.concat(val), [])
     .reverse()
-    .map(a => ({
+    .map((a) => ({
       ...a,
-      slug: a.url.replace('/anime/', '').split('/')[0]!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      slug: a.url.replace("/anime/", "").split("/")[0]!,
     }));
 };
 
 const filterNewAnimes = async (
-  recentlyReleasedAnimes: Awaited<ReturnType<typeof getRecentlyReleasedAnimes>>
+  recentlyReleasedAnimes: Awaited<ReturnType<typeof getRecentlyReleasedAnimes>>,
 ) => {
-  logger.log('Started fetching last updated animes from db');
+  logger.log("Started fetching last updated animes from db");
 
   const lastUpdatedAnimes = await db.query.anime.findMany({
     columns: {
@@ -58,13 +59,13 @@ const filterNewAnimes = async (
     },
   });
 
-  logger.log('Fetched last updated animes from db', lastUpdatedAnimes.length);
+  logger.log("Fetched last updated animes from db", lastUpdatedAnimes.length);
 
-  return recentlyReleasedAnimes.filter(a => {
+  return recentlyReleasedAnimes.filter((a) => {
     const animeFromDB = lastUpdatedAnimes.find(
-      anime =>
+      (anime) =>
         anime.slug === a.slug ||
-        anime.videos[0]?.slug.split('-episode-')[0] === a.slug
+        anime.videos[0]?.slug.split("-episode-")[0] === a.slug,
     );
 
     return !animeFromDB || animeFromDB.lastEpisode !== String(a.episode);
@@ -72,12 +73,13 @@ const filterNewAnimes = async (
 };
 
 const constructIndividualInsertValues = async (
-  newAnime: Awaited<ReturnType<typeof filterNewAnimes>>[number]
+  newAnime: Awaited<ReturnType<typeof filterNewAnimes>>[number],
 ) => {
-  const episodeSlug = `${newAnime.slug}-episode-${newAnime.episode.toString().replace('.', '-')}`;
+  const episodeSlug = `${newAnime.slug}-episode-${newAnime.episode.toString().replace(".", "-")}`;
 
   const slug = await scrapeSlugFromEpisodeSlug(episodeSlug).then(
-    scrapedSlug => scrapedSlug || newAnime.slug
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    (scrapedSlug) => scrapedSlug || newAnime.slug,
   );
 
   const [anime] = await db
@@ -91,7 +93,7 @@ const constructIndividualInsertValues = async (
   const animeId = anime?.id ?? createId();
 
   if (!anime) {
-    logger.log('No anime found in db, fetching from anitaku', newAnime.slug);
+    logger.log("No anime found in db, fetching from anitaku", newAnime.slug);
 
     await db.insert(schema.anime).values({
       id: animeId,
@@ -102,7 +104,7 @@ const constructIndividualInsertValues = async (
       updatedAt: new Date(),
     });
 
-    logger.log('Inserted new anime', newAnime.name, 'into db');
+    logger.log("Inserted new anime", newAnime.name, "into db");
   }
 
   await db
@@ -113,7 +115,7 @@ const constructIndividualInsertValues = async (
     })
     .where(orm.eq(schema.anime.id, animeId));
 
-  const lastEpisodeSaved = Number(anime?.lastEpisode ?? '0');
+  const lastEpisodeSaved = Number(anime?.lastEpisode ?? "0");
 
   const numberOfEpisodesToInsert = newAnime.episode - lastEpisodeSaved;
 
@@ -124,66 +126,66 @@ const constructIndividualInsertValues = async (
   episodes.pop(); // Remove the last episode
 
   return [
-    ...episodes.map(ep => ({
+    ...episodes.map((ep) => ({
       id: createId(),
-      animeId: animeId!,
+      animeId: animeId,
       episode: String(ep),
       slug: `${newAnime.slug}-episode-${ep}`,
       createdAt: new Date(),
     })),
     {
       id: createId(),
-      animeId: animeId!,
+      animeId: animeId,
       episode: String(newAnime.episode),
-      slug: `${newAnime.slug}-episode-${newAnime.episode.toString().replace('.', '-')}`,
+      slug: `${newAnime.slug}-episode-${newAnime.episode.toString().replace(".", "-")}`,
       createdAt: new Date(),
     },
   ];
 };
 
 const constructInsertValues = async (
-  newAnimes: Awaited<ReturnType<typeof filterNewAnimes>>
+  newAnimes: Awaited<ReturnType<typeof filterNewAnimes>>,
 ) => {
   const insertValues = await Promise.all(
-    newAnimes.map(constructIndividualInsertValues)
+    newAnimes.map(constructIndividualInsertValues),
   );
 
   return insertValues.flat();
 };
 
 export const main = async () => {
-  if (checkIfOffline()) throw new Error('Offline mode');
+  if (checkIfOffline()) throw new Error("Offline mode");
 
-  logger.log('Started fetching recently released anime from anitaku');
+  logger.log("Started fetching recently released anime from anitaku");
 
   const recentlyReleasedAnime = await getRecentlyReleasedAnimes();
 
   logger.log(
-    'Fetched recently released anime from anitaku',
-    recentlyReleasedAnime.length
+    "Fetched recently released anime from anitaku",
+    recentlyReleasedAnime.length,
   );
 
-  logger.log('Started filtering new animes');
+  logger.log("Started filtering new animes");
 
   const newAnimes = await filterNewAnimes(recentlyReleasedAnime);
 
-  logger.log('New anime episodes', newAnimes);
+  logger.log("New anime episodes", newAnimes);
 
   if (newAnimes.length === 0) {
-    return logger.log('No new animes');
+    return logger.log("No new animes");
   }
 
   const insertValues = await constructInsertValues(newAnimes);
 
   if (insertValues.length === 0) {
-    return logger.log('No new episodes to insert');
+    return logger.log("No new episodes to insert");
   }
 
   await db.insert(schema.video).values(insertValues);
 
-  logger.log('Inserted', insertValues.length, 'new episodes into db');
+  logger.log("Inserted", insertValues.length, "new episodes into db");
 
   await client.end(); // Close the connection
 
-  logger.log('Connection closed');
+  logger.log("Connection closed");
 };
