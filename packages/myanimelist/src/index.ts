@@ -1,10 +1,10 @@
-export * from './anime-list';
+export * from "./anime-list";
 export {
   default as getAnimeDetailsFromMyAnimeList,
   type AnimeDetails,
-} from './details';
+} from "./details";
 export {
   default as searchAnimeFromMyAnimeList,
   type SearchResults,
-} from './search';
-export * from './seasonal';
+} from "./search";
+export * from "./seasonal";

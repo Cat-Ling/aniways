@@ -28,7 +28,6 @@
     "@aniways/web-scraping": "workspace:*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "dotenv": "^16.4.1",
     "drizzle-orm": "^0.31.2",
     "lodash": "^4.17.21",
     "pg": "^8.12.0",

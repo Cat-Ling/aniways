@@ -1,8 +1,8 @@
-import { MALClient } from '@animelist/client';
+import { MALClient } from "@animelist/client";
 
 export default async function deleteFromAnimeList(
   accessToken: string,
-  malId: number
+  malId: number,
 ) {
   const client = new MALClient({ accessToken });
 

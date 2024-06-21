@@ -1,1 +1,1 @@
-export * from './get-current-season';
+export * from "./get-current-season";

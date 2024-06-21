@@ -1,4 +1,4 @@
-import { Jikan4 } from 'node-myanimelist';
+import { Jikan4 } from "node-myanimelist";
 
 export type CurrentAnimeSeason = {
   data: Jikan4.Types.Anime[];
