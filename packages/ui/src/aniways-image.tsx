@@ -1,7 +1,9 @@
-'use client';
+"use client";
 
-import { cn } from '@ui/lib/utils';
-import { HTMLProps, useState } from 'react';
+import type { HTMLProps } from "react";
+import { useState } from "react";
+
+import { cn } from "@aniways/ui";
 
 type ImageProps = HTMLProps<HTMLImageElement>;
 
@@ -13,7 +15,7 @@ export const Image = (props: ImageProps) => {
       {...props}
       loading="lazy"
       onError={setError.bind(null, true)}
-      className={cn(props.className, error && 'bg-background')}
+      className={cn(props.className, error && "bg-background")}
     />
   );
 };

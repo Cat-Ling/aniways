@@ -25,7 +25,7 @@
     "lint:ws": "bun x sherif@latest",
     "postinstall": "bun lint:ws",
     "typecheck": "turbo run typecheck",
-    "ui:add": "bun -F @aniways/ui ui:add",
+    "ui:add": "turbo run ui:add",
     "deploy:prod": "turbo deploy:prod",
     "package": "turbo run package",
     "workspace:generate": "turbo gen workspace --name"
