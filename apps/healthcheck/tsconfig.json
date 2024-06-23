@@ -4,9 +4,6 @@
     "lib": ["es2022", "dom", "dom.iterable"],
     "jsx": "preserve",
     "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "module": "esnext"
   },

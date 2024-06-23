@@ -25,7 +25,7 @@ async function checkIfMyAnimeListIsDown() {
     isDown = true;
   }
 
-  return isDown;
+  return { isDown, date: new Date() };
 }
 
 async function checkIfEpisodeServiceIsDown() {
@@ -47,26 +47,32 @@ async function checkIfEpisodeServiceIsDown() {
     isDown = true;
   }
 
-  return isDown;
+  return { isDown, date: new Date() };
 }
 
 async function checkIfWebsiteIsDown() {
   let isDown = false;
 
   try {
-    const response = await fetch("https://aniways.xyz");
+    const response = await fetch("https://aniways.xyz/api/healthcheck");
 
     if (!response.ok) {
+      isDown = true;
+    }
+
+    const json = (await response.json()) as { success: boolean };
+
+    if (!json.success) {
       isDown = true;
     }
   } catch {
     isDown = true;
   }
 
-  return isDown;
+  return { isDown, date: new Date() };
 }
 
-export const healthCheck: APIGatewayProxyHandler = async () => {
+export const handler: APIGatewayProxyHandler = async () => {
   const [isMyAnimeListDown, isEpisodeServiceDown, isWebsiteDown] =
     await Promise.all([
       checkIfMyAnimeListIsDown(),
@@ -74,7 +80,11 @@ export const healthCheck: APIGatewayProxyHandler = async () => {
       checkIfWebsiteIsDown(),
     ]);
 
-  if (isMyAnimeListDown || isEpisodeServiceDown || isWebsiteDown) {
+  if (
+    isMyAnimeListDown.isDown ||
+    isEpisodeServiceDown.isDown ||
+    isWebsiteDown.isDown
+  ) {
     return {
       statusCode: 500,
       body: JSON.stringify({

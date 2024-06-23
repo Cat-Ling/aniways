@@ -31,6 +31,7 @@ export default {
           },
         },
         environment: {
+          NODE_OPTIONS: "--enable-source-maps",
           DATABASE_URL: env.DATABASE_URL!,
           MAL_CLIENT_ID: env.MAL_CLIENT_ID!,
           MAL_CLIENT_SECRET: env.MAL_CLIENT_SECRET!,

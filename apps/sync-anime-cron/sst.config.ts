@@ -2,6 +2,10 @@ import { Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Cron, Function } from "sst/constructs";
 
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is required");
+}
+
 export default {
   config: (_input) => ({
     name: "sync-anime-cron",
@@ -17,6 +21,7 @@ export default {
         handler: "src/index.syncAnimeCron",
         timeout: "300 seconds",
         environment: {
+          NODE_OPTIONS: "--enable-source-maps",
           DATABASE_URL: process.env.DATABASE_URL!,
         },
       });

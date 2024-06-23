@@ -18,7 +18,7 @@
     "@aniways/db": "workspace:*",
     "@aniways/myanimelist": "workspace:*",
     "@aniways/ui": "workspace:*",
-    "@tanstack/react-query": "^5.45.1",
+    "@tanstack/react-query": "^5.21.7",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "zod": "^3.23.8"
@@ -27,13 +27,14 @@
     "@aniways/eslint-config": "workspace:*",
     "@aniways/prettier-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
+    "@types/aws-lambda": "^8.10.140",
     "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^9.4.0",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5",
     "aws-cdk-lib": "2.142.1",
     "constructs": "10.3.0",
+    "eslint": "^9.4.0",
+    "prettier": "^3.3.1",
     "sst": "^2.43.1",
+    "typescript": "^5.4.5",
     "vite": "^5.3.1"
   },
   "prettier": "@aniways/prettier-config"

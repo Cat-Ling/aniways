@@ -1,18 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { z } from "zod";
+
+const DependencySchema = z.object({
+  isDown: z.boolean(),
+  date: z.coerce.date(),
+});
 
 const ResponseSchema = z.object({
   message: z.string(),
   success: z.boolean(),
   dependencies: z.object({
-    myAnimeList: z.boolean(),
-    episodeService: z.boolean(),
-    website: z.boolean(),
+    myAnimeList: DependencySchema,
+    episodeService: DependencySchema,
+    website: DependencySchema,
   }),
 });
 
 export const useHealthCheck = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["healthcheck"],
     queryFn: async () => {
       // eslint-disable-next-line turbo/no-undeclared-env-vars
