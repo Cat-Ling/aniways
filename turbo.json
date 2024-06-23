@@ -2,9 +2,6 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
@@ -24,7 +21,7 @@
       "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^topo", "^build"],
+      "dependsOn": ["^build"],
       "outputs": ["node_modules/.cache/.eslintcache"]
     },
     "typecheck": {
@@ -50,7 +47,7 @@
       "interactive": true
     },
     "deploy:prod": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^deploy:prod"]
     }
   },
   "globalEnv": [

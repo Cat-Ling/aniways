@@ -69,9 +69,6 @@ jobs:
       - name: Setup
         uses: ./tooling/github/setup
 
-      - name: Install serverless
-        run: bun add -g serverless@3.34.0
-
       - name: Set up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
