@@ -1,5 +1,3 @@
-import { useHealthCheck } from "src/hooks/useHealthCheck";
-
 import {
   Table,
   TableBody,
@@ -9,6 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@aniways/ui/table";
+
+import { useHealthCheck } from "../hooks/useHealthCheck";
 
 export const HealthCheckTable = () => {
   const healthcheck = useHealthCheck();

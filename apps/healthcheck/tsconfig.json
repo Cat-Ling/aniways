@@ -8,5 +8,5 @@
     "module": "esnext"
   },
   "include": ["."],
-  "exclude": ["node_modules", ".sst"]
+  "exclude": ["node_modules", ".sst", "dist"]
 }

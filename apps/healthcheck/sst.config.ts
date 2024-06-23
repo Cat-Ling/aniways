@@ -55,9 +55,8 @@ export default {
       });
 
       const website = new StaticSite(stack, "healthcheck-website", {
-        path: ".",
         buildOutput: "dist",
-        buildCommand: "bun run build",
+        buildCommand: "bun run vite:build",
         customDomain: {
           domainName: "healthcheck.aniways.xyz",
           isExternalDomain: true,
