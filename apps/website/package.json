@@ -11,7 +11,7 @@
     "lint": "eslint",
     "start": "bun with-env next start",
     "typecheck": "tsc --noEmit",
-    "deploy:prod": "bunx with-env sst deploy --stage prod",
+    "deploy:prod": "bun with-env sst deploy --stage prod",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
