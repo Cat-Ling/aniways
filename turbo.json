@@ -50,7 +50,7 @@
       "interactive": true
     },
     "deploy:prod": {
-      "dependsOn": ["package"]
+      "dependsOn": ["build"]
     }
   },
   "globalEnv": [
