@@ -1,16 +1,15 @@
 {
-  "name": "@aniways/aws-cron",
+  "name": "@aniways/sync-anime-cron",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun with-env serverless package",
-    "dev": "bun with-env serverless offline start --httpPort 8080 --reloadHandler",
+    "build": "bunx with-env sst build",
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "deploy:prod": "bun with-env serverless deploy --stage prod",
+    "deploy:prod": "bunx with-env sst deploy --stage prod",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -21,15 +20,12 @@
     "@aniways/eslint-config": "workspace:*",
     "@aniways/prettier-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
-    "@serverless/typescript": "^3.38.0",
-    "@types/aws-lambda": "^8.10.133",
     "eslint": "^9.4.0",
     "prettier": "^3.3.1",
-    "serverless-offline": "13.3.3",
-    "serverless-webpack": "5.13.0",
-    "ts-loader": "9.5.1",
     "typescript": "^5.4.5",
-    "webpack": "5.90.1"
+    "aws-cdk-lib": "2.142.1",
+    "constructs": "10.3.0",
+    "sst": "^2.43.1"
   },
   "prettier": "@aniways/prettier-config"
 }

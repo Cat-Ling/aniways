@@ -4,5 +4,5 @@
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "include": ["src", "*.ts"],
-  "exclude": ["node_modules", ".serverless", ".build", ".webpack"]
+  "exclude": ["node_modules", ".sst"]
 }

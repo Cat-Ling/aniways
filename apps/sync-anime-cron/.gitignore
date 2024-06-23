@@ -5,3 +5,6 @@ node_modules
 # generated .d.ts files
 *.d.ts
 *.d.ts.map
+
+# sst
+.sst

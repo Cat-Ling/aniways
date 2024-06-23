@@ -7,7 +7,13 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "next-env.d.ts",
+        "dist/**",
+        ".sst/**"
+      ]
     },
     "dev": {
       "persistent": true,
@@ -18,7 +24,7 @@
       "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^topo", "^build", "^package"],
+      "dependsOn": ["^topo", "^build"],
       "outputs": ["node_modules/.cache/.eslintcache"]
     },
     "typecheck": {
@@ -42,10 +48,6 @@
     "ui:add": {
       "cache": false,
       "interactive": true
-    },
-    "package": {
-      "dependsOn": ["^lint"],
-      "outputs": [".serverless/**", "dist/**", ".webpack/**"]
     },
     "deploy:prod": {
       "dependsOn": ["package"]
