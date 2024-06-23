@@ -11,7 +11,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "deploy:prod": "bun with-env sst deploy --stage prod",
+    "deploy:prod": "bun sst deploy --stage prod",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
