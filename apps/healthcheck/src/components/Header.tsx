@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Image } from "@aniways/ui/aniways-image";
 
-export const Navbar = () => {
+export const Header = () => {
   return (
     <nav className="border-b border-border bg-background">
       <div className="container mx-auto flex items-center justify-between px-3 md:container">
