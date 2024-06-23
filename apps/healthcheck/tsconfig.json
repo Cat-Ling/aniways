@@ -1,8 +1,15 @@
 {
   "extends": "@aniways/typescript-config/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "module": "esnext"
   },
-  "include": ["src", "*.ts"],
-  "exclude": ["node_modules", ".serverless", ".build", ".webpack"]
+  "include": ["."],
+  "exclude": ["node_modules", ".sst"]
 }

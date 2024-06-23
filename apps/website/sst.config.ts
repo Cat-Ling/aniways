@@ -1,4 +1,5 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { NextjsSite } from "sst/constructs";
 
@@ -13,6 +14,10 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
+      Tags.of(stack).add("App", "Aniways");
+      Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);
+      Tags.of(stack).add("Purpose", "Aniways Main Website");
+
       const site = new NextjsSite(stack, "site", {
         customDomain: {
           domainName: "aniways.xyz",

@@ -42,6 +42,7 @@ async function checkIfEpisodeServiceIsDown() {
     if (!anime?.lastEpisode) throw new Error("No anime found");
 
     await service.getEpisodeUrl(anime.id, anime.lastEpisode);
+    await service.getEpisodesByAnimeId(anime.id);
   } catch {
     isDown = true;
   }

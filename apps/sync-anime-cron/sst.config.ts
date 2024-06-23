@@ -1,3 +1,4 @@
+import { Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Cron, Function } from "sst/constructs";
 
@@ -8,6 +9,10 @@ export default {
   }),
   stacks: (app) => {
     app.stack(({ stack }) => {
+      Tags.of(stack).add("App", "Aniways");
+      Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);
+      Tags.of(stack).add("Purpose", "Sync Anime Data");
+
       const syncAnimeFn = new Function(stack, "sync-anime-function", {
         handler: "src/index.syncAnimeCron",
         timeout: "300 seconds",
