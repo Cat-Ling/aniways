@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bunx with-env sst build",
-    "dev": "bunx with-env sst dev --stage dev",
+    "build": "bun with-env sst build",
+    "dev": "bun with-env sst dev --stage dev",
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "deploy:prod": "bunx with-env sst deploy --stage prod",
+    "deploy:prod": "bun with-env sst deploy --stage prod",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
