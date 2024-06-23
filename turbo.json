@@ -55,7 +55,12 @@
     "MAL_CLIENT_ID",
     "MAL_CLIENT_SECRET",
     "MAL_SECRET_KEY",
-    "AWS_CERT_ARN"
+    "AWS_CERT_ARN",
+    "AWS_DEFAULT_REGION",
+    "AWS_REGION",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_SESSION_TOKEN"
   ],
   "globalPassThroughEnv": ["NODE_ENV", "CI", "npm_lifecycle_event"]
 }
