@@ -1,1 +1,1 @@
-export * from './anime-service';
+export * from "./anime-service";

@@ -3,14 +3,7 @@ import {
   getContinueWatchingAnime,
   getRecentlyReleasedAnime,
   searchAnimeFromDB,
-} from './functions';
-
-export namespace AnimeServiceTypes {
-  export type GetAnimeById = typeof getAnimeById;
-  export type GetContinueWatchingAnime = typeof getContinueWatchingAnime;
-  export type GetRecentlyReleasedAnime = typeof getRecentlyReleasedAnime;
-  export type SearchAnime = typeof searchAnimeFromDB;
-}
+} from "./functions";
 
 export class AnimeService {
   getAnimeById = getAnimeById;

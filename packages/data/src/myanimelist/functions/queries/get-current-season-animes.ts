@@ -1,15 +1,15 @@
-import { db, orm, schema } from '@aniways/database';
-import { getCurrentAnimeSeason } from '@aniways/myanimelist';
+import { db, orm, schema } from "@aniways/db";
+import { getCurrentAnimeSeason } from "@aniways/myanimelist";
 
 export type CurrentAnimeSeason = Awaited<
   ReturnType<typeof getCurrentAnimeSeason>
->['data'][number] & {
+>["data"][number] & {
   anime?: schema.Anime;
 };
 
 export async function getCurrentSeasonAnimes(): Promise<CurrentAnimeSeason[]> {
   const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
-    data.slice(0, 10)
+    data.filter((data) => data.mal_id !== undefined).slice(0, 10),
   );
 
   const animes = await db
@@ -18,8 +18,8 @@ export async function getCurrentSeasonAnimes(): Promise<CurrentAnimeSeason[]> {
     .where(
       orm.inArray(
         schema.anime.malAnimeId,
-        currentSeasonAnime.map(anime => anime.mal_id!)
-      )
+        currentSeasonAnime.map((anime) => anime.mal_id) as number[],
+      ),
     );
 
   const animeMap = animes.reduce(
@@ -28,11 +28,12 @@ export async function getCurrentSeasonAnimes(): Promise<CurrentAnimeSeason[]> {
       acc[anime.malAnimeId] = anime;
       return acc;
     },
-    {} as Record<number, (typeof animes)[number]>
+    {} as Record<number, (typeof animes)[number]>,
   );
 
-  return currentSeasonAnime.map(anime => ({
+  return currentSeasonAnime.map((anime) => ({
     ...anime,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     anime: animeMap[anime.mal_id!],
   }));
 }

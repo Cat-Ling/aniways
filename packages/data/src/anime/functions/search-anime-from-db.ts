@@ -1,4 +1,4 @@
-import { db, orm, schema } from '@aniways/database';
+import { db, orm, schema } from "@aniways/db";
 
 export async function searchAnimeFromDB(query: string, page: number) {
   const animes = await db
@@ -12,10 +12,10 @@ export async function searchAnimeFromDB(query: string, page: number) {
     .where(
       orm.and(
         orm.sql`SIMILARITY(${schema.anime.title}, ${query}) > 0.2`,
-        orm.notLike(schema.anime.title, '%Dub%'),
-        orm.notLike(schema.anime.title, '%dub%'),
-        orm.isNotNull(schema.anime.lastEpisode)
-      )
+        orm.notLike(schema.anime.title, "%Dub%"),
+        orm.notLike(schema.anime.title, "%dub%"),
+        orm.isNotNull(schema.anime.lastEpisode),
+      ),
     )
     .orderBy(orm.sql`SIMILARITY(${schema.anime.title}, ${query}) DESC`)
     .limit(21)

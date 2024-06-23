@@ -1,10 +1,9 @@
-import { syncAnimeMetadataFromMAL } from './mutations/sync-anime-metadata-from-mal';
-import {
-  GetAnimeMetadataOptions,
-  getAnimeMetadataFromMAL,
-} from './queries/get-anime-metadata-from-mal';
+/* eslint-disable @typescript-eslint/only-throw-error */
+import type { GetAnimeMetadataOptions } from "./queries/get-anime-metadata-from-mal";
+import { syncAnimeMetadataFromMAL } from "./mutations/sync-anime-metadata-from-mal";
+import { getAnimeMetadataFromMAL } from "./queries/get-anime-metadata-from-mal";
 
-const NOT_FOUND = 'not-found' as const;
+const NOT_FOUND = "not-found";
 
 async function _syncAndGetAnimeMetadataFromMAL(
   accessToken: string | undefined,
@@ -12,11 +11,10 @@ async function _syncAndGetAnimeMetadataFromMAL(
     id: string;
     title: string;
     malAnimeId: number | null;
-  }
+  },
 ) {
-  const options: GetAnimeMetadataOptions =
-    anime.malAnimeId ?
-      {
+  const options: GetAnimeMetadataOptions = anime.malAnimeId
+    ? {
         malId: anime.malAnimeId,
       }
     : {
@@ -30,13 +28,13 @@ async function _syncAndGetAnimeMetadataFromMAL(
       accessToken,
       anime.id,
       details.mal_id,
-      false
+      false,
     );
   }
 
   if (!details || !details.mal_id) throw NOT_FOUND;
 
-  console.log('details =====>', details);
+  console.log("details =====>", details);
 
   return details;
 }
@@ -45,5 +43,5 @@ export const syncAndGetAnimeMetadataFromMAL = Object.assign(
   _syncAndGetAnimeMetadataFromMAL,
   {
     NOT_FOUND,
-  }
+  },
 );

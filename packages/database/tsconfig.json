@@ -1,8 +1,0 @@
-{
-  "extends": "@aniways/typescript-config/base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-  },
-  "include": ["src", "drizzle.config.ts"],
-  "exclude": ["node_modules"],
-}

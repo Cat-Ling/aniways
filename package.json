@@ -1,40 +1,41 @@
 {
   "name": "aniways",
-  "version": "1.1.0",
   "private": true,
-  "scripts": {
-    "build": "dotenv -- turbo build",
-    "dev": "dotenv -- turbo dev",
-    "start": "dotenv -- turbo start",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "ui:add": "bun --filter @aniways/ui ui:add",
-    "db:push": "dotenv -- bunx --filter @aniways/database push",
-    "db:studio": "dotenv -- bunx --filter @aniways/database db:studio",
-    "deploy:prod": "dotenv -- turbo deploy:prod",
-    "package": "dotenv -- turbo package",
-    "workspace:generate": "bunx turbo gen workspace --name",
-    "delete": "bunx npkill"
-  },
-  "devDependencies": {
-    "@aniways/eslint-config": "workspace:*",
-    "@aniways/typescript-config": "workspace:*",
-    "@types/eslint": "^8.56.1",
-    "@types/node": "^20.11.17",
-    "dotenv-cli": "^7.3.0",
-    "eslint": "^8",
-    "npkill": "^0.11.3",
-    "prettier": "^3.1.1",
-    "prettier-plugin-tailwindcss": "^0.5.11",
-    "turbo": "^1.12.2",
-    "typescript": "5.3.3"
-  },
-  "packageManager": "bun@1.1.14",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tooling/*"
+  ],
   "engines": {
     "node": ">=18"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "packageManager": "bun@1.1.14",
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "db:push": "turbo -F @aniways/db push",
+    "db:studio": "turbo -F @aniways/db studio",
+    "dev": "turbo watch dev",
+    "dev:website": "turbo watch dev -F @aniways/website",
+    "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
+    "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:ws": "bun x sherif@latest",
+    "postinstall": "bun lint:ws",
+    "typecheck": "turbo run typecheck",
+    "ui:add": "turbo run ui:add",
+    "deploy:prod": "turbo deploy:prod",
+    "package": "turbo run package",
+    "gen": "turbo gen init"
+  },
+  "devDependencies": {
+    "@aniways/prettier-config": "workspace:*",
+    "@turbo/gen": "^2.0.3",
+    "prettier": "^3.3.1",
+    "turbo": "^2.0.3",
+    "typescript": "^5.4.5"
+  },
+  "prettier": "@aniways/prettier-config"
 }

@@ -1,7 +1,5 @@
-import {
-  getAnimeDetailsFromMyAnimeList,
-  AnimeDetails,
-} from '@aniways/myanimelist';
+import type { AnimeDetails } from "@aniways/myanimelist";
+import { getAnimeDetailsFromMyAnimeList } from "@aniways/myanimelist";
 
 export type GetAnimeMetadataOptions =
   | {
@@ -13,7 +11,7 @@ export type GetAnimeMetadataOptions =
 
 export async function getAnimeMetadataFromMAL(
   accessToken: string | undefined,
-  options: GetAnimeMetadataOptions
+  options: GetAnimeMetadataOptions,
 ): Promise<AnimeDetails | undefined> {
   return await getAnimeDetailsFromMyAnimeList({
     accessToken: accessToken,

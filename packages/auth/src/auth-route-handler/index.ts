@@ -1,11 +1,11 @@
-import { api } from './api';
+import { createMyAnimeListFetchHandler } from "@animelist/auth-next/server";
 
-import { createMyAnimeListFetchHandler } from '@animelist/auth-next/server';
-import { AuthRouteHandler } from './types';
+import type { AuthRouteHandler } from "./types";
+import { api } from "./api";
 
 const handler = createMyAnimeListFetchHandler({
-  redirectAfterSignOutUrl: '/api/myanimelist/auth/redirect',
-  redirectAfterSignInUrl: '/api/myanimelist/auth/redirect',
+  redirectAfterSignOutUrl: "/api/myanimelist/auth/redirect",
+  redirectAfterSignInUrl: "/api/myanimelist/auth/redirect",
 });
 
 export const createAuthRouteHandler: () => AuthRouteHandler = () => ({

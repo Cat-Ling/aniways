@@ -1,8 +1,9 @@
 {
-  "extends": "@aniways/typescript-config/base.json",
+  "extends": "@aniways/typescript-config/internal-package.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "outDir": "dist",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["src", "drizzle.config.ts"],
-  "exclude": ["node_modules"],
+  "include": ["src", "*.ts"],
+  "exclude": ["node_modules"]
 }

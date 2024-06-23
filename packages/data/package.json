@@ -2,17 +2,33 @@
   "name": "@aniways/data",
   "version": "0.0.0",
   "private": true,
-  "main": "src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
-    "lint": "eslint . --ext .ts"
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@aniways/database": "workspace:*",
+    "@aniways/db": "workspace:*",
     "@aniways/myanimelist": "workspace:*",
     "@aniways/web-scraping": "workspace:*"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
-    "@aniways/typescript-config": "workspace:*"
-  }
+    "@aniways/prettier-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*",
+    "eslint": "^9.4.0",
+    "prettier": "^3.3.1",
+    "typescript": "^5.4.5"
+  },
+  "prettier": "@aniways/prettier-config"
 }

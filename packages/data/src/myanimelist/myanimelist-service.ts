@@ -1,7 +1,9 @@
-import {
+import type {
   AnimeDetails,
   SearchResults as MALSearchResults,
-} from '@aniways/myanimelist';
+} from "@aniways/myanimelist";
+
+import type { CurrentAnimeSeason } from "./functions";
 import {
   addToMAL,
   deleteFromMAL,
@@ -13,10 +15,10 @@ import {
   syncAndGetAnimeMetadataFromMAL,
   syncAnimeMetadataFromMAL,
   updateAnimeInMAL,
-  CurrentAnimeSeason,
-} from './functions';
+} from "./functions";
 
 // prettier-ignore
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace MyAnimeListServiceTypes {
   export type GetAnimeListOfUser = typeof getAnimeListOfUser;
   export type GetCurrentSeasonAnimes = typeof getCurrentSeasonAnimes;
@@ -34,7 +36,7 @@ export namespace MyAnimeListServiceTypes {
 }
 
 export class MyAnimeListService {
-  static NOT_FOUND = 'not-found' as const;
+  static NOT_FOUND = "not-found" as const;
 
   getAnimeListOfUser = getAnimeListOfUser;
 

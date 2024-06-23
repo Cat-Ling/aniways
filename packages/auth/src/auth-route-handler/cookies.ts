@@ -1,17 +1,15 @@
-/* eslint-disable no-unused-vars */
-
-type Cookies = {
+interface Cookies {
   get: (name: string) => { value: string } | undefined;
   set: (name: string, value: string) => void;
   delete: (name: string) => void;
-};
+}
 
 export const cookies = (req: Request, responseHeaders: Headers): Cookies => {
-  const cookieHeader = req.headers.get('Cookie');
+  const cookieHeader = req.headers.get("Cookie");
   const cookies = (cookieHeader
-    ?.split(';')
-    .map(cookie => {
-      const [name, value] = cookie.split('=');
+    ?.split(";")
+    .map((cookie) => {
+      const [name, value] = cookie.split("=");
 
       if (!name || !value) {
         return null;
@@ -19,17 +17,17 @@ export const cookies = (req: Request, responseHeaders: Headers): Cookies => {
 
       return { name: name.trim(), value: value.trim() };
     })
-    .filter(cookie => cookie) ?? []) as { name: string; value: string }[];
+    .filter((cookie) => cookie) ?? []) as { name: string; value: string }[];
 
   return {
-    get: name => cookies?.find(cookie => cookie.name === name),
+    get: (name) => cookies.find((cookie) => cookie.name === name),
     set: (name, value) => {
       const cookie = `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=None`;
-      responseHeaders.append('Set-Cookie', cookie);
+      responseHeaders.append("Set-Cookie", cookie);
     },
-    delete: name => {
+    delete: (name) => {
       const cookie = `${name}=; Path=/; Secure; HttpOnly; SameSite=None; Max-Age=0`;
-      responseHeaders.append('Set-Cookie', cookie);
+      responseHeaders.append("Set-Cookie", cookie);
     },
   };
 };

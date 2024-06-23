@@ -1,30 +1,33 @@
-import parse from 'node-html-parser';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import parse from "node-html-parser";
 
-const BASE_URL = 'https://gogoanime3.co';
+const BASE_URL = "https://gogoanime3.co";
 
 export default async function searchAnimeFromGogo(query: string, page: number) {
   // total of 20 anime per page
   const response = await fetch(
-    `${BASE_URL}/search.html?page=${page}&keyword=${encodeURIComponent(query)}`
-  ).then(res => res.text());
+    `${BASE_URL}/search.html?page=${page}&keyword=${encodeURIComponent(query)}`,
+  ).then((res) => res.text());
 
   const searchResults = parse(response)
-    .querySelectorAll('.last_episodes ul.items li')
-    .map(async li => {
-      const image = li.querySelector('.img img')!.getAttribute('src')!;
+    .querySelectorAll(".last_episodes ul.items li")
+    .map(async (li) => {
+      const image = li.querySelector(".img img")!.getAttribute("src")!;
 
-      const name = li.querySelector('.name')!.innerText.trim();
+      const name = li.querySelector(".name")!.innerText.trim();
 
-      const url = li.querySelector('.name a')!.getAttribute('href')!;
+      const url = li.querySelector(".name a")!.getAttribute("href")!;
 
-      const slug = url.split('/').pop()!;
+      const slug = url.split("/").pop()!;
 
-      const details = await fetch(`${BASE_URL}/${url}`).then(res => res.text());
+      const details = await fetch(`${BASE_URL}/${url}`).then((res) =>
+        res.text(),
+      );
 
       const episodes = parse(details)
-        .querySelectorAll('#episode_page a')
+        .querySelectorAll("#episode_page a")
         .pop()
-        ?.getAttribute('ep_end');
+        ?.getAttribute("ep_end");
 
       return {
         name,
