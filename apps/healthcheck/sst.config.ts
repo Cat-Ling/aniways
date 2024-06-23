@@ -11,8 +11,12 @@ if (!process.env.MAL_CLIENT_ID) {
   throw new Error("MAL_CLIENT_ID is required");
 }
 
-if (!process.env.AWS_CERT_ARN) {
-  throw new Error("AWS_CERT_ARN is required");
+if (!process.env.AWS_CERT_ARN_AP_SOUTHEAST_1) {
+  throw new Error("AWS_CERT_ARN_AP_SOUTHEAST_1 is required");
+}
+
+if (!process.env.AWS_CERT_ARN_US_EAST_1) {
+  throw new Error("AWS_CERT_ARN_US_EAST_1 is required");
 }
 
 export default {
@@ -26,10 +30,10 @@ export default {
       Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);
       Tags.of(stack).add("Purpose", "Health Check");
 
-      const certificate = Certificate.fromCertificateArn(
+      const certificateAPSE = Certificate.fromCertificateArn(
         stack,
-        "Certificate",
-        process.env.AWS_CERT_ARN!,
+        "ap-southeast-1-certificate",
+        process.env.AWS_CERT_ARN_AP_SOUTHEAST_1!,
       );
 
       const api = new Api(stack, "healthcheck-api", {
@@ -49,10 +53,16 @@ export default {
           isExternalDomain: true,
           domainName: "api.healthcheck.aniways.xyz",
           cdk: {
-            certificate: certificate,
+            certificate: certificateAPSE,
           },
         },
       });
+
+      const certificateUSEast = Certificate.fromCertificateArn(
+        stack,
+        "us-east-1-certificate",
+        process.env.AWS_CERT_ARN_US_EAST_1!,
+      );
 
       const website = new StaticSite(stack, "healthcheck-website", {
         buildOutput: "dist",
@@ -61,7 +71,7 @@ export default {
           domainName: "healthcheck.aniways.xyz",
           isExternalDomain: true,
           cdk: {
-            certificate: certificate,
+            certificate: certificateUSEast,
           },
         },
         environment: {

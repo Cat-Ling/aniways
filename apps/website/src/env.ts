@@ -13,7 +13,7 @@ export const env = createEnv({
       .default("development"),
   },
   server: {
-    AWS_CERT_ARN: z.string(),
+    AWS_CERT_ARN_US_EAST_1: z.string(),
   },
   client: {},
   experimental__runtimeEnv: {
