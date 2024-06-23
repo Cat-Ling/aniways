@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
+import { Header } from "./components/Header";
 import { HealthCheckTable } from "./components/HealthCheckTable";
-import { Navbar } from "./components/Navbar";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         </div>
       }
     >
-      <Navbar />
+      <Header />
       <div className="mb-6 flex w-full flex-col justify-between gap-3 pt-6 md:mb-5 md:flex-row md:items-center md:gap-0">
         <h1 className="text-lg font-bold md:text-2xl">Health Check</h1>
         <HealthCheckTable />
