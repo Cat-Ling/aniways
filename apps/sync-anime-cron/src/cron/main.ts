@@ -7,7 +7,7 @@ import { scrape } from "./scrape";
 
 const logger = createLogger("AniwaysSyncAnimeCron", "cron");
 
-export const main = async () => {
+export const handler = async () => {
   try {
     if (checkIfOffline()) throw new Error("Offline mode");
 

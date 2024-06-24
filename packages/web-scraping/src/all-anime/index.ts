@@ -1,4 +1,4 @@
-import parse from "node-html-parser";
+import { parse } from "node-html-parser";
 
 const getAnimeFromGogoAnime = async (page: number) => {
   return fetch(`https://gogoanime3.co/anime-list.html?page=${page}`)

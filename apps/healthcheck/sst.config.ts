@@ -1,15 +1,13 @@
+import { fileURLToPath } from "url";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Tags } from "aws-cdk-lib/core";
+import createJiti from "jiti";
 import { SSTConfig } from "sst";
 import { Api, StaticSite } from "sst/constructs";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is required");
-}
-
-if (!process.env.MAL_CLIENT_ID) {
-  throw new Error("MAL_CLIENT_ID is required");
-}
+const jiti = createJiti(fileURLToPath(import.meta.url));
+jiti("@aniways/db/env");
+jiti("@aniways/myanimelist/env");
 
 if (!process.env.AWS_CERT_ARN_AP_SOUTHEAST_1) {
   throw new Error("AWS_CERT_ARN_AP_SOUTHEAST_1 is required");

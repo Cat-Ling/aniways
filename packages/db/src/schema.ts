@@ -79,7 +79,7 @@ export const video = pgTable(
     id: varchar("id", { length: 25 }).primaryKey(),
     animeId: varchar("anime_id", { length: 25 })
       .notNull()
-      .references((): AnyPgColumn => anime.id),
+      .references((): AnyPgColumn => anime.id, { onDelete: "cascade" }),
     episode: numeric("episode").notNull(),
     slug: text("slug").notNull(),
     title: text("title"),

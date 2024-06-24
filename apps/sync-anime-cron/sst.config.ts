@@ -1,10 +1,10 @@
+import { fileURLToPath } from "url";
 import { Tags } from "aws-cdk-lib/core";
+import createJiti from "jiti";
 import { SSTConfig } from "sst";
 import { Cron, Function } from "sst/constructs";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is required");
-}
+createJiti(fileURLToPath(import.meta.url))("@aniways/db/env");
 
 export default {
   config: (_input) => ({
@@ -18,7 +18,7 @@ export default {
       Tags.of(stack).add("Purpose", "Sync Anime Data");
 
       const syncAnimeFn = new Function(stack, "sync-anime-function", {
-        handler: "src/index.syncAnimeCron",
+        handler: "src/cron/main.handler",
         timeout: "300 seconds",
         environment: {
           NODE_OPTIONS: "--enable-source-maps",

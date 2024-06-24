@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { chunk } from "lodash";
-import parse from "node-html-parser";
+import { parse } from "node-html-parser";
 
 const BASE_URL = "https://gogotaku.info/recent-release-anime";
 

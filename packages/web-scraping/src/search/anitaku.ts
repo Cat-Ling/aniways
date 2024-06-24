@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import parse from "node-html-parser";
+import { parse } from "node-html-parser";
 
 const BASE_URL = "https://anitaku.to";
 

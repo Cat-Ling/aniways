@@ -1,7 +1,11 @@
+import { fileURLToPath } from "url";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Tags } from "aws-cdk-lib/core";
+import createJiti from "jiti";
 import { SSTConfig } from "sst";
 import { NextjsSite } from "sst/constructs";
+
+createJiti(fileURLToPath(import.meta.url))("./src/env");
 
 export default {
   config(_input) {
