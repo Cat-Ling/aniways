@@ -38,6 +38,7 @@ export default {
           MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
           MAL_CLIENT_SECRET: process.env.MAL_CLIENT_SECRET!,
           MAL_SECRET_KEY: process.env.MAL_SECRET_KEY!,
+          HEALTHCHECK_KEY: process.env.HEALTHCHECK_KEY!,
         },
       });
 
