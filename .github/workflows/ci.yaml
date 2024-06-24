@@ -22,13 +22,13 @@ env:
   MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
   MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
   MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
+  HEALTHCHECK_KEY: ${{ secrets.HEALTHCHECK_KEY }}
   # For AWS
   AWS_CERT_ARN_US_EAST_1: ${{ secrets.AWS_CERT_ARN_US_EAST_1 }}
   AWS_CERT_ARN_AP_SOUTHEAST_1: ${{ secrets.AWS_CERT_ARN_AP_SOUTHEAST_1 }}
   # For TurboRepo
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-  FORCE_COLOR: 3
 
 jobs:
   lint:

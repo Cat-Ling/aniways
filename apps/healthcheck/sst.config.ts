@@ -13,6 +13,10 @@ if (!process.env.AWS_CERT_ARN_US_EAST_1) {
   throw new Error("AWS_CERT_ARN_US_EAST_1 is required");
 }
 
+if (!process.env.HEALTHCHECK_KEY) {
+  throw new Error("HEALTHCHECK_KEY is required");
+}
+
 export default {
   config: (_input) => ({
     name: "healthcheck",
@@ -34,6 +38,7 @@ export default {
               NODE_OPTIONS: "--enable-source-maps",
               DATABASE_URL: process.env.DATABASE_URL!,
               MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
+              HEALTHCHECK_KEY: process.env.HEALTHCHECK_KEY!,
             },
           },
         },
