@@ -86,13 +86,13 @@ export const handler: APIGatewayProxyHandler = async () => {
     isWebsiteDown.isDown
   ) {
     return {
-      statusCode: 500,
+      statusCode: 200,
       body: JSON.stringify({
         message: "Services are down",
         success: false,
         dependencies: {
           myAnimeList: !isMyAnimeListDown,
-          episodeService: !isEpisodeServiceDown,
+          episodes: !isEpisodeServiceDown,
           website: !isWebsiteDown,
         },
       }),
@@ -106,7 +106,7 @@ export const handler: APIGatewayProxyHandler = async () => {
       success: true,
       dependencies: {
         myAnimeList: !isMyAnimeListDown,
-        episodeService: !isEpisodeServiceDown,
+        episodes: !isEpisodeServiceDown,
         website: !isWebsiteDown,
       },
     }),

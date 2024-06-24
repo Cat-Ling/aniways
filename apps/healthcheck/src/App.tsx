@@ -9,7 +9,7 @@ function App() {
       fallback={
         <div className="flex h-screen items-center justify-center">
           <img
-            src="https://aniways.xyz/logo.png"
+            src="/logo.png"
             alt="Aniways Logo"
             className="h-20 w-20 animate-bounce"
           />
@@ -17,7 +17,7 @@ function App() {
       }
     >
       <Header />
-      <div className="mb-6 flex w-full flex-col justify-between gap-3 pt-6 md:mb-5 md:flex-row md:items-center md:gap-0">
+      <div className="container mb-6 flex w-full flex-col justify-between gap-3 px-3 pt-6 md:container">
         <h1 className="text-lg font-bold md:text-2xl">Health Check</h1>
         <HealthCheckTable />
       </div>
