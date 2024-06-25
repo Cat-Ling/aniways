@@ -12,7 +12,7 @@ const getRecentlyReleasedAnimes = cache(async (page: number) => {
 });
 
 const Home = ({ searchParams }: { searchParams: { page: string } }) => {
-  const page = Number(searchParams.page || "1");
+  const page = Math.max(Number(searchParams.page || "1"), 1);
 
   return (
     <>

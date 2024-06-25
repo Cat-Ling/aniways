@@ -29,7 +29,7 @@ const SearchPage = ({
 }: {
   searchParams: { query: string; page: string };
 }) => {
-  const page = Number(searchParams.page || "1");
+  const page = Math.max(Number(searchParams.page || "1"));
 
   return (
     <>

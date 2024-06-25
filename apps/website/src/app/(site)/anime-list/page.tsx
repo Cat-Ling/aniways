@@ -41,8 +41,10 @@ interface AnimeListPageProps {
   searchParams: { page?: string; status?: Status };
 }
 
-const AnimeListPage = async (props: AnimeListPageProps) => {
-  const { page = "1", status = "all" } = props.searchParams;
+const AnimeListPage = async ({
+  searchParams: { status = "all", ...searchParams },
+}: AnimeListPageProps) => {
+  const page = Math.max(Number(searchParams.page ?? 1), 1);
 
   const user = await auth(cookies());
 
@@ -72,7 +74,7 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
             </TabsList>
             <Suspense key={status} fallback={<PaginationLoader />}>
               <PaginationWrapper
-                page={Number(page)}
+                page={page}
                 accessToken={accessToken}
                 username={name}
                 status={status}
@@ -83,7 +85,7 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
       </Tabs>
       <Suspense key={page + status} fallback={<AnimeListLoader />}>
         <AnimeList
-          page={Number(page)}
+          page={page}
           accessToken={accessToken}
           username={name}
           status={status}
@@ -92,7 +94,7 @@ const AnimeListPage = async (props: AnimeListPageProps) => {
       <div className="-mb-6">
         <Suspense key={status} fallback={<PaginationLoader />}>
           <PaginationWrapper
-            page={Number(page)}
+            page={page}
             accessToken={accessToken}
             username={name}
             status={status}

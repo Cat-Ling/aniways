@@ -28,7 +28,7 @@ export const Pagination = ({ hasNext }: { hasNext: boolean }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const page = Number(searchParams.get("page") ?? "1");
+  const page = Math.max(Number(searchParams.get("page") ?? "1"), 1);
 
   const getParams = (page: number) => {
     const params = new URLSearchParams(searchParams);
