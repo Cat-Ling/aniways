@@ -8,7 +8,7 @@ const URLS = [
 
 export default async function getVideoSourceUrl(
   slug: string,
-  type: "movie" | undefined = undefined,
+  _type: "movie" | undefined = undefined,
 ) {
   const getUrl = async (
     url: string,
@@ -46,10 +46,10 @@ export default async function getVideoSourceUrl(
     }
   };
 
-  slug =
-    type === "movie"
-      ? `${slug.split("-episode-").at(0)}-camrip-episode-1`
-      : slug;
+  const movieSlug = `${slug.split("-episode-").at(0)}-camrip-episode-1`;
 
-  return getUrl(`${URLS[0]}/${slug}`, slug, 0);
+  return (
+    (await getUrl(`${URLS[0]}/${slug}`, slug, 0)) ??
+    (await getUrl(`${URLS[0]}/${movieSlug}`, movieSlug, 0))
+  );
 }

@@ -21,6 +21,7 @@ export default {
       Tags.of(stack).add("Purpose", "Aniways Main Website");
 
       const site = new NextjsSite(stack, "site", {
+        timeout: "30 seconds",
         customDomain: {
           domainName: "aniways.xyz",
           isExternalDomain: true,

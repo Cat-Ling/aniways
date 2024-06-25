@@ -6,7 +6,7 @@ import { getAnimeList } from "@aniways/myanimelist";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const animeRouter = createTRPCRouter({
-  all: publicProcedure
+  recentlyReleased: publicProcedure
     .input(z.object({ page: z.number().default(1) }))
     .query(async ({ ctx, input }) => {
       const recentlyReleased = await ctx.db
@@ -42,37 +42,14 @@ export const animeRouter = createTRPCRouter({
 
   byId: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx, input: { id } }) => {
       const [anime] = await ctx.db
         .select()
         .from(schema.anime)
-        .where(orm.eq(schema.anime.id, input.id))
+        .where(orm.eq(schema.anime.id, id))
         .limit(1);
 
       return anime;
-    }),
-
-  byIdWithFirstEpisode: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const [anime] = await ctx.db
-        .select()
-        .from(schema.anime)
-        .where(orm.eq(schema.anime.id, input.id))
-        .limit(1);
-
-      if (!anime) return null;
-
-      const [episodes] = await ctx.db
-        .select({
-          episode: schema.video.episode,
-        })
-        .from(schema.video)
-        .where(orm.eq(schema.video.animeId, input.id))
-        .orderBy(orm.asc(schema.video.episode))
-        .limit(1);
-
-      return { ...anime, firstEpisode: episodes?.episode ?? null };
     }),
 
   continueWatching: protectedProcedure.query(async ({ ctx }) => {
