@@ -21,7 +21,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  metadataBase: new URL("https://aniways.vercel.app"),
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
