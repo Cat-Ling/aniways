@@ -74,7 +74,10 @@ jobs:
         uses: ./tooling/github/setup
 
       - name: Generate Healthcheck Key
-        run: echo "HEALTHCHECK_KEY=$(openssl rand -hex 32)" >> $GITHUB_ENV
+        run: |
+          HEALTHCHECK_KEY=$(openssl rand -hex 32)
+          echo "::add-mask::$HEALTHCHECK_KEY"
+          echo "HEALTHCHECK_KEY=$HEALTHCHECK_KEY" >> $GITHUB_ENV
 
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
