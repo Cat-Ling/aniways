@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@aniways/auth": "workspace:*",
-    "@aniways/data": "workspace:*",
     "@aniways/db": "workspace:*",
     "@aniways/ui": "workspace:*",
     "@hookform/resolvers": "3.3.4",

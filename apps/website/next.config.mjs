@@ -12,7 +12,6 @@ const config = {
   transpilePackages: [
     "@aniways/auth",
     "@aniways/api",
-    "@aniways/data",
     "@aniways/db",
     "@aniways/myanimelist",
     "@aniways/ui",

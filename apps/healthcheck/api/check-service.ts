@@ -1,24 +1,21 @@
 import type { APIGatewayProxyHandler } from "aws-lambda";
 
-import {
-  createAnimeService,
-  createEpisodeService,
-  createMyAnimeListService,
-} from "@aniways/data";
+import { api } from "./trpc";
 
 async function checkIfMyAnimeListIsDown() {
-  const service = createMyAnimeListService();
-
   let isDown = false;
 
   try {
-    const anime = await service.searchAnimeOnMyAnimeList("naruto", 1);
+    const anime = await api.myAnimeList.search({
+      query: "naruto",
+      page: 1,
+    });
 
     if (!anime.data.length) {
       isDown = true;
     }
 
-    await service.getAnimeMetadataFromMyAnimeList(undefined, {
+    await api.myAnimeList.getAnimeMetadata({
       malId: anime.data[0]?.mal_id ?? 0,
     });
   } catch {
@@ -29,20 +26,22 @@ async function checkIfMyAnimeListIsDown() {
 }
 
 async function checkIfEpisodeServiceIsDown() {
-  const service = createEpisodeService();
-
   let isDown = false;
 
   try {
-    const { recentlyReleased } =
-      await createAnimeService().getRecentlyReleasedAnimes(1);
+    const { recentlyReleased } = await api.anime.recentlyReleased({ page: 1 });
 
     const anime = recentlyReleased.find(anime => anime.lastEpisode !== null);
 
     if (!anime?.lastEpisode) throw new Error("No anime found");
 
-    await service.getEpisodeUrl(anime.id, anime.lastEpisode);
-    await service.getEpisodesByAnimeId(anime.id);
+    const episode = await api.episodes.getEpisodeByAnimeIdAndEpisode({
+      animeId: anime.id,
+      episode: Number(anime.lastEpisode),
+    });
+
+    await api.episodes.scrapeVideoUrl({ slug: episode?.slug ?? "" });
+    await api.episodes.getEpisodesOfAnime({ animeId: anime.id });
   } catch {
     isDown = true;
   }
