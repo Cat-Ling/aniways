@@ -11,6 +11,7 @@ const config = {
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
     "@aniways/auth",
+    "@aniways/api",
     "@aniways/data",
     "@aniways/db",
     "@aniways/myanimelist",

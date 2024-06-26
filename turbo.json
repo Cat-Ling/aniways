@@ -64,5 +64,5 @@
     "AWS_SESSION_TOKEN",
     "HEALTHCHECK_KEY"
   ],
-  "globalPassThroughEnv": ["NODE_ENV", "CI", "npm_lifecycle_event"]
+  "globalPassThroughEnv": ["NODE_ENV", "CI", "npm_lifecycle_event", "PORT"]
 }
