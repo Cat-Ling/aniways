@@ -1,14 +1,11 @@
 import { cache, Suspense } from "react";
 
-import { createAnimeService } from "@aniways/data";
-
+import { api } from "~/trpc/server";
 import { AnimeGrid, AnimeGridLoader } from "../anime-grid";
 import { Pagination, PaginationLoader } from "../pagination";
 
 const getRecentlyReleasedAnimes = cache(async (page: number) => {
-  const service = createAnimeService();
-
-  return service.getRecentlyReleasedAnimes(page);
+  return api.anime.recentlyReleased({ page });
 });
 
 const Home = ({ searchParams }: { searchParams: { page: string } }) => {

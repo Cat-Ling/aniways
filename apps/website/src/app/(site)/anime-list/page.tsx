@@ -5,11 +5,11 @@ import { redirect, RedirectType } from "next/navigation";
 import { Play, Shell } from "lucide-react";
 
 import { auth } from "@aniways/auth";
-import { createMyAnimeListService } from "@aniways/data";
 import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@aniways/ui/tabs";
 
+import { api } from "~/trpc/server";
 import { Pagination, PaginationLoader } from "../pagination";
 
 type Status =
@@ -46,23 +46,20 @@ const AnimeListPage = async ({
 }: AnimeListPageProps) => {
   const page = Math.max(Number(searchParams.page ?? 1), 1);
 
-  const user = await auth(cookies());
+  const session = await auth(cookies());
 
-  if (!user) {
+  if (!session?.user) {
     redirect("/", RedirectType.replace);
   }
 
-  const {
-    accessToken,
-    user: { name },
-  } = user;
+  const { user } = session;
 
   return (
     <div className="flex flex-col gap-6">
       <Tabs defaultValue={status}>
         <div className="flex w-full flex-col gap-6 md:mb-3">
           <h1 className="text-2xl">
-            <span className="font-bold">{name}'s</span> Anime List
+            <span className="font-bold">{user.name}'s</span> Anime List
           </h1>
           <div className="flex flex-col gap-6 md:flex-row md:justify-between">
             <TabsList className="flex h-fit max-w-full flex-wrap">
@@ -73,32 +70,17 @@ const AnimeListPage = async ({
               ))}
             </TabsList>
             <Suspense key={status} fallback={<PaginationLoader />}>
-              <PaginationWrapper
-                page={page}
-                accessToken={accessToken}
-                username={name}
-                status={status}
-              />
+              <PaginationWrapper page={page} status={status} />
             </Suspense>
           </div>
         </div>
       </Tabs>
       <Suspense key={page + status} fallback={<AnimeListLoader />}>
-        <AnimeList
-          page={page}
-          accessToken={accessToken}
-          username={name}
-          status={status}
-        />
+        <AnimeList page={page} status={status} />
       </Suspense>
       <div className="-mb-6">
         <Suspense key={status} fallback={<PaginationLoader />}>
-          <PaginationWrapper
-            page={page}
-            accessToken={accessToken}
-            username={name}
-            status={status}
-          />
+          <PaginationWrapper page={page} status={status} />
         </Suspense>
       </div>
     </div>
@@ -107,54 +89,26 @@ const AnimeListPage = async ({
 
 interface AnimeListProps {
   page: number;
-  accessToken: string;
-  username: string;
   status: Status;
 }
 
-const getAnimeListOfUser = cache(
-  async (
-    accessToken: string,
-    username: string,
-    page: number,
-    status: Status
-  ) => {
-    const service = createMyAnimeListService();
-
-    return service.getAnimeListOfUser(accessToken, username, page, status);
-  }
-);
-
-const PaginationWrapper = async ({
-  page,
-  accessToken,
-  username,
-  status,
-}: AnimeListProps) => {
-  const animeList = await getAnimeListOfUser(
-    accessToken,
-    username,
+const getAnimeListOfUser = cache(async (page: number, status: Status) => {
+  return await api.myAnimeList.getAnimeListOfUser({
     page,
-    status
-  );
+    status,
+  });
+});
+
+const PaginationWrapper = async ({ page, status }: AnimeListProps) => {
+  const animeList = await getAnimeListOfUser(page, status);
 
   if (!animeList.anime.length) return null;
 
   return <Pagination hasNext={animeList.hasNext} />;
 };
 
-const AnimeList = async ({
-  page,
-  accessToken,
-  username,
-  status,
-}: AnimeListProps) => {
-  const animeList = await getAnimeListOfUser(
-    accessToken,
-    username,
-    page,
-    status
-  );
+const AnimeList = async ({ page, status }: AnimeListProps) => {
+  const animeList = await getAnimeListOfUser(page, status);
 
   if (!animeList.anime.length) {
     return (

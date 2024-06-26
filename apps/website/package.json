@@ -19,6 +19,7 @@
     "@aniways/data": "workspace:*",
     "@aniways/db": "workspace:*",
     "@aniways/ui": "workspace:*",
+    "@hookform/resolvers": "3.3.4",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.21.7",
     "@trpc/client": "11.0.0-rc.364",
@@ -30,6 +31,7 @@
     "nextjs-toploader": "^1.6.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hook-form": "^7.50.1",
     "superjson": "2.2.1",
     "zod": "^3.23.8"
   },

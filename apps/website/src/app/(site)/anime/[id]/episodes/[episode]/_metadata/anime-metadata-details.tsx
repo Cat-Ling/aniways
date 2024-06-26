@@ -1,8 +1,6 @@
-"use client";
-
-import { Suspense } from "react";
 import Link from "next/link";
 
+import type { RouterOutputs } from "@aniways/api";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import {
@@ -12,25 +10,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@aniways/ui/dialog";
-import { Skeleton } from "@aniways/ui/skeleton";
 
 import { AnimeChooser } from "./_anime-chooser";
 import { MyAnimeListButton } from "./_myanimelist-button";
-import { useMetadata } from "./metadata-provider";
 
-interface AnimeMetadataClientProps {
-  anime: {
-    title: string;
-  };
+interface AnimeMetadataProps {
+  anime: Exclude<RouterOutputs["anime"]["byId"], undefined>;
+  metadata: Exclude<
+    RouterOutputs["myAnimeList"]["getAnimeMetadata"],
+    undefined
+  >;
 }
 
-export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
-  const [details] = useMetadata();
-
+export const AnimeMetadataDetails = ({
+  anime,
+  metadata,
+}: AnimeMetadataProps) => {
   return (
     <div className="mb-6 grid min-h-[400px] w-full grid-cols-1 gap-6 md:grid-cols-4">
       <Image
-        src={details.images.jpg.large_image_url}
+        src={metadata.images.jpg.large_image_url}
         alt={anime.title}
         width={300}
         height={400}
@@ -38,17 +37,17 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
       />
       <div className="flex flex-col gap-3 md:col-span-3">
         <div>
-          <h2 className="text-2xl font-bold">{details.title}</h2>
+          <h2 className="text-2xl font-bold">{metadata.title}</h2>
           <p className="text-sm text-muted-foreground">
-            {details.title_english}
+            {metadata.title_english}
           </p>
           <div className="mt-2 flex flex-col justify-start gap-3 md:flex-row">
             {[
-              details.type,
-              details.rating,
-              `${details.season?.replace(/^\w/, c => c.toUpperCase())} ${details.year}`,
-              details.duration,
-              details.status,
+              metadata.type,
+              metadata.rating,
+              `${metadata.season?.replace(/^\w/, c => c.toUpperCase())} ${metadata.year}`,
+              metadata.duration,
+              metadata.status,
             ].map(
               (info, index) =>
                 info && (
@@ -64,19 +63,19 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
           <div className="mt-2 grid w-full grid-cols-2 md:w-1/2">
             <div className="text-sm">
               <span className="text-muted-foreground">Genres: </span>
-              {details.genres.map(genre => genre.name).join(", ")}
+              {metadata.genres.map(genre => genre.name).join(", ")}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Total Episodes: </span>
-              {details.episodes ?? "???"}
+              {metadata.episodes ?? "???"}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Studios: </span>
-              {details.studios.map(studio => studio.name).join(", ")}
+              {metadata.studios.map(studio => studio.name).join(", ")}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Rank: </span>
-              {details.rank}
+              {metadata.rank}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Score: </span>
@@ -84,37 +83,37 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
                 {Intl.NumberFormat("en-US", {
                   minimumSignificantDigits: 3,
                   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                }).format(details.score ?? 0)}
+                }).format(metadata.score ?? 0)}
               </span>{" "}
-              ({Intl.NumberFormat("en-US").format(details.scored_by ?? 0)}{" "}
+              ({Intl.NumberFormat("en-US").format(metadata.scored_by ?? 0)}{" "}
               users)
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Popularity: </span>
-              {details.popularity}
+              {metadata.popularity}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Aired: </span>
-              {(details.aired as unknown as { string: string }).string}
+              {(metadata.aired as unknown as { string: string }).string}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Source: </span>
-              {details.source}
+              {metadata.source}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Status: </span>
-              {details.listStatus ?
-                details.listStatus.status.charAt(0).toUpperCase() +
-                details.listStatus.status.slice(1).replace(/_/g, " ")
+              {metadata.listStatus ?
+                metadata.listStatus.status.charAt(0).toUpperCase() +
+                metadata.listStatus.status.slice(1).replace(/_/g, " ")
               : "Not in list"}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Watched Episodes: </span>
-              {details.listStatus?.num_episodes_watched ?? 0}
+              {metadata.listStatus?.num_episodes_watched ?? 0}
             </div>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground">{details.synopsis}</p>
+        <p className="text-sm text-muted-foreground">{metadata.synopsis}</p>
         <div className="flex flex-col gap-2 md:flex-row">
           <Dialog>
             <DialogTrigger asChild>
@@ -123,16 +122,15 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
             <DialogContent>
               <DialogTitle>Report Wrong Information</DialogTitle>
               <DialogDescription>Choose the correct Anime</DialogDescription>
-              <Suspense fallback={<Skeleton className="h-[480px] w-full" />}>
-                <AnimeChooser query={anime.title} />
-              </Suspense>
+              <AnimeChooser query={anime.title} />
             </DialogContent>
           </Dialog>
           <Button variant={"secondary"} asChild>
             <Link
               className="w-full md:w-fit"
               href={
-                details.url ?? `https://myanimelist.net/anime/${details.mal_id}`
+                metadata.url ??
+                `https://myanimelist.net/anime/${metadata.mal_id}`
               }
               target="_blank"
             >
@@ -144,10 +142,10 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
               <Button variant={"secondary"}>View Trailer</Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogTitle>Trailer - {details.title}</DialogTitle>
+              <DialogTitle>Trailer - {metadata.title}</DialogTitle>
               <iframe
                 className="aspect-video w-full"
-                src={details.trailer.embed_url}
+                src={metadata.trailer.embed_url}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -155,7 +153,7 @@ export const AnimeMetadataClient = ({ anime }: AnimeMetadataClientProps) => {
               ></iframe>
             </DialogContent>
           </Dialog>
-          <MyAnimeListButton details={details} />
+          <MyAnimeListButton details={metadata} />
         </div>
       </div>
     </div>

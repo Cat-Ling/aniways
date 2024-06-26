@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 import { cache, Suspense } from "react";
 import { notFound } from "next/navigation";
 
-import { createAnimeService } from "@aniways/data";
 import { Skeleton } from "@aniways/ui/skeleton";
 
+import { api } from "~/trpc/server";
 import { EpisodesSection } from "./_episodes";
+import { AnimeMetadata } from "./_metadata";
 import { VideoFrame } from "./video-frame";
 
 const getAnimeById = cache(async (id: string) => {
-  const service = createAnimeService();
-
-  return await service.getAnimeById(id);
+  return await api.anime.byId({ id });
 });
 
 export const generateMetadata = async ({
@@ -75,7 +74,7 @@ const AnimeStreamingPage = async ({
               <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
             }
           >
-            <VideoFrame animeId={id} currentEpisode={episode} />
+            <VideoFrame animeId={id} episode={episode} />
           </Suspense>
         </div>
         <Suspense
@@ -90,6 +89,7 @@ const AnimeStreamingPage = async ({
           <EpisodesSection animeId={id} currentEpisode={episode} />
         </Suspense>
       </div>
+      <AnimeMetadata anime={anime} />
     </>
   );
 };

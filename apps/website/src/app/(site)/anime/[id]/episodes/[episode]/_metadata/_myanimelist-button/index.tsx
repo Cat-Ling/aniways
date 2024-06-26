@@ -1,23 +1,19 @@
-import type { MyAnimeListServiceTypes } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 
 import { AddToListButton } from "./add-to-list-button";
 import { UpdateAnimeButton } from "./update-anime-button";
 
 interface MyAnimeListButtonProps {
-  details: MyAnimeListServiceTypes.AnimeMetadata;
+  metadata: Exclude<
+    RouterOutputs["myAnimeList"]["getAnimeMetadata"],
+    undefined
+  >;
 }
 
-export const MyAnimeListButton = ({ details }: MyAnimeListButtonProps) => {
-  if (details.listStatus) {
-    return (
-      <UpdateAnimeButton
-        details={{
-          ...details,
-          listStatus: details.listStatus,
-        }}
-      />
-    );
+export const MyAnimeListButton = ({ metadata }: MyAnimeListButtonProps) => {
+  if (metadata.listStatus) {
+    return <UpdateAnimeButton metadata={metadata} />;
   }
 
-  return <AddToListButton malId={details.mal_id} />;
+  return <AddToListButton metadata={metadata} />;
 };

@@ -1,21 +1,19 @@
 import { notFound, redirect, RedirectType } from "next/navigation";
 
-import { createAnimeService } from "@aniways/data";
+import { api } from "~/trpc/server";
 
 const AnimeDetailsPage = async ({
   params: { id },
 }: {
   params: { id: string };
 }) => {
-  const { getAnimeById } = createAnimeService();
+  const firstEpisode = await api.episodes.getFirstEpisodeByAnimeId({ id });
 
-  const anime = await getAnimeById(id);
-
-  if (!anime) notFound();
+  if (!firstEpisode.episode) notFound();
 
   redirect(
-    `/anime/${id}/episodes/${anime.firstEpisode ?? 1}`,
-    RedirectType.replace
+    `/anime/${id}/episodes/${firstEpisode.episode}`,
+    RedirectType.replace,
   );
 };
 

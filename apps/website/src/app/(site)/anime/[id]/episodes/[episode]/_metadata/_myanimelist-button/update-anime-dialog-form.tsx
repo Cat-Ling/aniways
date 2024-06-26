@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, MinusIcon, PlusIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { MyAnimeListServiceTypes } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 import { Button } from "@aniways/ui/button";
 import {
   DialogClose,
@@ -18,8 +18,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  reactHookForm,
-  zodResolver,
 } from "@aniways/ui/form";
 import { Input } from "@aniways/ui/input";
 import {
@@ -31,11 +29,8 @@ import {
 } from "@aniways/ui/select";
 import { toast } from "@aniways/ui/sonner";
 
-import { useMetadata } from "../metadata-provider";
-import {
-  deleteAnimeInListAction,
-  updateAnimeInListAction,
-} from "./myanimelist-actions";
+import { env } from "~/env";
+import { api } from "~/trpc/react";
 
 const status = [
   "watching",
@@ -76,21 +71,21 @@ const UpdateAnimeSchema = z.object({
   score: z.coerce.number().int().min(0).max(10).optional(),
 });
 
-interface UpdateAnimeFormProps {
+interface UpdateAnimeDialogFormProps {
   malId: number;
-  listStatus: MyAnimeListServiceTypes.AnimeMetadata["listStatus"];
+  listStatus: Exclude<
+    RouterOutputs["myAnimeList"]["getAnimeMetadata"],
+    undefined
+  >["listStatus"];
 }
 
-export const UpdateAnimeForm = ({
+export const UpdateAnimeDialogForm = ({
   malId,
   listStatus,
-}: UpdateAnimeFormProps) => {
-  const { id } = useParams();
-  const [isDeleting, setIsDeleting] = useState(false);
+}: UpdateAnimeDialogFormProps) => {
   const { close } = useDialogContext();
-  const [metadata, setMetadata] = useMetadata();
 
-  const form = reactHookForm.useForm<z.infer<typeof UpdateAnimeSchema>>({
+  const form = useForm<z.infer<typeof UpdateAnimeSchema>>({
     resolver: zodResolver(UpdateAnimeSchema),
     defaultValues: {
       status: listStatus?.status,
@@ -99,49 +94,61 @@ export const UpdateAnimeForm = ({
     },
   });
 
-  const onSubmit = form.handleSubmit(async data => {
-    try {
-      const { error, success } = await updateAnimeInListAction(
-        malId,
-        data.status,
-        data.episodesWatched,
-        data.score ?? 0,
-        `/anime/${typeof id === "string" ? id : id?.[0]}`
-      );
+  const utils = api.useUtils();
 
-      if (error || !success) {
-        throw new Error(error);
-      }
-
-      setMetadata({
-        ...metadata,
-        listStatus: metadata.listStatus && {
-          ...metadata.listStatus,
-          status: data.status,
-          num_episodes_watched: data.episodesWatched,
-          score: data.score ?? 0,
-        },
-      });
-
+  const updateAnimeInMyList = api.myAnimeList.updateAnimeInMyList.useMutation({
+    onSuccess: async () => {
+      await utils.myAnimeList.getAnimeMetadata.invalidate({ malId });
+      close();
       toast.success("List updated", {
         description: "Your list has been updated",
       });
+    },
+    onError: error => {
+      toast.error(
+        env.NODE_ENV === "development" ?
+          error.message
+        : "Failed to update list",
+        {
+          description: "Please try again later",
+        }
+      );
+    },
+  });
 
+  const deleteAnimeInMyList = api.myAnimeList.deleteFromMyList.useMutation({
+    onSuccess: async () => {
+      await utils.myAnimeList.getAnimeMetadata.invalidate({ malId });
       close();
-    } catch (e) {
-      console.error(e);
-
-      const error = e instanceof Error ? e : new Error("Failed to update list");
-
-      toast.error(error.message, {
-        description: "Please try again later",
+      toast.success("Anime deleted", {
+        description: "Anime has been removed from your list",
       });
-    }
+    },
+    onError: error => {
+      toast.error(
+        env.NODE_ENV === "development" ?
+          error.message
+        : "Failed to delete anime",
+        {
+          description: "Please try again later",
+        }
+      );
+    },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="flex flex-col gap-3">
+      <form
+        onSubmit={form.handleSubmit(data => {
+          updateAnimeInMyList.mutate({
+            malId,
+            numWatchedEpisodes: data.episodesWatched,
+            score: data.score ?? 0,
+            status: data.status,
+          });
+        })}
+        className="flex flex-col gap-3"
+      >
         <FormField
           control={form.control}
           name="status"
@@ -241,47 +248,17 @@ export const UpdateAnimeForm = ({
             <Button
               type="button"
               variant={"secondary"}
-              disabled={isDeleting}
-              onClick={async () => {
-                setIsDeleting(true);
-                try {
-                  const { success, error } = await deleteAnimeInListAction(
-                    malId,
-                    `/anime/${typeof id === "string" ? id : id?.[0]}`
-                  );
-
-                  if (error || !success) {
-                    throw new Error("Failed to delete anime");
-                  }
-
-                  setMetadata({ ...metadata, listStatus: undefined });
-
-                  toast.success("Anime deleted", {
-                    description: "Anime has been removed from your list",
-                  });
-                  close();
-                } catch (e) {
-                  console.error(e);
-
-                  const error =
-                    e instanceof Error ? e : (
-                      new Error("Failed to delete anime")
-                    );
-
-                  toast.error(error.message, {
-                    description: "Please try again later",
-                  });
-                } finally {
-                  setIsDeleting(false);
-                }
+              disabled={deleteAnimeInMyList.isPending}
+              onClick={() => {
+                deleteAnimeInMyList.mutate({ malId });
               }}
             >
-              {isDeleting ?
+              {deleteAnimeInMyList.isPending ?
                 <Loader2 className="animate-spin" />
               : "Delete Entry"}
             </Button>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ?
+            <Button type="submit" disabled={updateAnimeInMyList.isPending}>
+              {updateAnimeInMyList.isPending ?
                 <Loader2 className="animate-spin" />
               : "Update Anime"}
             </Button>

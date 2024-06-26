@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import { cookies } from "next/headers";
 
-import { auth } from "@aniways/auth";
-import { createAnimeService, createMyAnimeListService } from "@aniways/data";
 import { Skeleton } from "@aniways/ui/skeleton";
 
+import { api } from "~/trpc/server";
 import { AnimeGrid, AnimeGridLoader } from "../anime-grid";
 import { AnimeCarousel } from "./carousel";
 
@@ -28,9 +26,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
 }
 
 const SeasonalAnimeCarousel = async () => {
-  const service = createMyAnimeListService();
-
-  const seasonalAnime = await service.getCurrentSeasonAnimes();
+  const seasonalAnime = await api.myAnimeList.getCurrentSeasonAnimes();
 
   return <AnimeCarousel seasonalAnime={seasonalAnime} />;
 };
@@ -45,18 +41,7 @@ const CurrentlyWatchingAnimeLoader = () => (
 );
 
 const CurrentlyWatchingAnime = async () => {
-  const user = await auth(cookies());
-
-  if (!user) return undefined;
-
-  const {
-    accessToken,
-    user: { name: username },
-  } = user;
-
-  const { getContinueWatchingAnimes } = createAnimeService();
-
-  const newReleases = await getContinueWatchingAnimes(accessToken, username);
+  const newReleases = await api.anime.continueWatching().catch(() => []);
 
   if (!newReleases.length) return undefined;
 

@@ -16,7 +16,6 @@ export const episodesRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        slug: z.string(),
         videoUrl: z.string(),
       })
     )
@@ -26,12 +25,7 @@ export const episodesRouter = createTRPCRouter({
         .set({
           videoUrl: input.videoUrl,
         })
-        .where(
-          orm.and(
-            orm.eq(schema.video.animeId, input.id),
-            orm.eq(schema.video.slug, input.slug)
-          )
-        );
+        .where(orm.eq(schema.video.id, input.id));
     }),
 
   getEpisodesOfAnime: publicProcedure

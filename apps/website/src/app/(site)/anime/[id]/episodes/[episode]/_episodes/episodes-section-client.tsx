@@ -4,13 +4,13 @@ import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-import type { Schema } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 import { cn } from "@aniways/ui";
 import { Button } from "@aniways/ui/button";
 
 interface EpisodesSidbarProps {
   animeId: string;
-  episodes: Schema.Video[];
+  episodes: RouterOutputs["episodes"]["getEpisodesOfAnime"];
   currentEpisode: string;
 }
 
