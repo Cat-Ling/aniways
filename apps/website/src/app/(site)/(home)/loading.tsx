@@ -1,7 +1,7 @@
 import { AnimeGridLoader } from "../anime-grid";
 
 const HomePageLoading = () => {
-  return <AnimeGridLoader />;
+	return <AnimeGridLoader />;
 };
 
 export default HomePageLoading;

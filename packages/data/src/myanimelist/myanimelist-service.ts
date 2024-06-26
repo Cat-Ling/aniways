@@ -1,20 +1,20 @@
 import type {
-  AnimeDetails,
-  SearchResults as MALSearchResults,
+	AnimeDetails,
+	SearchResults as MALSearchResults,
 } from "@aniways/myanimelist";
 
 import type { CurrentAnimeSeason } from "./functions";
 import {
-  addToMAL,
-  deleteFromMAL,
-  getAnimeListOfUser,
-  getAnimeMetadataFromMAL,
-  getCurrentSeasonAnimes,
-  getRelatedAnime,
-  searchAnimeFromMAL,
-  syncAndGetAnimeMetadataFromMAL,
-  syncAnimeMetadataFromMAL,
-  updateAnimeInMAL,
+	addToMAL,
+	deleteFromMAL,
+	getAnimeListOfUser,
+	getAnimeMetadataFromMAL,
+	getCurrentSeasonAnimes,
+	getRelatedAnime,
+	searchAnimeFromMAL,
+	syncAndGetAnimeMetadataFromMAL,
+	syncAnimeMetadataFromMAL,
+	updateAnimeInMAL,
 } from "./functions";
 
 // prettier-ignore
@@ -36,29 +36,29 @@ export namespace MyAnimeListServiceTypes {
 }
 
 export class MyAnimeListService {
-  static NOT_FOUND = "not-found" as const;
+	static NOT_FOUND = "not-found" as const;
 
-  getAnimeListOfUser = getAnimeListOfUser;
+	getAnimeListOfUser = getAnimeListOfUser;
 
-  getCurrentSeasonAnimes = getCurrentSeasonAnimes;
+	getCurrentSeasonAnimes = getCurrentSeasonAnimes;
 
-  getAnimeMetadataFromMyAnimeList = getAnimeMetadataFromMAL;
+	getAnimeMetadataFromMyAnimeList = getAnimeMetadataFromMAL;
 
-  syncAndGetAnimeMetadataFromMyAnimeList = syncAndGetAnimeMetadataFromMAL;
+	syncAndGetAnimeMetadataFromMyAnimeList = syncAndGetAnimeMetadataFromMAL;
 
-  syncAnimeMetadataFromMyAnimeList = syncAnimeMetadataFromMAL;
+	syncAnimeMetadataFromMyAnimeList = syncAnimeMetadataFromMAL;
 
-  getRelatedAnimeFromDetails = getRelatedAnime;
+	getRelatedAnimeFromDetails = getRelatedAnime;
 
-  searchAnimeOnMyAnimeList = searchAnimeFromMAL;
+	searchAnimeOnMyAnimeList = searchAnimeFromMAL;
 
-  addAnimeToMyList = addToMAL;
+	addAnimeToMyList = addToMAL;
 
-  updateAnimeInMyList = updateAnimeInMAL;
+	updateAnimeInMyList = updateAnimeInMAL;
 
-  deleteAnimeFromMyList = deleteFromMAL;
+	deleteAnimeFromMyList = deleteFromMAL;
 }
 
 export const createMyAnimeListService = () => {
-  return new MyAnimeListService();
+	return new MyAnimeListService();
 };

@@ -1,38 +1,38 @@
 {
-  "name": "@aniways/api",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
-    }
-  },
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "clean": "rm -rf .turbo node_modules",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
-  },
-  "dependencies": {
-    "@aniways/auth": "workspace:*",
-    "@aniways/db": "workspace:*",
-    "@aniways/myanimelist": "workspace:*",
-    "@aniways/web-scraping": "workspace:*",
-    "@trpc/server": "11.0.0-rc.364",
-    "superjson": "2.2.1",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@aniways/eslint-config": "workspace:*",
-    "@aniways/prettier-config": "workspace:*",
-    "@aniways/typescript-config": "workspace:*",
-    "eslint": "^9.4.0",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5"
-  },
-  "prettier": "@aniways/prettier-config"
+	"name": "@aniways/api",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"clean": "rm -rf .turbo node_modules",
+		"format": "prettier --check . --ignore-path ../../.gitignore",
+		"lint": "eslint",
+		"typecheck": "tsc --noEmit --emitDeclarationOnly false"
+	},
+	"dependencies": {
+		"@aniways/auth": "workspace:*",
+		"@aniways/db": "workspace:*",
+		"@aniways/myanimelist": "workspace:*",
+		"@aniways/web-scraping": "workspace:*",
+		"@trpc/server": "11.0.0-rc.364",
+		"superjson": "2.2.1",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@aniways/eslint-config": "workspace:*",
+		"@aniways/prettier-config": "workspace:*",
+		"@aniways/typescript-config": "workspace:*",
+		"eslint": "^9.4.0",
+		"prettier": "^3.3.1",
+		"typescript": "^5.4.5"
+	},
+	"prettier": "@aniways/prettier-config"
 }

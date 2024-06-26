@@ -1,10 +1,10 @@
 {
-  "extends": "@aniways/typescript-config/internal-package.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "lib": ["es2022", "dom", "dom.iterable"],
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
-  },
-  "include": ["*.ts", "src"],
-  "exclude": ["node_modules"]
+	"extends": "@aniways/typescript-config/internal-package.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"lib": ["es2022", "dom", "dom.iterable"],
+		"tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+	},
+	"include": ["*.ts", "src"],
+	"exclude": ["node_modules"]
 }

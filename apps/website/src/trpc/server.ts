@@ -8,13 +8,13 @@ import { createCaller, createTRPCContext } from "@aniways/api";
  * handling a tRPC call from a React Server Component.
  */
 const createContext = cache(async () => {
-  const heads = new Headers(headers());
-  heads.set("x-trpc-source", "rsc");
+	const heads = new Headers(headers());
+	heads.set("x-trpc-source", "rsc");
 
-  return createTRPCContext({
-    headers: heads,
-    cookies: cookies(),
-  });
+	return createTRPCContext({
+		headers: heads,
+		cookies: cookies(),
+	});
 });
 
 export const api = createCaller(createContext);

@@ -4,9 +4,9 @@ import { myAnimeListRouter } from "./router/myanimelist";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
-  anime: animeRouter,
-  episodes: episodesRouter,
-  myAnimeList: myAnimeListRouter,
+	anime: animeRouter,
+	episodes: episodesRouter,
+	myAnimeList: myAnimeListRouter,
 });
 
 // export type definition of API

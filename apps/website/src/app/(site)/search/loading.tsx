@@ -1,7 +1,7 @@
 import { AnimeGridLoader } from "../anime-grid";
 
 const SearchLoading = () => {
-  return <AnimeGridLoader />;
+	return <AnimeGridLoader />;
 };
 
 export default SearchLoading;
