@@ -153,7 +153,7 @@ export const AnimeMetadataDetails = ({
               ></iframe>
             </DialogContent>
           </Dialog>
-          <MyAnimeListButton details={metadata} />
+          <MyAnimeListButton metadata={metadata} />
         </div>
       </div>
     </div>

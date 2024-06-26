@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { keepPreviousData } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
@@ -23,7 +24,7 @@ export const AnimeSelectorForm = ({
   const [page, setPage] = useState(1);
   const utils = api.useUtils();
 
-  const { isLoading, data, isError } = api.myAnimeList.search.useQuery(
+  const searchQuery = api.myAnimeList.search.useQuery(
     {
       query,
       page,
@@ -35,24 +36,25 @@ export const AnimeSelectorForm = ({
 
   const updateMalAnimeId = api.anime.updateMalAnimeId.useMutation({
     onSuccess: async () => {
-      await utils.myAnimeList.getAnimeMetadata.invalidate();
       toast.success("Anime updated successfully", {
         description: "Thanks for updating the anime!",
       });
+      await utils.anime.byId.invalidate();
+      await utils.myAnimeList.getAnimeMetadata.invalidate();
     },
   });
 
-  if (isError) {
+  if (searchQuery.isError) {
     return <div>Something went wrong. Please try again later.</div>;
   }
 
-  if (isLoading || !data) {
+  if (searchQuery.isLoading || !searchQuery.data) {
     return <Skeleton className="h-[480px] w-full" />;
   }
 
   return (
     <div className="flex w-full flex-col gap-2">
-      {data.data.map(anime => (
+      {searchQuery.data.data.map(anime => (
         <DialogClose
           key={anime.mal_id}
           onClick={() => {
@@ -112,12 +114,15 @@ export const AnimeSelectorForm = ({
                 Previous
               </Button>
             : null}
-            {data.pagination.has_next_page ?
+            {searchQuery.data.pagination.has_next_page ?
               <Button
                 variant={"secondary"}
                 onClick={() => setPage(page => page + 1)}
+                disabled={searchQuery.isPlaceholderData}
               >
-                Next
+                {searchQuery.isPlaceholderData ?
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                : "Next"}
               </Button>
             : null}
           </div>

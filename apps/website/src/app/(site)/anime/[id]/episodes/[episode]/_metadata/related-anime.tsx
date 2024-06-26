@@ -14,6 +14,8 @@ interface RelatedAnimeProps {
 }
 
 export const RelatedAnime: FC<RelatedAnimeProps> = props => {
+  if (props.relatedAnime.length === 0) return null;
+
   return (
     <>
       <h3 className="mb-3 mt-6 text-lg font-semibold">Related Anime</h3>

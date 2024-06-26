@@ -3,8 +3,6 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createTRPCContext } from "@aniways/api";
 
-export const runtime = "edge";
-
 const createContext = async (req: NextRequest) => {
   return createTRPCContext({
     headers: req.headers,

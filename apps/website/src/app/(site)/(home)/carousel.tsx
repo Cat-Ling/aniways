@@ -57,11 +57,12 @@ export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
       }}
     >
       <CarouselContent>
-        {seasonalAnime.map((anime) => {
+        {seasonalAnime.map(anime => {
           const { anime: animeFromDB } = anime;
 
-          const url = animeFromDB
-            ? `/anime/${animeFromDB.id}`
+          const url =
+            animeFromDB ?
+              `/anime/${animeFromDB.id}`
             : "/search?query=" + anime.title;
 
           return (

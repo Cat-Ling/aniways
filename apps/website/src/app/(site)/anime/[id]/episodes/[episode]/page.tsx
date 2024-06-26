@@ -89,7 +89,7 @@ const AnimeStreamingPage = async ({
           <EpisodesSection animeId={id} currentEpisode={episode} />
         </Suspense>
       </div>
-      <AnimeMetadata anime={anime} />
+      <AnimeMetadata id={anime.id} />
     </>
   );
 };

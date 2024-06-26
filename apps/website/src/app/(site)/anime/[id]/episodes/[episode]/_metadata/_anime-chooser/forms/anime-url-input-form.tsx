@@ -35,11 +35,12 @@ export const AnimeUrlInputForm = ({ onChangeMode }: AnimeUrlInputFormProps) => {
 
   const updateMalAnimeId = api.anime.updateMalAnimeId.useMutation({
     onSuccess: async () => {
-      await utils.myAnimeList.getAnimeMetadata.invalidate();
       close();
       toast.success("Anime updated successfully", {
         description: "Thanks for updating the anime!",
       });
+      await utils.anime.byId.invalidate();
+      await utils.myAnimeList.getAnimeMetadata.invalidate();
     },
   });
 

@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 
-import type { RouterOutputs } from "@aniways/api";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import ErrorPage from "~/app/error";
@@ -11,30 +10,49 @@ import { AnimeMetadataDetails } from "./anime-metadata-details";
 import { RelatedAnime } from "./related-anime";
 
 interface AnimeMetadataProps {
-  anime: Exclude<RouterOutputs["anime"]["byId"], undefined>;
+  id: string;
 }
 
-export const AnimeMetadata = ({ anime }: AnimeMetadataProps) => {
+export const AnimeMetadata = ({ id }: AnimeMetadataProps) => {
+  const animeQuery = api.anime.byId.useQuery(
+    { id },
+    {
+      staleTime: 0,
+    }
+  );
+
   const {
     data: metadata,
     isLoading,
     isError,
     error,
-  } = api.myAnimeList.getAnimeMetadata.useQuery(anime);
+  } = api.myAnimeList.getAnimeMetadata.useQuery(
+    animeQuery.data?.malAnimeId ?
+      {
+        malId: animeQuery.data.malAnimeId,
+      }
+    : {
+        title: animeQuery.data?.title ?? "",
+      },
+    {
+      enabled: !animeQuery.isLoading,
+    }
+  );
 
   const { mutate: updateMalAnimeId } = api.anime.updateMalAnimeId.useMutation();
 
   useEffect(() => {
-    if (anime.malAnimeId) return;
+    if (!animeQuery.data) return;
+    if (animeQuery.data.malAnimeId) return;
     if (!metadata?.mal_id) return;
 
     updateMalAnimeId({
-      id: anime.id,
+      id: animeQuery.data.id,
       malId: metadata.mal_id,
     });
-  }, [metadata, anime, updateMalAnimeId]);
+  }, [metadata, animeQuery, updateMalAnimeId]);
 
-  if (isLoading || !metadata) {
+  if (animeQuery.isLoading || isLoading || !metadata || !animeQuery.data) {
     return <Skeleton className="mb-6 h-[500px] w-full" />;
   }
 
@@ -45,7 +63,7 @@ export const AnimeMetadata = ({ anime }: AnimeMetadataProps) => {
   return (
     <>
       <h3 className="mb-3 mt-6 text-lg font-semibold">Anime Information</h3>
-      <AnimeMetadataDetails anime={anime} metadata={metadata} />
+      <AnimeMetadataDetails anime={animeQuery.data} metadata={metadata} />
       <RelatedAnime relatedAnime={metadata.relatedAnime} />
     </>
   );

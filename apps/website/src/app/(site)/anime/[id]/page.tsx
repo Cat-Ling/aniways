@@ -13,7 +13,7 @@ const AnimeDetailsPage = async ({
 
   redirect(
     `/anime/${id}/episodes/${firstEpisode.episode}`,
-    RedirectType.replace,
+    RedirectType.replace
   );
 };
 
