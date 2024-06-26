@@ -13,38 +13,38 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: {
-		default: "AniWays",
-		template: "%s | AniWays",
-	},
-	description: "Another anime website but with a MyAnimeList Integration",
-	icons: {
-		icon: "/favicon.ico",
-	},
-	robots: {
-		index: false,
-		follow: false,
-	},
+  title: {
+    default: "AniWays",
+    template: "%s | AniWays",
+  },
+  description: "Another anime website but with a MyAnimeList Integration",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en" className="dark">
-			<body className={inter.className}>
-				<div className="min-h-screen">
-					<NextTopLoader showSpinner={false} color="#e11d48" />
-					<Providers>
-						<Navbar />
-						{children}
-						<Toaster richColors={true} />
-					</Providers>
-				</div>
-				<Footer />
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" className="dark">
+      <body className={inter.className}>
+        <div className="min-h-screen">
+          <NextTopLoader showSpinner={false} color="#e11d48" />
+          <Providers>
+            <Navbar />
+            {children}
+            <Toaster richColors={true} />
+          </Providers>
+        </div>
+        <Footer />
+      </body>
+    </html>
+  );
 }

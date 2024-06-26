@@ -4,20 +4,20 @@ import { AddToListButton } from "./add-to-list-button";
 import { UpdateAnimeButton } from "./update-anime-button";
 
 interface MyAnimeListButtonProps {
-	details: MyAnimeListServiceTypes.AnimeMetadata;
+  details: MyAnimeListServiceTypes.AnimeMetadata;
 }
 
 export const MyAnimeListButton = ({ details }: MyAnimeListButtonProps) => {
-	if (details.listStatus) {
-		return (
-			<UpdateAnimeButton
-				details={{
-					...details,
-					listStatus: details.listStatus,
-				}}
-			/>
-		);
-	}
+  if (details.listStatus) {
+    return (
+      <UpdateAnimeButton
+        details={{
+          ...details,
+          listStatus: details.listStatus,
+        }}
+      />
+    );
+  }
 
-	return <AddToListButton malId={details.mal_id} />;
+  return <AddToListButton malId={details.mal_id} />;
 };

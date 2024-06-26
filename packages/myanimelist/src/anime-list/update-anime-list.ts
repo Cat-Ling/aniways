@@ -2,19 +2,19 @@ import type { WatchStatus } from "@animelist/client";
 import { MALClient } from "@animelist/client";
 
 export default async function updateAnimeList(
-	accessToken: string,
-	malId: number,
-	status: WatchStatus,
-	numWatchedEpisodes: number,
-	score: number,
+  accessToken: string,
+  malId: number,
+  status: WatchStatus,
+  numWatchedEpisodes: number,
+  score: number
 ) {
-	const client = new MALClient({ accessToken });
+  const client = new MALClient({ accessToken });
 
-	const anime = await client.updateMyAnimeListStatus(malId, {
-		status,
-		num_watched_episodes: numWatchedEpisodes,
-		score,
-	});
+  const anime = await client.updateMyAnimeListStatus(malId, {
+    status,
+    num_watched_episodes: numWatchedEpisodes,
+    score,
+  });
 
-	return anime;
+  return anime;
 }

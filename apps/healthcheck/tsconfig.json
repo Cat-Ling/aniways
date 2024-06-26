@@ -1,12 +1,12 @@
 {
-	"extends": "@aniways/typescript-config/base.json",
-	"compilerOptions": {
-		"lib": ["es2022", "dom", "dom.iterable"],
-		"jsx": "preserve",
-		"baseUrl": ".",
-		"tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-		"module": "esnext"
-	},
-	"include": ["."],
-	"exclude": ["node_modules", ".sst", "dist"]
+  "extends": "@aniways/typescript-config/base.json",
+  "compilerOptions": {
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "module": "esnext"
+  },
+  "include": ["."],
+  "exclude": ["node_modules", ".sst", "dist"]
 }

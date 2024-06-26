@@ -9,12 +9,12 @@ import { AuthProvider } from "@aniways/auth";
 
 type ProvidersProps = AuthProviderProps;
 
-export const Providers: FC<ProvidersProps> = (props) => {
-	const [client] = useState(() => new QueryClient());
+export const Providers: FC<ProvidersProps> = props => {
+  const [client] = useState(() => new QueryClient());
 
-	return (
-		<QueryClientProvider client={client}>
-			<AuthProvider {...props} />
-		</QueryClientProvider>
-	);
+  return (
+    <QueryClientProvider client={client}>
+      <AuthProvider {...props} />
+    </QueryClientProvider>
+  );
 };

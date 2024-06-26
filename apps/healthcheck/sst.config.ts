@@ -10,66 +10,66 @@ jiti("@aniways/db/env");
 jiti("@aniways/myanimelist/env");
 
 if (!process.env.AWS_CERT_ARN_US_EAST_1) {
-	throw new Error("AWS_CERT_ARN_US_EAST_1 is required");
+  throw new Error("AWS_CERT_ARN_US_EAST_1 is required");
 }
 
 if (!process.env.HEALTHCHECK_KEY) {
-	throw new Error("HEALTHCHECK_KEY is required");
+  throw new Error("HEALTHCHECK_KEY is required");
 }
 
 export default {
-	config: (_input) => ({
-		name: "healthcheck",
-		region: "ap-southeast-1",
-	}),
-	stacks: (app) => {
-		app.stack(({ stack }) => {
-			Tags.of(stack).add("App", "Aniways");
-			Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);
-			Tags.of(stack).add("Purpose", "Health Check");
+  config: _input => ({
+    name: "healthcheck",
+    region: "ap-southeast-1",
+  }),
+  stacks: app => {
+    app.stack(({ stack }) => {
+      Tags.of(stack).add("App", "Aniways");
+      Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);
+      Tags.of(stack).add("Purpose", "Health Check");
 
-			const api = new Api(stack, "healthcheck-api", {
-				routes: {
-					"GET /": "api/check-service.handler",
-				},
-				defaults: {
-					function: {
-						environment: {
-							NODE_OPTIONS: "--enable-source-maps",
-							DATABASE_URL: process.env.DATABASE_URL!,
-							MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
-							HEALTHCHECK_KEY: process.env.HEALTHCHECK_KEY!,
-						},
-					},
-				},
-			});
+      const api = new Api(stack, "healthcheck-api", {
+        routes: {
+          "GET /": "api/check-service.handler",
+        },
+        defaults: {
+          function: {
+            environment: {
+              NODE_OPTIONS: "--enable-source-maps",
+              DATABASE_URL: process.env.DATABASE_URL!,
+              MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
+              HEALTHCHECK_KEY: process.env.HEALTHCHECK_KEY!,
+            },
+          },
+        },
+      });
 
-			const certificateUSEast = Certificate.fromCertificateArn(
-				stack,
-				"us-east-1-certificate",
-				process.env.AWS_CERT_ARN_US_EAST_1!,
-			);
+      const certificateUSEast = Certificate.fromCertificateArn(
+        stack,
+        "us-east-1-certificate",
+        process.env.AWS_CERT_ARN_US_EAST_1!
+      );
 
-			const website = new StaticSite(stack, "healthcheck-website", {
-				buildOutput: "dist",
-				buildCommand: "bun run vite:build",
-				customDomain: {
-					domainName: "healthcheck.aniways.xyz",
-					isExternalDomain: true,
-					cdk: {
-						certificate: certificateUSEast,
-					},
-				},
-				environment: {
-					VITE_APP_API_URL: api.url!,
-				},
-			});
+      const website = new StaticSite(stack, "healthcheck-website", {
+        buildOutput: "dist",
+        buildCommand: "bun run vite:build",
+        customDomain: {
+          domainName: "healthcheck.aniways.xyz",
+          isExternalDomain: true,
+          cdk: {
+            certificate: certificateUSEast,
+          },
+        },
+        environment: {
+          VITE_APP_API_URL: api.url!,
+        },
+      });
 
-			stack.addOutputs({
-				ApiEndpoint: api.url,
-				WebsiteDistrubution: website.url,
-				WebsiteDomain: website.customDomainUrl,
-			});
-		});
-	},
+      stack.addOutputs({
+        ApiEndpoint: api.url,
+        WebsiteDistrubution: website.url,
+        WebsiteDomain: website.customDomainUrl,
+      });
+    });
+  },
 } satisfies SSTConfig;

@@ -6,35 +6,35 @@ createJiti(fileURLToPath(import.meta.url))("./src/env");
 
 /** @type {import("next").NextConfig} */
 const config = {
-	reactStrictMode: true,
+  reactStrictMode: true,
 
-	/** Enables hot reloading for local packages without a build step */
-	transpilePackages: [
-		"@aniways/auth",
-		"@aniways/api",
-		"@aniways/data",
-		"@aniways/db",
-		"@aniways/myanimelist",
-		"@aniways/ui",
-		"@aniways/web-scraping",
-	],
+  /** Enables hot reloading for local packages without a build step */
+  transpilePackages: [
+    "@aniways/auth",
+    "@aniways/api",
+    "@aniways/data",
+    "@aniways/db",
+    "@aniways/myanimelist",
+    "@aniways/ui",
+    "@aniways/web-scraping",
+  ],
 
-	/** We already do linting and typechecking as separate tasks in CI */
-	eslint: { ignoreDuringBuilds: true },
-	typescript: { ignoreBuildErrors: true },
+  /** We already do linting and typechecking as separate tasks in CI */
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
 
-	/** Disable crawling of website */
-	headers: async () => [
-		{
-			source: "/:path*",
-			headers: [
-				{
-					key: "X-Robots-Tag",
-					value: "noindex, nofollow",
-				},
-			],
-		},
-	],
+  /** Disable crawling of website */
+  headers: async () => [
+    {
+      source: "/:path*",
+      headers: [
+        {
+          key: "X-Robots-Tag",
+          value: "noindex, nofollow",
+        },
+      ],
+    },
+  ],
 };
 
 export default config;

@@ -1,58 +1,58 @@
 {
-	"name": "@aniways/ui",
-	"version": "0.0.0",
-	"private": true,
-	"type": "module",
-	"exports": {
-		"./globals.css": "./src/globals.css",
-		".": "./src/index.ts",
-		"./*": [
-			"./src/*.tsx",
-			"./src/*.ts"
-		]
-	},
-	"scripts": {
-		"clean": "rm -rf .turbo node_modules",
-		"format": "prettier --check . --ignore-path ../../.gitignore",
-		"lint": "eslint",
-		"typecheck": "tsc --noEmit --emitDeclarationOnly false",
-		"ui:add": "shadcn-ui add && prettier src --write --list-different"
-	},
-	"dependencies": {
-		"@hookform/resolvers": "3.3.4",
-		"@radix-ui/react-dialog": "^1.0.5",
-		"@radix-ui/react-dropdown-menu": "^2.0.6",
-		"@radix-ui/react-label": "^2.0.2",
-		"@radix-ui/react-popover": "^1.0.7",
-		"@radix-ui/react-select": "^2.0.0",
-		"@radix-ui/react-slot": "^1.0.2",
-		"@radix-ui/react-tabs": "^1.0.4",
-		"@radix-ui/react-tooltip": "^1.0.7",
-		"class-variance-authority": "^0.7.0",
-		"clsx": "^2.1.0",
-		"embla-carousel-react": "^8.0.0",
-		"lucide-react": "^0.316.0",
-		"next-themes": "^0.2.1",
-		"react-hook-form": "^7.50.1",
-		"sonner": "^1.4.0",
-		"tailwind-merge": "^2.2.1"
-	},
-	"devDependencies": {
-		"@aniways/eslint-config": "workspace:*",
-		"@aniways/prettier-config": "workspace:*",
-		"@aniways/typescript-config": "workspace:*",
-		"@types/react": "^18.3.3",
-		"eslint": "^9.4.0",
-		"prettier": "^3.3.1",
-		"react": "18.3.1",
-		"tailwindcss": "^3.4.3",
-		"typescript": "^5.4.5",
-		"shadcn-ui": "^0.8.0",
-		"zod": "^3.23.8"
-	},
-	"peerDependencies": {
-		"react": "18.3.1",
-		"zod": "^3.23.8"
-	},
-	"prettier": "@aniways/prettier-config"
+  "name": "@aniways/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./globals.css": "./src/globals.css",
+    ".": "./src/index.ts",
+    "./*": [
+      "./src/*.tsx",
+      "./src/*.ts"
+    ]
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "ui:add": "shadcn-ui add && prettier src --write --list-different"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "3.3.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "embla-carousel-react": "^8.0.0",
+    "lucide-react": "^0.316.0",
+    "next-themes": "^0.2.1",
+    "react-hook-form": "^7.50.1",
+    "sonner": "^1.4.0",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@aniways/eslint-config": "workspace:*",
+    "@aniways/prettier-config": "workspace:*",
+    "@aniways/typescript-config": "workspace:*",
+    "@types/react": "^18.3.3",
+    "eslint": "^9.4.0",
+    "prettier": "^3.3.1",
+    "react": "18.3.1",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "shadcn-ui": "^0.8.0",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "react": "18.3.1",
+    "zod": "^3.23.8"
+  },
+  "prettier": "@aniways/prettier-config"
 }

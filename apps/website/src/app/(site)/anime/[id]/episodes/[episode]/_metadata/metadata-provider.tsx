@@ -10,28 +10,28 @@ type Metadata = MyAnimeListServiceTypes.AnimeMetadata;
 type SetMetadata = Dispatch<SetStateAction<Metadata>>;
 
 const MetadataContext = createContext<[Metadata, SetMetadata] | undefined>(
-	undefined,
+  undefined
 );
 
 export const useMetadata = () => {
-	const metadata = useContext(MetadataContext);
+  const metadata = useContext(MetadataContext);
 
-	if (!metadata) {
-		throw new Error("useMetadata must be used within a MetadataProvider");
-	}
+  if (!metadata) {
+    throw new Error("useMetadata must be used within a MetadataProvider");
+  }
 
-	return metadata;
+  return metadata;
 };
 
 export const MetadataProvider: FC<{
-	metadata: Metadata;
-	children: ReactNode;
-}> = (props) => {
-	const [metadata, setMetadata] = useOptimistic(props.metadata);
+  metadata: Metadata;
+  children: ReactNode;
+}> = props => {
+  const [metadata, setMetadata] = useOptimistic(props.metadata);
 
-	return (
-		<MetadataContext.Provider value={[metadata, setMetadata]}>
-			{props.children}
-		</MetadataContext.Provider>
-	);
+  return (
+    <MetadataContext.Provider value={[metadata, setMetadata]}>
+      {props.children}
+    </MetadataContext.Provider>
+  );
 };

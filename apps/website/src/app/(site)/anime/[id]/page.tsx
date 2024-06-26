@@ -3,20 +3,20 @@ import { notFound, redirect, RedirectType } from "next/navigation";
 import { createAnimeService } from "@aniways/data";
 
 const AnimeDetailsPage = async ({
-	params: { id },
+  params: { id },
 }: {
-	params: { id: string };
+  params: { id: string };
 }) => {
-	const { getAnimeById } = createAnimeService();
+  const { getAnimeById } = createAnimeService();
 
-	const anime = await getAnimeById(id);
+  const anime = await getAnimeById(id);
 
-	if (!anime) notFound();
+  if (!anime) notFound();
 
-	redirect(
-		`/anime/${id}/episodes/${anime.firstEpisode ?? 1}`,
-		RedirectType.replace,
-	);
+  redirect(
+    `/anime/${id}/episodes/${anime.firstEpisode ?? 1}`,
+    RedirectType.replace
+  );
 };
 
 export default AnimeDetailsPage;

@@ -13,55 +13,57 @@ import { useMetadata } from "../metadata-provider";
 import { addToListAction } from "./myanimelist-actions";
 
 interface AddToListButtonProps {
-	malId: number | undefined;
+  malId: number | undefined;
 }
 
 export const AddToListButton = ({ malId }: AddToListButtonProps) => {
-	const [, setMetadata] = useMetadata();
-	const session = useAuth();
-	const { id } = useParams();
-	const [loading, setLoading] = useState(false);
+  const [, setMetadata] = useMetadata();
+  const session = useAuth();
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
 
-	if (!session.user) {
-		return <LoginModal>Add To List</LoginModal>;
-	}
+  if (!session.user) {
+    return <LoginModal>Add To List</LoginModal>;
+  }
 
-	if (!malId) return null;
+  if (!malId) return null;
 
-	return (
-		<Button
-			onClick={async () => {
-				setLoading(true);
+  return (
+    <Button
+      onClick={async () => {
+        setLoading(true);
 
-				try {
-					const { error, details } = await addToListAction(
-						malId,
-						`/anime/${typeof id === "string" ? id : id?.[0]}`,
-					);
+        try {
+          const { error, details } = await addToListAction(
+            malId,
+            `/anime/${typeof id === "string" ? id : id?.[0]}`
+          );
 
-					if (error || !details) {
-						throw new Error("Failed to add to list");
-					}
+          if (error || !details) {
+            throw new Error("Failed to add to list");
+          }
 
-					setMetadata(details);
+          setMetadata(details);
 
-					toast.success("Added to list", {
-						description: "Anime has been added to your list",
-					});
-				} catch (e) {
-					const error =
-						e instanceof Error ? e : new Error("Failed to add to list");
+          toast.success("Added to list", {
+            description: "Anime has been added to your list",
+          });
+        } catch (e) {
+          const error =
+            e instanceof Error ? e : new Error("Failed to add to list");
 
-					toast.error("Failed to add to list", {
-						description: error.message,
-					});
-				} finally {
-					setLoading(false);
-				}
-			}}
-			disabled={loading}
-		>
-			{loading ? <Loader2 className="animate-spin" /> : "Add to List"}
-		</Button>
-	);
+          toast.error("Failed to add to list", {
+            description: error.message,
+          });
+        } finally {
+          setLoading(false);
+        }
+      }}
+      disabled={loading}
+    >
+      {loading ?
+        <Loader2 className="animate-spin" />
+      : "Add to List"}
+    </Button>
+  );
 };

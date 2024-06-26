@@ -4,38 +4,36 @@ import { parse } from "node-html-parser";
 const BASE_URL = "https://gogoanime3.co";
 
 export default async function searchAnimeFromGogo(query: string, page: number) {
-	// total of 20 anime per page
-	const response = await fetch(
-		`${BASE_URL}/search.html?page=${page}&keyword=${encodeURIComponent(query)}`,
-	).then((res) => res.text());
+  // total of 20 anime per page
+  const response = await fetch(
+    `${BASE_URL}/search.html?page=${page}&keyword=${encodeURIComponent(query)}`
+  ).then(res => res.text());
 
-	const searchResults = parse(response)
-		.querySelectorAll(".last_episodes ul.items li")
-		.map(async (li) => {
-			const image = li.querySelector(".img img")!.getAttribute("src")!;
+  const searchResults = parse(response)
+    .querySelectorAll(".last_episodes ul.items li")
+    .map(async li => {
+      const image = li.querySelector(".img img")!.getAttribute("src")!;
 
-			const name = li.querySelector(".name")!.innerText.trim();
+      const name = li.querySelector(".name")!.innerText.trim();
 
-			const url = li.querySelector(".name a")!.getAttribute("href")!;
+      const url = li.querySelector(".name a")!.getAttribute("href")!;
 
-			const slug = url.split("/").pop()!;
+      const slug = url.split("/").pop()!;
 
-			const details = await fetch(`${BASE_URL}/${url}`).then((res) =>
-				res.text(),
-			);
+      const details = await fetch(`${BASE_URL}/${url}`).then(res => res.text());
 
-			const episodes = parse(details)
-				.querySelectorAll("#episode_page a")
-				.pop()
-				?.getAttribute("ep_end");
+      const episodes = parse(details)
+        .querySelectorAll("#episode_page a")
+        .pop()
+        ?.getAttribute("ep_end");
 
-			return {
-				name,
-				image,
-				url: `/anime/${slug}`,
-				episodes: episodes ? parseInt(episodes) : 0,
-			};
-		});
+      return {
+        name,
+        image,
+        url: `/anime/${slug}`,
+        episodes: episodes ? parseInt(episodes) : 0,
+      };
+    });
 
-	return await Promise.all(searchResults);
+  return await Promise.all(searchResults);
 }

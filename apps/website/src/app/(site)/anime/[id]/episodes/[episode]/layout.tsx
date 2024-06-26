@@ -8,26 +8,26 @@ import ErrorPage from "../../../../../error";
 import { AnimeMetadata } from "./_metadata";
 
 interface AnimePageLayoutProps {
-	children: ReactNode;
-	params: {
-		id: string;
-	};
+  children: ReactNode;
+  params: {
+    id: string;
+  };
 }
 
 const AnimePageLayout = ({
-	children,
-	params: { id },
+  children,
+  params: { id },
 }: AnimePageLayoutProps) => {
-	return (
-		<>
-			{children}
-			<ErrorBoundary errorComponent={ErrorPage}>
-				<Suspense fallback={<Skeleton className="mb-6 h-[500px] w-full" />}>
-					<AnimeMetadata id={id} />
-				</Suspense>
-			</ErrorBoundary>
-		</>
-	);
+  return (
+    <>
+      {children}
+      <ErrorBoundary errorComponent={ErrorPage}>
+        <Suspense fallback={<Skeleton className="mb-6 h-[500px] w-full" />}>
+          <AnimeMetadata id={id} />
+        </Suspense>
+      </ErrorBoundary>
+    </>
+  );
 };
 
 export default AnimePageLayout;
