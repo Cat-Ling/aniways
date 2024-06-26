@@ -77,27 +77,30 @@ export const animeRouter = createTRPCRouter({
         ),
       );
 
-    const animeListMap = animeList.data.reduce(
-      (acc, { node }) => {
-        acc[node.id] = node;
-        return acc;
-      },
-      {} as Record<number, (typeof animeList)["data"][number]["node"]>,
-    );
+    const embeddedCurrentlyWatchingAnime = currentlyWatchingAnime
+      // embed last watched episode and last updated at
+      .map((anime) => {
+        const malAnime = animeList.data.find(
+          ({ node }) => node.id === anime.malAnimeId,
+        );
+
+        if (!malAnime) return undefined;
+
+        const { my_list_status } = malAnime.node;
+
+        return {
+          ...anime,
+          lastWatchedEpisode: my_list_status?.num_episodes_watched,
+          lastUpdatedAt: my_list_status?.updated_at,
+        };
+      })
+      .filter((anime) => anime !== undefined) as (schema.Anime & {
+      lastWatchedEpisode: number | undefined;
+      lastUpdatedAt: string | undefined;
+    })[];
 
     return (
-      currentlyWatchingAnime
-        // embed last watched episode and last updated at
-        .map((anime) => {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const { my_list_status } = animeListMap[anime.malAnimeId!]!;
-
-          return {
-            ...anime,
-            lastWatchedEpisode: my_list_status?.num_episodes_watched,
-            lastUpdatedAt: my_list_status?.updated_at,
-          };
-        })
+      embeddedCurrentlyWatchingAnime
         // filter out animes that have all episodes watched
         .filter((anime) => {
           const lastEpisodeReleased = Number(anime.lastEpisode);
@@ -163,5 +166,14 @@ export const animeRouter = createTRPCRouter({
         animes,
         hasNext,
       };
+    }),
+
+  updateMalAnimeId: publicProcedure
+    .input(z.object({ id: z.string(), malId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(schema.anime)
+        .set({ malAnimeId: input.malId })
+        .where(orm.eq(schema.anime.id, input.id));
     }),
 });
