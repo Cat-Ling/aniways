@@ -6,7 +6,7 @@ export default async function getAnimeList(
   username: string,
   page = 1,
   limit = 20,
-  status: WatchStatus | undefined = undefined,
+  status: WatchStatus | undefined = undefined
 ) {
   const client = new MALClient({ accessToken });
   const animeList = await client.getUserAnimeList(username, {

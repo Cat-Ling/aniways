@@ -11,7 +11,7 @@ const config = {
     "prettier-plugin-tailwindcss",
   ],
   tailwindConfig: fileURLToPath(
-    new URL("../../packages/ui/tailwind.config.ts", import.meta.url),
+    new URL("../../packages/ui/tailwind.config.ts", import.meta.url)
   ),
   tailwindFunctions: ["cn", "cva"],
   importOrder: [
@@ -29,6 +29,12 @@ const config = {
     "^[../]",
     "^[./]",
   ],
+  trailingComma: "es5",
+  tabWidth: 2,
+  semi: true,
+  arrowParens: "avoid",
+  experimentalTernaries: true,
+  useTabs: false,
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
   importOrderTypeScriptVersion: "4.4.0",
   overrides: [

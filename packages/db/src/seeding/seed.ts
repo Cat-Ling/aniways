@@ -30,7 +30,7 @@ async function main() {
 
   const insertValues = anime
     .filter(
-      (anime) =>
+      anime =>
         anime &&
         anime.name &&
         anime.description &&
@@ -38,9 +38,9 @@ async function main() {
         anime.released &&
         anime.genres &&
         anime.genres.length &&
-        anime.slug,
+        anime.slug
     )
-    .map((anime) => ({
+    .map(anime => ({
       id: createId(),
       title: anime!.name!,
       description: anime!.description!,
@@ -61,12 +61,12 @@ async function main() {
   let insertIds: { id: string }[] = [];
 
   await Promise.all(
-    chunk(insertValues, 1000).map(async (chunk) => {
+    chunk(insertValues, 1000).map(async chunk => {
       insertIds = [
         ...insertIds,
         ...(await db.insert(AnimeTable).values(chunk).returning().execute()),
       ];
-    }),
+    })
   );
 }
 

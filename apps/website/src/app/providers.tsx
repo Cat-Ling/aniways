@@ -1,20 +1,18 @@
 "use client";
 
 import type { FC } from "react";
-import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import type { AuthProviderProps } from "@aniways/auth";
 import { AuthProvider } from "@aniways/auth";
 
+import { TRPCReactProvider } from "~/trpc/react";
+
 type ProvidersProps = AuthProviderProps;
 
-export const Providers: FC<ProvidersProps> = (props) => {
-  const [client] = useState(() => new QueryClient());
-
+export const Providers: FC<ProvidersProps> = props => {
   return (
-    <QueryClientProvider client={client}>
+    <TRPCReactProvider>
       <AuthProvider {...props} />
-    </QueryClientProvider>
+    </TRPCReactProvider>
   );
 };

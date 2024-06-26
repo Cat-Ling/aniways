@@ -1,4 +1,4 @@
-import type { MyAnimeListServiceTypes } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 import { Button } from "@aniways/ui/button";
 import {
   Dialog,
@@ -8,14 +8,17 @@ import {
   DialogTrigger,
 } from "@aniways/ui/dialog";
 
-import { UpdateAnimeForm } from "./update-anime-form";
+import { UpdateAnimeDialogForm } from "./update-anime-dialog-form";
 
 interface UpdateAnimeButtonProps {
-  details: MyAnimeListServiceTypes.AnimeMetadata;
+  metadata: Exclude<
+    RouterOutputs["myAnimeList"]["getAnimeMetadata"],
+    undefined
+  >;
 }
 
-export const UpdateAnimeButton = ({ details }: UpdateAnimeButtonProps) => {
-  if (!details.mal_id) return null;
+export const UpdateAnimeButton = ({ metadata }: UpdateAnimeButtonProps) => {
+  if (!metadata.mal_id) return null;
 
   return (
     <Dialog>
@@ -23,13 +26,13 @@ export const UpdateAnimeButton = ({ details }: UpdateAnimeButtonProps) => {
         <Button>Update Anime</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>Update Anime - {details.title}</DialogTitle>
+        <DialogTitle>Update Anime - {metadata.title}</DialogTitle>
         <DialogDescription>
           Update the anime in your MyAnimeList Anime List
         </DialogDescription>
-        <UpdateAnimeForm
-          malId={details.mal_id}
-          listStatus={details.listStatus}
+        <UpdateAnimeDialogForm
+          malId={metadata.mal_id}
+          listStatus={metadata.listStatus}
         />
       </DialogContent>
     </Dialog>

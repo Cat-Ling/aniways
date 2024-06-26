@@ -5,7 +5,7 @@ export type SearchResults = Jikan4.Types.AnimeSearch & {};
 export default async function searchAnimeFromMyAnimeList(
   query: string,
   page: number,
-  limit = 20,
+  limit = 20
 ) {
   return Jikan4.animeSearch({
     q: query,

@@ -25,7 +25,7 @@ export const useHealthCheck = () => {
         const url = import.meta.env.VITE_APP_API_URL;
 
         const response = await fetch(url)
-          .then((res) => res.json())
+          .then(res => res.json())
           .then(ResponseSchema.parse.bind(null));
 
         return response;

@@ -15,7 +15,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@aniways/data": "workspace:*",
+    "@aniways/api": "workspace:*",
     "@aniways/db": "workspace:*",
     "@aniways/myanimelist": "workspace:*",
     "@aniways/ui": "workspace:*",

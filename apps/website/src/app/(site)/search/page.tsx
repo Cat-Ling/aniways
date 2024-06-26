@@ -2,15 +2,12 @@ import type { Metadata } from "next";
 import { cache, Suspense } from "react";
 import { HeartCrack } from "lucide-react";
 
-import { createAnimeService } from "@aniways/data";
-
+import { api } from "~/trpc/server";
 import { AnimeGrid, AnimeGridLoader } from "../anime-grid";
 import { Pagination, PaginationLoader } from "../pagination";
 
 const searchAnime = cache(async (query: string, page: number) => {
-  const service = createAnimeService();
-
-  return service.searchAnime(query, page);
+  return await api.anime.search({ query, page });
 });
 
 export const generateMetadata = ({

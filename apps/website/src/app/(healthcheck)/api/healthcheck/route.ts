@@ -11,7 +11,7 @@ export const GET = (req: NextRequest) => {
       },
       {
         status: 401,
-      },
+      }
     );
   }
 

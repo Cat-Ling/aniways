@@ -4,13 +4,13 @@ import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-import type { Schema } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 import { cn } from "@aniways/ui";
 import { Button } from "@aniways/ui/button";
 
 interface EpisodesSidbarProps {
   animeId: string;
-  episodes: Schema.Video[];
+  episodes: RouterOutputs["episodes"]["getEpisodesOfAnime"];
   currentEpisode: string;
 }
 
@@ -24,7 +24,7 @@ export const EpisodesSectionClient = ({
 
   const nextEpisode = useMemo(() => {
     const currentIndex = episodes.findIndex(
-      (video) => video.episode === currentEpisode,
+      video => video.episode === currentEpisode
     );
 
     return episodes.at(currentIndex + 1);
@@ -32,7 +32,7 @@ export const EpisodesSectionClient = ({
 
   const prevEpisode = useMemo(() => {
     const currentIndex = episodes.findIndex(
-      (video) => video.episode === currentEpisode,
+      video => video.episode === currentEpisode
     );
 
     return episodes.at(currentIndex - 1);
@@ -56,16 +56,14 @@ export const EpisodesSectionClient = ({
   return (
     <div className="mt-3">
       <div className="mb-6 flex w-full justify-between">
-        {prevEpisode ? (
+        {prevEpisode ?
           <Button className="flex items-center gap-2" asChild>
             <Link href={`/anime/${animeId}/episodes/${prevEpisode.episode}`}>
               <ChevronLeftIcon className="h-5 w-5" />
               Previous
             </Link>
           </Button>
-        ) : (
-          <div></div>
-        )}
+        : <div></div>}
         {nextEpisode && (
           <Button className="flex items-center gap-2" asChild>
             <Link href={`/anime/${animeId}/episodes/${nextEpisode.episode}`}>
@@ -80,7 +78,7 @@ export const EpisodesSectionClient = ({
         ref={sidebarRef}
         className="grid h-fit max-h-[500px] w-full grid-cols-3 gap-2 overflow-scroll rounded-md sm:grid-cols-6 md:grid-cols-12"
       >
-        {episodes.map((video) => {
+        {episodes.map(video => {
           const isCurrentVideo =
             String(currentEpisode) === String(video.episode);
 
@@ -93,13 +91,12 @@ export const EpisodesSectionClient = ({
               disabled={isCurrentVideo}
               className={cn(isCurrentVideo && "!opacity-100")}
             >
-              {isCurrentVideo ? (
+              {isCurrentVideo ?
                 `Episode ${video.episode}`
-              ) : (
-                <Link href={`/anime/${animeId}/episodes/${video.episode}`}>
+              : <Link href={`/anime/${animeId}/episodes/${video.episode}`}>
                   Episode {video.episode}
                 </Link>
-              )}
+              }
             </Button>
           );
         })}

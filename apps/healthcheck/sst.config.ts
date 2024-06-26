@@ -18,11 +18,11 @@ if (!process.env.HEALTHCHECK_KEY) {
 }
 
 export default {
-  config: (_input) => ({
+  config: _input => ({
     name: "healthcheck",
     region: "ap-southeast-1",
   }),
-  stacks: (app) => {
+  stacks: app => {
     app.stack(({ stack }) => {
       Tags.of(stack).add("App", "Aniways");
       Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);
@@ -47,7 +47,7 @@ export default {
       const certificateUSEast = Certificate.fromCertificateArn(
         stack,
         "us-east-1-certificate",
-        process.env.AWS_CERT_ARN_US_EAST_1!,
+        process.env.AWS_CERT_ARN_US_EAST_1!
       );
 
       const website = new StaticSite(stack, "healthcheck-website", {

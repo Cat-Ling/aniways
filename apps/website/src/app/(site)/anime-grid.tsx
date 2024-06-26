@@ -29,13 +29,13 @@ export const AnimeGrid = (props: AnimeGridProps) => {
 
   return (
     <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
-      {animes.map((anime) => {
+      {animes.map(anime => {
         const { title, lastEpisode, image, id } = anime;
 
         const url =
-          type === "home"
-            ? `/anime/${id}/episodes/${lastEpisode?.replace(".", "-")}`
-            : `/anime/${id}`;
+          type === "home" ?
+            `/anime/${id}/episodes/${lastEpisode?.replace(".", "-")}`
+          : `/anime/${id}`;
 
         return (
           <li
@@ -66,9 +66,9 @@ export const AnimeGrid = (props: AnimeGridProps) => {
                   {title}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-                  {type === "home"
-                    ? `Episode ${lastEpisode}`
-                    : `${lastEpisode} episodes`}
+                  {type === "home" ?
+                    `Episode ${lastEpisode}`
+                  : `${lastEpisode} episodes`}
                 </p>
               </div>
             </Link>

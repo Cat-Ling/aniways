@@ -54,11 +54,11 @@ export const anime = pgTable(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     malAnimeId: integer("mal_anime_id"),
   },
-  (table) => ({
+  table => ({
     malAnimeIdx: index("anime_mal_anime_idx").on(table.malAnimeId),
     slugIdx: index("anime_slug_idx").on(table.slug),
     updatedAtIdx: index("anime_updated_at_idx").on(table.updatedAt),
-  }),
+  })
 );
 
 export type Anime = InferSelectModel<typeof anime>;
@@ -86,12 +86,12 @@ export const video = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
     videoUrl: text("video_url"),
   },
-  (table) => ({
+  table => ({
     animeIdx: index("video_anime_idx").on(table.animeId),
     episodeIdx: index("video_episode_idx").on(table.episode),
     slugIdx: index("video_slug_idx").on(table.slug),
     createdAtIdx: index("video_created_at_idx").on(table.createdAt),
-  }),
+  })
 );
 
 export type Video = InferSelectModel<typeof video>;

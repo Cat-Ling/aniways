@@ -1,5 +1,4 @@
-import { createEpisodeService } from "@aniways/data";
-
+import { api } from "~/trpc/server";
 import { EpisodesSectionClient } from "./episodes-section-client";
 
 interface EpisodesSidbarProps {
@@ -11,9 +10,7 @@ export const EpisodesSection = async ({
   animeId,
   currentEpisode,
 }: EpisodesSidbarProps) => {
-  const { getEpisodesByAnimeId } = createEpisodeService();
-
-  const videos = await getEpisodesByAnimeId(animeId);
+  const videos = await api.episodes.getEpisodesOfAnime({ animeId });
 
   return (
     <EpisodesSectionClient

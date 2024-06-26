@@ -7,7 +7,7 @@ const URLS = [
 
 export default async function scrapeDetailsOfAnime(slug: string) {
   const scrapeDetails = async (
-    url: (typeof URLS)[number],
+    url: (typeof URLS)[number]
   ): ReturnType<typeof getDetails> => {
     try {
       const abortController = new AbortController();
@@ -41,8 +41,8 @@ export default async function scrapeDetailsOfAnime(slug: string) {
 }
 
 async function getDetails(url: string, slug: string, signal: AbortSignal) {
-  const html = await fetch(`${url}/${slug}`, { signal }).then((res) =>
-    res.text(),
+  const html = await fetch(`${url}/${slug}`, { signal }).then(res =>
+    res.text()
   );
 
   const dom = parse(html);

@@ -1,22 +1,32 @@
 import { notFound } from "next/navigation";
 
-import { createEpisodeService, EpisodeService } from "@aniways/data";
+import { api } from "~/trpc/server";
 
 interface VideoFrameProps {
-  currentEpisode: string;
+  episode: string;
   animeId: string;
 }
 
-export const VideoFrame = async ({
-  animeId,
-  currentEpisode,
-}: VideoFrameProps) => {
-  const { getEpisodeUrl } = createEpisodeService();
-
-  const iframe = await getEpisodeUrl(animeId, currentEpisode).catch((err) => {
-    if (err === EpisodeService.NOT_FOUND) notFound();
-    throw err;
+export const VideoFrame = async ({ animeId, episode }: VideoFrameProps) => {
+  const currentEpisode = await api.episodes.getEpisodeByAnimeIdAndEpisode({
+    animeId,
+    episode: Number(episode),
   });
+
+  if (!currentEpisode) notFound();
+
+  let iframe = currentEpisode.videoUrl;
+
+  if (!iframe) {
+    iframe = await api.episodes.scrapeVideoUrl({ slug: currentEpisode.slug });
+
+    if (!iframe) notFound();
+
+    await api.episodes.updateVideoUrl({
+      id: currentEpisode.id,
+      videoUrl: iframe,
+    });
+  }
 
   return (
     <iframe

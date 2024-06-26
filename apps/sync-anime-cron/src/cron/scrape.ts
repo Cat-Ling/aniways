@@ -13,22 +13,22 @@ export type RecentlyReleasedAnime = Awaited<
 
 const scrapeRecentlyReleasedAnimes = async () => {
   const recentlyReleasedAnimes = await Promise.all([
-    scrapeRecentlyReleasedAnime(1).then((data) => data.anime),
-    scrapeRecentlyReleasedAnime(2).then((data) => data.anime),
+    scrapeRecentlyReleasedAnime(1).then(data => data.anime),
+    scrapeRecentlyReleasedAnime(2).then(data => data.anime),
   ]);
 
   return recentlyReleasedAnimes
     .flat()
     .reverse()
-    .map((a) => ({
+    .map(a => ({
       ...a,
       slug: a.url.replace("/anime/", "").split("/")[0],
     }))
-    .filter((a) => !!a.slug) as RecentlyReleasedAnime[];
+    .filter(a => !!a.slug) as RecentlyReleasedAnime[];
 };
 
 const filterScrapedAnimes = async (
-  recentlyReleasedAnimes: RecentlyReleasedAnime[],
+  recentlyReleasedAnimes: RecentlyReleasedAnime[]
 ) => {
   const lastUpdatedAnimes = await db.query.anime.findMany({
     columns: {
@@ -49,11 +49,11 @@ const filterScrapedAnimes = async (
     },
   });
 
-  return recentlyReleasedAnimes.filter((a) => {
+  return recentlyReleasedAnimes.filter(a => {
     const animeFromDB = lastUpdatedAnimes.find(
-      (anime) =>
+      anime =>
         anime.slug === a.slug ||
-        anime.videos[0]?.slug.split("-episode-")[0] === a.slug,
+        anime.videos[0]?.slug.split("-episode-")[0] === a.slug
     );
 
     const isNewEpisode =

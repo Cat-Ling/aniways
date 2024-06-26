@@ -25,7 +25,7 @@ interface FetchResponse {
 
 export default async function getRecentlyReleasedAnimeFromAllAnime(
   page: number,
-  abortSignal: AbortSignal,
+  abortSignal: AbortSignal
 ) {
   const variables = encodeURIComponent(
     JSON.stringify({
@@ -34,7 +34,7 @@ export default async function getRecentlyReleasedAnimeFromAllAnime(
       page: page,
       translationType: "sub",
       countryOrigin: "JP",
-    }),
+    })
   );
 
   const extensions = encodeURIComponent(
@@ -44,7 +44,7 @@ export default async function getRecentlyReleasedAnimeFromAllAnime(
         sha256Hash:
           "06327bc10dd682e1ee7e07b6db9c16e9ad2fd56c1b769e47513128cd5c9fc77a",
       },
-    }),
+    })
   );
 
   const response = await fetch(
@@ -54,15 +54,15 @@ export default async function getRecentlyReleasedAnimeFromAllAnime(
       headers: {
         Origin: "https://allmanga.to",
       },
-    },
+    }
   )
-    .then((res) => res.json() as unknown as FetchResponse)
-    .then((res) => res.data.shows.edges);
+    .then(res => res.json() as unknown as FetchResponse)
+    .then(res => res.data.shows.edges);
 
-  return response.map((show) => {
+  return response.map(show => {
     const image = show.thumbnail.replace(
       "https:/",
-      "https://wp.youtube-anime.com",
+      "https://wp.youtube-anime.com"
     );
     const name = show.name;
     const episode = Number(show.lastEpisodeInfo.sub.episodeString ?? "1");

@@ -15,10 +15,12 @@ export const env = createEnv({
   server: {
     HEALTHCHECK_KEY: z.string(),
     AWS_CERT_ARN_US_EAST_1:
-      process.env.npm_lifecycle_event === "build" ||
-      process.env.npm_lifecycle_event === "deploy:prod"
-        ? z.string()
-        : z.string().optional(),
+      (
+        process.env.npm_lifecycle_event === "build" ||
+        process.env.npm_lifecycle_event === "deploy:prod"
+      ) ?
+        z.string()
+      : z.string().optional(),
   },
   client: {},
   experimental__runtimeEnv: {

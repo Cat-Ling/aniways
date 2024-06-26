@@ -7,11 +7,11 @@ import { Cron, Function } from "sst/constructs";
 createJiti(fileURLToPath(import.meta.url))("@aniways/db/env");
 
 export default {
-  config: (_input) => ({
+  config: _input => ({
     name: "sync-anime-cron",
     region: "ap-southeast-1",
   }),
-  stacks: (app) => {
+  stacks: app => {
     app.stack(({ stack }) => {
       Tags.of(stack).add("App", "Aniways");
       Tags.of(stack).add("Meta", `${app.stage}-${app.region}`);

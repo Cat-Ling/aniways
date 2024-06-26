@@ -23,8 +23,8 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
     queryKey: ["error"],
     queryFn: () => {
       return fetch("https://healthcheck.aniways.xyz/healthcheck")
-        .then((res) => res.json())
-        .then((data) => HealthcheckResponseSchema.parse(data))
+        .then(res => res.json())
+        .then(data => HealthcheckResponseSchema.parse(data))
         .then(({ dependencies }) => dependencies.myAnimeList === false);
     },
   });
@@ -50,9 +50,9 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
       <h1 className="text-4xl font-bold">An error occurred</h1>
       <p className="text-lg text-muted-foreground">
         {}
-        {env.NODE_ENV === "development"
-          ? error?.message ?? "An unknown error occurred"
-          : "Please try again later"}
+        {env.NODE_ENV === "development" ?
+          error?.message ?? "An unknown error occurred"
+        : "Please try again later"}
       </p>
     </div>
   );

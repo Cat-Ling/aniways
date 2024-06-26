@@ -6,7 +6,7 @@ export default async function updateAnimeList(
   malId: number,
   status: WatchStatus,
   numWatchedEpisodes: number,
-  score: number,
+  score: number
 ) {
   const client = new MALClient({ accessToken });
 

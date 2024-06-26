@@ -17,7 +17,7 @@ export const seedVideos = async () => {
   let length = 0;
 
   const fetchRecentlyReleased = async (
-    page: number,
+    page: number
   ): Promise<
     {
       slug: string;
@@ -33,12 +33,12 @@ export const seedVideos = async () => {
           const _page = page + i;
           const recentlyReleasedAnime = (
             await scrapeRecentlyReleasedAnime(_page)
-          ).anime.map((a) => ({
+          ).anime.map(a => ({
             ...a,
             slug: a.url.replace("/anime/", "").split("/")[0] ?? "",
           }));
           return recentlyReleasedAnime;
-        }),
+        })
       )
     ).flat();
     length += recentlyReleasedAnime.length;
@@ -58,7 +58,7 @@ export const seedVideos = async () => {
   console.log(
     "Fetched",
     recentlyReleasedAnime.length,
-    "Recently Released Animes",
+    "Recently Released Animes"
   );
 
   console.log("Started fetching animes from DB");
@@ -67,12 +67,12 @@ export const seedVideos = async () => {
 
   const insertValues = (
     await Promise.all(
-      chunk(recentlyReleasedAnime, 1000).map(async (chunk) => {
+      chunk(recentlyReleasedAnime, 1000).map(async chunk => {
         return (
           await Promise.all(
-            chunk.map(async (a) => {
+            chunk.map(async a => {
               const animeFromDb = allAnimes.find(
-                (anime) => anime.slug === a.slug,
+                anime => anime.slug === a.slug
               );
               if (!animeFromDb) return Promise.resolve(undefined);
               await db
@@ -88,21 +88,21 @@ export const seedVideos = async () => {
               })
                 .map((_, i) => a.episode - i)
                 .reverse();
-              return episodes.map((ep) => ({
+              return episodes.map(ep => ({
                 id: createId(),
                 animeId: animeFromDb.id,
                 episode: String(ep),
                 slug: `${a.slug}-episode-${ep}`,
                 createdAt: new Date(),
               }));
-            }),
+            })
           )
         ).flat();
-      }),
+      })
     )
   )
     .flat()
-    .filter((val) => val !== undefined) as {
+    .filter(val => val !== undefined) as {
     id: string;
     animeId: string;
     episode: string;

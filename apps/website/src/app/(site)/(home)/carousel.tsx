@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
 
-import type { MyAnimeListServiceTypes } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 import type { CarouselApi } from "@aniways/ui/carousel";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@aniways/ui/carousel";
 
 interface AnimeCarouselProps {
-  seasonalAnime: MyAnimeListServiceTypes.AnimeSeason[];
+  seasonalAnime: RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
 }
 
 export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
@@ -57,11 +57,12 @@ export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
       }}
     >
       <CarouselContent>
-        {seasonalAnime.map((anime) => {
+        {seasonalAnime.map(anime => {
           const { anime: animeFromDB } = anime;
 
-          const url = animeFromDB
-            ? `/anime/${animeFromDB.id}`
+          const url =
+            animeFromDB ?
+              `/anime/${animeFromDB.id}`
             : "/search?query=" + anime.title;
 
           return (

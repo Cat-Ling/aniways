@@ -16,7 +16,7 @@ const constructEpisodeSlug = (newAnime: RecentlyReleasedAnime) => {
 const constructVideoInsertValues = (
   animeId: string,
   lastEpisode: string | undefined,
-  newAnime: RecentlyReleasedAnime,
+  newAnime: RecentlyReleasedAnime
 ) => {
   const lastEpisodeSaved = Number(lastEpisode ?? "0");
   const numberOfEpisodesToInsert = newAnime.episode - lastEpisodeSaved;
@@ -30,7 +30,7 @@ const constructVideoInsertValues = (
   const createdAt = new Date();
 
   return [
-    ...episodes.map((ep) => ({
+    ...episodes.map(ep => ({
       id: createId(),
       animeId,
       episode: String(ep),
@@ -62,7 +62,7 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
 
   const animeId = anime?.id ?? createId();
 
-  return await db.transaction(async (tx) => {
+  return await db.transaction(async tx => {
     if (!anime) {
       logger.log("No anime found in db, fetching from anitaku", newAnime.slug);
 
@@ -89,7 +89,7 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
     const episodes = constructVideoInsertValues(
       animeId,
       anime?.lastEpisode ?? undefined,
-      newAnime,
+      newAnime
     );
 
     if (episodes.length === 0) {
@@ -106,8 +106,8 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
       .where(
         orm.and(
           orm.eq(schema.video.animeId, animeId),
-          orm.eq(schema.video.episode, String(newAnime.episode)),
-        ),
+          orm.eq(schema.video.episode, String(newAnime.episode))
+        )
       );
 
     if (lastEpisode) return episodes.length;
@@ -116,7 +116,7 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
       "Failed to insert episodes for anime",
       newAnime.name,
       "episode",
-      newAnime.episode,
+      newAnime.episode
     );
 
     tx.rollback();

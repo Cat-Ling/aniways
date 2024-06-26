@@ -7,7 +7,7 @@ export const api = (handler: Handler) => {
   return async (req: Request) => {
     const map = [redirect, signIn(handler), signOut].reduce(
       (acc, fn) => ({ ...acc, [fn.url]: fn }),
-      {} as Record<string, (req: Request) => Promise<Response> | Response>,
+      {} as Record<string, (req: Request) => Promise<Response> | Response>
     );
 
     const url = new URL(req.url);

@@ -33,7 +33,7 @@ export const HealthCheckTable = () => {
             <TableCell
               className={cn(
                 "font-bold",
-                value.isDown ? "text-red-500" : "text-green-500",
+                value.isDown ? "text-red-500" : "text-green-500"
               )}
             >
               {value.isDown ? "Down" : "Up"}

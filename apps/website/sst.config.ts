@@ -21,6 +21,7 @@ export default {
       Tags.of(stack).add("Purpose", "Aniways Main Website");
 
       const site = new NextjsSite(stack, "site", {
+        timeout: "30 seconds",
         customDomain: {
           domainName: "aniways.xyz",
           isExternalDomain: true,
@@ -28,7 +29,7 @@ export default {
             certificate: Certificate.fromCertificateArn(
               stack,
               "Certificate",
-              process.env.AWS_CERT_ARN_US_EAST_1!,
+              process.env.AWS_CERT_ARN_US_EAST_1!
             ),
           },
         },

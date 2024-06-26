@@ -40,7 +40,7 @@ export const SearchBar = () => {
   return (
     <form
       className="group relative"
-      onSubmit={(e) => {
+      onSubmit={e => {
         e.preventDefault();
 
         const formData = new FormData(e.target as HTMLFormElement);
@@ -65,7 +65,7 @@ export const SearchBar = () => {
         size="sm"
         tabIndex={-1}
         className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 p-0 text-muted-foreground opacity-0 transition group-focus-within:pointer-events-auto group-focus-within:opacity-100"
-        onClick={(e) => {
+        onClick={e => {
           e.currentTarget.blur();
           if (!ref.current) return;
           ref.current.value = "";

@@ -2,31 +2,28 @@ import type { FC } from "react";
 import Link from "next/link";
 import { Play } from "lucide-react";
 
-import type { MyAnimeListServiceTypes } from "@aniways/data";
-import { createMyAnimeListService } from "@aniways/data";
+import type { RouterOutputs } from "@aniways/api";
 import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 interface RelatedAnimeProps {
-  details: MyAnimeListServiceTypes.AnimeMetadata;
+  relatedAnime: Exclude<
+    RouterOutputs["myAnimeList"]["getAnimeMetadata"],
+    undefined
+  >["relatedAnime"];
 }
 
-export const RelatedAnime: FC<RelatedAnimeProps> = async (props) => {
-  const { details } = props;
-
-  const { getRelatedAnimeFromDetails } = createMyAnimeListService();
-
-  const relatedAnime = await getRelatedAnimeFromDetails(details);
-
-  if (relatedAnime.length === 0) return null;
+export const RelatedAnime: FC<RelatedAnimeProps> = props => {
+  if (props.relatedAnime.length === 0) return null;
 
   return (
     <>
       <h3 className="mb-3 mt-6 text-lg font-semibold">Related Anime</h3>
       <section className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
-        {relatedAnime.map((anime) => {
-          const url = anime.id
-            ? `/anime/${anime.id}`
+        {props.relatedAnime.map(anime => {
+          const url =
+            anime.id ?
+              `/anime/${anime.id}`
             : "/search?query=" + encodeURIComponent(anime.node.title);
 
           return (

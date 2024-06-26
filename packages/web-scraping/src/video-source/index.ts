@@ -8,12 +8,12 @@ const URLS = [
 
 export default async function getVideoSourceUrl(
   slug: string,
-  type: "movie" | undefined = undefined,
+  _type: "movie" | undefined = undefined
 ) {
   const getUrl = async (
     url: string,
     slug: string,
-    index: number,
+    index: number
   ): Promise<string | null> => {
     try {
       const controller = new AbortController();
@@ -23,11 +23,11 @@ export default async function getVideoSourceUrl(
       const iframe = await fetch(url, {
         signal: controller.signal,
       })
-        .then((res) => {
+        .then(res => {
           clearTimeout(timeout);
           return res.text();
         })
-        .then((html) => {
+        .then(html => {
           const dom = parse(html);
           return dom.querySelector("iframe")?.getAttribute("src") ?? null;
         });
@@ -46,10 +46,10 @@ export default async function getVideoSourceUrl(
     }
   };
 
-  slug =
-    type === "movie"
-      ? `${slug.split("-episode-").at(0)}-camrip-episode-1`
-      : slug;
+  const movieSlug = `${slug.split("-episode-").at(0)}-camrip-episode-1`;
 
-  return getUrl(`${URLS[0]}/${slug}`, slug, 0);
+  return (
+    (await getUrl(`${URLS[0]}/${slug}`, slug, 0)) ??
+    (await getUrl(`${URLS[0]}/${movieSlug}`, movieSlug, 0))
+  );
 }

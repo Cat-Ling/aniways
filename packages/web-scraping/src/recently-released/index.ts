@@ -28,7 +28,7 @@ export default async function getRecentlyReleasedAnime(page: number) {
   // if fails or takes more than 5 seconds, move to the next one
   const getAnime = async (
     page: number,
-    index: number,
+    index: number
   ): Promise<{
     anime: Awaited<ReturnType<(typeof functions)[0]["fn"]>>;
     hasNext: boolean;
@@ -43,16 +43,16 @@ export default async function getRecentlyReleasedAnime(page: number) {
 
       const timeout = setTimeout(() => {
         abortController.abort(
-          new Error(`Timeout for ${name} current page: ${page}`),
+          new Error(`Timeout for ${name} current page: ${page}`)
         );
         nextAbortController.abort(
-          new Error(`Timeout for ${name} next page: ${page + 1}`),
+          new Error(`Timeout for ${name} next page: ${page + 1}`)
         );
       }, 5000);
 
       const [anime, hasNext] = await Promise.all([
         fn(page, abortController.signal),
-        fn(page + 1, nextAbortController.signal).then((res) => !!res.length),
+        fn(page + 1, nextAbortController.signal).then(res => !!res.length),
       ]);
 
       clearTimeout(timeout);

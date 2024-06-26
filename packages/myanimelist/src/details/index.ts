@@ -18,21 +18,21 @@ type Args = {
 
 const getListStatusAndRelatedAnimeFromMAL = (
   malId: number,
-  accessToken: string | undefined,
+  accessToken: string | undefined
 ) => {
   const client = new MALClient(
-    accessToken
-      ? { accessToken }
-      : {
-          clientId: env.MAL_CLIENT_ID,
-        },
+    accessToken ?
+      { accessToken }
+    : {
+        clientId: env.MAL_CLIENT_ID,
+      }
   );
 
   return client
     .getAnimeDetails(malId, {
       fields: ["my_list_status", "related_anime"],
     })
-    .then((res) => ({
+    .then(res => ({
       listStatus: res?.my_list_status,
       relatedAnime: res?.related_anime ?? [],
     }));
@@ -44,7 +44,7 @@ export type AnimeDetails = Jikan4.Types.Anime & {
 };
 
 export default async function getAnimeDetails(
-  args: Args,
+  args: Args
 ): Promise<AnimeDetails | undefined> {
   const { accessToken } = args;
 
@@ -53,7 +53,7 @@ export default async function getAnimeDetails(
 
     const data = await Jikan4.anime(args.malId)
       .info()
-      .then((res) => res.data);
+      .then(res => res.data);
 
     const { listStatus, relatedAnime } =
       await getListStatusAndRelatedAnimeFromMAL(args.malId, accessToken);
@@ -68,7 +68,7 @@ export default async function getAnimeDetails(
   console.log("Getting anime details of", args.title);
 
   const data = (await Jikan4.animeSearch({ q: encodeURI(args.title) })).data
-    .map((anime) => ({
+    .map(anime => ({
       ...anime,
       distance: distance(anime.title ?? "", args.title),
     }))

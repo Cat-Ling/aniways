@@ -20,7 +20,7 @@ export default async function searchAnime(query: string, page: number) {
     page: number,
     name: (typeof functions)[number]["name"],
     index: number,
-    fn: (typeof functions)[number]["fn"],
+    fn: (typeof functions)[number]["fn"]
   ): Promise<{
     animes: Awaited<ReturnType<typeof searchAnimeFromAnitaku>>;
     hasNext: boolean;
@@ -33,7 +33,7 @@ export default async function searchAnime(query: string, page: number) {
       const anime = await fn(query, page);
       return {
         animes: anime,
-        hasNext: await fn(query, page + 1).then((res) => {
+        hasNext: await fn(query, page + 1).then(res => {
           done = true;
           console.log(`Fetched search ${name} anime`);
           return res.length > 0;
