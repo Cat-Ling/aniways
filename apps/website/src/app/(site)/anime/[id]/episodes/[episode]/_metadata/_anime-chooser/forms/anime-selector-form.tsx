@@ -6,7 +6,7 @@ import { ArrowLeftIcon, ArrowRightIcon, Loader2 } from "lucide-react";
 import type { RouterOutputs } from "@aniways/api";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
-import { DialogClose, DialogFooter } from "@aniways/ui/dialog";
+import { CredenzaClose, CredenzaFooter } from "@aniways/ui/credenza";
 import { Skeleton } from "@aniways/ui/skeleton";
 import { toast } from "@aniways/ui/sonner";
 
@@ -73,14 +73,11 @@ export const AnimeSelectorForm = ({
   return (
     <div className="flex w-full flex-col gap-2">
       {searchQuery.data.data.map(anime => (
-        <DialogClose
-          key={anime.mal_id}
-          onClick={onClick.bind(null, anime)}
-          asChild
-        >
+        <CredenzaClose key={anime.mal_id} asChild>
           <Button
             className="group relative flex h-fit w-full flex-col items-start justify-center gap-4 whitespace-normal text-wrap break-words p-0 text-left transition hover:scale-105 md:flex-row md:justify-start md:px-4 md:py-2"
             variant={"ghost"}
+            onClick={onClick.bind(null, anime)}
           >
             <Image
               src={anime.images.jpg.image_url ?? ""}
@@ -112,10 +109,10 @@ export const AnimeSelectorForm = ({
               </div>
             </div>
           </Button>
-        </DialogClose>
+        </CredenzaClose>
       ))}
 
-      <DialogFooter className="px-4">
+      <CredenzaFooter className="px-0 md:px-4">
         <div className="flex w-full flex-col-reverse items-center justify-between gap-4 md:flex-row">
           <Button
             onClick={() => onChangeMode()}
@@ -151,7 +148,7 @@ export const AnimeSelectorForm = ({
             </Button>
           </div>
         </div>
-      </DialogFooter>
+      </CredenzaFooter>
     </div>
   );
 };

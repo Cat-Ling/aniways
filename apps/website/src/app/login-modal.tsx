@@ -5,15 +5,15 @@ import type { ReactNode } from "react";
 import { signIn } from "@aniways/auth";
 import { Button } from "@aniways/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@aniways/ui/dialog";
+  Credenza,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@aniways/ui/credenza";
 
 interface LoginModalProps {
   children?: ReactNode;
@@ -21,22 +21,22 @@ interface LoginModalProps {
 
 export const LoginModal = ({ children }: LoginModalProps) => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Credenza>
+      <CredenzaTrigger asChild>
         <Button>{children ?? "Login"}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Login using your MyAnimeList account</DialogTitle>
-          <DialogDescription>
+      </CredenzaTrigger>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Login using your MyAnimeList account</CredenzaTitle>
+          <CredenzaDescription>
             This will allow you to import your anime list from MyAnimeList as
             well as sync your progress.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaFooter className="flex-col-reverse gap-2 md:flex-row">
+          <CredenzaClose asChild>
             <Button variant={"secondary"}>Cancel</Button>
-          </DialogClose>
+          </CredenzaClose>
           <Button
             onClick={() => {
               signIn({ redirectUrl: window.location.href });
@@ -44,8 +44,8 @@ export const LoginModal = ({ children }: LoginModalProps) => {
           >
             Log in with MyAnimeList
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 };

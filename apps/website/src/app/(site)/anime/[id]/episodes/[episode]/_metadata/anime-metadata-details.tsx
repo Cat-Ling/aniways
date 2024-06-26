@@ -4,13 +4,14 @@ import type { RouterOutputs } from "@aniways/api";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@aniways/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@aniways/ui/credenza";
 
 import { AnimeChooser } from "./_anime-chooser";
 import { MyAnimeListButton } from "./_myanimelist-button";
@@ -116,18 +117,22 @@ export const AnimeMetadataDetails = ({
         </div>
         <p className="text-sm text-muted-foreground">{metadata.synopsis}</p>
         <div className="flex flex-col gap-2 md:flex-row">
-          <Dialog>
-            <DialogTrigger asChild>
+          <Credenza>
+            <CredenzaTrigger asChild>
               <Button variant={"secondary"}>Report Wrong Information</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Report Wrong Information</DialogTitle>
-                <DialogDescription>Choose the correct Anime</DialogDescription>
-              </DialogHeader>
-              <AnimeChooser query={anime.title} />
-            </DialogContent>
-          </Dialog>
+            </CredenzaTrigger>
+            <CredenzaContent>
+              <CredenzaHeader>
+                <CredenzaTitle>Report Wrong Information</CredenzaTitle>
+                <CredenzaDescription>
+                  Choose the correct Anime
+                </CredenzaDescription>
+              </CredenzaHeader>
+              <CredenzaBody>
+                <AnimeChooser query={anime.title} />
+              </CredenzaBody>
+            </CredenzaContent>
+          </Credenza>
           <Button variant={"secondary"} asChild>
             <Link
               className="w-full md:w-fit"
@@ -140,22 +145,26 @@ export const AnimeMetadataDetails = ({
               MyAnimeList
             </Link>
           </Button>
-          <Dialog>
-            <DialogTrigger asChild>
+          <Credenza>
+            <CredenzaTrigger asChild>
               <Button variant={"secondary"}>View Trailer</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogTitle>Trailer - {metadata.title}</DialogTitle>
-              <iframe
-                className="aspect-video w-full"
-                src={metadata.trailer.embed_url}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </DialogContent>
-          </Dialog>
+            </CredenzaTrigger>
+            <CredenzaContent>
+              <CredenzaHeader>
+                <CredenzaTitle>Trailer - {metadata.title}</CredenzaTitle>
+              </CredenzaHeader>
+              <CredenzaBody>
+                <iframe
+                  className="aspect-video w-full"
+                  src={metadata.trailer.embed_url}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </CredenzaBody>
+            </CredenzaContent>
+          </Credenza>
           <MyAnimeListButton metadata={metadata} />
         </div>
       </div>

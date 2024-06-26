@@ -8,10 +8,10 @@ import { z } from "zod";
 import type { RouterOutputs } from "@aniways/api";
 import { Button } from "@aniways/ui/button";
 import {
-  DialogClose,
-  DialogFooter,
-  useDialogContext,
-} from "@aniways/ui/dialog";
+  CredenzaClose,
+  CredenzaFooter,
+  useCredenzaContext,
+} from "@aniways/ui/credenza";
 import {
   Form,
   FormControl,
@@ -83,7 +83,7 @@ export const UpdateAnimeDialogForm = ({
   malId,
   listStatus,
 }: UpdateAnimeDialogFormProps) => {
-  const { close } = useDialogContext();
+  const { close } = useCredenzaContext();
 
   const form = useForm<z.infer<typeof UpdateAnimeSchema>>({
     resolver: zodResolver(UpdateAnimeSchema),
@@ -98,8 +98,8 @@ export const UpdateAnimeDialogForm = ({
 
   const updateAnimeInMyList = api.myAnimeList.updateAnimeInMyList.useMutation({
     onSuccess: async () => {
-      await utils.myAnimeList.getAnimeMetadata.invalidate();
       close();
+      await utils.myAnimeList.getAnimeMetadata.invalidate();
       toast.success("List updated", {
         description: "Your list has been updated",
       });
@@ -238,13 +238,17 @@ export const UpdateAnimeDialogForm = ({
             </FormItem>
           )}
         />
-        <DialogFooter className="mt-6 w-full sm:justify-between">
-          <DialogClose asChild>
-            <Button variant={"secondary"} type="button">
+        <CredenzaFooter className="mt-6 w-full px-0 sm:justify-between">
+          <CredenzaClose asChild>
+            <Button
+              variant={"secondary"}
+              type="button"
+              className="hidden md:block"
+            >
               Cancel
             </Button>
-          </DialogClose>
-          <div className="flex flex-col-reverse gap-2 sm:flex-row">
+          </CredenzaClose>
+          <div className="flex flex-col-reverse gap-2 md:flex-row md:gap-2">
             <Button
               type="button"
               variant={"secondary"}
@@ -257,13 +261,23 @@ export const UpdateAnimeDialogForm = ({
                 <Loader2 className="animate-spin" />
               : "Delete Entry"}
             </Button>
+            <div className="my-2 h-[1px] w-full bg-muted md:hidden" />
+            <CredenzaClose asChild>
+              <Button
+                variant={"secondary"}
+                type="button"
+                className="block md:hidden"
+              >
+                Cancel
+              </Button>
+            </CredenzaClose>
             <Button type="submit" disabled={updateAnimeInMyList.isPending}>
               {updateAnimeInMyList.isPending ?
                 <Loader2 className="animate-spin" />
               : "Update Anime"}
             </Button>
           </div>
-        </DialogFooter>
+        </CredenzaFooter>
       </form>
     </Form>
   );

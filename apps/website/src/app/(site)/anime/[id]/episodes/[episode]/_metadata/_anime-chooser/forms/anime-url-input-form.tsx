@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@aniways/ui/button";
-import { DialogFooter, useDialogContext } from "@aniways/ui/dialog";
+import { CredenzaFooter, useCredenzaContext } from "@aniways/ui/credenza";
 import {
   Form,
   FormControl,
@@ -26,7 +26,7 @@ interface AnimeUrlInputFormProps {
 
 export const AnimeUrlInputForm = ({ onChangeMode }: AnimeUrlInputFormProps) => {
   const params = useParams();
-  const { close } = useDialogContext();
+  const { close } = useCredenzaContext();
   const form = useForm<z.infer<typeof UpdateAnimeSchema>>({
     resolver: zodResolver(UpdateAnimeSchema),
   });
@@ -77,7 +77,7 @@ export const AnimeUrlInputForm = ({ onChangeMode }: AnimeUrlInputFormProps) => {
             </FormItem>
           )}
         />
-        <DialogFooter className="mt-6 flex w-full !justify-between gap-2">
+        <CredenzaFooter className="flex w-full flex-col-reverse !justify-between gap-2 px-0 md:mt-6 md:flex-row">
           <Button
             variant={"secondary"}
             type="button"
@@ -86,7 +86,7 @@ export const AnimeUrlInputForm = ({ onChangeMode }: AnimeUrlInputFormProps) => {
             Return to search
           </Button>
           <Button>Submit</Button>
-        </DialogFooter>
+        </CredenzaFooter>
       </form>
     </Form>
   );
