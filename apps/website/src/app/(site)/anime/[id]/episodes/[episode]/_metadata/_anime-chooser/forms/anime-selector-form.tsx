@@ -72,46 +72,47 @@ export const AnimeSelectorForm = ({
 
   return (
     <div className="flex w-full flex-col gap-2">
-      {searchQuery.data.data.map(anime => (
-        <CredenzaClose key={anime.mal_id} asChild>
-          <Button
-            className="group relative flex h-fit w-full flex-col items-start justify-center gap-4 whitespace-normal text-wrap break-words p-0 text-left transition hover:scale-105 md:flex-row md:justify-start md:px-4 md:py-2"
-            variant={"ghost"}
-            onClick={onClick.bind(null, anime)}
-          >
-            <Image
-              src={anime.images.jpg.image_url ?? ""}
-              alt={anime.title ?? ""}
-              width={100}
-              height={100 * (650 / 450)}
-              className="h-[200px] w-full rounded-md border border-border bg-muted object-cover object-center md:h-[144px] md:w-[100px] md:object-contain"
-            />
-            <div className="absolute bottom-0 flex w-full flex-col items-center justify-center rounded-md bg-muted/80 py-2 md:static md:h-full md:w-auto md:items-start md:bg-transparent md:py-0">
-              <h2 className="line-clamp-2 text-sm font-bold md:text-base">
-                {anime.title}
-              </h2>
-              <p className="line-clamp-2 text-xs text-muted-foreground md:text-sm">
-                {anime.title_english}
-              </p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                {[
-                  anime.type,
-                  anime.status,
-                  `${anime.episodes ?? "?"} Episodes`,
-                ].map((text, index) => (
-                  <p
-                    key={index}
-                    className="w-fit rounded-md bg-primary p-2 text-xs text-primary-foreground transition"
-                  >
-                    {text}
-                  </p>
-                ))}
+      <div className="flex h-full max-h-[40svh] flex-col gap-2 overflow-y-auto md:max-h-full">
+        {searchQuery.data.data.map(anime => (
+          <CredenzaClose key={anime.mal_id} asChild>
+            <Button
+              className="group relative flex h-fit w-full scale-95 flex-col items-start justify-center gap-4 whitespace-normal text-wrap break-words p-0 text-left transition hover:scale-100 md:scale-100 md:flex-row md:justify-start md:px-4 md:py-2"
+              variant={"ghost"}
+              onClick={onClick.bind(null, anime)}
+            >
+              <Image
+                src={anime.images.jpg.image_url ?? ""}
+                alt={anime.title ?? ""}
+                width={100}
+                height={100 * (650 / 450)}
+                className="h-[200px] w-full rounded-md border border-border object-cover object-center md:h-[144px] md:w-[100px]"
+              />
+              <div className="absolute bottom-0 flex w-full flex-col items-center justify-center rounded-md bg-muted/80 py-2 md:static md:h-full md:w-auto md:items-start md:bg-transparent md:py-0">
+                <h2 className="line-clamp-2 text-sm font-bold md:text-base">
+                  {anime.title}
+                </h2>
+                <p className="line-clamp-2 text-xs text-muted-foreground md:text-sm">
+                  {anime.title_english}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {[
+                    anime.type,
+                    anime.status,
+                    `${anime.episodes ?? "?"} Episodes`,
+                  ].map((text, index) => (
+                    <p
+                      key={index}
+                      className="w-fit rounded-md bg-primary p-2 text-xs text-primary-foreground transition"
+                    >
+                      {text}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Button>
-        </CredenzaClose>
-      ))}
-
+            </Button>
+          </CredenzaClose>
+        ))}
+      </div>
       <CredenzaFooter className="px-0 md:px-4">
         <div className="flex w-full flex-col-reverse items-center justify-between gap-4 md:flex-row">
           <Button
