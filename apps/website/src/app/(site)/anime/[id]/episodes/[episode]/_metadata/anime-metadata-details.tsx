@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@aniways/ui/dialog";
@@ -120,8 +121,10 @@ export const AnimeMetadataDetails = ({
               <Button variant={"secondary"}>Report Wrong Information</Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogTitle>Report Wrong Information</DialogTitle>
-              <DialogDescription>Choose the correct Anime</DialogDescription>
+              <DialogHeader>
+                <DialogTitle>Report Wrong Information</DialogTitle>
+                <DialogDescription>Choose the correct Anime</DialogDescription>
+              </DialogHeader>
               <AnimeChooser query={anime.title} />
             </DialogContent>
           </Dialog>

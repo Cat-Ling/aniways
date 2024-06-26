@@ -31,7 +31,7 @@ export const VideoFrame = async ({ animeId, episode }: VideoFrameProps) => {
   return (
     <iframe
       src={iframe}
-      className="min-h-[260px] w-full md:aspect-video md:min-h-0"
+      className="min-h-[260px] w-full bg-black md:aspect-video md:min-h-0"
       frameBorder="0"
       scrolling="no"
       allowFullScreen
