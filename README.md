@@ -1,12 +1,8 @@
 <h1 align="center">
-  <img src="./apps/website/public/logo.png" width="200" height="200" />
-  
-  <strong>Aniways</strong>
-
-  <p style="font-size: 0.6em">
-      An anime streaming website with built-in MyAnimeList access and more!
-  </p>
-</h1>
+  <img src="./apps/website/public/logo.png" width="200" height="200" /><br>
+  AniWays<br>
+  An anime streaming website with built-in MyAnimeList support
+</div>
 
 ## 📦 Installation
 
