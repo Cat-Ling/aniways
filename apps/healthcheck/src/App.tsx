@@ -11,7 +11,7 @@ function App() {
           <img
             src="/logo.png"
             alt="Aniways Logo"
-            className="h-20 w-20 animate-bounce"
+            className="size-80 animate-bounce"
           />
         </div>
       }
