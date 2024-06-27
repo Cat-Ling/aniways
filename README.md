@@ -47,7 +47,8 @@ DATABASE_URL=<postgres-database-url>
 # For Deployments
 
 # SSL Certificates for HTTPS
-AWS_CERT_ARN_US_EAST_1=<aws-cert-arn-us-east-1>
+WEBSITE_AWS_SSL_CERT_ARN=<ssl-cert-arn-for-website>
+HEALTHCHECK_AWS_SSL_CERT_ARN=<ssl-cert-arn-for-healthcheck>
 
 # AWS Role for github actions to authenticate with AWS
 AWS_ROLE=<aws-role>
@@ -59,7 +60,7 @@ To get the `MAL_SECRET_KEY`, you can generate a random string using a tool like 
 
 To get the `DATABASE_URL`, you will need to create a new postgres database and get the connection string.
 
-To get the `AWS_CERT_ARN_US_EAST_1`, you will need to create a new certificate on AWS Certificate Manager.
+To get the `WEBSITE_AWS_SSL_CERT_ARN` and `HEALTHCHECK_AWS_SSL_CERT_ARN`, you will need to create a new certificate on AWS Certificate Manager.
 
 To get the `AWS_ROLE`, you will need to create a new role on AWS IAM. You can follow the instructions [here](https://docs.sst.dev/going-to-production#deploy-from-github-actions).
 

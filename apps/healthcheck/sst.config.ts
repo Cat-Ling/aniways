@@ -9,8 +9,8 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
 jiti("@aniways/db/env");
 jiti("@aniways/myanimelist/env");
 
-if (!process.env.AWS_CERT_ARN_US_EAST_1) {
-  throw new Error("AWS_CERT_ARN_US_EAST_1 is required");
+if (!process.env.HEALTHCHECK_AWS_SSL_CERT_ARN) {
+  throw new Error("HEALTHCHECK_AWS_SSL_CERT_ARN is required");
 }
 
 if (!process.env.HEALTHCHECK_KEY) {
@@ -46,8 +46,8 @@ export default {
 
       const certificateUSEast = Certificate.fromCertificateArn(
         stack,
-        "us-east-1-certificate",
-        process.env.AWS_CERT_ARN_US_EAST_1!
+        "healthcheck-certificate",
+        process.env.HEALTHCHECK_AWS_SSL_CERT_ARN!
       );
 
       const website = new StaticSite(stack, "healthcheck-website", {

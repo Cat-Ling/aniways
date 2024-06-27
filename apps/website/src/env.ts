@@ -14,7 +14,7 @@ export const env = createEnv({
   },
   server: {
     HEALTHCHECK_KEY: z.string(),
-    AWS_CERT_ARN_US_EAST_1:
+    WEBSITE_AWS_SSL_CERT_ARN:
       (
         process.env.npm_lifecycle_event === "build" ||
         process.env.npm_lifecycle_event === "deploy:prod"
