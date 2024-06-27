@@ -4,8 +4,9 @@ import { Suspense } from "react";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import { api } from "~/trpc/server";
-import { AnimeGrid, AnimeGridLoader } from "../anime-grid";
+import { AnimeGridLoader } from "../anime-grid";
 import { AnimeCarousel } from "./carousel";
+import { CurrentlyWatchingAnimeClient } from "./currently-watching-anime-client";
 
 interface HomeLayoutProps {
   children: ReactNode;
@@ -51,7 +52,7 @@ const CurrentlyWatchingAnime = async () => {
         Continue Watching
       </h1>
       <div className="mb-6">
-        <AnimeGrid animes={newReleases} type="home" />
+        <CurrentlyWatchingAnimeClient newReleases={newReleases} />
       </div>
     </>
   );
