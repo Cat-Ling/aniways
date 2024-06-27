@@ -48,7 +48,7 @@ export default async function getRecentlyReleasedAnime(page: number) {
         nextAbortController.abort(
           new Error(`Timeout for ${name} next page: ${page + 1}`)
         );
-      }, 5000);
+      }, 10_000 /* 10 seconds */);
 
       const [anime, hasNext] = await Promise.all([
         fn(page, abortController.signal),

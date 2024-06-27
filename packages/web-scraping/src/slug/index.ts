@@ -17,7 +17,7 @@ export default async function scrapeSlugFromAnimeEpisode(episodeSlug: string) {
         abortController.abort(
           new Error("Timeout " + fn.name + " " + episodeSlug)
         );
-      }, 2000);
+      }, 10_000 /* 10 seconds */);
 
       const slug = await fn(episodeSlug, abortController.signal);
 
