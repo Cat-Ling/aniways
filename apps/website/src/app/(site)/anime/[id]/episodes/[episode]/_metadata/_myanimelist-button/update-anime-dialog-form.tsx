@@ -98,11 +98,11 @@ export const UpdateAnimeDialogForm = ({
 
   const updateAnimeInMyList = api.myAnimeList.updateAnimeInMyList.useMutation({
     onSuccess: async () => {
-      close();
       await utils.myAnimeList.getAnimeMetadata.invalidate();
       toast.success("List updated", {
         description: "Your list has been updated",
       });
+      close();
     },
     onError: error => {
       toast.error(
@@ -119,10 +119,10 @@ export const UpdateAnimeDialogForm = ({
   const deleteAnimeInMyList = api.myAnimeList.deleteFromMyList.useMutation({
     onSuccess: async () => {
       await utils.myAnimeList.getAnimeMetadata.invalidate();
-      close();
       toast.success("Anime deleted", {
         description: "Anime has been removed from your list",
       });
+      close();
     },
     onError: error => {
       toast.error(
