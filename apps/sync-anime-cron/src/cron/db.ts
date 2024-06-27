@@ -1,5 +1,8 @@
 import { createId, db, orm, schema } from "@aniways/db";
-import { scrapeSlugFromEpisodeSlug } from "@aniways/web-scraping";
+import {
+  scrapeSlugFromEpisodeSlug,
+  scrapeVideoSource,
+} from "@aniways/web-scraping";
 
 import type { RecentlyReleasedAnime } from "./scrape";
 import { createLogger } from "../utils/logger";
@@ -13,7 +16,7 @@ const constructEpisodeSlug = (newAnime: RecentlyReleasedAnime) => {
   return `${newAnime.slug}-episode-${episode}`;
 };
 
-const constructVideoInsertValues = (
+const constructVideoInsertValues = async (
   animeId: string,
   lastEpisode: string | undefined,
   newAnime: RecentlyReleasedAnime
@@ -29,7 +32,7 @@ const constructVideoInsertValues = (
 
   const createdAt = new Date();
 
-  return [
+  const videos = [
     ...episodes.map(ep => ({
       id: createId(),
       animeId,
@@ -45,6 +48,13 @@ const constructVideoInsertValues = (
       createdAt,
     },
   ];
+
+  return await Promise.all(
+    videos.map(async video => {
+      const videoUrl = await scrapeVideoSource(video.slug).catch(() => null);
+      return { ...video, videoUrl };
+    })
+  );
 };
 
 const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
@@ -86,7 +96,7 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
       })
       .where(orm.eq(schema.anime.id, animeId));
 
-    const episodes = constructVideoInsertValues(
+    const episodes = await constructVideoInsertValues(
       animeId,
       anime?.lastEpisode ?? undefined,
       newAnime

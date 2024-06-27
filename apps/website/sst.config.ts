@@ -22,6 +22,7 @@ export default {
 
       const site = new NextjsSite(stack, "site", {
         timeout: "30 seconds",
+        warm: 3,
         customDomain: {
           domainName: "aniways.xyz",
           isExternalDomain: true,
