@@ -24,7 +24,6 @@ env:
   MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
   # For AWS
   AWS_CERT_ARN_US_EAST_1: ${{ secrets.AWS_CERT_ARN_US_EAST_1 }}
-  AWS_CERT_ARN_AP_SOUTHEAST_1: ${{ secrets.AWS_CERT_ARN_AP_SOUTHEAST_1 }}
   # For TurboRepo
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
