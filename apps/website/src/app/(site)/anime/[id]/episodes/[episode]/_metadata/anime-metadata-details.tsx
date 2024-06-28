@@ -78,14 +78,14 @@ export const AnimeMetadataDetails = ({
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Rank: </span>
-              {metadata.rank}
+              {metadata.rank ?? "N/A"}
             </div>
             <div className="text-sm">
               <span className="text-muted-foreground">Score: </span>
               <span className="font-bold">
                 {Intl.NumberFormat("en-US", {
                   minimumSignificantDigits: 3,
-                }).format(metadata.mean)}
+                }).format(metadata.mean) === "NaN" && "N/A"}
               </span>{" "}
               ({Intl.NumberFormat("en-US").format(metadata.num_scoring_users)}{" "}
               users)
