@@ -13,8 +13,8 @@ import {
   CredenzaTrigger,
 } from "@aniways/ui/credenza";
 
-import { AnimeChooser } from "./_anime-chooser";
-import { MyAnimeListButton } from "./_myanimelist-button";
+import { AnimeChooser } from "./anime-chooser";
+import { MyAnimeListButton } from "./myanimelist-button";
 import { Trailer } from "./trailer";
 
 interface AnimeMetadataProps {

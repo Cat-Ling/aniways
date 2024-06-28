@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 
 import { Skeleton } from "@aniways/ui/skeleton";
 
+import { EpisodesSection } from "~/components/anime/episodes";
+import { AnimeMetadata } from "~/components/anime/metadata";
+import { VideoFrame } from "~/components/streaming/video-frame";
 import { api } from "~/trpc/server";
-import { EpisodesSection } from "./_episodes";
-import { AnimeMetadata } from "./_metadata";
-import { VideoFrame } from "./video-frame";
 
 const getAnimeById = cache(async (id: string) => {
   return await api.anime.byId({ id });

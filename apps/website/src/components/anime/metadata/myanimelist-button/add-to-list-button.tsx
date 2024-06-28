@@ -7,7 +7,7 @@ import { useAuth } from "@aniways/auth";
 import { Button } from "@aniways/ui/button";
 import { toast } from "@aniways/ui/sonner";
 
-import { LoginModal } from "~/app/login-modal";
+import { LoginModal } from "~/components/auth/login-modal";
 import { api } from "~/trpc/react";
 
 interface AddToListButtonProps {

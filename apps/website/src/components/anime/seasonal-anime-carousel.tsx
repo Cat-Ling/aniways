@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { PlayIcon } from "lucide-react";
@@ -10,54 +10,23 @@ import type { CarouselApi } from "@aniways/ui/carousel";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@aniways/ui/carousel";
-import { Skeleton } from "@aniways/ui/skeleton";
 
-export const AnimeCarousel = () => {
+interface AnimeCarouselProps {
+  initialData: RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
+}
+
+export const AnimeCarousel = (props: AnimeCarouselProps) => {
+  const { carouselApi, setCarouselApi, count, current } = useCarouselApi();
+
   const seasonalAnimeQuery = useQuery({
     queryKey: ["seasonal-anime"],
+    initialData: props.initialData,
     queryFn: () => {
-      return fetch("/seasonal").then(async res => {
+      return fetch("/api/seasonal").then(async res => {
         return (await res.json()) as RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
       });
     },
   });
-
-  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!carouselApi) return;
-
-    setCount(carouselApi.scrollSnapList().length);
-    setCurrent(carouselApi.selectedScrollSnap() + 1);
-
-    const onSelect = () => {
-      setCurrent(carouselApi.selectedScrollSnap() + 1);
-    };
-
-    carouselApi.on("select", onSelect);
-
-    return () => {
-      carouselApi.off("select", onSelect);
-    };
-  }, [carouselApi]);
-
-  useEffect(() => {
-    if (!carouselApi) return;
-
-    const interval = setInterval(() => {
-      carouselApi.scrollNext();
-    }, 5000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [carouselApi, current]);
-
-  if (seasonalAnimeQuery.isLoading || !seasonalAnimeQuery.data) {
-    return <Skeleton className="mb-2 h-[430px] md:mb-5" />;
-  }
 
   return (
     <Carousel
@@ -136,4 +105,44 @@ export const AnimeCarousel = () => {
       </div>
     </Carousel>
   );
+};
+
+const useCarouselApi = () => {
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  const count = useMemo(
+    () => carouselApi?.scrollSnapList().length ?? 0,
+    [carouselApi]
+  );
+
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    setCurrent(carouselApi.selectedScrollSnap() + 1);
+
+    const onSelect = () => {
+      setCurrent(carouselApi.selectedScrollSnap() + 1);
+    };
+
+    carouselApi.on("select", onSelect);
+
+    return () => {
+      carouselApi.off("select", onSelect);
+    };
+  }, [carouselApi]);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    const interval = setInterval(() => {
+      carouselApi.scrollNext();
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [carouselApi, current]);
+
+  return { carouselApi, setCarouselApi, current, count };
 };

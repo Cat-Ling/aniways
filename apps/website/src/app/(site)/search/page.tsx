@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { cache, Suspense } from "react";
 import { HeartCrack } from "lucide-react";
 
+import { AnimeGrid, AnimeGridLoader } from "~/components/layouts/anime-grid";
+import { Pagination, PaginationLoader } from "~/components/pagination";
 import { api } from "~/trpc/server";
-import { AnimeGrid, AnimeGridLoader } from "../anime-grid";
-import { Pagination, PaginationLoader } from "../pagination";
 
 const searchAnime = cache(async (query: string, page: number) => {
   return await api.anime.search({ query, page });

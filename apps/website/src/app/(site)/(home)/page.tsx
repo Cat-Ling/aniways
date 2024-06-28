@@ -1,13 +1,9 @@
 import { cache, Suspense } from "react";
 
+import { RecentlyReleasedAnime } from "~/components/anime/recently-released-anime";
+import { AnimeGridLoader } from "~/components/layouts/anime-grid";
+import { Pagination, PaginationLoader } from "~/components/pagination";
 import { api } from "~/trpc/server";
-import { AnimeGridLoader } from "../anime-grid";
-import { Pagination, PaginationLoader } from "../pagination";
-import { RecentlyReleasedAnimeClient } from "./recently-released-anime-client";
-
-const getRecentlyReleasedAnimes = cache(async (page: number) => {
-  return api.anime.recentlyReleased({ page });
-});
 
 const Home = ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Math.max(Number(searchParams.page || "1"), 1);
@@ -25,7 +21,7 @@ const Home = ({ searchParams }: { searchParams: { page: string } }) => {
       </div>
       <div className="mb-12">
         <Suspense key={page} fallback={<AnimeGridLoader />}>
-          <RecentlyReleasedAnime page={page} />
+          <RecentlyReleasedAnimeWrapper page={page} />
         </Suspense>
       </div>
       <div className="-my-6">
@@ -37,11 +33,15 @@ const Home = ({ searchParams }: { searchParams: { page: string } }) => {
   );
 };
 
-const RecentlyReleasedAnime = async ({ page }: { page: number }) => {
+const getRecentlyReleasedAnimes = cache(async (page: number) => {
+  return api.anime.recentlyReleased({ page });
+});
+
+const RecentlyReleasedAnimeWrapper = async ({ page }: { page: number }) => {
   const recentlyReleased = await getRecentlyReleasedAnimes(page);
 
   return (
-    <RecentlyReleasedAnimeClient
+    <RecentlyReleasedAnime
       recentlyReleasedAnime={recentlyReleased}
       page={page}
     />

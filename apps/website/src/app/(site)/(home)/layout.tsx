@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 
+import type { RouterOutputs } from "@aniways/api";
+
+import { CurrentlyWatchingAnime } from "~/components/anime/current-watching-anime";
+import { AnimeCarousel } from "~/components/anime/seasonal-anime-carousel";
 import { api } from "~/trpc/server";
-import { AnimeCarousel } from "./carousel";
-import { CurrentlyWatchingAnimeClient } from "./currently-watching-anime-client";
 
 interface HomeLayoutProps {
   children: ReactNode;
@@ -11,26 +13,26 @@ interface HomeLayoutProps {
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <>
-      <AnimeCarousel />
-      <CurrentlyWatchingAnime />
+      <AnimeCarouselWrapper />
+      <CurrentlyWatchingAnimeWrapper />
       {children}
     </>
   );
 }
 
-const CurrentlyWatchingAnime = async () => {
-  const newReleases = await api.anime.continueWatching().catch(() => []);
+const AnimeCarouselWrapper = async () => {
+  // use fetch to get data as it is cached on the server using isr instead of trpc
+  const initialData = (await fetch("/api/seasonal", {
+    cache: "no-store",
+  }).then(res => {
+    return res.json();
+  })) as RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
 
-  if (!newReleases.length) return undefined;
+  return <AnimeCarousel initialData={initialData} />;
+};
 
-  return (
-    <>
-      <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
-        Continue Watching
-      </h1>
-      <div className="mb-6">
-        <CurrentlyWatchingAnimeClient newReleases={newReleases} />
-      </div>
-    </>
-  );
+const CurrentlyWatchingAnimeWrapper = async () => {
+  const newReleases = await api.anime.continueWatching().catch(() => []); // Catch error if the user is not logged in
+
+  return <CurrentlyWatchingAnime newReleases={newReleases} />;
 };

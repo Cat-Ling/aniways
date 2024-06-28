@@ -9,8 +9,8 @@ import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@aniways/ui/tabs";
 
+import { Pagination, PaginationLoader } from "~/components/pagination";
 import { api } from "~/trpc/server";
-import { Pagination, PaginationLoader } from "../pagination";
 
 type Status =
   | "all"

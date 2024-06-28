@@ -7,8 +7,8 @@ import { useAuth } from "@aniways/auth";
 import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 
-import { LoginModal } from "./login-modal";
-import { ProfileDropdown } from "./profile-dropdown";
+import { LoginModal } from "../auth/login-modal";
+import { ProfileDropdown } from "../auth/profile-dropdown";
 import { SearchBar, SearchBarFallback } from "./search-bar";
 
 const UserButtons = () => {

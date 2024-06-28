@@ -1,4 +1,4 @@
-import { AnimeGridLoader } from "../anime-grid";
+import { AnimeGridLoader } from "~/components/layouts/anime-grid";
 
 const SearchLoading = () => {
   return <AnimeGridLoader />;

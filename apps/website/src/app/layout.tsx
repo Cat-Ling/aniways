@@ -6,9 +6,9 @@ import NextTopLoader from "nextjs-toploader";
 
 import { Toaster } from "@aniways/ui/sonner";
 
-import { Footer } from "./footer";
-import { Navbar } from "./navbar";
-import { Providers } from "./providers";
+import { Footer } from "~/components/navigation/footer";
+import { Navbar } from "~/components/navigation/navbar";
+import { Providers } from "~/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
