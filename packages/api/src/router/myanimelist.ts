@@ -7,6 +7,7 @@ import {
   getAnimeDetailsFromMyAnimeList,
   getAnimeList,
   getCurrentAnimeSeason,
+  getTrailerUrl,
   searchAnimeFromMyAnimeList,
   updateAnimeList,
 } from "@aniways/myanimelist";
@@ -119,6 +120,10 @@ export const myAnimeListRouter = createTRPCRouter({
         }),
       };
     }),
+
+  getTrailer: publicProcedure
+    .input(z.object({ malId: z.number() }))
+    .query(async ({ input }) => getTrailerUrl(input.malId)),
 
   getCurrentSeasonAnimes: publicProcedure.query(async ({ ctx }) => {
     const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>

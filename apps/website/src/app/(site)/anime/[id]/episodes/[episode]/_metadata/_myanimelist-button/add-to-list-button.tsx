@@ -17,9 +17,7 @@ interface AddToListButtonProps {
   >;
 }
 
-export const AddToListButton = ({
-  metadata: { mal_id },
-}: AddToListButtonProps) => {
+export const AddToListButton = ({ metadata: { id } }: AddToListButtonProps) => {
   const session = useAuth();
   const utils = api.useUtils();
   const addToList = api.myAnimeList.addToMyList.useMutation({
@@ -40,11 +38,11 @@ export const AddToListButton = ({
     return <LoginModal>Add To List</LoginModal>;
   }
 
-  if (!mal_id) return null;
+  if (!id) return null;
 
   return (
     <Button
-      onClick={() => addToList.mutate({ malId: mal_id })}
+      onClick={() => addToList.mutate({ malId: id })}
       disabled={addToList.isPending}
     >
       {addToList.isPending ?

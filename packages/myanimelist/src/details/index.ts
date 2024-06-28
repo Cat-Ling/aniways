@@ -1,4 +1,4 @@
-import type { MyListStatus, RelatedAnime } from "@animelist/client";
+import type { AnimeNode } from "@animelist/client";
 import { MALClient } from "@animelist/client";
 import { distance } from "fastest-levenshtein";
 import { Jikan4 } from "node-myanimelist";
@@ -16,53 +16,101 @@ type Args = {
     }
 );
 
-const getListStatusAndRelatedAnimeFromMAL = (
-  malId: number,
-  accessToken: string | undefined
-) => {
-  const client = new MALClient(
-    accessToken ?
-      { accessToken }
-    : {
-        clientId: env.MAL_CLIENT_ID,
-      }
-  );
+const fields = [
+  "my_list_status",
+  "related_anime",
+  "genres",
+  "alternative_titles",
+  "start_season",
+  "start_date",
+  "end_date",
+  "media_type",
+  "rating",
+  "average_episode_duration",
+  "status",
+  "num_episodes",
+  "studios",
+  "rank",
+  "num_scoring_users",
+  "popularity",
+  "source",
+  "synopsis",
+  "mean",
+];
 
-  return client
-    .getAnimeDetails(malId, {
-      fields: ["my_list_status", "related_anime"],
-    })
-    .then(res => ({
-      listStatus: res?.my_list_status,
-      relatedAnime: res?.related_anime ?? [],
-    }));
-};
+function formatRating(rating: string) {
+  switch (rating) {
+    case "g":
+      return "G - All Ages";
+    case "pg":
+      return "PG - Children";
+    case "pg_13":
+      return "PG-13 - Teens 13 or older";
+    case "r":
+      return "R - 17+ (violence & profanity)";
+    case "r+":
+      return "R+ - Profanity & Mild Nudity";
+    case "rx":
+      return "Rx - Hentai";
+    default:
+      return "Unknown Rating";
+  }
+}
 
-export type AnimeDetails = Jikan4.Types.Anime & {
-  listStatus: MyListStatus | undefined;
-  relatedAnime: RelatedAnime[];
-};
+function transformResponse(res: AnimeNode | null) {
+  if (!res) return undefined;
 
-export default async function getAnimeDetails(
-  args: Args
-): Promise<AnimeDetails | undefined> {
+  const { my_list_status, related_anime, ...anime } = res;
+
+  return {
+    ...anime,
+    media_type: anime.media_type.toUpperCase(),
+    rating: formatRating(anime.rating ?? ""),
+    season: `${anime.start_season?.season.replace(/^.{0,1}/g, s => s.toUpperCase())} ${anime.start_season?.year}`,
+    average_episode_duration:
+      anime.average_episode_duration &&
+      `${Math.floor(anime.average_episode_duration / 60)} min per ep`,
+    airingStatus: anime.status
+      .replace(/_/g, " ")
+      .split(" ")
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" "),
+    totalEpisodes: anime.num_episodes || "???",
+    genreString: anime.genres.map(genre => genre.name).join(", "),
+    studiosString: anime.studios.map(studio => studio.name).join(", "),
+    num_scoring_users: anime.num_scoring_users || 0,
+    airingDate:
+      anime.start_date ?
+        `${anime.start_date} to ${anime.end_date ?? "?"}`
+      : "Not aired yet",
+    source: anime.source
+      ?.replace(/_/g, " ")
+      .replace(/^.{0,1}/g, s => s.toUpperCase()),
+    listStatusFormatted:
+      my_list_status ?
+        my_list_status.status.charAt(0).toUpperCase() +
+        my_list_status.status.slice(1).replace(/_/g, " ")
+      : "Not in list",
+    listStatus: my_list_status,
+    relatedAnime: related_anime ?? [],
+  };
+}
+
+export default async function getAnimeDetails(args: Args) {
   const { accessToken } = args;
 
   if ("malId" in args) {
-    console.log("Getting anime details of", args.malId);
+    const client = new MALClient(
+      accessToken ?
+        { accessToken }
+      : {
+          clientId: env.MAL_CLIENT_ID,
+        }
+    );
 
-    const data = await Jikan4.anime(args.malId)
-      .info()
-      .then(res => res.data);
-
-    const { listStatus, relatedAnime } =
-      await getListStatusAndRelatedAnimeFromMAL(args.malId, accessToken);
-
-    return {
-      ...data,
-      listStatus,
-      relatedAnime,
-    };
+    return await client
+      .getAnimeDetails(args.malId, { fields })
+      .then(transformResponse);
   }
 
   console.log("Getting anime details of", args.title);
@@ -79,8 +127,5 @@ export default async function getAnimeDetails(
     return undefined;
   }
 
-  return {
-    ...data,
-    ...(await getListStatusAndRelatedAnimeFromMAL(data.mal_id, accessToken)),
-  };
+  return await getAnimeDetails({ malId: data.mal_id, accessToken });
 }

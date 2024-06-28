@@ -44,11 +44,11 @@ export const AnimeMetadata = ({ id }: AnimeMetadataProps) => {
   useEffect(() => {
     if (!animeQuery.data) return;
     if (animeQuery.data.malAnimeId) return;
-    if (!metadata?.mal_id) return;
+    if (!metadata?.id) return;
 
     updateMalAnimeId({
       id: animeQuery.data.id,
-      malId: metadata.mal_id,
+      malId: metadata.id,
     });
   }, [metadata, animeQuery, updateMalAnimeId]);
 

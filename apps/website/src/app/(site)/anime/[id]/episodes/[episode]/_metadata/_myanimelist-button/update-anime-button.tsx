@@ -20,7 +20,7 @@ interface UpdateAnimeButtonProps {
 }
 
 export const UpdateAnimeButton = ({ metadata }: UpdateAnimeButtonProps) => {
-  if (!metadata.mal_id) return null;
+  if (!metadata.id) return null;
 
   return (
     <Credenza>
@@ -36,7 +36,7 @@ export const UpdateAnimeButton = ({ metadata }: UpdateAnimeButtonProps) => {
         </CredenzaHeader>
         <CredenzaBody>
           <UpdateAnimeDialogForm
-            malId={metadata.mal_id}
+            malId={metadata.id}
             listStatus={metadata.listStatus}
           />
         </CredenzaBody>
