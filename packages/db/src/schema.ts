@@ -107,3 +107,18 @@ export const videoRelations = relations(video, ({ one }) => ({
 export type VideoWithRelations = Video & {
   anime: Anime;
 };
+
+export const seasonalAnime = pgTable("seasonal_anime", {
+  id: varchar("id", { length: 25 }).primaryKey(),
+  malId: integer("mal_id").notNull(),
+  title: text("title").notNull(),
+  rating: text("rating"),
+  type: text("type"),
+  episodes: integer("episodes"),
+  synopsis: text("synopsis"),
+  imageUrl: text("image_url").notNull(),
+  order: integer("order").notNull(),
+  status: text("status"),
+});
+
+export type SeasonalAnime = InferSelectModel<typeof seasonalAnime>;

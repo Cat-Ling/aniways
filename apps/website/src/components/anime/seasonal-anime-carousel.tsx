@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
 import { PlayIcon } from "lucide-react";
 
 import type { RouterOutputs } from "@aniways/api";
@@ -12,21 +11,11 @@ import { Button } from "@aniways/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@aniways/ui/carousel";
 
 interface AnimeCarouselProps {
-  initialData: RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
+  seasonalAnime: RouterOutputs["seasonalAnime"]["getCachedSeasonalAnimes"];
 }
 
 export const AnimeCarousel = (props: AnimeCarouselProps) => {
   const { carouselApi, setCarouselApi, count, current } = useCarouselApi();
-
-  const seasonalAnimeQuery = useQuery({
-    queryKey: ["seasonal-anime"],
-    initialData: props.initialData,
-    queryFn: () => {
-      return fetch("/api/seasonal").then(async res => {
-        return (await res.json()) as RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
-      });
-    },
-  });
 
   return (
     <Carousel
@@ -37,16 +26,16 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
       }}
     >
       <CarouselContent>
-        {seasonalAnimeQuery.data.map(anime => {
-          const { anime: animeFromDB } = anime;
+        {props.seasonalAnime.map(anime => {
+          const { animeFromDb } = anime;
 
           const url =
-            animeFromDB ?
-              `/anime/${animeFromDB.id}`
+            animeFromDb ?
+              `/anime/${animeFromDb.id}`
             : "/search?query=" + anime.title;
 
           return (
-            <CarouselItem key={anime.mal_id}>
+            <CarouselItem key={anime.malId}>
               <div className="flex w-full flex-col-reverse gap-3 md:grid md:grid-cols-5 md:gap-6">
                 <div className="col-span-2 flex select-none flex-col justify-center">
                   <h1 className="mb-2 line-clamp-3 text-2xl font-bold md:mb-5 md:text-5xl">
@@ -77,12 +66,12 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
                   <div
                     className="absolute bottom-0 left-0 right-0 top-0 -m-3 h-full w-full bg-cover bg-center bg-no-repeat blur-sm"
                     style={{
-                      backgroundImage: `url(${anime.images.webp.large_image_url})`,
+                      backgroundImage: `url(${anime.imageUrl})`,
                     }}
                   />
                   <div className="relative z-10 flex aspect-video h-full w-full items-center justify-center">
                     <Image
-                      src={anime.images.webp.large_image_url}
+                      src={anime.imageUrl}
                       alt={anime.title}
                       className="h-full rounded-lg object-contain shadow-lg"
                     />

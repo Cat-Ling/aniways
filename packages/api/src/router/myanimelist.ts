@@ -6,7 +6,6 @@ import {
   deleteFromAnimeList,
   getAnimeDetailsFromMyAnimeList,
   getAnimeList,
-  getCurrentAnimeSeason,
   getTrailerUrl,
   searchAnimeFromMyAnimeList,
   updateAnimeList,
@@ -124,27 +123,6 @@ export const myAnimeListRouter = createTRPCRouter({
   getTrailer: publicProcedure
     .input(z.object({ malId: z.number() }))
     .query(async ({ input }) => getTrailerUrl(input.malId)),
-
-  getCurrentSeasonAnimes: publicProcedure.query(async ({ ctx }) => {
-    const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
-      data.filter(data => data.mal_id !== undefined).slice(0, 10)
-    );
-
-    const animes = await ctx.db
-      .select()
-      .from(schema.anime)
-      .where(
-        orm.inArray(
-          schema.anime.malAnimeId,
-          currentSeasonAnime.map(anime => anime.mal_id) as number[]
-        )
-      );
-
-    return currentSeasonAnime.map(anime => ({
-      ...anime,
-      anime: animes.find(dbAnime => dbAnime.malAnimeId === anime.mal_id),
-    }));
-  }),
 
   search: publicProcedure
     .input(
