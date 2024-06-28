@@ -2,18 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { PlayIcon } from "lucide-react";
 
+import type { RouterOutputs } from "@aniways/api";
 import type { CarouselApi } from "@aniways/ui/carousel";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@aniways/ui/carousel";
 import { Skeleton } from "@aniways/ui/skeleton";
 
-import { api } from "~/trpc/react";
-
 export const AnimeCarousel = () => {
-  const seasonalAnimeQuery = api.myAnimeList.getCurrentSeasonAnimes.useQuery();
+  const seasonalAnimeQuery = useQuery({
+    queryKey: ["seasonal-anime"],
+    queryFn: () => {
+      return fetch("/seasonal").then(async res => {
+        return (await res.json()) as RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
+      });
+    },
+  });
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
