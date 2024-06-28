@@ -8,6 +8,10 @@ interface HomeLayoutProps {
   children: ReactNode;
 }
 
+export const dynamic = "force-static";
+
+export const revalidate = 3600; // 1 hour
+
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <>
