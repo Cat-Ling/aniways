@@ -73,7 +73,7 @@ export const AnimeCarousel = () => {
             <CarouselItem key={anime.mal_id}>
               <div className="flex w-full flex-col-reverse gap-3 md:grid md:grid-cols-5 md:gap-6">
                 <div className="col-span-2 flex select-none flex-col justify-center">
-                  <h1 className="mb-2 text-2xl font-bold md:mb-5 md:text-5xl">
+                  <h1 className="mb-2 line-clamp-3 text-2xl font-bold md:mb-5 md:text-5xl">
                     {anime.title}
                   </h1>
                   <div className="mb-3 flex gap-2">
