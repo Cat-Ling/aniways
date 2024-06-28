@@ -62,13 +62,15 @@ export const seasonalAnimeRouter = createTRPCRouter({
       )
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(schema.seasonalAnime);
+      await ctx.db.transaction(async tx => {
+        await tx.delete(schema.seasonalAnime);
 
-      await ctx.db.insert(schema.seasonalAnime).values(
-        input.map(data => ({
-          ...data,
-          id: createId(),
-        }))
-      );
+        await tx.insert(schema.seasonalAnime).values(
+          input.map(data => ({
+            ...data,
+            id: createId(),
+          }))
+        );
+      });
     }),
 });

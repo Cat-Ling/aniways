@@ -7,6 +7,7 @@ import { Cron, Function } from "sst/constructs";
 const jiti = createJITI(fileURLToPath(import.meta.url));
 
 jiti("@aniways/db/env");
+jiti("@aniways/myanimelist/env");
 
 export default {
   config: _input => ({
@@ -28,6 +29,7 @@ export default {
           environment: {
             NODE_OPTIONS: "--enable-source-maps",
             DATABASE_URL: process.env.DATABASE_URL!,
+            MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
           },
         }
       );
