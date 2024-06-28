@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
-import { Suspense } from "react";
-
-import { Skeleton } from "@aniways/ui/skeleton";
 
 import { api } from "~/trpc/server";
-import { AnimeGridLoader } from "../anime-grid";
 import { AnimeCarousel } from "./carousel";
 import { CurrentlyWatchingAnimeClient } from "./currently-watching-anime-client";
 
@@ -15,31 +11,12 @@ interface HomeLayoutProps {
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <>
-      <Suspense fallback={<Skeleton className="mb-2 h-[430px] md:mb-5" />}>
-        <SeasonalAnimeCarousel />
-      </Suspense>
-      <Suspense fallback={<CurrentlyWatchingAnimeLoader />}>
-        <CurrentlyWatchingAnime />
-      </Suspense>
+      <AnimeCarousel />
+      <CurrentlyWatchingAnime />
       {children}
     </>
   );
 }
-
-const SeasonalAnimeCarousel = async () => {
-  const seasonalAnime = await api.myAnimeList.getCurrentSeasonAnimes();
-
-  return <AnimeCarousel seasonalAnime={seasonalAnime} />;
-};
-
-const CurrentlyWatchingAnimeLoader = () => (
-  <>
-    <Skeleton className="mb-2 h-[32px] md:mb-5" />
-    <div className="mb-12">
-      <AnimeGridLoader length={5} />
-    </div>
-  </>
-);
 
 const CurrentlyWatchingAnime = async () => {
   const newReleases = await api.anime.continueWatching().catch(() => []);

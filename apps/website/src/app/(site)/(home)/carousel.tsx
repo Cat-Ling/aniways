@@ -4,60 +4,64 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
 
-import type { RouterOutputs } from "@aniways/api";
 import type { CarouselApi } from "@aniways/ui/carousel";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@aniways/ui/carousel";
+import { Skeleton } from "@aniways/ui/skeleton";
 
-interface AnimeCarouselProps {
-  seasonalAnime: RouterOutputs["myAnimeList"]["getCurrentSeasonAnimes"];
-}
+import { api } from "~/trpc/react";
 
-export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
-  const [api, setApi] = useState<CarouselApi>();
+export const AnimeCarousel = () => {
+  const seasonalAnimeQuery = api.myAnimeList.getCurrentSeasonAnimes.useQuery();
+
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!api) return;
+    if (!carouselApi) return;
 
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
+    setCount(carouselApi.scrollSnapList().length);
+    setCurrent(carouselApi.selectedScrollSnap() + 1);
 
     const onSelect = () => {
-      setCurrent(api.selectedScrollSnap() + 1);
+      setCurrent(carouselApi.selectedScrollSnap() + 1);
     };
 
-    api.on("select", onSelect);
+    carouselApi.on("select", onSelect);
 
     return () => {
-      api.off("select", onSelect);
+      carouselApi.off("select", onSelect);
     };
-  }, [api]);
+  }, [carouselApi]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!carouselApi) return;
 
     const interval = setInterval(() => {
-      api.scrollNext();
+      carouselApi.scrollNext();
     }, 5000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [api, current]);
+  }, [carouselApi, current]);
+
+  if (seasonalAnimeQuery.isLoading || !seasonalAnimeQuery.data) {
+    return <Skeleton className="mb-2 h-[430px] md:mb-5" />;
+  }
 
   return (
     <Carousel
       className="relative mb-12"
-      setApi={setApi}
+      setApi={setCarouselApi}
       opts={{
         loop: true,
       }}
     >
       <CarouselContent>
-        {seasonalAnime.map(anime => {
+        {seasonalAnimeQuery.data.map(anime => {
           const { anime: animeFromDB } = anime;
 
           const url =
@@ -117,7 +121,7 @@ export const AnimeCarousel = ({ seasonalAnime }: AnimeCarouselProps) => {
         {Array.from({ length: count }).map((_, i) => (
           <Button
             key={i}
-            onClick={() => api?.scrollTo(i)}
+            onClick={() => carouselApi?.scrollTo(i)}
             className={`mx-1 h-2 w-2 rounded-full p-0`}
             variant={i === current - 1 ? "default" : "secondary"}
           />
