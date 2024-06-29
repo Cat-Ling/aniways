@@ -1,5 +1,3 @@
-import "server-only";
-
 export { default as scrapeRecentlyReleasedAnime } from "./recently-released";
 export { default as scrapeAllAnime } from "./all-anime";
 export { default as scrapeAnimeByQuery } from "./search";
