@@ -1,4 +1,4 @@
-import { db } from "@aniways/db";
+import { db, orm, schema } from "@aniways/db";
 import { scrapeRecentlyReleasedAnime } from "@aniways/web-scraping";
 
 import { createLogger } from "../utils/logger";
@@ -7,9 +7,7 @@ const logger = createLogger("AniwaysSyncAnimeCron", "scrape");
 
 export type RecentlyReleasedAnime = Awaited<
   ReturnType<typeof scrapeRecentlyReleasedAnime>
->["anime"][number] & {
-  slug: string;
-};
+>["anime"][number];
 
 const scrapeRecentlyReleasedAnimes = async () => {
   const recentlyReleasedAnimes = await Promise.all([
@@ -17,43 +15,25 @@ const scrapeRecentlyReleasedAnimes = async () => {
     scrapeRecentlyReleasedAnime(2).then(data => data.anime),
   ]);
 
-  return recentlyReleasedAnimes
-    .flat()
-    .reverse()
-    .map(a => ({
-      ...a,
-      slug: a.url.replace("/anime/", "").split("/")[0],
-    }))
-    .filter(a => !!a.slug) as RecentlyReleasedAnime[];
+  return recentlyReleasedAnimes.flat().reverse();
 };
 
 const filterScrapedAnimes = async (
   recentlyReleasedAnimes: RecentlyReleasedAnime[]
 ) => {
-  const lastUpdatedAnimes = await db.query.anime.findMany({
-    columns: {
-      id: true,
-      slug: true,
-      lastEpisode: true,
-    },
-    orderBy: ({ updatedAt }, { desc }) => desc(updatedAt),
-    limit: 60,
-    with: {
-      videos: {
-        columns: {
-          slug: true,
-        },
-        limit: 1,
-        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
-      },
-    },
-  });
+  const lastUpdatedAnimes = await db
+    .select({
+      id: schema.anime.id,
+      slug: schema.anime.slug,
+      lastEpisode: schema.anime.lastEpisode,
+    })
+    .from(schema.anime)
+    .orderBy(orm.desc(schema.anime.updatedAt))
+    .limit(60);
 
   return recentlyReleasedAnimes.filter(a => {
     const animeFromDB = lastUpdatedAnimes.find(
-      anime =>
-        anime.slug === a.slug ||
-        anime.videos[0]?.slug.split("-episode-")[0] === a.slug
+      anime => anime.slug === a.animeSlug
     );
 
     const isNewEpisode =

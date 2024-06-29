@@ -1,80 +1,101 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import getRecentlyReleasedAnimeFromAllAnime from "./allanime";
-import getRecentlyReleasedAnimeFromAnitaku from "./anitaku";
-import getRecentlyReleasedAnimeFromGogo from "./gogoanime";
-import getRecentlyReleasedAnimeFromGogoTaku from "./gogotaku";
+import { parse } from "node-html-parser";
 
-export default async function getRecentlyReleasedAnime(page: number) {
-  const functions = [
-    {
-      fn: getRecentlyReleasedAnimeFromAnitaku,
-      name: "Anitaku",
-    },
-    {
-      fn: getRecentlyReleasedAnimeFromGogoTaku,
-      name: "GogoTaku",
-    },
-    {
-      fn: getRecentlyReleasedAnimeFromGogo,
-      name: "Gogo",
-    },
-    {
-      fn: getRecentlyReleasedAnimeFromAllAnime,
-      name: "AllAnime",
-    },
-  ] as const;
+const urls = [
+  {
+    type: "anitaku",
+    baseUrl: "https://anitaku.pe",
+    recentlyReleasedUrl: "https://anitaku.pe/home.html",
+  },
+  {
+    type: "gogoanime",
+    baseUrl: "https://gogoanime3.co",
+    recentlyReleasedUrl: "https://gogoanime3.co",
+  },
+] as const;
 
-  // fetch anime
-  // if fails or takes more than 5 seconds, move to the next one
-  const getAnime = async (
-    page: number,
-    index: number
-  ): Promise<{
-    anime: Awaited<ReturnType<(typeof functions)[0]["fn"]>>;
-    hasNext: boolean;
-  }> => {
-    const { name, fn } = functions[index]!;
+type FetchType = (typeof urls)[number]["type"];
 
-    try {
-      const abortController = new AbortController();
-      const nextAbortController = new AbortController();
+export default async function getRecentlyReleasedAnime(
+  page: number,
+  type: FetchType = "anitaku",
+  errorCount = 0
+) {
+  const { signal } = new AbortController();
 
-      console.log(`Fetching ${name} anime`);
+  const { recentlyReleasedUrl, baseUrl } = urls.find(url => url.type === type)!;
 
-      const timeout = setTimeout(() => {
-        abortController.abort(
-          new Error(`Timeout for ${name} current page: ${page}`)
-        );
-        nextAbortController.abort(
-          new Error(`Timeout for ${name} next page: ${page + 1}`)
-        );
-      }, 10_000 /* 10 seconds */);
+  try {
+    const hasNext = fetch(`${recentlyReleasedUrl}?page=${page + 1}`, {
+      signal,
+    })
+      .then(res => res.text())
+      .then(parse)
+      .then(dom => dom.querySelectorAll(".last_episodes li").length > 0);
 
-      const [anime, hasNext] = await Promise.all([
-        fn(page, abortController.signal),
-        fn(page + 1, nextAbortController.signal).then(res => !!res.length),
-      ]);
+    const recentlyReleasedPage = await fetch(
+      `${recentlyReleasedUrl}?page=${page}`,
+      { signal }
+    )
+      .then(res => res.text())
+      .then(parse);
 
-      clearTimeout(timeout);
-      console.log(`Fetched ${name} anime`);
+    const recentlyReleased = await Promise.all(
+      recentlyReleasedPage
+        .querySelectorAll(".last_episodes li")
+        .map(async li => {
+          const name = li.querySelector(".name > a")!.getAttribute("title")!;
 
-      return {
-        anime: anime,
-        hasNext,
-      };
-    } catch (e) {
-      console.error(`Failed to fetch ${name} anime`, e);
+          const image = li.querySelector(".img img")!.getAttribute("src")!;
 
-      if (index + 1 < functions.length) {
-        return await getAnime(page, index + 1);
-      }
+          const episode = Number(
+            li
+              .querySelector(".episode")!
+              .innerText.trim()
+              .replace("Episode ", "")
+          );
 
-      return {
-        anime: [],
-        hasNext: false,
-      };
+          const episodeSlug = li
+            .querySelector(".name > a")!
+            .getAttribute("href")!
+            .trim()
+            .replace("/", "");
+
+          const animeSlug = await fetch(`${baseUrl}/${episodeSlug}`, { signal })
+            .then(res => res.text())
+            .then(parse)
+            .then(dom => {
+              return dom
+                .querySelector(".anime-info > a")!
+                .getAttribute("href")!
+                .replace("/category/", "");
+            });
+
+          return {
+            name,
+            image,
+            episode,
+            episodeSlug,
+            animeSlug,
+          };
+        })
+    );
+
+    return {
+      anime: recentlyReleased,
+      hasNext: await hasNext,
+    };
+  } catch (e) {
+    console.error(e);
+
+    if (errorCount > 3) {
+      throw new Error("Failed to fetch data");
     }
-  };
 
-  return await getAnime(page, 0);
+    return getRecentlyReleasedAnime(
+      page,
+      type === "anitaku" ? "gogoanime" : "anitaku",
+      errorCount + 1
+    );
+  }
 }

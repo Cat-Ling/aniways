@@ -1,22 +1,11 @@
 import { createId, db, orm, schema } from "@aniways/db";
-import {
-  scrapeSlugFromEpisodeSlug,
-  scrapeVideoSource,
-} from "@aniways/web-scraping";
 
 import type { RecentlyReleasedAnime } from "./scrape";
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("AniwaysSyncAnimeCron", "db");
 
-const constructEpisodeSlug = (newAnime: RecentlyReleasedAnime) => {
-  // replace . with - to avoid issues with .5 episodes
-  const episode = newAnime.episode.toString().replace(".", "-");
-
-  return `${newAnime.slug}-episode-${episode}`;
-};
-
-const constructVideoInsertValues = async (
+const constructVideoInsertValues = (
   animeId: string,
   lastEpisode: string | undefined,
   newAnime: RecentlyReleasedAnime
@@ -32,55 +21,47 @@ const constructVideoInsertValues = async (
 
   const createdAt = new Date();
 
-  const videos = [
+  return [
     ...episodes.map(ep => ({
       id: createId(),
       animeId,
       episode: String(ep),
-      slug: `${newAnime.slug}-episode-${ep}`,
+      slug:
+        newAnime.episodeSlug
+          .trim()
+          .split("-episode-")
+          .slice(0, -1)
+          .join("-episode-") + `-episode-${ep}`,
       createdAt,
     })),
     {
       id: createId(),
       animeId,
       episode: String(newAnime.episode),
-      slug: constructEpisodeSlug(newAnime),
+      slug: newAnime.episodeSlug,
       createdAt,
     },
   ];
-
-  return await Promise.all(
-    videos.map(async video => {
-      const videoUrl = await scrapeVideoSource(video.slug).catch(() => null);
-      return { ...video, videoUrl };
-    })
-  );
 };
 
 const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
-  const episodeSlug = constructEpisodeSlug(newAnime);
-
-  const slug = (await scrapeSlugFromEpisodeSlug(episodeSlug)) ?? newAnime.slug;
-
   const [anime] = await db
     .select({
       id: schema.anime.id,
       lastEpisode: schema.anime.lastEpisode,
     })
     .from(schema.anime)
-    .where(orm.eq(schema.anime.slug, slug));
+    .where(orm.eq(schema.anime.slug, newAnime.animeSlug));
 
   const animeId = anime?.id ?? createId();
 
   return await db.transaction(async tx => {
     if (!anime) {
-      logger.log("No anime found in db, fetching from anitaku", newAnime.slug);
-
       await tx.insert(schema.anime).values({
         id: animeId,
         title: newAnime.name,
         image: newAnime.image,
-        slug: slug,
+        slug: newAnime.animeSlug,
         lastEpisode: String(newAnime.episode),
         updatedAt: new Date(),
       });
@@ -96,7 +77,7 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
       })
       .where(orm.eq(schema.anime.id, animeId));
 
-    const episodes = await constructVideoInsertValues(
+    const episodes = constructVideoInsertValues(
       animeId,
       anime?.lastEpisode ?? undefined,
       newAnime
