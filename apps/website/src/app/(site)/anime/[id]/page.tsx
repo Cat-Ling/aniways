@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { Skeleton } from "@aniways/ui/skeleton";
@@ -8,23 +8,43 @@ import { Skeleton } from "@aniways/ui/skeleton";
 import { api } from "~/trpc/react";
 
 const AnimeRedirectPage = () => {
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
-  const { data } = api.episodes.getFirstEpisodeByAnimeId.useQuery({
-    id: typeof id === "string" ? id : id?.[0] ?? "",
+
+  const id = useMemo(() => {
+    if (typeof params.id === "string") {
+      return params.id;
+    }
+
+    return params.id?.[0] ?? "";
+  }, [params.id]);
+
+  const { data } = api.episodes.getFirstEpisodeByAnimeId.useQuery({ id });
+
+  const { data: anime, isLoading } = api.anime.byId.useQuery({ id });
+
+  const utils = api.useUtils();
+
+  const { mutate } = api.anime.seedMissingEpisodes.useMutation({
+    onSuccess: () => {
+      void utils.episodes.getFirstEpisodeByAnimeId.invalidate({ id });
+    },
+    onError: () => {
+      router.replace("/404");
+    },
   });
 
   useEffect(() => {
     if (!data) return;
 
     if (data.episode === undefined) {
-      throw new Error("No episode found");
+      if (isLoading) return;
+      if (!anime) return router.replace("/404");
+      mutate({ slug: anime.slug });
     }
 
-    router.replace(
-      `/anime/${typeof id === "string" ? id : id?.[0] ?? ""}/episodes/${data.episode}`
-    );
-  }, [data, router, id]);
+    router.replace(`/anime/${id}/episodes/${data.episode}`);
+  }, [data, anime, router, id, mutate, isLoading]);
 
   return (
     <>

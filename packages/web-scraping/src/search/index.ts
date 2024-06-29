@@ -82,8 +82,6 @@ export const searchAniList = async (query: string, page: number) => {
           slug = Object.keys(gogoanime).find(key => !key.includes("-dub"));
         }
 
-        console.log(slug);
-
         return {
           ...anime,
           slug,

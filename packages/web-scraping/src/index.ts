@@ -5,3 +5,4 @@ export { default as scrapeSlugFromEpisodeSlug } from "./slug";
 export { default as scrapeDetailsOfAnime } from "./details";
 export * from "./streaming";
 export * from "./search";
+export * from "./episodes";
