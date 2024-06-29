@@ -92,6 +92,7 @@ export const getStreamingUrl = async (episodeSlug: string) => {
     ) as {
       source: { file: string }[];
       source_bk: { file: string }[];
+      track?: { tracks?: { file?: string }[] };
       linkiframe: string;
     };
 
@@ -119,6 +120,7 @@ export const getStreamingUrl = async (episodeSlug: string) => {
 
     return {
       sources,
+      tracks: decryptedData.track?.tracks,
       iframe: {
         default: videoUrl.href,
         backup: decryptedData.linkiframe,

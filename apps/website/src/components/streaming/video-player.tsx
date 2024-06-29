@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Artplayer from "artplayer";
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality";
+import artplayerPluginThumbnail from "artplayer-plugin-thumbnail";
 import Hls from "hls.js";
 
 import type { RouterOutputs } from "@aniways/api";
@@ -60,6 +61,9 @@ export const VideoPlayer = ({
           control: false,
           setting: true,
           auto: "Auto",
+        }),
+        artplayerPluginThumbnail({
+          vtt: streamingSources.tracks?.[0]?.file,
         }),
       ],
       icons: {
@@ -169,6 +173,12 @@ export const VideoPlayer = ({
       },
     });
 
+    artPlayer.current.on("video:play", () => {
+      if (!artPlayer.current) return;
+      if (artPlayer.current.layers.show === false) return;
+      artPlayer.current.layers.show = false;
+    });
+
     artPlayer.current.on("play", () => {
       if (!artPlayer.current) return;
       artPlayer.current.layers.show = false;
@@ -189,7 +199,7 @@ export const VideoPlayer = ({
       artPlayer.current?.destroy();
       artPlayer.current = null;
     };
-  }, [streamingSources.sources, episodeSlug, nextEpisodeUrl, router]);
+  }, [streamingSources, episodeSlug, nextEpisodeUrl, router]);
 
   return <div ref={artRef} className="aspect-video w-full" />;
 };
