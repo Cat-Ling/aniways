@@ -23,11 +23,9 @@ const AnimeRedirectPage = () => {
 
   const { data: anime, isLoading } = api.anime.byId.useQuery({ id });
 
-  const utils = api.useUtils();
-
   const { mutate } = api.anime.seedMissingEpisodes.useMutation({
-    onSuccess: () => {
-      void utils.episodes.getFirstEpisodeByAnimeId.invalidate({ id });
+    onSuccess: episode => {
+      router.replace(`/anime/${id}/episodes/${episode ?? "1"}`);
     },
     onError: () => {
       router.replace("/404");

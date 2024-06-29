@@ -176,6 +176,8 @@ export const animeRouter = createTRPCRouter({
           episode: String(episode),
         }))
       );
+
+      return episodes.sort((a, b) => a.episode - b.episode).at(0)?.episode;
     }),
 
   search: publicProcedure
