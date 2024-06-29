@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "node-html-parser": "^6.1.12"
+    "node-html-parser": "^6.1.12",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",

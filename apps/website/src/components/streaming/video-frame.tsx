@@ -15,6 +15,10 @@ export const VideoFrame = async ({ animeId, episode }: VideoFrameProps) => {
 
   if (!currentEpisode) notFound();
 
+  const json = await api.episodes.getStreamingSources({
+    episodeSlug: currentEpisode.slug,
+  });
+
   let iframe = currentEpisode.videoUrl;
 
   if (!iframe) {
@@ -29,12 +33,15 @@ export const VideoFrame = async ({ animeId, episode }: VideoFrameProps) => {
   }
 
   return (
-    <iframe
-      src={iframe}
-      className="min-h-[260px] w-full bg-black md:aspect-video md:min-h-0"
-      frameBorder="0"
-      scrolling="no"
-      allowFullScreen
-    />
+    <>
+      <pre>{JSON.stringify(json, null, 2)}</pre>
+      <iframe
+        src={iframe}
+        className="min-h-[260px] w-full bg-black md:aspect-video md:min-h-0"
+        frameBorder="0"
+        scrolling="no"
+        allowFullScreen
+      />
+    </>
   );
 };
