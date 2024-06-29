@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { orm, schema } from "@aniways/db";
 import { getAnimeList } from "@aniways/myanimelist";
+import { searchAniList } from "@aniways/web-scraping";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -134,37 +135,51 @@ export const animeRouter = createTRPCRouter({
   search: publicProcedure
     .input(z.object({ query: z.string(), page: z.number() }))
     .query(async ({ ctx, input }) => {
+      const results = await searchAniList(input.query, input.page);
+
+      const slugs = results.media
+        .map(data => data?.slug)
+        .filter(Boolean) as string[];
+
+      if (slugs.length === 0) {
+        return {
+          animes: [],
+          hasNext: false,
+        };
+      }
+
       const animes = await ctx.db
         .select({
           id: schema.anime.id,
           title: schema.anime.title,
           image: schema.anime.image,
           lastEpisode: schema.anime.lastEpisode,
+          slug: schema.anime.slug,
         })
         .from(schema.anime)
-        .where(
-          orm.and(
-            orm.sql`SIMILARITY(${schema.anime.title}, ${input.query}) > 0.2`,
-            orm.notLike(schema.anime.title, "%Dub%"),
-            orm.notLike(schema.anime.title, "%dub%"),
-            orm.isNotNull(schema.anime.lastEpisode)
-          )
-        )
-        .orderBy(
-          orm.sql`SIMILARITY(${schema.anime.title}, ${input.query}) DESC`
-        )
-        .limit(21)
-        .offset((input.page - 1) * 20);
-
-      const hasNext = animes.length > 20;
-
-      if (hasNext) {
-        animes.pop();
-      }
+        .where(orm.inArray(schema.anime.slug, slugs));
 
       return {
-        animes,
-        hasNext,
+        animes: results.media
+          .map(data => {
+            const anime = animes.find(anime => anime.slug === data?.slug);
+
+            if (!anime) return undefined;
+
+            return {
+              id: anime.id,
+              title: anime.title,
+              image: anime.image,
+              lastEpisode: anime.lastEpisode,
+            };
+          })
+          .filter(Boolean) as {
+          id: string;
+          title: string;
+          image: string;
+          lastEpisode: string;
+        }[],
+        hasNext: results.pageInfo.hasNextPage,
       };
     }),
 
