@@ -3,7 +3,6 @@ import { cache, Suspense } from "react";
 import { HeartCrack } from "lucide-react";
 
 import { AnimeGrid, AnimeGridLoader } from "~/components/layouts/anime-grid";
-import { Pagination, PaginationLoader } from "~/components/pagination";
 import { api } from "~/trpc/server";
 
 const searchAnime = cache(async (query: string, page: number) => {
@@ -37,18 +36,10 @@ const SearchPage = ({
             Showing results for <span className="text-foreground">{query}</span>
           </p>
         </div>
-        <Suspense key={query + "-pagination"} fallback={<PaginationLoader />}>
-          <PaginationWrapper page={page} query={query} />
-        </Suspense>
       </div>
       <Suspense key={query + page} fallback={<AnimeGridLoader />}>
         <SearchResults query={query} page={page} />
       </Suspense>
-      <div className="-mb-6 mt-6">
-        <Suspense key={query + "-pagination"} fallback={<PaginationLoader />}>
-          <PaginationWrapper page={page} query={query} />
-        </Suspense>
-      </div>
     </>
   );
 };
@@ -75,16 +66,6 @@ const SearchResults = async ({
   }
 
   return <AnimeGrid animes={animes} type="search" />;
-};
-
-const PaginationWrapper = async (props: { page: number; query: string }) => {
-  const { hasNext, animes } = await searchAnime(props.query, props.page);
-
-  if (!animes.length) {
-    return null;
-  }
-
-  return <Pagination hasNext={hasNext} />;
 };
 
 export default SearchPage;

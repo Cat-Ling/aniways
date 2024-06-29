@@ -1,7 +1,9 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { orm, schema } from "@aniways/db";
+import { createId, orm, schema } from "@aniways/db";
 import { getAnimeList } from "@aniways/myanimelist";
+import { scrapeAllEpisodes, searchAniList } from "@aniways/web-scraping";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -131,40 +133,99 @@ export const animeRouter = createTRPCRouter({
     );
   }),
 
+  seedMissingEpisodes: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [anime] = await ctx.db
+        .select()
+        .from(schema.anime)
+        .where(orm.eq(schema.anime.slug, input.slug))
+        .limit(1);
+
+      if (!anime) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Anime not found",
+        });
+      }
+
+      const { episodes, animeSlug } = await scrapeAllEpisodes(input.slug);
+
+      if (!episodes.length) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No episodes found for this anime",
+        });
+      }
+
+      await ctx.db
+        .update(schema.anime)
+        .set({
+          slug: animeSlug,
+          lastEpisode: String(
+            episodes.sort((a, b) => a.episode - b.episode).pop()?.episode
+          ),
+        })
+        .where(orm.eq(schema.anime.id, anime.id));
+
+      await ctx.db.insert(schema.video).values(
+        episodes.map(({ episode, episodeSlug }) => ({
+          id: createId(),
+          animeId: anime.id,
+          slug: episodeSlug,
+          episode: String(episode),
+        }))
+      );
+    }),
+
   search: publicProcedure
     .input(z.object({ query: z.string(), page: z.number() }))
     .query(async ({ ctx, input }) => {
+      const results = await searchAniList(input.query, input.page);
+
+      const slugs = results.media
+        .map(data => data?.slug)
+        .filter(Boolean) as string[];
+
+      if (slugs.length === 0) {
+        return {
+          animes: [],
+          hasNext: false,
+        };
+      }
+
       const animes = await ctx.db
         .select({
           id: schema.anime.id,
           title: schema.anime.title,
           image: schema.anime.image,
           lastEpisode: schema.anime.lastEpisode,
+          slug: schema.anime.slug,
         })
         .from(schema.anime)
-        .where(
-          orm.and(
-            orm.sql`SIMILARITY(${schema.anime.title}, ${input.query}) > 0.2`,
-            orm.notLike(schema.anime.title, "%Dub%"),
-            orm.notLike(schema.anime.title, "%dub%"),
-            orm.isNotNull(schema.anime.lastEpisode)
-          )
-        )
-        .orderBy(
-          orm.sql`SIMILARITY(${schema.anime.title}, ${input.query}) DESC`
-        )
-        .limit(21)
-        .offset((input.page - 1) * 20);
-
-      const hasNext = animes.length > 20;
-
-      if (hasNext) {
-        animes.pop();
-      }
+        .where(orm.inArray(schema.anime.slug, slugs));
 
       return {
-        animes,
-        hasNext,
+        animes: results.media
+          .map(data => {
+            const anime = animes.find(anime => anime.slug === data?.slug);
+
+            if (!anime) return undefined;
+
+            return {
+              id: anime.id,
+              title: anime.title,
+              image: anime.image,
+              lastEpisode: anime.lastEpisode,
+            };
+          })
+          .filter(Boolean) as {
+          id: string;
+          title: string;
+          image: string;
+          lastEpisode: string;
+        }[],
+        hasNext: results.pageInfo.hasNextPage,
       };
     }),
 

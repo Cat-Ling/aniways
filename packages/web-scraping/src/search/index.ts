@@ -1,56 +1,99 @@
-import searchAnimeFromAnitaku from "./anitaku";
-import searchAnimeFromGogo from "./gogoanime";
+import { searchQuery } from "./search-query";
 
-export default async function searchAnime(query: string, page: number) {
-  const functions = [
-    {
-      fn: searchAnimeFromAnitaku,
-      name: "Anitaku",
+export const searchAniList = async (query: string, page: number) => {
+  const response = (await fetch("https://graphql.anilist.co", {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    {
-      fn: searchAnimeFromGogo,
-      name: "GogoAnime",
-    },
-  ] as const;
-
-  // fetch anime
-  // if fails or takes more than 2 seconds, move to the next one
-  const getAnime = async (
-    query: string,
-    page: number,
-    name: (typeof functions)[number]["name"],
-    index: number,
-    fn: (typeof functions)[number]["fn"]
-  ): Promise<{
-    animes: Awaited<ReturnType<typeof searchAnimeFromAnitaku>>;
-    hasNext: boolean;
-  }> => {
-    try {
-      let done = false;
-      setTimeout(() => {
-        if (!done) throw new Error("Timeout");
-      }, 10000);
-      const anime = await fn(query, page);
-      return {
-        animes: anime,
-        hasNext: await fn(query, page + 1).then(res => {
-          done = true;
-          console.log(`Fetched search ${name} anime`);
-          return res.length > 0;
-        }),
+    method: "POST",
+    body: JSON.stringify({
+      query: searchQuery,
+      variables: {
+        search: query,
+        page: page,
+        size: 20,
+        type: "ANIME",
+      },
+    }),
+  }).then(res => res.json())) as {
+    data: {
+      Page: {
+        pageInfo: {
+          total: number;
+          perPage: number;
+          currentPage: number;
+          lastPage: number;
+          hasNextPage: boolean;
+        };
+        media: {
+          id: number;
+          idMal: number;
+          status: string;
+          title: {
+            userPreferred: string;
+            romaji: string;
+            english: string;
+            native: string;
+          };
+          bannerImage: string;
+          coverImage: {
+            extraLarge: string;
+            large: string;
+            medium: string;
+            color: string;
+          };
+          episodes: number;
+          genres: string[];
+          tags: {
+            id: number;
+            name: string;
+          }[];
+          season: string;
+          format: string;
+          seasonYear: number;
+          averageScore: number;
+          nextAiringEpisode: {
+            airingAt: number;
+            timeUntilAiring: number;
+            episode: number;
+          };
+        }[];
       };
-    } catch (e) {
-      console.error(`Failed to fetch ${name} anime`, e);
-      const nextFn = functions.at(index + 1);
-      if (nextFn) {
-        return await getAnime(query, page, nextFn.name, index + 1, nextFn.fn);
-      }
-      return {
-        animes: [],
-        hasNext: false,
-      };
-    }
+    };
   };
 
-  return await getAnime(query, page, functions[0].name, 0, functions[0].fn);
-}
+  const syncedData = await Promise.all(
+    response.data.Page.media.map(async anime => {
+      try {
+        const data = (await fetch(
+          `https://raw.githubusercontent.com/bal-mackup/mal-backup/master/anilist/anime/${anime.id}.json`
+        ).then(res => res.json())) as {
+          Sites: {
+            Gogoanime?: Record<string, unknown>;
+          };
+        };
+
+        const gogoanime = data.Sites.Gogoanime;
+
+        let slug = null;
+
+        if (gogoanime) {
+          slug = Object.keys(gogoanime).find(key => !key.includes("-dub"));
+        }
+
+        return {
+          ...anime,
+          slug,
+        };
+      } catch {
+        console.error("Failed to fetch data for", anime.id);
+      }
+    })
+  );
+
+  return {
+    pageInfo: response.data.Page.pageInfo,
+    media: syncedData,
+  };
+};
