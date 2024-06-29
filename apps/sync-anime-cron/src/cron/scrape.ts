@@ -28,8 +28,12 @@ const filterScrapedAnimes = async (
       lastEpisode: schema.anime.lastEpisode,
     })
     .from(schema.anime)
-    .orderBy(orm.desc(schema.anime.updatedAt))
-    .limit(60);
+    .where(
+      orm.inArray(
+        schema.anime.slug,
+        recentlyReleasedAnimes.map(a => a.animeSlug)
+      )
+    );
 
   return recentlyReleasedAnimes.filter(a => {
     const animeFromDB = lastUpdatedAnimes.find(
