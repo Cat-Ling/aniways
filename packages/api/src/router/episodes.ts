@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { orm, schema } from "@aniways/db";
-import { scrapeVideoSource } from "@aniways/web-scraping";
+import { getStreamingUrl, scrapeVideoSource } from "@aniways/web-scraping";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -75,4 +75,8 @@ export const episodesRouter = createTRPCRouter({
         episode: video?.episode,
       };
     }),
+
+  getStreamingSources: publicProcedure
+    .input(z.object({ episodeSlug: z.string() }))
+    .query(({ input }) => getStreamingUrl(input.episodeSlug)),
 });
