@@ -1,13 +1,19 @@
 import { notFound } from "next/navigation";
 
 import { api } from "~/trpc/server";
+import { VideoPlayer } from "./video-player";
 
 interface VideoFrameProps {
   episode: string;
   animeId: string;
+  nextEpisode: string | null;
 }
 
-export const VideoFrame = async ({ animeId, episode }: VideoFrameProps) => {
+export const VideoFrame = async ({
+  animeId,
+  episode,
+  nextEpisode,
+}: VideoFrameProps) => {
   const currentEpisode = await api.episodes.getEpisodeByAnimeIdAndEpisode({
     animeId,
     episode: Number(episode),
@@ -15,33 +21,15 @@ export const VideoFrame = async ({ animeId, episode }: VideoFrameProps) => {
 
   if (!currentEpisode) notFound();
 
-  const json = await api.episodes.getStreamingSources({
+  const streamingSources = await api.episodes.getStreamingSources({
     episodeSlug: currentEpisode.slug,
   });
 
-  let iframe = currentEpisode.videoUrl;
-
-  if (!iframe) {
-    iframe = await api.episodes.scrapeVideoUrl({ slug: currentEpisode.slug });
-
-    if (!iframe) notFound();
-
-    await api.episodes.updateVideoUrl({
-      id: currentEpisode.id,
-      videoUrl: iframe,
-    });
-  }
-
   return (
-    <>
-      <pre>{JSON.stringify(json, null, 2)}</pre>
-      <iframe
-        src={iframe}
-        className="min-h-[260px] w-full bg-black md:aspect-video md:min-h-0"
-        frameBorder="0"
-        scrolling="no"
-        allowFullScreen
-      />
-    </>
+    <VideoPlayer
+      streamingSources={streamingSources}
+      episodeSlug={currentEpisode.slug}
+      nextEpisodeUrl={nextEpisode}
+    />
   );
 };

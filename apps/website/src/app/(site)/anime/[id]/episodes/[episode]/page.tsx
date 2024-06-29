@@ -59,6 +59,12 @@ const AnimeStreamingPage = async ({
 
   if (!anime) notFound();
 
+  const episodes = await api.episodes.getEpisodesOfAnime({ animeId: id });
+
+  const currentEpisodeIndex = episodes.findIndex(ep => ep.episode === episode);
+
+  const nextEpisode = episodes.at(currentEpisodeIndex + 1) ?? null;
+
   return (
     <>
       <div className="mb-3">
@@ -74,20 +80,22 @@ const AnimeStreamingPage = async ({
               <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
             }
           >
-            <VideoFrame animeId={id} episode={episode} />
+            <VideoFrame
+              animeId={id}
+              episode={episode}
+              nextEpisode={
+                nextEpisode ?
+                  `/anime/${id}/episodes/${nextEpisode.episode}`
+                : null
+              }
+            />
           </Suspense>
         </div>
-        <Suspense
-          fallback={
-            <>
-              <Skeleton className="mb-6 mt-3 h-10 w-full" />
-              <h2 className="mb-3 text-lg font-semibold">Episodes</h2>
-              <Skeleton className="mb-6 h-10 w-full" />
-            </>
-          }
-        >
-          <EpisodesSection animeId={id} currentEpisode={episode} />
-        </Suspense>
+        <EpisodesSection
+          animeId={id}
+          currentEpisode={episode}
+          episodes={episodes}
+        />
       </div>
       <AnimeMetadata id={anime.id} />
     </>
