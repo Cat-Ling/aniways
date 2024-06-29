@@ -6,6 +6,7 @@ import NextTopLoader from "nextjs-toploader";
 
 import { Toaster } from "@aniways/ui/sonner";
 
+import { DevToolsDetector } from "~/components/devtools-detector";
 import { Footer } from "~/components/navigation/footer";
 import { Navbar } from "~/components/navigation/navbar";
 import { Providers } from "~/components/providers";
@@ -52,6 +53,7 @@ export default function RootLayout({
           </Providers>
         </div>
         <Footer />
+        <DevToolsDetector />
       </body>
     </html>
   );

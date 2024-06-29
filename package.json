@@ -22,7 +22,7 @@
     "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
-    "lint:ws": "bun x sherif@latest",
+    "lint:ws": "bun sherif",
     "postinstall": "bun lint:ws",
     "typecheck": "turbo run typecheck",
     "ui:add": "turbo run ui:add",
@@ -36,6 +36,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.1",
+    "sherif": "^0.9.0",
     "turbo": "^2.0.3",
     "typescript": "^5.4.5"
   },
