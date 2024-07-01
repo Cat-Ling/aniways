@@ -4,9 +4,9 @@ import { z } from "zod";
 import { createId, orm, schema } from "@aniways/db";
 import {
   getStreamingUrl,
-  scrapeAllEpisodes,
+  scrapeAllEpisodesOfAnime,
   scrapeVideoSource,
-} from "@aniways/web-scraping";
+} from "@aniways/gogoanime";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -49,7 +49,9 @@ export const episodesRouter = createTRPCRouter({
         });
       }
 
-      const { episodes, animeSlug } = await scrapeAllEpisodes(anime.slug);
+      const { episodes, animeSlug } = await scrapeAllEpisodesOfAnime(
+        anime.slug
+      );
 
       if (!episodes.length) {
         throw new TRPCError({

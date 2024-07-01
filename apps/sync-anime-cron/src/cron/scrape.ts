@@ -1,18 +1,15 @@
+import type { RecentlyReleasedAnime } from "@aniways/gogoanime";
 import { db, orm, schema } from "@aniways/db";
-import { scrapeRecentlyReleasedAnime } from "@aniways/web-scraping";
+import { scrapeRecentlyReleasedAnimeEpisodes } from "@aniways/gogoanime";
 
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("AniwaysSyncAnimeCron", "scrape");
 
-export type RecentlyReleasedAnime = Awaited<
-  ReturnType<typeof scrapeRecentlyReleasedAnime>
->["anime"][number];
-
 const scrapeRecentlyReleasedAnimes = async () => {
   const recentlyReleasedAnimes = await Promise.all([
-    scrapeRecentlyReleasedAnime(1).then(data => data.anime),
-    scrapeRecentlyReleasedAnime(2).then(data => data.anime),
+    scrapeRecentlyReleasedAnimeEpisodes(1).then(data => data.anime),
+    scrapeRecentlyReleasedAnimeEpisodes(2).then(data => data.anime),
   ]);
 
   return recentlyReleasedAnimes.flat().reverse();

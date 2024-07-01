@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import { orm, schema } from "@aniways/db";
+import { searchAniList } from "@aniways/gogoanime";
 import { getAnimeList } from "@aniways/myanimelist";
-import { searchAniList } from "@aniways/web-scraping";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 

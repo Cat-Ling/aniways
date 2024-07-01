@@ -15,7 +15,7 @@ const config = {
     "@aniways/db",
     "@aniways/myanimelist",
     "@aniways/ui",
-    "@aniways/web-scraping",
+    "@aniways/gogoanime",
   ],
 
   /** We already do linting and typechecking as separate tasks in CI */

@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@aniways/db": "workspace:*",
-    "@aniways/web-scraping": "workspace:*"
+    "@aniways/gogoanime": "workspace:*"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
