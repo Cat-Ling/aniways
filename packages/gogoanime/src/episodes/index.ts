@@ -52,7 +52,7 @@ export const scrapeAllEpisodesOfAnime = async (animeSlug: string) => {
       };
     });
 
-  return { episodes, animeSlug };
+  return episodes;
 };
 
 const urls = [

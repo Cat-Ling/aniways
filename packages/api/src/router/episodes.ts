@@ -49,9 +49,7 @@ export const episodesRouter = createTRPCRouter({
         });
       }
 
-      const { episodes, animeSlug } = await scrapeAllEpisodesOfAnime(
-        anime.slug
-      );
+      const episodes = await scrapeAllEpisodesOfAnime(anime.slug);
 
       if (!episodes.length) {
         throw new TRPCError({
@@ -63,9 +61,8 @@ export const episodesRouter = createTRPCRouter({
       await ctx.db
         .update(schema.anime)
         .set({
-          slug: animeSlug,
           lastEpisode: String(
-            episodes.sort((a, b) => a.episode - b.episode).pop()?.episode
+            episodes.sort((a, b) => a.episode - b.episode).at(-1)?.episode
           ),
         })
         .where(orm.eq(schema.anime.id, anime.id));
