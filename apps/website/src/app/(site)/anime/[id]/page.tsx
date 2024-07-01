@@ -19,11 +19,11 @@ const AnimeRedirectPage = () => {
     return params.id?.[0] ?? "";
   }, [params.id]);
 
-  const { data } = api.episodes.getFirstEpisodeByAnimeId.useQuery({ id });
+  const firstEpisodeQuery = api.episodes.getFirstEpisodeByAnimeId.useQuery({
+    id,
+  });
 
-  const { data: anime, isLoading } = api.anime.byId.useQuery({ id });
-
-  const { mutate } = api.anime.seedMissingEpisodes.useMutation({
+  const seedMissingEpisodes = api.episodes.seedMissingEpisodes.useMutation({
     onSuccess: episode => {
       router.replace(`/anime/${id}/episodes/${episode ?? "1"}`);
     },
@@ -33,16 +33,24 @@ const AnimeRedirectPage = () => {
   });
 
   useEffect(() => {
-    if (!data) return;
+    if (!firstEpisodeQuery.data) return;
 
-    if (data.episode === undefined) {
-      if (isLoading) return;
-      if (!anime) return router.replace("/404");
-      mutate({ slug: anime.slug });
+    if (firstEpisodeQuery.data.episode) {
+      return router.replace(
+        `/anime/${id}/episodes/${firstEpisodeQuery.data.episode}`
+      );
     }
 
-    router.replace(`/anime/${id}/episodes/${data.episode}`);
-  }, [data, anime, router, id, mutate, isLoading]);
+    if (seedMissingEpisodes.status === "idle") {
+      return seedMissingEpisodes.mutate({ id });
+    }
+
+    if (seedMissingEpisodes.status === "pending") {
+      return;
+    }
+
+    return router.replace("/404");
+  }, [router, firstEpisodeQuery, id, seedMissingEpisodes]);
 
   return (
     <>

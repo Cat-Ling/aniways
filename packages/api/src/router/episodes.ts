@@ -1,7 +1,12 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { orm, schema } from "@aniways/db";
-import { getStreamingUrl, scrapeVideoSource } from "@aniways/web-scraping";
+import { createId, orm, schema } from "@aniways/db";
+import {
+  getStreamingUrl,
+  scrapeAllEpisodes,
+  scrapeVideoSource,
+} from "@aniways/web-scraping";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -26,6 +31,53 @@ export const episodesRouter = createTRPCRouter({
           videoUrl: input.videoUrl,
         })
         .where(orm.eq(schema.video.id, input.id));
+    }),
+
+  seedMissingEpisodes: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [anime] = await ctx.db
+        .select()
+        .from(schema.anime)
+        .where(orm.eq(schema.anime.id, input.id))
+        .limit(1);
+
+      if (!anime) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Anime not found",
+        });
+      }
+
+      const { episodes, animeSlug } = await scrapeAllEpisodes(anime.slug);
+
+      if (!episodes.length) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No episodes found for this anime",
+        });
+      }
+
+      await ctx.db
+        .update(schema.anime)
+        .set({
+          slug: animeSlug,
+          lastEpisode: String(
+            episodes.sort((a, b) => a.episode - b.episode).pop()?.episode
+          ),
+        })
+        .where(orm.eq(schema.anime.id, anime.id));
+
+      await ctx.db.insert(schema.video).values(
+        episodes.map(({ episode, episodeSlug }) => ({
+          id: createId(),
+          animeId: anime.id,
+          slug: episodeSlug,
+          episode: String(episode),
+        }))
+      );
+
+      return episodes.sort((a, b) => a.episode - b.episode).at(0)?.episode;
     }),
 
   getEpisodesOfAnime: publicProcedure
