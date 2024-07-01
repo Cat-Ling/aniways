@@ -97,7 +97,7 @@ const AnimeStreamingPage = async ({
           episodes={episodes}
         />
       </div>
-      <AnimeMetadata id={anime.id} />
+      <AnimeMetadata anime={anime} />
     </>
   );
 };

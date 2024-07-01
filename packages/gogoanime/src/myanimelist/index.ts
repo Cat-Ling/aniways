@@ -7,7 +7,7 @@ export const getMalIdFromSlug = async (slug: string) => {
     throw new Error("Failed to fetch MAL ID");
   }
 
-  const data = (await response.json()) as { malId: number } | null | undefined;
+  const data = (await response.json()) as { malId?: number } | null | undefined;
 
   if (!data?.malId) {
     throw new Error("Failed to fetch MAL ID");

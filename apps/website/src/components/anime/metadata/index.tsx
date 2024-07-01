@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useParams } from "next/navigation";
 
+import type { RouterOutputs } from "@aniways/api";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import ErrorPage from "~/app/error";
@@ -10,20 +12,29 @@ import { AnimeMetadataDetails } from "./anime-metadata-details";
 import { RelatedAnime } from "./related-anime";
 
 interface AnimeMetadataProps {
-  id: string;
+  anime: RouterOutputs["anime"]["byId"];
 }
 
-export const AnimeMetadata = ({ id }: AnimeMetadataProps) => {
+export const AnimeMetadata = ({ anime }: AnimeMetadataProps) => {
+  const params = useParams();
+
+  const id = useMemo(() => {
+    if (typeof params.id === "string") {
+      return params.id;
+    }
+
+    return params.id?.[0] ?? "";
+  }, [params.id]);
+
   const animeQuery = api.anime.byId.useQuery(
     { id },
     {
-      staleTime: 0,
+      initialData: anime,
     }
   );
 
   const {
     data: metadata,
-    isLoading,
     isError,
     error,
   } = api.myAnimeList.getAnimeMetadata.useQuery(
@@ -33,6 +44,7 @@ export const AnimeMetadata = ({ id }: AnimeMetadataProps) => {
       }
     : {
         title: animeQuery.data?.title ?? "",
+        slug: animeQuery.data?.slug ?? "",
       },
     {
       enabled: !animeQuery.isLoading,
@@ -52,12 +64,12 @@ export const AnimeMetadata = ({ id }: AnimeMetadataProps) => {
     });
   }, [metadata, animeQuery, updateMalAnimeId]);
 
-  if (animeQuery.isLoading || isLoading || !metadata || !animeQuery.data) {
-    return <Skeleton className="mb-6 h-[500px] w-full" />;
-  }
-
   if (isError) {
     return <ErrorPage error={{ ...error, name: "error" }} />;
+  }
+
+  if (!metadata || !animeQuery.data) {
+    return <Skeleton className="mb-6 h-[500px] w-full" />;
   }
 
   return (

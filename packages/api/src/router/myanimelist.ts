@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { orm, schema } from "@aniways/db";
+import { getMalIdFromSlug } from "@aniways/gogoanime";
 import {
   addToAnimeList,
   deleteFromAnimeList,
@@ -80,14 +81,21 @@ export const myAnimeListRouter = createTRPCRouter({
   getAnimeMetadata: publicProcedure
     .input(
       z.union([
-        z.object({ title: z.string() }),
+        z.object({ title: z.string(), slug: z.string() }),
         z.object({ malId: z.number() }),
       ])
     )
     .query(async ({ ctx, input }) => {
+      const malId =
+        "malId" in input ?
+          input.malId
+        : await getMalIdFromSlug(input.slug).catch(() => null);
+
+      const args = malId ? { malId } : input;
+
       const metadata = await getAnimeDetailsFromMyAnimeList({
         accessToken: ctx.session?.accessToken,
-        ...input,
+        ...args,
       });
 
       if (!metadata) return;
