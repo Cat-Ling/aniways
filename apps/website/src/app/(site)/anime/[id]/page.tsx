@@ -45,7 +45,10 @@ const AnimeRedirectPage = () => {
       return seedMissingEpisodes.mutate({ id });
     }
 
-    if (seedMissingEpisodes.status === "pending") {
+    if (
+      seedMissingEpisodes.status === "pending" ||
+      seedMissingEpisodes.status === "success"
+    ) {
       return;
     }
 
