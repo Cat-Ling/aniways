@@ -1,6 +1,6 @@
+import type { RecentlyReleasedAnime } from "@aniways/gogoanime";
 import { createId, db, orm, schema } from "@aniways/db";
 
-import type { RecentlyReleasedAnime } from "./scrape";
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("AniwaysSyncAnimeCron", "db");
