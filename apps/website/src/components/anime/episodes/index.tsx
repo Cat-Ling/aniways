@@ -35,6 +35,8 @@ export const EpisodesSection = ({
       video => video.episode === currentEpisode
     );
 
+    if (currentIndex === 0) return null;
+
     return episodes.at(currentIndex - 1);
   }, [currentEpisode, episodes]);
 
