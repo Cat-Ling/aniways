@@ -84,7 +84,11 @@ export const createTRPCRouter = t.router;
  * tRPC API. It does not guarantee that a user querying is authorized, but you
  * can still access user session data if they are logged in
  */
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(({ next, path }) => {
+  console.log(">>> tRPC Procedure", path);
+
+  return next();
+});
 
 /**
  * Protected (authenticated) procedure
@@ -94,7 +98,9 @@ export const publicProcedure = t.procedure;
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+export const protectedProcedure = t.procedure.use(({ ctx, next, path }) => {
+  console.log(">>> tRPC Procedure", path);
+
   if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }

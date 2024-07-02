@@ -46,11 +46,48 @@ export const VideoPlayer = ({
 
       if (event.key === "f") {
         event.preventDefault();
-        if (artPlayer.current.fullscreen) {
+        if (!document.fullscreenElement) {
           void artRef.current.requestFullscreen();
         } else {
           void document.exitFullscreen();
         }
+      }
+
+      if (event.key === "ArrowRight") {
+        if (
+          artRef.current === document.activeElement ||
+          artRef.current.contains(document.activeElement)
+        ) {
+          return;
+        }
+        event.preventDefault();
+        artPlayer.current.currentTime += 5;
+      }
+
+      if (event.key === "ArrowLeft") {
+        if (
+          artRef.current === document.activeElement ||
+          artRef.current.contains(document.activeElement)
+        ) {
+          return;
+        }
+        event.preventDefault();
+        artPlayer.current.currentTime -= 5;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        artPlayer.current.volume += 0.1;
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        artPlayer.current.volume -= 0.1;
+      }
+
+      if (event.key === "m") {
+        event.preventDefault();
+        artPlayer.current.muted = !artPlayer.current.muted;
       }
     };
 
@@ -121,6 +158,7 @@ export const VideoPlayer = ({
       airplay: true,
       autoSize: true,
       setting: true,
+      volume: 100,
       fullscreen: true,
       fullscreenWeb: true,
       playbackRate: true,
