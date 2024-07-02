@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { cache, Suspense } from "react";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { Skeleton } from "@aniways/ui/skeleton";
 
-import { EpisodesSection } from "~/components/anime/episodes";
-import { AnimeMetadata } from "~/components/anime/metadata";
-import { VideoFrame } from "~/components/streaming/video-frame";
-import { api } from "~/trpc/server";
-
-const getAnimeById = cache(async (id: string) => {
-  return await api.anime.byId({ id });
-});
+import { VideoPlayer } from "~/components/streaming/video-frame";
+import { getAnimeById, getEpisodesOfAnime } from "./cache";
 
 export const generateMetadata = async ({
   params: { id, episode },
@@ -23,7 +17,7 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   episode = episode.replace("-", ".");
 
-  const data = await getAnimeById(id);
+  const data = await getAnimeById({ id });
 
   if (!data?.title) return {};
 
@@ -55,11 +49,11 @@ const AnimeStreamingPage = async ({
 }) => {
   episode = episode.replace("-", ".");
 
-  const anime = await getAnimeById(id);
+  const anime = await getAnimeById({ id });
 
   if (!anime) notFound();
 
-  const episodes = await api.episodes.getEpisodesOfAnime({ animeId: id });
+  const episodes = await getEpisodesOfAnime({ animeId: id });
 
   const currentEpisodeIndex = episodes.findIndex(ep => ep.episode === episode);
 
@@ -73,31 +67,23 @@ const AnimeStreamingPage = async ({
           Episode {episode}
         </h2>
       </div>
-      <div className="mb-5 flex aspect-video w-full flex-col gap-2">
-        <div className="flex-1">
-          <Suspense
-            fallback={
-              <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
+      <div className="mb-2 flex-1">
+        <Suspense
+          fallback={
+            <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
+          }
+        >
+          <VideoPlayer
+            animeId={id}
+            episode={episode}
+            nextEpisode={
+              nextEpisode ?
+                `/anime/${id}/episodes/${nextEpisode.episode}`
+              : null
             }
-          >
-            <VideoFrame
-              animeId={id}
-              episode={episode}
-              nextEpisode={
-                nextEpisode ?
-                  `/anime/${id}/episodes/${nextEpisode.episode}`
-                : null
-              }
-            />
-          </Suspense>
-        </div>
-        <EpisodesSection
-          animeId={id}
-          currentEpisode={episode}
-          episodes={episodes}
-        />
+          />
+        </Suspense>
       </div>
-      <AnimeMetadata anime={anime} />
     </>
   );
 };

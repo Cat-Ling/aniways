@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { api } from "~/trpc/server";
-import { VideoPlayer } from "./video-player";
+import { VideoPlayerClient } from "./video-player";
 
 interface VideoFrameProps {
   episode: string;
@@ -9,7 +9,7 @@ interface VideoFrameProps {
   nextEpisode: string | null;
 }
 
-export const VideoFrame = async ({
+export const VideoPlayer = async ({
   animeId,
   episode,
   nextEpisode,
@@ -26,7 +26,7 @@ export const VideoFrame = async ({
   });
 
   return (
-    <VideoPlayer
+    <VideoPlayerClient
       streamingSources={streamingSources}
       episodeSlug={currentEpisode.slug}
       nextEpisodeUrl={nextEpisode}
