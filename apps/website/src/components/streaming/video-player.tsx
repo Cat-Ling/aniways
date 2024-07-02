@@ -31,6 +31,37 @@ export const VideoPlayer = ({
   const artPlayer = useRef<Artplayer | null>(null);
 
   useEffect(() => {
+    const keyboardEventListener = (event: KeyboardEvent) => {
+      if (!artPlayer.current) return;
+      if (!artRef.current) return;
+
+      if (event.key === " ") {
+        event.preventDefault();
+        if (artPlayer.current.playing) {
+          artPlayer.current.pause();
+        } else {
+          void artPlayer.current.play();
+        }
+      }
+
+      if (event.key === "f") {
+        event.preventDefault();
+        if (artPlayer.current.fullscreen) {
+          void artRef.current.requestFullscreen();
+        } else {
+          void document.exitFullscreen();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", keyboardEventListener);
+
+    return () => {
+      document.removeEventListener("keydown", keyboardEventListener);
+    };
+  }, []);
+
+  useEffect(() => {
     if (localStorage.getItem("autoNext") === null) {
       localStorage.setItem("autoNext", "true");
     }
