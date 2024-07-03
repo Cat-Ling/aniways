@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import { cache, Suspense } from "react";
+import { Suspense } from "react";
 import { HeartCrack } from "lucide-react";
 
 import { AnimeGrid, AnimeGridLoader } from "~/components/layouts/anime-grid";
 import { api } from "~/trpc/server";
-
-const searchAnime = cache(async (query: string, page: number) => {
-  return await api.anime.search({ query, page });
-});
 
 export const generateMetadata = ({
   searchParams: { query },
@@ -51,7 +47,7 @@ const SearchResults = async ({
   query: string;
   page: number;
 }) => {
-  const { animes } = await searchAnime(query, page);
+  const { animes } = await api.anime.search({ query, page });
 
   if (!animes.length) {
     return (

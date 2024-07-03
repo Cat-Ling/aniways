@@ -51,16 +51,15 @@ export const AnimeMetadataDetails = ({
               metadata.season,
               metadata.average_episode_duration,
               metadata.airingStatus,
-            ].map(
-              (info, index) =>
-                info && (
-                  <div
-                    key={index}
-                    className="rounded-md bg-muted p-2 text-sm text-primary"
-                  >
-                    {info}
-                  </div>
-                )
+            ].map((info, index) =>
+              info ?
+                <div
+                  key={index}
+                  className="rounded-md bg-muted p-2 text-sm text-primary"
+                >
+                  {info}
+                </div>
+              : null
             )}
           </div>
           <div className="mt-2 grid w-full grid-cols-2 md:w-1/2">

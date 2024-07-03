@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { orm, schema } from "@aniways/db";
-import { getMalIdFromSlug } from "@aniways/gogoanime";
+import { getGogoSlugFromMalId, getMalIdFromSlug } from "@aniways/gogoanime";
 import {
   addToAnimeList,
   deleteFromAnimeList,
@@ -27,12 +27,14 @@ export const myAnimeListRouter = createTRPCRouter({
   getAnimeListOfUser: protectedProcedure
     .input(
       z.object({
-        page: z.number().transform(val => (val < 1 ? 1 : val)),
+        cursor: z.number().transform(val => (val < 1 ? 1 : val)),
         status: z.enum(watchStatus),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, status } = input;
+      const { status } = input;
+      const page = input.cursor;
+
       const {
         accessToken,
         user: { name },
@@ -42,7 +44,7 @@ export const myAnimeListRouter = createTRPCRouter({
         accessToken,
         name,
         page,
-        20,
+        50,
         status !== "all" ? status : undefined
       );
 
@@ -53,20 +55,43 @@ export const myAnimeListRouter = createTRPCRouter({
         };
       }
 
+      const animeListWithSlugs = await Promise.all(
+        animeList.data.map(async data => {
+          const slug = await getGogoSlugFromMalId(data.node.id).catch(
+            () => null
+          );
+
+          return {
+            ...data,
+            slug,
+          };
+        })
+      );
+
       const dbAnimes = await ctx.db
         .select()
         .from(schema.anime)
         .where(
-          orm.inArray(
-            schema.anime.malAnimeId,
-            animeList.data.map(({ node: anime }) => anime.id)
+          orm.or(
+            orm.inArray(
+              schema.anime.malAnimeId,
+              animeListWithSlugs.map(({ node: anime }) => anime.id)
+            ),
+            orm.inArray(
+              schema.anime.slug,
+              animeListWithSlugs
+                .map(({ slug }) => slug)
+                .filter(Boolean) as string[]
+            )
           )
         );
 
       return {
-        anime: animeList.data.map(anime => {
+        anime: animeListWithSlugs.map(anime => {
           const dbAnime = dbAnimes.find(
-            dbAnime => dbAnime.malAnimeId === anime.node.id
+            dbAnime =>
+              dbAnime.malAnimeId === anime.node.id ||
+              dbAnime.slug === anime.slug
           );
 
           return {

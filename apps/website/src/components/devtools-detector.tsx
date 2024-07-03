@@ -18,7 +18,7 @@ export const DevToolsDetector = () => {
         return;
       }
       if (!isOpen) return;
-      router.replace("/devtools");
+      router.replace(`/devtools?redirect=${pathname}`);
     };
 
     devtoolsDetector.addListener(listener);
