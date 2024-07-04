@@ -28,7 +28,9 @@ const useKeyboardShortcuts = (artPlayerRef: RefObject<Artplayer | null>) => {
       const artPlayer = artPlayerRef.current;
       if (!artPlayer) return;
 
-      const { key } = event;
+      const { key, currentTarget } = event;
+
+      if (currentTarget instanceof HTMLInputElement) return;
 
       switch (key) {
         // Play/Pause
