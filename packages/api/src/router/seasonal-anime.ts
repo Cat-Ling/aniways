@@ -7,8 +7,17 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const seasonalAnimeRouter = createTRPCRouter({
   getCurrentSeasonalAnimes: publicProcedure.query(async ({ ctx }) => {
-    const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
-      [...new Set(data.filter(data => data.mal_id !== undefined))].slice(0, 10)
+    const currentSeasonAnime = await getCurrentAnimeSeason().then(
+      ({ data }) => {
+        const ids = data.map(anime => anime.mal_id).filter(Boolean) as number[];
+
+        const dedupedIds = [...new Set(ids)];
+
+        return dedupedIds
+          .map(id => data.find(anime => anime.mal_id === id))
+          .filter(Boolean)
+          .slice(0, 10) as ((typeof data)[number] & { mal_id: number })[];
+      }
     );
 
     const animes = await ctx.db
@@ -17,14 +26,13 @@ export const seasonalAnimeRouter = createTRPCRouter({
       .where(
         orm.inArray(
           schema.anime.malAnimeId,
-          currentSeasonAnime.map(anime => anime.mal_id) as number[]
+          currentSeasonAnime.map(anime => anime.mal_id)
         )
       );
 
     return currentSeasonAnime.map(anime => ({
       ...anime,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      mal_id: anime.mal_id!,
+      mal_id: anime.mal_id,
       anime: animes.find(dbAnime => dbAnime.malAnimeId === anime.mal_id),
     }));
   }),
