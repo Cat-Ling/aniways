@@ -8,7 +8,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 export const seasonalAnimeRouter = createTRPCRouter({
   getCurrentSeasonalAnimes: publicProcedure.query(async ({ ctx }) => {
     const currentSeasonAnime = await getCurrentAnimeSeason().then(({ data }) =>
-      data.filter(data => data.mal_id !== undefined).slice(0, 10)
+      [...new Set(data.filter(data => data.mal_id !== undefined))].slice(0, 10)
     );
 
     const animes = await ctx.db
