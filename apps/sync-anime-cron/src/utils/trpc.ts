@@ -6,7 +6,7 @@ import { createCaller, createTRPCContext } from "@aniways/api";
  */
 const createContext = () => {
   const headers = new Headers();
-  headers.set("x-trpc-source", "seasonal-anime-cron");
+  headers.set("x-trpc-source", "sync-anime-cron");
 
   return createTRPCContext({
     headers: headers,
