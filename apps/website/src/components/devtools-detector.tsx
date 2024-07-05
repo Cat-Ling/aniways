@@ -1,17 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import devtoolsDetector from "devtools-detector";
 
 import { env } from "~/env";
 
+const useMounted = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  return isMounted;
+};
+
 export const DevToolsDetector = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const isMounted = useMounted();
 
   useEffect(() => {
     if (env.NODE_ENV === "development") return;
+    if (!isMounted) return;
 
     const listener = (isOpen: boolean) => {
       if (env.NODE_ENV === "development") return;
@@ -31,7 +43,7 @@ export const DevToolsDetector = () => {
       devtoolsDetector.stop();
       devtoolsDetector.removeListener(listener);
     };
-  }, [router, pathname]);
+  }, [router, pathname, isMounted]);
 
   return <div></div>;
 };
