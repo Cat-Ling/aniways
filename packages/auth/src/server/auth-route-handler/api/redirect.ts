@@ -23,13 +23,16 @@ async function _redirect(req: Request) {
   });
 
   if (session) {
-    await db.insert(schema.users).values({
-      id: createId(),
-      malId: session.user.id,
-      username: session.user.name,
-      gender: session.user.gender,
-      picture: session.user.picture,
-    });
+    await db
+      .insert(schema.users)
+      .values({
+        id: createId(),
+        malId: session.user.id,
+        username: session.user.name,
+        gender: session.user.gender,
+        picture: session.user.picture,
+      })
+      .onConflictDoNothing();
   }
 
   const redirectUrl = cookies(req, new Headers()).get("redirectUrl")?.value;
