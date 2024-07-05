@@ -1,10 +1,13 @@
 import { fileURLToPath } from "url";
 import { Tags } from "aws-cdk-lib/core";
-import createJiti from "jiti";
+import createJITI from "jiti";
 import { SSTConfig } from "sst";
 import { Cron, Function } from "sst/constructs";
 
-createJiti(fileURLToPath(import.meta.url))("@aniways/db/env");
+const jiti = createJITI(fileURLToPath(import.meta.url));
+
+jiti("@aniways/db/env");
+jiti("@aniways/myanimelist/env");
 
 export default {
   config: _input => ({
@@ -23,6 +26,7 @@ export default {
         environment: {
           NODE_OPTIONS: "--enable-source-maps",
           DATABASE_URL: process.env.DATABASE_URL!,
+          MAL_CLIENT_ID: process.env.MAL_CLIENT_ID!,
         },
       });
 
