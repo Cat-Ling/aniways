@@ -125,7 +125,7 @@ export const seasonalAnime = pgTable("seasonal_anime", {
 
 export type SeasonalAnime = InferSelectModel<typeof seasonalAnime>;
 
-interface Settings {
+export interface Settings {
   autoPlay: boolean;
   autoNext: boolean;
   autoUpdateMal: boolean;
