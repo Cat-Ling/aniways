@@ -11,6 +11,8 @@ export const DevToolsDetector = () => {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (env.NODE_ENV === "development") return;
+
     const listener = (isOpen: boolean) => {
       if (env.NODE_ENV === "development") return;
       if (pathname === "/devtools") {

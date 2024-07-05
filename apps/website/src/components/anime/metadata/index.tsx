@@ -51,7 +51,13 @@ export const AnimeMetadata = ({ anime }: AnimeMetadataProps) => {
     }
   );
 
-  const { mutate: updateMalAnimeId } = api.anime.updateMalAnimeId.useMutation();
+  const utils = api.useUtils();
+
+  const { mutate: updateMalAnimeId } = api.anime.updateMalAnimeId.useMutation({
+    onSuccess: async () => {
+      await utils.anime.byId.invalidate({ id });
+    },
+  });
 
   useEffect(() => {
     if (!animeQuery.data) return;
