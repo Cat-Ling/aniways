@@ -2,6 +2,7 @@ import type { RecentlyReleasedAnime } from "@aniways/gogoanime";
 import { createId, db, orm, schema } from "@aniways/db";
 
 import { createLogger } from "../utils/logger";
+import { api } from "../utils/trpc";
 
 const logger = createLogger("AniwaysSyncAnimeCron", "db");
 
@@ -101,16 +102,39 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
         )
       );
 
-    if (lastEpisode) return episodes.length;
+    if (!lastEpisode) {
+      logger.error(
+        "Failed to insert episodes for anime",
+        newAnime.name,
+        "episode",
+        newAnime.episode
+      );
 
-    logger.error(
-      "Failed to insert episodes for anime",
-      newAnime.name,
-      "episode",
-      newAnime.episode
-    );
+      tx.rollback();
+      return;
+    }
 
-    tx.rollback();
+    try {
+      await Promise.all(
+        episodes.map(async ep => {
+          await api.episodes.getStreamingSources({ episodeSlug: ep.slug }); // Preload the streaming sources
+        })
+      );
+    } catch (error) {
+      logger.error(
+        "Failed to preload streaming sources for",
+        newAnime.name,
+        "episode",
+        newAnime.episode
+      );
+
+      logger.error(error);
+      // Don't need to rollback here since the episodes are already inserted
+    }
+
+    logger.log("Inserted", episodes.length, "episodes for", newAnime.name);
+
+    return episodes.length;
   });
 };
 

@@ -29,7 +29,6 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@aniways/gogoanime": "workspace:*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@t3-oss/env-nextjs": "^0.10.1",
     "drizzle-orm": "^0.31.2",

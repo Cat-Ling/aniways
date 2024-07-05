@@ -129,5 +129,31 @@ export const episodesRouter = createTRPCRouter({
 
   getStreamingSources: publicProcedure
     .input(z.object({ episodeSlug: z.string() }))
-    .query(({ input }) => getStreamingUrl(input.episodeSlug)),
+    .query(async ({ input, ctx }) => {
+      const [episode] = await ctx.db
+        .select()
+        .from(schema.video)
+        .where(orm.eq(schema.video.slug, input.episodeSlug))
+        .limit(1);
+
+      if (!episode) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Episode not found",
+        });
+      }
+
+      const streamingSources = await getStreamingUrl(input.episodeSlug);
+
+      if (!episode.streamingSources) {
+        await ctx.db
+          .update(schema.video)
+          .set({
+            streamingSources,
+          })
+          .where(orm.eq(schema.video.id, episode.id));
+      }
+
+      return streamingSources;
+    }),
 });

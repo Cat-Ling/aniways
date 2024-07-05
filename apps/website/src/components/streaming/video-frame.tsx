@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import type { RouterOutputs } from "@aniways/api";
+
 import { api } from "~/trpc/server";
 import { VideoPlayerClient } from "./video-player";
 
@@ -8,6 +10,8 @@ interface VideoFrameProps {
   animeId: string;
   nextEpisode: string | null;
 }
+
+type StreamingSources = RouterOutputs["episodes"]["getStreamingSources"];
 
 export const VideoPlayer = async ({
   animeId,
@@ -21,9 +25,11 @@ export const VideoPlayer = async ({
 
   if (!currentEpisode) notFound();
 
-  const streamingSources = await api.episodes.getStreamingSources({
-    episodeSlug: currentEpisode.slug,
-  });
+  const streamingSources: StreamingSources =
+    (currentEpisode.streamingSources as StreamingSources | null) ??
+    (await api.episodes.getStreamingSources({
+      episodeSlug: currentEpisode.slug,
+    }));
 
   return (
     <VideoPlayerClient

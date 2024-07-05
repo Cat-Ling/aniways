@@ -4,6 +4,7 @@ import { relations } from "drizzle-orm";
 import {
   index,
   integer,
+  jsonb,
   numeric,
   pgEnum,
   pgTable,
@@ -85,6 +86,7 @@ export const video = pgTable(
     title: text("title"),
     createdAt: timestamp("created_at").defaultNow(),
     videoUrl: text("video_url"),
+    streamingSources: jsonb("streaming_sources"),
   },
   table => ({
     animeIdx: index("video_anime_idx").on(table.animeId),
