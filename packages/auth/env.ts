@@ -2,10 +2,11 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+import { env as dbEnv } from "@aniways/db/env";
 import { env as myAnimeListEnv } from "@aniways/myanimelist/env";
 
 export const env = createEnv({
-  extends: [myAnimeListEnv],
+  extends: [myAnimeListEnv, dbEnv],
   server: {
     MAL_CLIENT_SECRET: z.string(),
     MAL_SECRET_KEY: z.string().base64().length(44),

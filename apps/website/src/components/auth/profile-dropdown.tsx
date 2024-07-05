@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { List, LogOut } from "lucide-react";
 
-import { signOut, useAuth } from "@aniways/auth";
+import { signOut, useAuth } from "@aniways/auth/react";
 import { Image } from "@aniways/ui/aniways-image";
 import {
   DropdownMenu,

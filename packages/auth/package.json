@@ -4,9 +4,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./src/react/index.ts"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./src/server/index.ts"
     },
     "./env": {
       "types": "./dist/env.d.ts",
@@ -22,6 +26,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@aniways/db": "workspace:*",
     "@aniways/myanimelist": "workspace:*",
     "@animelist/auth-next": "^0.1.1",
     "@t3-oss/env-nextjs": "^0.10.1",

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { signIn } from "@aniways/auth";
+import { signIn } from "@aniways/auth/react";
 import { Button } from "@aniways/ui/button";
 import {
   Credenza,

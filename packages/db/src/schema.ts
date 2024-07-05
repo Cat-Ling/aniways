@@ -124,3 +124,27 @@ export const seasonalAnime = pgTable("seasonal_anime", {
 });
 
 export type SeasonalAnime = InferSelectModel<typeof seasonalAnime>;
+
+interface Settings {
+  autoPlay: boolean;
+  autoNext: boolean;
+  autoUpdateMal: boolean;
+  darkMode: boolean;
+}
+
+export const users = pgTable("users", {
+  id: varchar("id", { length: 25 }).primaryKey(),
+  malId: integer("mal_id").notNull().unique(),
+  username: text("username").notNull().unique(),
+  picture: text("picture"),
+  gender: text("gender"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  settings: jsonb("settings").$type<Settings>().default({
+    autoPlay: true,
+    autoNext: true,
+    autoUpdateMal: false,
+    darkMode: true,
+  }),
+});
+
+export type User = InferSelectModel<typeof users>;

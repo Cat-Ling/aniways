@@ -2,8 +2,8 @@
 
 import type { FC } from "react";
 
-import type { AuthProviderProps } from "@aniways/auth";
-import { AuthProvider } from "@aniways/auth";
+import type { AuthProviderProps } from "@aniways/auth/react";
+import { AuthProvider } from "@aniways/auth/react";
 
 import { TRPCReactProvider } from "~/trpc/react";
 

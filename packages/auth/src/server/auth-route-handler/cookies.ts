@@ -1,4 +1,5 @@
 interface Cookies {
+  getAll: () => { name: string; value: string }[];
   get: (name: string) => { value: string } | undefined;
   set: (name: string, value: string) => void;
   delete: (name: string) => void;
@@ -20,6 +21,7 @@ export const cookies = (req: Request, responseHeaders: Headers): Cookies => {
     .filter(cookie => cookie) ?? []) as { name: string; value: string }[];
 
   return {
+    getAll: () => cookies,
     get: name => cookies.find(cookie => cookie.name === name),
     set: (name, value) => {
       const cookie = `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=None`;

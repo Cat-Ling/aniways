@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 
-import { useAuth } from "@aniways/auth";
+import { useAuth } from "@aniways/auth/react";
 import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 
