@@ -109,7 +109,7 @@ export const scrapeRecentlyReleasedAnimeEpisodes = async (
       recentlyReleasedPage
         .querySelectorAll(".last_episodes li")
         .map(async li => {
-          const name = li.querySelector(".name > a")!.getAttribute("title")!;
+          const name = li.querySelector(".name > a")!.innerText.trim();
 
           const image = li.querySelector(".img img")!.getAttribute("src")!;
 
