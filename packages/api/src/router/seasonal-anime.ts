@@ -53,7 +53,7 @@ export const seasonalAnimeRouter = createTRPCRouter({
           order: z.number(),
           rating: z.string(),
           type: z.string(),
-          episodes: z.number().optional(),
+          episodes: z.number().nullable().optional(),
           synopsis: z.string(),
           imageUrl: z.string(),
           status: z.string(),
