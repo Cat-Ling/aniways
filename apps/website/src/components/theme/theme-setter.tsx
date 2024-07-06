@@ -10,8 +10,6 @@ export const ThemeSetter = () => {
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    console.log(settings);
-    console.log("rendering");
     if (settings.isLoading) return;
 
     let theme: string;

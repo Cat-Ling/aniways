@@ -9,6 +9,7 @@ interface VideoFrameProps {
   episode: string;
   animeId: string;
   nextEpisode: string | null;
+  malId: number | null;
 }
 
 type StreamingSources = RouterOutputs["episodes"]["getStreamingSources"];
@@ -17,6 +18,7 @@ export const VideoPlayer = async ({
   animeId,
   episode,
   nextEpisode,
+  malId,
 }: VideoFrameProps) => {
   const currentEpisode = await api.episodes.getEpisodeByAnimeIdAndEpisode({
     animeId,
@@ -36,6 +38,8 @@ export const VideoPlayer = async ({
       streamingSources={streamingSources}
       episodeSlug={currentEpisode.slug}
       nextEpisodeUrl={nextEpisode}
+      episode={Number(episode)}
+      malId={malId}
     />
   );
 };

@@ -75,6 +75,7 @@ const AnimeStreamingPage = async ({
         >
           <VideoPlayer
             animeId={id}
+            malId={anime.malAnimeId}
             episode={episode}
             nextEpisode={
               nextEpisode ?

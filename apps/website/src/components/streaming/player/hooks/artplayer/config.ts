@@ -2,10 +2,12 @@ import type Artplayer from "artplayer";
 import type { RefObject } from "react";
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality";
 import artplayerPluginThumbnail from "artplayer-plugin-thumbnail";
+import Hls from "hls.js";
 
 import type { RouterOutputs } from "@aniways/api";
+import { toast } from "@aniways/ui/sonner";
 
-import { ANIWAYS_LOGO, LOADING_SVG } from "../../icons";
+import { ANIWAYS_LOGO, LOADING_SVG, STREAMING_SOURCE_ICON } from "../../icons";
 
 const getStreamingUrl = (
   streamingSources: RouterOutputs["episodes"]["getStreamingSources"],
@@ -38,18 +40,23 @@ interface BaseArtPlayerConfigParameters {
   streamingSources: RouterOutputs["episodes"]["getStreamingSources"];
   artPlayerRef: RefObject<Artplayer>;
   playerContainer: HTMLDivElement;
+  hls: RefObject<Hls>;
+  settings: RouterOutputs["settings"]["getSettings"];
 }
 
-export const getBaseArtPlayerConfig = ({
+export const getArtPlayerConfig = ({
   episodeSlug,
   streamingSources,
   artPlayerRef,
   playerContainer,
+  hls,
+  settings,
 }: BaseArtPlayerConfigParameters) => {
   return {
     id: episodeSlug,
     url: getStreamingUrl(streamingSources, artPlayerRef),
     container: playerContainer,
+    autoplay: settings?.autoPlay ?? localStorage.getItem("autoPlay") === "true",
     mutex: true,
     hotkey: false,
     screenshot: true,
@@ -87,6 +94,49 @@ export const getBaseArtPlayerConfig = ({
           position: "absolute",
           top: "20px",
           right: "20px",
+        },
+      },
+    ],
+    customType: {
+      m3u8: (video, url) => {
+        if (Hls.isSupported()) {
+          hls.current?.loadSource(url);
+          hls.current?.attachMedia(video);
+          return;
+        }
+
+        const canPlay = video.canPlayType("application/vnd.apple.mpegurl");
+        if (canPlay === "probably" || canPlay === "maybe") {
+          video.src = url;
+          return;
+        }
+
+        toast.error("Your browser does not support HLS", {
+          description: "Please use a modern browser",
+        });
+      },
+    },
+    settings: [
+      {
+        html: "Stream Source",
+        width: 200,
+        icon: STREAMING_SOURCE_ICON,
+        tooltip: localStorage.getItem("streamSource") ?? "Main",
+        selector: ["Main", "Backup"].map(source => ({
+          default: localStorage.getItem("streamSource") === source,
+          html: source,
+          url: streamingSources.sources.find(
+            stramingSource => stramingSource.quality === source.toLowerCase()
+          )?.url,
+        })),
+        onSelect: item => {
+          if (item.url && typeof item.url === "string") {
+            void artPlayerRef.current?.switchQuality(item.url);
+          }
+
+          localStorage.setItem("streamSource", item.html);
+
+          return item.html;
         },
       },
     ],
