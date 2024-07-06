@@ -24,6 +24,7 @@ export const useVideoPlayer = ({
   episode,
   malId,
 }: UseArtPlayerProps) => {
+  const toastRef = useRef<string | number | null>(null);
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
   const artPlayerRef = useRef<Artplayer | null>(null);
 
@@ -43,6 +44,9 @@ export const useVideoPlayer = ({
       onSuccess: async () => {
         await utils.anime.continueWatching.invalidate();
         await utils.myAnimeList.getAnimeMetadata.invalidate();
+        if (toastRef.current) {
+          toast.dismiss(toastRef.current);
+        }
         toast.success("List updated", {
           description: "Your list has been updated",
         });
@@ -97,8 +101,11 @@ export const useVideoPlayer = ({
         autoUpdateMal &&
         malId &&
         listStatus.data?.status === "watching" &&
-        listStatus.data.num_episodes_watched !== episode
+        listStatus.data.num_episodes_watched < episode
       ) {
+        toastRef.current = toast.loading("Updating list", {
+          description: "Updating your list...",
+        });
         updateAnimeInMyList({
           malId,
           numWatchedEpisodes: episode,
