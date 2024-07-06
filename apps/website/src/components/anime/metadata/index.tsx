@@ -68,7 +68,7 @@ export const AnimeMetadata = ({ anime }: AnimeMetadataProps) => {
       id: animeQuery.data.id,
       malId: metadata.id,
     });
-  }, [metadata, animeQuery, updateMalAnimeId]);
+  }, [animeQuery.data, metadata, updateMalAnimeId]);
 
   if (isError) {
     return <ErrorPage error={{ ...error, name: "error" }} />;

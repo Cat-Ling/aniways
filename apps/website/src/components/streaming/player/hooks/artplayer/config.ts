@@ -1,5 +1,6 @@
 import type Artplayer from "artplayer";
 import type { RefObject } from "react";
+import artplayerPluginChromecast from "artplayer-plugin-chromecast";
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality";
 import artplayerPluginThumbnail from "artplayer-plugin-thumbnail";
 import Hls from "hls.js";
@@ -7,7 +8,12 @@ import Hls from "hls.js";
 import type { RouterOutputs } from "@aniways/api";
 import { toast } from "@aniways/ui/sonner";
 
-import { ANIWAYS_LOGO, LOADING_SVG, STREAMING_SOURCE_ICON } from "../../icons";
+import {
+  ANIWAYS_LOGO,
+  DOWNLOAD_ICON,
+  LOADING_SVG,
+  STREAMING_SOURCE_ICON,
+} from "../../icons";
 
 const getStreamingUrl = (
   streamingSources: RouterOutputs["episodes"]["getStreamingSources"],
@@ -73,15 +79,34 @@ export const getArtPlayerConfig = ({
     playsInline: true,
     autoMini: false,
     pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
+    controls: [
+      {
+        name: "Download",
+        html: `
+          <a href="${episodeSlug.split("-").at(-1)}/download">
+            ${DOWNLOAD_ICON}
+          </a>
+        `,
+        tooltip: "Download",
+        position: "right",
+        index: 0,
+      },
+    ],
     plugins: [
       artplayerPluginHlsQuality({
         control: false,
         setting: true,
         auto: "Auto",
+        getResolution: (level: { height?: string }) => {
+          return !level.height || level.height !== "unknown" ?
+              level.height + "P"
+            : "Auto";
+        },
       }),
       artplayerPluginThumbnail({
         vtt: streamingSources.tracks?.[0]?.file,
       }),
+      artplayerPluginChromecast({}),
     ],
     icons: {
       loading: LOADING_SVG,

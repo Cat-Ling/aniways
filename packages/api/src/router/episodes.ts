@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { createId, orm, schema } from "@aniways/db";
 import {
+  getDownloadUrl,
   getStreamingUrl,
   scrapeAllEpisodesOfAnime,
   scrapeVideoSource,
@@ -156,4 +157,8 @@ export const episodesRouter = createTRPCRouter({
 
       return streamingSources;
     }),
+
+  getDownloadUrl: publicProcedure
+    .input(z.object({ episodeSlug: z.string() }))
+    .query(({ input }) => getDownloadUrl(input.episodeSlug)),
 });

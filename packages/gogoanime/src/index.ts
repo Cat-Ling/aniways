@@ -6,3 +6,4 @@ export * from "./streaming";
 export * from "./search";
 export * from "./episodes";
 export * from "./myanimelist";
+export * from "./download";
