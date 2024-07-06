@@ -10,7 +10,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { auth } from "@aniways/auth";
+import { auth } from "@aniways/auth/server";
 import { db } from "@aniways/db";
 
 /**

@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react";
 
 import type { RouterOutputs } from "@aniways/api";
-import { useAuth } from "@aniways/auth";
+import { useAuth } from "@aniways/auth/react";
 import { Button } from "@aniways/ui/button";
 import { toast } from "@aniways/ui/sonner";
 

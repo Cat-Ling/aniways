@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { List, LogOut } from "lucide-react";
+import { List, LogOut, Settings } from "lucide-react";
 
-import { signOut, useAuth } from "@aniways/auth";
+import { signOut, useAuth } from "@aniways/auth/react";
 import { Image } from "@aniways/ui/aniways-image";
 import {
   DropdownMenu,
@@ -36,6 +36,12 @@ export const ProfileDropdown = () => {
           <Link href={"/anime-list"}>
             <List className="mr-2 h-5 w-5" />
             Anime List
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={"/settings"}>
+            <Settings className="mr-2 h-5 w-5" />
+            Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

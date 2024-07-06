@@ -6,7 +6,7 @@
   "scripts": {
     "build": "bun with-env sst build --stage prod",
     "vite:build": "tsc && vite build",
-    "dev": "bun with-env sst bind vite --stage dev",
+    "aws:dev": "bun with-env sst bind vite --stage dev",
     "clean": "rm -rf .turbo node_modules .sst dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",

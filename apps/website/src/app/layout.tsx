@@ -10,6 +10,7 @@ import { DevToolsDetector } from "~/components/devtools-detector";
 import { Footer } from "~/components/navigation/footer";
 import { Navbar } from "~/components/navigation/navbar";
 import { Providers } from "~/components/providers";
+import { ThemeSetter } from "~/components/theme/theme-setter";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen">
           <NextTopLoader showSpinner={false} color="#e11d48" />
@@ -50,6 +51,7 @@ export default function RootLayout({
             <Navbar />
             {children}
             <Toaster richColors={true} />
+            <ThemeSetter />
           </Providers>
         </div>
         <Footer />

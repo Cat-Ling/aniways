@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Skeleton } from "@aniways/ui/skeleton";
 
-import { VideoPlayer } from "~/components/streaming/video-frame";
+import { VideoPlayer } from "~/components/streaming/video-player";
 import { getAnimeById, getEpisodesOfAnime } from "./cache";
 
 export const generateMetadata = async ({
@@ -75,6 +75,7 @@ const AnimeStreamingPage = async ({
         >
           <VideoPlayer
             animeId={id}
+            malId={anime.malAnimeId}
             episode={episode}
             nextEpisode={
               nextEpisode ?
