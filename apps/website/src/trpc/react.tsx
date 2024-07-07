@@ -6,7 +6,7 @@ import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import SuperJSON from "superjson";
 
-import type { AppRouter } from "@aniways/api";
+import type { AppRouter } from "@aniways/trpc";
 
 import { env } from "~/env";
 
@@ -47,7 +47,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         }),
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,
-          url: getBaseUrl() + "/api/trpc",
+          url: getUrl(),
           headers() {
             const headers = new Headers();
             headers.set("x-trpc-source", "nextjs-react");
@@ -67,9 +67,10 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   );
 }
 
-const getBaseUrl = () => {
-  if (typeof window !== "undefined") return window.location.origin;
-  if (env.NODE_ENV === "production") return `https://aniways.xyz`;
+const getUrl = () => {
+  if (env.NODE_ENV === "production" || typeof window !== "undefined") {
+    return `https://api.aniways.xyz`;
+  }
   // eslint-disable-next-line no-restricted-properties
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  return `http://localhost:${process.env.PORT ?? 3000}/api/trpc`;
 };

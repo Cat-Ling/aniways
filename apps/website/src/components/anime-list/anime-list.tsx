@@ -1,4 +1,4 @@
-import type { RouterInputs } from "@aniways/api";
+import type { RouterInputs } from "@aniways/trpc";
 
 import { api } from "~/trpc/server";
 import { AnimeListClient } from "./anime-list-client";

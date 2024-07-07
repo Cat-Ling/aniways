@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { cn } from "@aniways/ui";
 import { Button } from "@aniways/ui/button";
 

@@ -1,12 +1,13 @@
 import { api } from "./trpc";
 
 export const syncSeasonalAnime = async () => {
-  const seasonalAnimes = await api.seasonalAnime.getCurrentSeasonalAnimes();
+  const getCurrentSeasonalAnimes = api.seasonalAnime.getCurrentSeasonalAnimes;
+  const seasonalAnimes = await getCurrentSeasonalAnimes.query();
 
   console.log("Fetched seasonal anime.");
   console.log(JSON.stringify(seasonalAnimes, null, 2));
 
-  await api.seasonalAnime.saveSeasonalAnimes(
+  await api.seasonalAnime.saveSeasonalAnimes.mutate(
     seasonalAnimes.map((anime, i) => ({
       malId: anime.mal_id,
       order: i,

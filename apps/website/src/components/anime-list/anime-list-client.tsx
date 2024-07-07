@@ -4,7 +4,7 @@ import { useCallback, useRef } from "react";
 import Link from "next/link";
 import { Loader2, Play, Shell } from "lucide-react";
 
-import type { RouterInputs, RouterOutputs } from "@aniways/api";
+import type { RouterInputs, RouterOutputs } from "@aniways/trpc";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import { Skeleton } from "@aniways/ui/skeleton";

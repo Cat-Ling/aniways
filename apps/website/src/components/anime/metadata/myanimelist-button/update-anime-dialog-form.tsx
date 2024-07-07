@@ -5,7 +5,7 @@ import { Loader2, MinusIcon, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { Button } from "@aniways/ui/button";
 import {
   CredenzaClose,

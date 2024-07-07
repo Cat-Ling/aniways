@@ -1,4 +1,4 @@
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { Button } from "@aniways/ui/button";
 import {
   Credenza,

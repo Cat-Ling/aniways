@@ -4,7 +4,7 @@ import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality";
 import artplayerPluginThumbnail from "artplayer-plugin-thumbnail";
 import Hls from "hls.js";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { toast } from "@aniways/ui/sonner";
 
 import "./artplayer.css";

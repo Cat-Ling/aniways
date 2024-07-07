@@ -1,4 +1,4 @@
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 
 import { AddToListButton } from "./add-to-list-button";
 import { UpdateAnimeButton } from "./update-anime-button";

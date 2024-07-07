@@ -1,6 +1,6 @@
 "use client";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 
 import { AnimeGrid } from "~/components/layouts/anime-grid";
 import { api } from "~/trpc/react";

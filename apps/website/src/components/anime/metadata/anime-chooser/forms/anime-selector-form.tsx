@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import { keepPreviousData } from "@tanstack/react-query";
 import { ArrowLeftIcon, ArrowRightIcon, Loader2 } from "lucide-react";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import { CredenzaClose, CredenzaFooter } from "@aniways/ui/credenza";

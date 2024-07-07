@@ -6,7 +6,7 @@ async function checkIfMyAnimeListIsDown() {
   let isDown = false;
 
   try {
-    const anime = await api.myAnimeList.search({
+    const anime = await api.myAnimeList.search.query({
       query: "naruto",
       page: 1,
     });
@@ -15,7 +15,7 @@ async function checkIfMyAnimeListIsDown() {
       isDown = true;
     }
 
-    await api.myAnimeList.getAnimeMetadata({
+    await api.myAnimeList.getAnimeMetadata.query({
       malId: anime.data[0]?.mal_id ?? 0,
     });
   } catch {
@@ -29,19 +29,21 @@ async function checkIfEpisodeServiceIsDown() {
   let isDown = false;
 
   try {
-    const { recentlyReleased } = await api.anime.recentlyReleased({ page: 1 });
+    const { recentlyReleased } = await api.anime.recentlyReleased.query({
+      page: 1,
+    });
 
     const anime = recentlyReleased.find(anime => anime.lastEpisode !== null);
 
     if (!anime?.lastEpisode) throw new Error("No anime found");
 
-    const episode = await api.episodes.getEpisodeByAnimeIdAndEpisode({
+    const episode = await api.episodes.getEpisodeByAnimeIdAndEpisode.query({
       animeId: anime.id,
       episode: Number(anime.lastEpisode),
     });
 
-    await api.episodes.scrapeVideoUrl({ slug: episode?.slug ?? "" });
-    await api.episodes.getEpisodesOfAnime({ animeId: anime.id });
+    await api.episodes.scrapeVideoUrl.query({ slug: episode?.slug ?? "" });
+    await api.episodes.getEpisodesOfAnime.query({ animeId: anime.id });
   } catch {
     isDown = true;
   }

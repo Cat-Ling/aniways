@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Artplayer from "artplayer";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { toast } from "@aniways/ui/sonner";
 
 import { api } from "~/trpc/react";
