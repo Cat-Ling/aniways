@@ -15,10 +15,16 @@ export const api = (handler: Handler) => {
 
     const fn = map[url.pathname];
 
-    if (!fn) {
-      return handler(req);
+    const res = fn ? await fn(req) : await handler(req);
+
+    // A hack to convert all set-cookie headers to use .aniways.xyz
+    // eslint-disable-next-line no-restricted-properties
+    if (process.env.NODE_ENV === "production") {
+      const setCookies = res.headers.get("set-cookie")?.split(", ") ?? [];
+      setCookies.map(cookie => cookie + "; Domain=.aniways.xyz");
+      res.headers.set("set-cookie", setCookies.join(", "));
     }
 
-    return fn(req);
+    return res;
   };
 };
