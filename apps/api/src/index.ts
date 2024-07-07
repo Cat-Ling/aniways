@@ -48,4 +48,7 @@ const createContext = (
 export const handler = awsLambdaRequestHandler({
   createContext,
   router: appRouter,
+  onError({ error, path }) {
+    console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
+  },
 });
