@@ -1,6 +1,7 @@
 import "@aniways/ui/globals.css";
 
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 
@@ -62,7 +63,9 @@ export default function RootLayout({
           </Providers>
         </div>
         <Footer />
-        <DevToolsDetector />
+        <Suspense>
+          <DevToolsDetector />
+        </Suspense>
       </body>
     </html>
   );
