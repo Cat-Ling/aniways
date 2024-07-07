@@ -7,6 +7,8 @@ import { appRouter, createTRPCContext } from "@aniways/trpc";
 const createContext = (
   options: CreateAWSLambdaContextOptions<APIGatewayProxyEvent>
 ) => {
+  console.log("options", options);
+
   const headers = new Headers();
 
   for (const key in options.event.headers) {
@@ -16,12 +18,15 @@ const createContext = (
   }
 
   const cookies = new Map<string, string>();
-  if (options.event.headers.cookie) {
-    options.event.headers.cookie.split(";").forEach(cookie => {
-      const [key, value] = cookie.split("=");
-      if (!key || !value) return;
-      cookies.set(key.trim(), value.trim());
-    });
+  if (headers.has("cookie")) {
+    headers
+      .get("cookie")
+      ?.split(";")
+      .forEach(cookie => {
+        const [key, value] = cookie.split("=");
+        if (!key || !value) return;
+        cookies.set(key.trim(), value.trim());
+      });
   }
 
   return createTRPCContext({
