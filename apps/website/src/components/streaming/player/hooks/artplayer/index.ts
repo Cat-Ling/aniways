@@ -17,6 +17,11 @@ export interface UseArtPlayerProps {
   malId: number | null;
 }
 
+type ListStatus = Exclude<
+  RouterOutputs["myAnimeList"]["getAnimeMetadata"],
+  undefined
+>["listStatus"];
+
 export const useVideoPlayer = ({
   streamingSources,
   episodeSlug,
@@ -32,6 +37,9 @@ export const useVideoPlayer = ({
   const router = useRouter();
 
   const settings = api.settings.getSettings.useQuery();
+
+  const listStatusRef = useRef<ListStatus | null>(null);
+
   const listStatus = api.myAnimeList.getAnimeMetadata.useQuery(
     { malId: malId ?? 0 },
     { enabled: !!malId, select: data => data?.listStatus }
@@ -52,6 +60,10 @@ export const useVideoPlayer = ({
         });
       },
     });
+
+  useEffect(() => {
+    listStatusRef.current = listStatus.data;
+  }, [listStatus]);
 
   useEffect(() => {
     const playerContainer = playerContainerRef.current;
@@ -96,20 +108,23 @@ export const useVideoPlayer = ({
       if (!artPlayer) return;
 
       const autoUpdateMal = settings.data?.autoUpdateMal ?? false;
+      const listStatus = listStatusRef.current;
 
       if (
         autoUpdateMal &&
         malId &&
-        listStatus.data?.status === "watching" &&
-        listStatus.data.num_episodes_watched < episode
+        listStatus &&
+        listStatus.status === "watching" &&
+        listStatus.num_episodes_watched < episode
       ) {
         toastRef.current = toast.loading("Updating list", {
           description: "Updating your list...",
         });
+
         updateAnimeInMyList({
           malId,
           numWatchedEpisodes: episode,
-          score: listStatus.data.score,
+          score: listStatus.score,
           status: "watching",
         });
       }
@@ -130,9 +145,6 @@ export const useVideoPlayer = ({
     episode,
     episodeSlug,
     hls,
-    listStatus.data?.num_episodes_watched,
-    listStatus.data?.score,
-    listStatus.data?.status,
     malId,
     nextEpisodeUrl,
     router,
