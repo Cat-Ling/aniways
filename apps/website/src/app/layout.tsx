@@ -20,8 +20,15 @@ export const metadata: Metadata = {
     template: "%s | AniWays",
   },
   description: "Another anime website but with a MyAnimeList Integration",
+  appleWebApp: {
+    title: "AniWays",
+    statusBarStyle: "black-translucent",
+    capable: true,
+    startupImage: "/logo.jpg",
+  },
   icons: {
     icon: "/favicon.ico",
+    apple: "/logo.jpg",
   },
   robots: {
     index: false,
