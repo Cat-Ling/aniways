@@ -44,10 +44,14 @@ export default {
         // Allow cookies to be sent from the client
         cors: {
           allowCredentials: true,
-          allowHeaders: ["*"],
+          allowHeaders: [
+            "trpc-batch-mode",
+            "content-type",
+            "cookie",
+            "x-trpc-source",
+          ],
           allowOrigins: ["https://aniways.xyz"],
           allowMethods: ["ANY"],
-          exposeHeaders: ["*"],
         },
         defaults: {
           function: {

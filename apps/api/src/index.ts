@@ -56,7 +56,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
         "Access-Control-Allow-Origin": "https://aniways.xyz",
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Headers":
+          "trpc-batch-mode, content-type, cookie, x-trpc-source",
       },
       body: "",
     };
@@ -75,7 +76,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
     "Access-Control-Allow-Origin": "https://aniways.xyz",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "*",
-    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Headers":
+      "trpc-batch-mode, content-type, cookie, x-trpc-source",
   };
 
   return res;
