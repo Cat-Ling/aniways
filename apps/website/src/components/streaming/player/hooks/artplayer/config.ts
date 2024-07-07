@@ -1,12 +1,13 @@
 import type Artplayer from "artplayer";
 import type { RefObject } from "react";
-import artplayerPluginChromecast from "artplayer-plugin-chromecast";
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality";
 import artplayerPluginThumbnail from "artplayer-plugin-thumbnail";
 import Hls from "hls.js";
 
 import type { RouterOutputs } from "@aniways/api";
 import { toast } from "@aniways/ui/sonner";
+
+import "./artplayer.css";
 
 import {
   ANIWAYS_LOGO,
@@ -65,7 +66,7 @@ export const getArtPlayerConfig = ({
     autoplay: settings?.autoPlay ?? localStorage.getItem("autoPlay") === "true",
     mutex: true,
     hotkey: false,
-    screenshot: true,
+    screenshot: window.innerWidth > 768, // Disable screenshot on mobile
     miniProgressBar: true,
     airplay: true,
     autoSize: true,
@@ -106,7 +107,6 @@ export const getArtPlayerConfig = ({
       artplayerPluginThumbnail({
         vtt: streamingSources.tracks?.[0]?.file,
       }),
-      artplayerPluginChromecast({}),
     ],
     icons: {
       loading: LOADING_SVG,
