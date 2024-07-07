@@ -25,6 +25,7 @@ env:
   # For AWS
   WEBSITE_AWS_SSL_CERT_ARN: ${{ secrets.WEBSITE_AWS_SSL_CERT_ARN}}
   HEALTHCHECK_AWS_SSL_CERT_ARN: ${{ secrets.HEALTHCHECK_AWS_SSL_CERT_ARN }}
+  API_AWS_SSL_CERT_ARN: ${{ secrets.API_AWS_SSL_CERT_ARN }}
   # For TurboRepo
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
