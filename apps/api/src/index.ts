@@ -1,14 +1,12 @@
 import type { CreateAWSLambdaContextOptions } from "@trpc/server/adapters/aws-lambda";
-import type { APIGatewayProxyEvent } from "aws-lambda";
+import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import { awsLambdaRequestHandler } from "@trpc/server/adapters/aws-lambda";
 
 import { appRouter, createTRPCContext } from "@aniways/trpc";
 
 const createContext = (
-  options: CreateAWSLambdaContextOptions<APIGatewayProxyEvent>
+  options: CreateAWSLambdaContextOptions<APIGatewayProxyEventV2>
 ) => {
-  console.log("options", options);
-
   const headers = new Headers();
 
   for (const key in options.event.headers) {
@@ -18,15 +16,12 @@ const createContext = (
   }
 
   const cookies = new Map<string, string>();
-  if (headers.has("cookie")) {
-    headers
-      .get("cookie")
-      ?.split(";")
-      .forEach(cookie => {
-        const [key, value] = cookie.split("=");
-        if (!key || !value) return;
-        cookies.set(key.trim(), value.trim());
-      });
+  if (options.event.cookies) {
+    options.event.cookies.forEach(cookie => {
+      const [name, value] = cookie.split("=");
+      if (!name || !value) return;
+      cookies.set(name, value);
+    });
   }
 
   return createTRPCContext({
