@@ -1,11 +1,13 @@
 import "@aniways/ui/globals.css";
 
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 
 import { Toaster } from "@aniways/ui/sonner";
 
+import { DevToolsDetector } from "~/components/devtools-detector";
 import { Footer } from "~/components/navigation/footer";
 import { Navbar } from "~/components/navigation/navbar";
 import { Providers } from "~/components/providers";
@@ -61,9 +63,9 @@ export default function RootLayout({
           </Providers>
         </div>
         <Footer />
-        {/* <Suspense>
+        <Suspense>
           <DevToolsDetector />
-        </Suspense> */}
+        </Suspense>
       </body>
     </html>
   );
