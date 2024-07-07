@@ -42,6 +42,7 @@ DATABASE_URL=<postgres-database-url>
 # SSL Certificates for HTTPS
 WEBSITE_AWS_SSL_CERT_ARN=<ssl-cert-arn-for-website>
 HEALTHCHECK_AWS_SSL_CERT_ARN=<ssl-cert-arn-for-healthcheck>
+API_AWS_SSL_CERT_ARN=<ssl-cert-arn-for-api> # Make sure to ensure region is ap-southeast-1
 
 # AWS Role for github actions to authenticate with AWS
 AWS_ROLE=<aws-role>
