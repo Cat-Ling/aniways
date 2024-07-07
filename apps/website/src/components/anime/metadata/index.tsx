@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import ErrorPage from "~/app/error";

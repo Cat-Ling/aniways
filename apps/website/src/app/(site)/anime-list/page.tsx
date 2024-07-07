@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect, RedirectType } from "next/navigation";
 
-import type { RouterInputs } from "@aniways/api";
+import type { RouterInputs } from "@aniways/trpc";
 import { auth } from "@aniways/auth/server";
 import { Tabs, TabsList, TabsTrigger } from "@aniways/ui/tabs";
 

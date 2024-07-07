@@ -1,4 +1,4 @@
-import { createCaller, createTRPCContext } from "@aniways/api";
+import { createCaller, createTRPCContext } from "@aniways/trpc";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when

@@ -1,5 +1,5 @@
 {
-  "name": "@aniways/api",
+  "name": "@aniways/trpc",
   "private": true,
   "version": "0.0.0",
   "type": "module",

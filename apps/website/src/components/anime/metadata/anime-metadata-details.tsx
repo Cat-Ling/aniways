@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";
 import {

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import type { CarouselApi } from "@aniways/ui/carousel";
 import { Image } from "@aniways/ui/aniways-image";
 import { Button } from "@aniways/ui/button";

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 
 import { api } from "~/trpc/server";
 import { VideoPlayerClient } from "./player";

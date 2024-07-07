@@ -2,7 +2,7 @@ import type { FC } from "react";
 import Link from "next/link";
 import { Play } from "lucide-react";
 
-import type { RouterOutputs } from "@aniways/api";
+import type { RouterOutputs } from "@aniways/trpc";
 import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 
