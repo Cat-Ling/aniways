@@ -48,6 +48,16 @@ const createContext = (
 export const handler = awsLambdaRequestHandler({
   createContext,
   router: appRouter,
+  responseMeta() {
+    return {
+      headers: {
+        "Access-Control-Allow-Origin": "https://aniways.xyz",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "*",
+      },
+    };
+  },
   onError({ error, path }) {
     console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
   },

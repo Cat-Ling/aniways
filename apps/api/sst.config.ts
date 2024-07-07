@@ -28,6 +28,7 @@ export default {
         routes: {
           "GET /{proxy+}": "src/index.handler",
           "POST /{proxy+}": "src/index.handler",
+          "OPTIONS /{proxy+}": "src/index.handler",
         },
         customDomain: {
           domainName: "api.aniways.xyz",
@@ -44,7 +45,7 @@ export default {
         cors: {
           allowCredentials: true,
           allowHeaders: ["*"],
-          allowOrigins: ["aniways.xyz"],
+          allowOrigins: ["https://aniways.xyz"],
           allowMethods: ["ANY"],
           exposeHeaders: ["*"],
         },
