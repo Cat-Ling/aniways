@@ -21,8 +21,10 @@ export const api = (handler: Handler) => {
     // eslint-disable-next-line no-restricted-properties
     if (process.env.NODE_ENV === "production") {
       const setCookies = res.headers.get("set-cookie")?.split(", ") ?? [];
-      setCookies.map(cookie => cookie + "; Domain=.aniways.xyz");
-      res.headers.set("set-cookie", setCookies.join(", "));
+      const newCookies = setCookies.map(
+        cookie => cookie + "; Domain=.aniways.xyz"
+      );
+      res.headers.set("set-cookie", newCookies.join(", "));
     }
 
     return res;
