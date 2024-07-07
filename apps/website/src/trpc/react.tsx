@@ -48,6 +48,12 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,
           url: getUrl(),
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
           headers() {
             const headers = new Headers();
             headers.set("x-trpc-source", "nextjs-react");
