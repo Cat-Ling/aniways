@@ -1,5 +1,8 @@
 import type { CreateAWSLambdaContextOptions } from "@trpc/server/adapters/aws-lambda";
-import type { APIGatewayProxyEventV2 } from "aws-lambda";
+import type {
+  APIGatewayProxyEventV2,
+  APIGatewayProxyHandlerV2,
+} from "aws-lambda";
 import { awsLambdaRequestHandler } from "@trpc/server/adapters/aws-lambda";
 
 import { appRouter, createTRPCContext } from "@aniways/trpc";
@@ -45,20 +48,35 @@ const createContext = (
   });
 };
 
-export const handler = awsLambdaRequestHandler({
-  createContext,
-  router: appRouter,
-  responseMeta() {
+export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
+  if (event.requestContext.http.method === "OPTIONS") {
     return {
+      statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "https://aniways.xyz",
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Methods": "*",
         "Access-Control-Allow-Headers": "*",
       },
+      body: "",
     };
-  },
-  onError({ error, path }) {
-    console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
-  },
-});
+  }
+
+  const res = await awsLambdaRequestHandler({
+    createContext,
+    router: appRouter,
+    onError({ error, path }) {
+      console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
+    },
+  })(event, context);
+
+  res.headers = {
+    ...res.headers,
+    "Access-Control-Allow-Origin": "https://aniways.xyz",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+  };
+
+  return res;
+};
