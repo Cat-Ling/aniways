@@ -40,6 +40,14 @@ export default {
             ),
           },
         },
+        // Allow cookies to be sent from the client
+        cors: {
+          allowCredentials: true,
+          allowHeaders: ["*"],
+          allowOrigins: ["aniways.xyz"],
+          allowMethods: ["ANY"],
+          exposeHeaders: ["*"],
+        },
         defaults: {
           function: {
             environment: {
