@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect, RedirectType } from "next/navigation";
@@ -8,7 +7,6 @@ import { auth } from "@aniways/auth/server";
 import { Tabs, TabsList, TabsTrigger } from "@aniways/ui/tabs";
 
 import { AnimeList } from "~/components/anime-list/anime-list";
-import { AnimeListLoader } from "~/components/anime-list/anime-list-client";
 
 type Status = RouterInputs["myAnimeList"]["getAnimeListOfUser"]["status"];
 
@@ -54,9 +52,7 @@ const AnimeListPage = async ({
           </div>
         </div>
       </Tabs>
-      <Suspense key={status} fallback={<AnimeListLoader />}>
-        <AnimeList status={status} />
-      </Suspense>
+      <AnimeList status={status} />
     </div>
   );
 };

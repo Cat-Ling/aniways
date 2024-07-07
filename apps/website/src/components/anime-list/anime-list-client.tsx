@@ -10,6 +10,7 @@ import { Button } from "@aniways/ui/button";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import { api } from "~/trpc/react";
+import { AnimeGridLoader } from "../layouts/anime-grid";
 
 type Status = RouterInputs["myAnimeList"]["getAnimeListOfUser"]["status"];
 
@@ -66,7 +67,7 @@ export const AnimeListClient = ({
   );
 
   if (!animeList) {
-    return <AnimeListLoader />;
+    return <AnimeGridLoader />;
   }
 
   if (!animeList.pages[0]?.anime.length) {
@@ -157,22 +158,5 @@ export const AnimeListClient = ({
         </li>
       )}
     </ul>
-  );
-};
-
-export const AnimeListLoader = () => {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {Array(20)
-        .fill(null)
-        .map((_, index) => (
-          <div key={index}>
-            <div className="relative h-96 w-full overflow-hidden rounded-lg">
-              <Skeleton className="absolute h-full w-full" />
-            </div>
-            <Skeleton className="w-3/4" />
-          </div>
-        ))}
-    </div>
   );
 };
