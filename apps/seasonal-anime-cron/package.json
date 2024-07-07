@@ -16,7 +16,9 @@
   "dependencies": {
     "@aniways/trpc": "workspace:*",
     "@aniways/db": "workspace:*",
-    "@aniways/myanimelist": "workspace:*"
+    "@aniways/myanimelist": "workspace:*",
+    "@trpc/client": "11.0.0-rc.364",
+    "superjson": "2.2.1"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
