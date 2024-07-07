@@ -74,7 +74,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 }
 
 const getUrl = () => {
-  if (env.NODE_ENV === "production" || typeof window !== "undefined") {
+  if (env.NODE_ENV === "production") {
     return `https://api.aniways.xyz`;
   }
   // eslint-disable-next-line no-restricted-properties

@@ -48,7 +48,6 @@ interface BaseArtPlayerConfigParameters {
   artPlayerRef: RefObject<Artplayer>;
   playerContainer: HTMLDivElement;
   hls: RefObject<Hls>;
-  settings: RouterOutputs["settings"]["getSettings"];
 }
 
 export const getArtPlayerConfig = ({
@@ -57,13 +56,11 @@ export const getArtPlayerConfig = ({
   artPlayerRef,
   playerContainer,
   hls,
-  settings,
 }: BaseArtPlayerConfigParameters) => {
   return {
     id: episodeSlug,
     url: getStreamingUrl(streamingSources, artPlayerRef),
     container: playerContainer,
-    autoplay: settings?.autoPlay ?? localStorage.getItem("autoPlay") === "true",
     mutex: true,
     hotkey: false,
     screenshot: window.innerWidth > 768, // Disable screenshot on mobile

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Artplayer from "artplayer";
 
+import type { Settings } from "@aniways/db/schema";
 import type { RouterOutputs } from "@aniways/trpc";
 import { toast } from "@aniways/ui/sonner";
 
@@ -36,10 +37,10 @@ export const useVideoPlayer = ({
   const hls = useHLS();
   const router = useRouter();
 
+  const settingsRef = useRef<Settings | null>(null);
   const settings = api.settings.getSettings.useQuery();
 
   const listStatusRef = useRef<ListStatus | null>(null);
-
   const listStatus = api.myAnimeList.getAnimeMetadata.useQuery(
     { malId: malId ?? 0 },
     { enabled: !!malId, select: data => data?.listStatus }
@@ -63,13 +64,12 @@ export const useVideoPlayer = ({
 
   useEffect(() => {
     listStatusRef.current = listStatus.data;
-  }, [listStatus]);
+    settingsRef.current = settings.data ?? null;
+  }, [listStatus, settings]);
 
   useEffect(() => {
     const playerContainer = playerContainerRef.current;
     if (!playerContainer) return;
-
-    if (settings.isLoading) return;
 
     const config = getArtPlayerConfig({
       episodeSlug,
@@ -77,12 +77,24 @@ export const useVideoPlayer = ({
       artPlayerRef,
       playerContainer,
       hls,
-      settings: settings.data ?? null,
     });
 
     artPlayerRef.current = new Artplayer(config);
 
     const artPlayer = artPlayerRef.current;
+
+    artPlayer.on("ready", () => {
+      const artPlayer = artPlayerRef.current;
+      if (!artPlayer) return;
+
+      const settings = settingsRef.current;
+      const autoPlay =
+        settings?.autoPlay ?? localStorage.getItem("autoPlay") === "true";
+
+      if (!autoPlay) return;
+
+      void artPlayer.play();
+    });
 
     artPlayer.on("video:play", () => {
       const artPlayer = artPlayerRef.current;
@@ -107,7 +119,8 @@ export const useVideoPlayer = ({
       const artPlayer = artPlayerRef.current;
       if (!artPlayer) return;
 
-      const autoUpdateMal = settings.data?.autoUpdateMal ?? false;
+      const settings = settingsRef.current;
+      const autoUpdateMal = settings?.autoUpdateMal ?? false;
       const listStatus = listStatusRef.current;
 
       if (
@@ -130,7 +143,7 @@ export const useVideoPlayer = ({
       }
 
       const autoNext =
-        settings.data?.autoNext ?? localStorage.getItem("autoNext") === "true";
+        settings?.autoNext ?? localStorage.getItem("autoNext") === "true";
 
       if (!autoNext || !nextEpisodeUrl) return;
 
@@ -148,8 +161,6 @@ export const useVideoPlayer = ({
     malId,
     nextEpisodeUrl,
     router,
-    settings.data,
-    settings.isLoading,
     streamingSources,
     updateAnimeInMyList,
   ]);
