@@ -26,9 +26,7 @@ export default {
 
       const api = new Api(stack, "trpc-api", {
         routes: {
-          "GET /{proxy+}": "src/index.handler",
-          "POST /{proxy+}": "src/index.handler",
-          "OPTIONS /{proxy+}": "src/index.handler",
+          "ANY /{proxy+}": "src/index.handler",
         },
         customDomain: {
           domainName: "api.aniways.xyz",
