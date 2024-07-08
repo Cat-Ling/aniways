@@ -26,7 +26,8 @@ export default {
 
       const api = new Api(stack, "trpc-api", {
         routes: {
-          "ANY /{proxy+}": "src/index.handler",
+          "GET /{proxy+}": "src/index.handler",
+          "POST /{proxy+}": "src/index.handler",
         },
         customDomain: {
           domainName: "api.aniways.xyz",
@@ -43,13 +44,13 @@ export default {
         cors: {
           allowCredentials: true,
           allowHeaders: [
-            "trpc-batch-mode",
             "content-type",
             "cookie",
+            "trpc-batch-mode",
             "x-trpc-source",
           ],
           allowOrigins: ["https://aniways.xyz"],
-          allowMethods: ["ANY"],
+          allowMethods: ["GET", "POST"],
         },
         defaults: {
           function: {

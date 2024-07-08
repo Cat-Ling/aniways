@@ -48,37 +48,29 @@ const createContext = (
   });
 };
 
-export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
-  if (event.requestContext.http.method === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "https://aniways.xyz",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Headers":
-          "trpc-batch-mode, content-type, cookie, x-trpc-source",
-      },
-      body: "",
-    };
-  }
+const allowedOrigins = ["https://aniways.xyz"];
+const allowedHeaders = [
+  "content-type",
+  "cookie",
+  "trpc-batch-mode",
+  "x-trpc-source",
+];
+const allowedMethods = ["GET", "POST"];
 
-  const res = await awsLambdaRequestHandler({
-    createContext,
-    router: appRouter,
-    onError({ error, path }) {
-      console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
-    },
-  })(event, context);
-
-  res.headers = {
-    ...res.headers,
-    "Access-Control-Allow-Origin": "https://aniways.xyz",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "*",
-    "Access-Control-Allow-Headers":
-      "trpc-batch-mode, content-type, cookie, x-trpc-source",
-  };
-
-  return res;
+const corsHeaders = {
+  "Access-Control-Allow-Origin": allowedOrigins.join(","),
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Methods": allowedMethods.join(","),
+  "Access-Control-Allow-Headers": allowedHeaders.join(","),
 };
+
+export const handler: APIGatewayProxyHandlerV2 = awsLambdaRequestHandler({
+  router: appRouter,
+  createContext,
+  responseMeta: () => ({
+    headers: corsHeaders,
+  }),
+  onError: ({ error, path }) => {
+    console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
+  },
+});
