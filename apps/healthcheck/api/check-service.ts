@@ -53,8 +53,15 @@ async function checkIfEpisodeServiceIsDown() {
       episode: Number(anime.lastEpisode),
     });
 
-    await api.episodes.scrapeVideoUrl.query({ slug: episode?.slug ?? "" });
-    await api.episodes.getEpisodesOfAnime.query({ animeId: anime.id });
+    await api.episodes.scrapeVideoUrl.query({
+      slug: episode?.slug ?? "",
+    });
+    await api.episodes.getStreamingSources.query({
+      episodeSlug: episode?.slug ?? "",
+    });
+    await api.episodes.getEpisodesOfAnime.query({
+      animeId: anime.id,
+    });
   } catch {
     isDown = true;
   }
