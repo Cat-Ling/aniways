@@ -18,7 +18,7 @@ import { MyAnimeListButton } from "./myanimelist-button";
 import { Trailer } from "./trailer";
 
 interface AnimeMetadataProps {
-  anime: Exclude<RouterOutputs["anime"]["byId"], undefined>;
+  title: string;
   metadata: Exclude<
     RouterOutputs["myAnimeList"]["getAnimeMetadata"],
     undefined
@@ -26,14 +26,14 @@ interface AnimeMetadataProps {
 }
 
 export const AnimeMetadataDetails = ({
-  anime,
+  title,
   metadata,
 }: AnimeMetadataProps) => {
   return (
     <div className="mb-6 grid min-h-[400px] w-full grid-cols-1 gap-6 md:grid-cols-4">
       <Image
         src={metadata.main_picture.large}
-        alt={anime.title}
+        alt={title}
         width={300}
         height={400}
         className="w-full rounded-md border border-border object-cover"
@@ -128,7 +128,7 @@ export const AnimeMetadataDetails = ({
                 </CredenzaDescription>
               </CredenzaHeader>
               <CredenzaBody>
-                <AnimeChooser query={anime.title} />
+                <AnimeChooser query={title} />
               </CredenzaBody>
             </CredenzaContent>
           </Credenza>

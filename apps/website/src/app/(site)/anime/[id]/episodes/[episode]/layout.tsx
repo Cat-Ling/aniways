@@ -35,7 +35,7 @@ const AnimeStreamingLayout = async ({
           episodes={episodes}
         />
       </div>
-      <AnimeMetadata anime={anime} />
+      <AnimeMetadata id={id} title={anime.title} />
     </>
   );
 };

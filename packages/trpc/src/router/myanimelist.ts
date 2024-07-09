@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { orm, schema } from "@aniways/db";
@@ -104,19 +105,26 @@ export const myAnimeListRouter = createTRPCRouter({
     }),
 
   getAnimeMetadata: publicProcedure
-    .input(
-      z.union([
-        z.object({ title: z.string(), slug: z.string() }),
-        z.object({ malId: z.number() }),
-      ])
-    )
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const malId =
-        "malId" in input ?
-          input.malId
-        : await getMalIdFromSlug(input.slug).catch(() => null);
+      const [anime] = await ctx.db
+        .select()
+        .from(schema.anime)
+        .where(orm.eq(schema.anime.id, input.id))
+        .limit(1);
 
-      const args = malId ? { malId } : input;
+      if (!anime) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Anime not found",
+        });
+      }
+
+      const malId =
+        anime.malAnimeId ??
+        (await getMalIdFromSlug(anime.slug).catch(() => null));
+
+      const args = malId ? { malId } : { title: anime.title };
 
       const metadata = await getAnimeDetailsFromMyAnimeList({
         accessToken: ctx.session?.accessToken,
@@ -124,6 +132,14 @@ export const myAnimeListRouter = createTRPCRouter({
       });
 
       if (!metadata) return;
+
+      const updateResult =
+        !anime.malAnimeId ?
+          ctx.db
+            .update(schema.anime)
+            .set({ malAnimeId: metadata.id })
+            .where(orm.eq(schema.anime.id, input.id))
+        : Promise.resolve();
 
       if (!metadata.relatedAnime.length)
         return {
@@ -138,6 +154,8 @@ export const myAnimeListRouter = createTRPCRouter({
         .from(schema.anime)
         .where(orm.inArray(schema.anime.malAnimeId, malIds));
 
+      await updateResult;
+
       return {
         ...metadata,
         relatedAnime: metadata.relatedAnime.map(anime => {
@@ -151,6 +169,15 @@ export const myAnimeListRouter = createTRPCRouter({
           };
         }),
       };
+    }),
+
+  getListStatusOfAnime: publicProcedure
+    .input(z.object({ malId: z.number() }))
+    .query(async ({ input, ctx }) => {
+      return await getAnimeDetailsFromMyAnimeList({
+        accessToken: ctx.session?.accessToken,
+        malId: input.malId,
+      }).then(data => data?.listStatus);
     }),
 
   getTrailer: publicProcedure

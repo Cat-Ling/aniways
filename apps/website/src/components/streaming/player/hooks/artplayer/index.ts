@@ -41,9 +41,9 @@ export const useVideoPlayer = ({
   const settings = api.settings.getSettings.useQuery();
 
   const listStatusRef = useRef<ListStatus | null>(null);
-  const listStatus = api.myAnimeList.getAnimeMetadata.useQuery(
+  const listStatus = api.myAnimeList.getListStatusOfAnime.useQuery(
     { malId: malId ?? 0 },
-    { enabled: !!malId, select: data => data?.listStatus }
+    { enabled: !!malId }
   );
 
   const utils = api.useUtils();
