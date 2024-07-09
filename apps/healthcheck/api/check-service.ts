@@ -11,12 +11,23 @@ async function checkIfMyAnimeListIsDown() {
       page: 1,
     });
 
-    if (!anime.data.length) {
+    if (!anime.data.length || !anime.data[0]?.title) {
       isDown = true;
+      throw new Error("No anime found");
+    }
+
+    const animeInDB = await api.anime.search.query({
+      query: anime.data[0]?.title,
+      page: 1,
+    });
+
+    if (!animeInDB.animes.length || !animeInDB.animes[0]?.id) {
+      isDown = true;
+      throw new Error("No anime found in DB");
     }
 
     await api.myAnimeList.getAnimeMetadata.query({
-      malId: anime.data[0]?.mal_id ?? 0,
+      id: animeInDB.animes[0]?.id,
     });
   } catch {
     isDown = true;
