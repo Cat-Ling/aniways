@@ -5,6 +5,7 @@ import { Skeleton } from "@aniways/ui/skeleton";
 import ErrorPage from "~/app/error";
 import { api } from "~/trpc/react";
 import { AnimeMetadataDetails } from "./anime-metadata-details";
+import { RecommendedAnime } from "./recommended-anime";
 import { RelatedAnime } from "./related-anime";
 
 export const AnimeMetadata = (props: { id: string; title: string }) => {
@@ -28,6 +29,7 @@ export const AnimeMetadata = (props: { id: string; title: string }) => {
       <h3 className="mb-3 mt-6 text-lg font-semibold">Anime Information</h3>
       <AnimeMetadataDetails title={props.title} metadata={metadata} />
       <RelatedAnime relatedAnime={metadata.relatedAnime} />
+      <RecommendedAnime recommendedAnime={metadata.recommendations} />
     </>
   );
 };

@@ -4,15 +4,26 @@ import { Play } from "lucide-react";
 import { Image } from "@aniways/ui/aniways-image";
 import { Skeleton } from "@aniways/ui/skeleton";
 
-interface AnimeGridProps {
-  type: "home" | "search";
-  animes: {
-    id: string;
-    title: string;
-    lastEpisode: string | null;
-    image: string;
-  }[];
-}
+type AnimeGridProps =
+  | {
+      type: "home" | "search";
+      animes: {
+        id: string;
+        title: string;
+        lastEpisode: string | null;
+        image: string;
+      }[];
+    }
+  | {
+      type: "related";
+      animes: {
+        id: string | null;
+        title: string;
+        lastEpisode: string | null;
+        image: string;
+        recommendations: number;
+      }[];
+    };
 
 export const AnimeGridLoader = ({ length = 20 }: { length?: number }) => {
   return (
@@ -35,7 +46,8 @@ export const AnimeGrid = (props: AnimeGridProps) => {
         const url =
           type === "home" ?
             `/anime/${id}/episodes/${lastEpisode?.replace(".", "-")}`
-          : `/anime/${id}`;
+          : type === "search" || id !== null ? `/anime/${id}`
+          : `/search?query=${encodeURIComponent(title)}`;
 
         return (
           <li
@@ -68,7 +80,11 @@ export const AnimeGrid = (props: AnimeGridProps) => {
                 <p className="mt-1 text-xs text-muted-foreground md:text-sm">
                   {type === "home" ?
                     `Episode ${lastEpisode}`
-                  : `${lastEpisode} episodes`}
+                  : type === "search" ?
+                    `${lastEpisode ?? "???"} episodes`
+                  : "recommendations" in anime ?
+                    `Recommended by ${anime.recommendations} users`
+                  : ""}
                 </p>
               </div>
             </Link>

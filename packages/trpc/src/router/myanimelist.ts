@@ -141,23 +141,52 @@ export const myAnimeListRouter = createTRPCRouter({
             .where(orm.eq(schema.anime.id, input.id))
         : Promise.resolve();
 
-      if (!metadata.relatedAnime.length)
-        return {
-          ...metadata,
-          relatedAnime: [],
-        };
+      const relatedAnime: { id: string; malId: number | null }[] = [];
+      const recommendedAnime: { id: string; malId: number | null }[] = [];
 
-      const malIds = metadata.relatedAnime.map(anime => anime.node.id);
+      if (metadata.relatedAnime.length > 0) {
+        const relatedAnimeMalIds = metadata.relatedAnime.map(
+          anime => anime.node.id
+        );
 
-      const relatedAnime = await ctx.db
-        .select({ id: schema.anime.id, malId: schema.anime.malAnimeId })
-        .from(schema.anime)
-        .where(orm.inArray(schema.anime.malAnimeId, malIds));
+        await ctx.db
+          .select({ id: schema.anime.id, malId: schema.anime.malAnimeId })
+          .from(schema.anime)
+          .where(orm.inArray(schema.anime.malAnimeId, relatedAnimeMalIds))
+          .then(data => {
+            relatedAnime.push(...data);
+          });
+      }
+
+      if (metadata.recommendations && metadata.recommendations.length > 0) {
+        const recommendedAnimeMalIds = metadata.recommendations.map(
+          anime => anime.node.id
+        );
+
+        await ctx.db
+          .select({ id: schema.anime.id, malId: schema.anime.malAnimeId })
+          .from(schema.anime)
+          .where(orm.inArray(schema.anime.malAnimeId, recommendedAnimeMalIds))
+          .then(data => {
+            recommendedAnime.push(...data);
+          });
+      }
 
       await updateResult;
 
       return {
         ...metadata,
+        recommendations:
+          metadata.recommendations?.map(anime => {
+            const dbAnime = recommendedAnime.find(
+              dbAnime => dbAnime.malId === anime.node.id
+            );
+
+            return {
+              ...anime,
+              id: dbAnime?.id ?? null,
+            };
+          }) ?? [],
         relatedAnime: metadata.relatedAnime.map(anime => {
           const dbAnime = relatedAnime.find(
             dbAnime => dbAnime.malId === anime.node.id

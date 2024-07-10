@@ -36,6 +36,7 @@ const fields = [
   "source",
   "synopsis",
   "mean",
+  "recommendations",
 ];
 
 function formatRating(rating: string) {
