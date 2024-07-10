@@ -141,36 +141,21 @@ export const myAnimeListRouter = createTRPCRouter({
             .where(orm.eq(schema.anime.id, input.id))
         : Promise.resolve();
 
-      const relatedAnime: { id: string; malId: number | null }[] = [];
-      const recommendedAnime: { id: string; malId: number | null }[] = [];
+      async function getDBAnimeFromMeta(animes?: { node: { id: number } }[]) {
+        const malIds = animes?.map(anime => anime.node.id);
 
-      if (metadata.relatedAnime.length > 0) {
-        const relatedAnimeMalIds = metadata.relatedAnime.map(
-          anime => anime.node.id
-        );
+        if (!malIds || malIds.length === 0) return [];
 
-        await ctx.db
+        return await ctx.db
           .select({ id: schema.anime.id, malId: schema.anime.malAnimeId })
           .from(schema.anime)
-          .where(orm.inArray(schema.anime.malAnimeId, relatedAnimeMalIds))
-          .then(data => {
-            relatedAnime.push(...data);
-          });
+          .where(orm.inArray(schema.anime.malAnimeId, malIds));
       }
 
-      if (metadata.recommendations && metadata.recommendations.length > 0) {
-        const recommendedAnimeMalIds = metadata.recommendations.map(
-          anime => anime.node.id
-        );
-
-        await ctx.db
-          .select({ id: schema.anime.id, malId: schema.anime.malAnimeId })
-          .from(schema.anime)
-          .where(orm.inArray(schema.anime.malAnimeId, recommendedAnimeMalIds))
-          .then(data => {
-            recommendedAnime.push(...data);
-          });
-      }
+      const [relatedAnime, recommendedAnime] = await Promise.all([
+        getDBAnimeFromMeta(metadata.relatedAnime),
+        getDBAnimeFromMeta(metadata.recommendations),
+      ]);
 
       await updateResult;
 
