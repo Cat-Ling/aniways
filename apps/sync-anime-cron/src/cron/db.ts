@@ -118,7 +118,8 @@ const processNewAnime = async (newAnime: RecentlyReleasedAnime) => {
       await Promise.allSettled(
         episodes.map(async ep => {
           await api.episodes.getStreamingSources.query({
-            episodeSlug: ep.slug,
+            animeId: animeId,
+            episode: ep.episode,
           }); // Preload the streaming sources
         })
       );
