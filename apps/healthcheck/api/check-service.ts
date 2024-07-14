@@ -57,7 +57,8 @@ async function checkIfEpisodeServiceIsDown() {
       slug: episode?.slug ?? "",
     });
     await api.episodes.getStreamingSources.query({
-      episodeSlug: episode?.slug ?? "",
+      animeId: anime.id,
+      episode: anime.lastEpisode,
     });
     await api.episodes.getEpisodesOfAnime.query({
       animeId: anime.id,
