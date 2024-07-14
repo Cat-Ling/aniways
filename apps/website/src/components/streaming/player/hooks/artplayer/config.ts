@@ -43,22 +43,22 @@ const getStreamingUrl = (
 };
 
 interface BaseArtPlayerConfigParameters {
-  episodeSlug: string;
   streamingSources: RouterOutputs["episodes"]["getStreamingSources"];
   artPlayerRef: RefObject<Artplayer>;
   playerContainer: HTMLDivElement;
   hls: RefObject<Hls>;
+  downloadUrl: string;
 }
 
 export const getArtPlayerConfig = ({
-  episodeSlug,
   streamingSources,
   artPlayerRef,
   playerContainer,
   hls,
+  downloadUrl,
 }: BaseArtPlayerConfigParameters) => {
   return {
-    id: episodeSlug,
+    id: streamingSources.sources[0]?.url,
     url: getStreamingUrl(streamingSources, artPlayerRef),
     container: playerContainer,
     mutex: true,
@@ -81,7 +81,7 @@ export const getArtPlayerConfig = ({
       {
         name: "Download",
         html: `
-          <a href="${episodeSlug.split("-").at(-1)}/download">
+          <a href="${downloadUrl}">
             ${DOWNLOAD_ICON}
           </a>
         `,

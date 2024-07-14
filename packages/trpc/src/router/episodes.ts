@@ -129,12 +129,22 @@ export const episodesRouter = createTRPCRouter({
     }),
 
   getStreamingSources: publicProcedure
-    .input(z.object({ episodeSlug: z.string() }))
+    .input(
+      z.object({
+        animeId: z.string(),
+        episode: z.string(),
+      })
+    )
     .query(async ({ input, ctx }) => {
       const [episode] = await ctx.db
         .select()
         .from(schema.video)
-        .where(orm.eq(schema.video.slug, input.episodeSlug))
+        .where(
+          orm.and(
+            orm.eq(schema.video.animeId, input.animeId),
+            orm.eq(schema.video.episode, input.episode)
+          )
+        )
         .limit(1);
 
       if (!episode) {
@@ -144,7 +154,13 @@ export const episodesRouter = createTRPCRouter({
         });
       }
 
-      const streamingSources = await getStreamingUrl(input.episodeSlug);
+      if (episode.streamingSources) {
+        return episode.streamingSources as Awaited<
+          ReturnType<typeof getStreamingUrl>
+        >;
+      }
+
+      const streamingSources = await getStreamingUrl(episode.slug);
 
       if (!episode.streamingSources) {
         await ctx.db

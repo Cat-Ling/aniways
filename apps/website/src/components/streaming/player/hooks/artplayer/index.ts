@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
 import { useRouter } from "next/navigation";
 import Artplayer from "artplayer";
 
@@ -12,7 +13,6 @@ import { getArtPlayerConfig } from "./config";
 
 export interface UseArtPlayerProps {
   streamingSources: RouterOutputs["episodes"]["getStreamingSources"];
-  episodeSlug: string;
   nextEpisodeUrl: string | null;
   episode: number;
   malId: number | null;
@@ -25,7 +25,6 @@ type ListStatus = Exclude<
 
 export const useVideoPlayer = ({
   streamingSources,
-  episodeSlug,
   nextEpisodeUrl,
   episode,
   malId,
@@ -68,15 +67,22 @@ export const useVideoPlayer = ({
   }, [listStatus, settings]);
 
   useEffect(() => {
+    if (!settings.data?.autoNext || !nextEpisodeUrl) return;
+    router.prefetch(nextEpisodeUrl, {
+      kind: PrefetchKind.FULL,
+    });
+  }, [settings.data, router, nextEpisodeUrl]);
+
+  useEffect(() => {
     const playerContainer = playerContainerRef.current;
     if (!playerContainer) return;
 
     const config = getArtPlayerConfig({
-      episodeSlug,
       streamingSources,
       artPlayerRef,
       playerContainer,
       hls,
+      downloadUrl: `${episode}/download`,
     });
 
     artPlayerRef.current = new Artplayer(config);
@@ -156,7 +162,6 @@ export const useVideoPlayer = ({
     };
   }, [
     episode,
-    episodeSlug,
     hls,
     malId,
     nextEpisodeUrl,
