@@ -8,7 +8,6 @@
     "aws:dev": "bun with-env sst dev --stage dev",
     "clean": "rm -rf .turbo node_modules .sst",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "deploy:prod": "bun sst deploy --stage prod",
     "with-env": "dotenv -e ../../.env --"
