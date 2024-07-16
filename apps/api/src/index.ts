@@ -16,13 +16,11 @@ const createContext = (
   }
 
   const cookies = new Map<string, string>();
-  if (options.event.cookies) {
-    options.event.cookies.forEach(cookie => {
-      const [name, value] = cookie.split("=");
-      if (!name || !value) return;
-      cookies.set(name, value);
-    });
-  }
+  options.event.cookies?.forEach(cookie => {
+    const [name, value] = cookie.split("=");
+    if (!name || !value) return;
+    cookies.set(name, value);
+  });
 
   return createTRPCContext({
     headers: headers,
