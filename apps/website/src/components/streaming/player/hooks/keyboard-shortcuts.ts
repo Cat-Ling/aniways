@@ -10,9 +10,9 @@ export const useKeyboardShortcuts = (
       const artPlayer = artPlayerRef.current;
       if (!artPlayer) return;
 
-      const { key, currentTarget } = event;
+      const { key, target } = event;
 
-      if (currentTarget instanceof HTMLInputElement) return;
+      if (target instanceof HTMLInputElement) return;
 
       switch (key) {
         // Play/Pause
