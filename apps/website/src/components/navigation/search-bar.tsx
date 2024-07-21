@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -30,11 +30,13 @@ export const SearchBar = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get("query") ?? "";
+  const [hasText, setHasText] = useState(false);
 
   useEffect(() => {
     if (pathname === "/search") return;
     if (!ref.current) return;
     ref.current.value = "";
+    setHasText(false);
   }, [pathname, searchParams]);
 
   return (
@@ -55,24 +57,34 @@ export const SearchBar = () => {
         ref={ref}
         name="query"
         placeholder="Search for anime"
-        className={cn("w-full pl-9 md:w-96")}
+        className={cn("h-10 w-full pl-9 pr-36 md:w-96")}
         defaultValue={query}
         autoComplete="off"
+        onChange={e => setHasText(e.currentTarget.value !== "")}
       />
       <Button
         type="button"
-        variant={"link"}
+        variant="link"
         size="sm"
         tabIndex={-1}
-        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 p-0 text-muted-foreground opacity-0 transition group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+        className={cn(
+          "pointer-events-none absolute right-24 top-1/2 -translate-y-1/2 p-0 text-muted-foreground opacity-0 transition group-focus-within:pointer-events-auto group-focus-within:opacity-100 ",
+          {
+            "opacity-100": hasText,
+          }
+        )}
         onClick={e => {
           e.currentTarget.blur();
           if (!ref.current) return;
           ref.current.value = "";
+          setHasText(false);
           router.push("/", { scroll: false });
         }}
       >
         Clear
+      </Button>
+      <Button type="submit" className="absolute right-0 top-0 ml-2">
+        Search
       </Button>
       <Search
         className="absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground"
