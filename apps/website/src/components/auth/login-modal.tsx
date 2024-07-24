@@ -1,8 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { LogIn } from "lucide-react";
 
 import { signIn } from "@aniways/auth/react";
+import { cn } from "@aniways/ui";
 import { Button } from "@aniways/ui/button";
 import {
   Credenza,
@@ -17,13 +19,22 @@ import {
 
 interface LoginModalProps {
   children?: ReactNode;
+  mobile?: boolean;
 }
 
-export const LoginModal = ({ children }: LoginModalProps) => {
+export const LoginModal = ({ children, mobile }: LoginModalProps) => {
   return (
     <Credenza>
       <CredenzaTrigger asChild>
-        <Button>{children ?? "Login"}</Button>
+        <Button
+          variant={mobile ? "navlink" : "default"}
+          className={cn({
+            "h-fit w-full justify-start": mobile,
+          })}
+        >
+          <LogIn className="mr-2 size-4" />
+          {children ?? "Login"}
+        </Button>
       </CredenzaTrigger>
       <CredenzaContent>
         <CredenzaHeader>

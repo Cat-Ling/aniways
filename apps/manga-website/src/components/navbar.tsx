@@ -1,3 +1,5 @@
+import { Tv2 } from "lucide-react";
+
 import { Button } from "@aniways/ui/button";
 import {
   DropdownMenu,
@@ -5,13 +7,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@aniways/ui/dropdown-menu";
+import { Skeleton } from "@aniways/ui/skeleton";
 
 import { api } from "../trpc";
 
 const UserDropdown = () => {
   const { data: session, isLoading } = api.auth.getSession.useQuery();
 
-  if (isLoading || !session?.user) return null;
+  if (isLoading || !session?.user) {
+    return <Skeleton className="h-12 w-12 rounded-full" />;
+  }
 
   return (
     <DropdownMenu>
@@ -34,19 +39,18 @@ export const Navbar = () => {
   return (
     <nav className="border-b border-border bg-background">
       <div className="container mx-auto flex items-center justify-between gap-3 px-3 md:container">
-        <a href="/" className="flex items-center">
-          <img
-            src="/logo.png"
-            width={80}
-            height={80}
-            alt="AniWays Logo"
-            className="-ml-3 h-20 w-20"
-          />
-          <h1 className="text-2xl font-bold">Aniways Manga</h1>
-        </a>
-
         <div className="flex items-center gap-3">
-          <Button asChild variant={"secondary"}>
+          <a href="/" className="flex items-center">
+            <img
+              src="/logo.png"
+              width={80}
+              height={80}
+              alt="AniWays Logo"
+              className="-ml-3 h-20 w-20"
+            />
+            <h1 className="text-2xl font-bold">Aniways</h1>
+          </a>
+          <Button asChild variant={"ghost"}>
             <a
               href={
                 // eslint-disable-next-line turbo/no-undeclared-env-vars
@@ -55,11 +59,13 @@ export const Navbar = () => {
                 : "https://aniways.xyz"
               }
             >
-              Anime
+              <Tv2 className="mr-2 size-4" />
+              Watch Anime
             </a>
           </Button>
-          <UserDropdown />
         </div>
+
+        <UserDropdown />
       </div>
     </nav>
   );

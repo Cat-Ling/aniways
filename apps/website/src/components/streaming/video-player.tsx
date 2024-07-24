@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { api } from "~/trpc/server";
 import { VideoPlayerClient } from "./player";
 
+import "./streaming.css";
+
 interface VideoFrameProps {
   episode: string;
   animeId: string;

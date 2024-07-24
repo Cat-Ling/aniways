@@ -191,4 +191,21 @@ export const animeRouter = createTRPCRouter({
         .set({ malAnimeId: input.malId })
         .where(orm.eq(schema.anime.id, input.id));
     }),
+
+  random: publicProcedure.query(async ({ ctx }) => {
+    const [anime] = await ctx.db
+      .select()
+      .from(schema.anime)
+      .orderBy(orm.sql`RANDOM()`)
+      .where(
+        orm.and(
+          orm.notLike(schema.anime.title, "%Dub%"),
+          orm.notLike(schema.anime.title, "%dub%"),
+          orm.isNotNull(schema.anime.lastEpisode)
+        )
+      )
+      .limit(1);
+
+    return anime;
+  }),
 });

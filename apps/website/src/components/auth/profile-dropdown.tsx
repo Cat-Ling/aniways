@@ -5,6 +5,7 @@ import { List, LogOut, Settings } from "lucide-react";
 
 import { signOut, useAuth } from "@aniways/auth/react";
 import { Image } from "@aniways/ui/aniways-image";
+import { Button } from "@aniways/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +14,57 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@aniways/ui/dropdown-menu";
+import { SheetClose } from "@aniways/ui/sheet";
 
-export const ProfileDropdown = () => {
+export const ProfileDropdown = ({ mobile }: { mobile?: boolean }) => {
   const user = useAuth();
 
   if (!user.user) return null;
+
+  if (mobile) {
+    return (
+      <>
+        <SheetClose asChild>
+          <Button
+            asChild
+            variant="navlink"
+            className="h-fit w-full justify-start"
+          >
+            <Link href={"/anime-list"}>
+              <List className="mr-2 size-4" />
+              Anime List
+            </Link>
+          </Button>
+        </SheetClose>
+        <SheetClose asChild>
+          <Button
+            asChild
+            variant="navlink"
+            className="h-fit w-full justify-start"
+          >
+            <Link href={"/settings"}>
+              <Settings className="mr-2 size-4" />
+              Settings
+            </Link>
+          </Button>
+        </SheetClose>
+        <SheetClose asChild>
+          <Button
+            variant="navlink"
+            className="h-fit w-full justify-start"
+            onClick={() => {
+              signOut({
+                redirectUrl: window.location.href,
+              });
+            }}
+          >
+            <LogOut className="mr-2 size-4" />
+            Log Out
+          </Button>
+        </SheetClose>
+      </>
+    );
+  }
 
   return (
     <DropdownMenu>
