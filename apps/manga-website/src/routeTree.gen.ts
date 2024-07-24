@@ -11,11 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from "./routes/__root";
+import { Route as SettingsImport } from "./routes/settings";
 import { Route as SearchImport } from "./routes/search";
 import { Route as RandomImport } from "./routes/random";
+import { Route as LibraryImport } from "./routes/library";
 import { Route as IndexImport } from "./routes/index";
 
 // Create/Update Routes
+
+const SettingsRoute = SettingsImport.update({
+  path: "/settings",
+  getParentRoute: () => rootRoute,
+} as any);
 
 const SearchRoute = SearchImport.update({
   path: "/search",
@@ -24,6 +31,11 @@ const SearchRoute = SearchImport.update({
 
 const RandomRoute = RandomImport.update({
   path: "/random",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const LibraryRoute = LibraryImport.update({
+  path: "/library",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -43,6 +55,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexImport;
       parentRoute: typeof rootRoute;
     };
+    "/library": {
+      id: "/library";
+      path: "/library";
+      fullPath: "/library";
+      preLoaderRoute: typeof LibraryImport;
+      parentRoute: typeof rootRoute;
+    };
     "/random": {
       id: "/random";
       path: "/random";
@@ -57,6 +76,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof SearchImport;
       parentRoute: typeof rootRoute;
     };
+    "/settings": {
+      id: "/settings";
+      path: "/settings";
+      fullPath: "/settings";
+      preLoaderRoute: typeof SettingsImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
@@ -64,8 +90,10 @@ declare module "@tanstack/react-router" {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
+  LibraryRoute,
   RandomRoute,
   SearchRoute,
+  SettingsRoute,
 });
 
 /* prettier-ignore-end */
@@ -77,18 +105,26 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/library",
         "/random",
-        "/search"
+        "/search",
+        "/settings"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/library": {
+      "filePath": "library.tsx"
     },
     "/random": {
       "filePath": "random.tsx"
     },
     "/search": {
       "filePath": "search.tsx"
+    },
+    "/settings": {
+      "filePath": "settings.tsx"
     }
   }
 }

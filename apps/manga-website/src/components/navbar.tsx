@@ -1,23 +1,31 @@
-import { Link } from "@tanstack/react-router";
-import { Shuffle, Tv2 } from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Library, LogOut, Settings, Shuffle, Tv2 } from "lucide-react";
 
 import { Button } from "@aniways/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@aniways/ui/dropdown-menu";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import { api } from "../trpc";
+import { LoginModal } from "./login-modal";
 import { SearchBar } from "./search-bar";
 
 const UserDropdown = () => {
+  const routerState = useRouterState();
   const { data: session, isLoading } = api.auth.getSession.useQuery();
 
-  if (isLoading || !session?.user) {
+  if (isLoading) {
     return <Skeleton className="h-12 w-12 rounded-full" />;
+  }
+
+  if (!session) {
+    return <LoginModal />;
   }
 
   return (
@@ -32,6 +40,33 @@ const UserDropdown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/library">
+            <Library className="mr-2 size-4" />
+            Your Library
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/settings">
+            <Settings className="mr-2 size-4" />
+            Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <a
+            href={
+              // eslint-disable-next-line turbo/no-undeclared-env-vars
+              import.meta.env.DEV ?
+                `http://localhost:3000/auth/signout?redirect=${window.location.origin + routerState.location.href}`
+              : `https://aniways.xyz/auth/signout?redirect=${window.location.origin + routerState.location.href}`
+            }
+          >
+            <LogOut className="mr-2 size-4" />
+            Log Out
+          </a>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
