@@ -16,11 +16,11 @@ export default {
 
       const certificateUSEast = Certificate.fromCertificateArn(
         stack,
-        "healthcheck-certificate",
+        "manga-certificate",
         process.env.HEALTHCHECK_AWS_SSL_CERT_ARN!
       );
 
-      const website = new StaticSite(stack, "healthcheck-website", {
+      const website = new StaticSite(stack, "manga-website", {
         buildOutput: "dist",
         buildCommand: "bun run vite:build",
         customDomain: {
