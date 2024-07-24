@@ -43,7 +43,7 @@ const createContext = (
   });
 };
 
-const allowedOrigins = ["https://aniways.xyz"];
+const allowedOrigins = ["https://aniways.xyz", "https://manga.aniways.xyz"];
 const allowedMethods = ["GET", "POST"];
 const allowedHeaders = [
   "content-type",
