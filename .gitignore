@@ -48,3 +48,4 @@ dist
 .next
 
 *.d.ts
+!vite-env.d.ts
