@@ -8,7 +8,8 @@ export const Route = createRootRoute({
     <>
       <Navbar />
       <Outlet />
-      <TanStackRouterDevtools />
+      {/* eslint-disable-next-line turbo/no-undeclared-env-vars */}
+      {import.meta.env.DEV && <TanStackRouterDevtools />}
     </>
   ),
 });
