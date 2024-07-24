@@ -5,8 +5,10 @@ import Link from "next/link";
 
 import { useAuth } from "@aniways/auth/react";
 import { Image } from "@aniways/ui/aniways-image";
+import { Button } from "@aniways/ui/button";
 import { Skeleton } from "@aniways/ui/skeleton";
 
+import { env } from "~/env";
 import { LoginModal } from "../auth/login-modal";
 import { ProfileDropdown } from "../auth/profile-dropdown";
 import { SearchBar, SearchBarFallback } from "./search-bar";
@@ -46,7 +48,20 @@ export const Navbar = () => {
             </Suspense>
           </div>
         </div>
-        <UserButtons />
+        <div className="flex items-center gap-3">
+          <Button asChild variant={"secondary"}>
+            <Link
+              href={
+                env.NODE_ENV === "development" ?
+                  "http://localhost:5173"
+                : "https://manga.aniways.xyz"
+              }
+            >
+              Manga
+            </Link>
+          </Button>
+          <UserButtons />
+        </div>
       </div>
       <div className="mb-3 block px-3 md:hidden">
         <Suspense fallback={<SearchBarFallback />}>

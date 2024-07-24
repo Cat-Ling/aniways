@@ -25,6 +25,16 @@ export const api = (handler: Handler) => {
         cookie => cookie + "; Domain=aniways.xyz"
       );
       res.headers.set("set-cookie", newCookies.join(", "));
+    } else {
+      const setCookies = res.headers.get("set-cookie")?.split(", ") ?? [];
+      const newCookies = setCookies.map(cookie => {
+        if (cookie.startsWith("mal.session")) {
+          const newCookie = cookie.split("SameSite=Lax").join("SameSite=None");
+          return newCookie + "; Secure";
+        }
+        return cookie;
+      });
+      res.headers.set("set-cookie", newCookies.join(", "));
     }
 
     return res;

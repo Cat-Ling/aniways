@@ -13,12 +13,30 @@ const createContext = async (req: NextRequest) => {
   });
 };
 
-const handler = (req: NextRequest) => {
+const setCorsHeaders = (res: Response) => {
+  res.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.headers.set("Access-Control-Allow-Methods", "GET, POST");
+  res.headers.set(
+    "Access-Control-Allow-Headers",
+    "content-type, cookie, trpc-batch-mode, x-trpc-source"
+  );
+  res.headers.set("Access-Control-Allow-Credentials", "true");
+};
+
+export const OPTIONS = () => {
+  const response = new Response(null, {
+    status: 204,
+  });
+  setCorsHeaders(response);
+  return response;
+};
+
+const handler = async (req: NextRequest) => {
   // return a 404 in production because we want to use the api service
   if (env.NODE_ENV === "production") notFound();
 
   // Only use this for development
-  return fetchRequestHandler({
+  const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
@@ -27,6 +45,10 @@ const handler = (req: NextRequest) => {
       console.error(`❌ tRPC failed on ${path ?? "<no-path>"}:`, error);
     },
   });
+
+  setCorsHeaders(response);
+
+  return response;
 };
 
 export { handler as GET, handler as POST };

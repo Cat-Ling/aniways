@@ -20,8 +20,9 @@
   "dependencies": {
     "@aniways/auth": "workspace:*",
     "@aniways/db": "workspace:*",
-    "@aniways/myanimelist": "workspace:*",
     "@aniways/gogoanime": "workspace:*",
+    "@aniways/myanimelist": "workspace:*",
+    "@consumet/extensions": "^1.6.0",
     "@trpc/server": "11.0.0-rc.364",
     "superjson": "2.2.1",
     "zod": "^3.23.8"
