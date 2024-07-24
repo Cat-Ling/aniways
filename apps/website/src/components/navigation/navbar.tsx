@@ -50,7 +50,7 @@ export const Navbar = () => {
         </div>
         <div className="flex items-center gap-3">
           <Button asChild variant={"secondary"}>
-            <Link
+            <a
               href={
                 env.NODE_ENV === "development" ?
                   "http://localhost:5173"
@@ -58,7 +58,7 @@ export const Navbar = () => {
               }
             >
               Manga
-            </Link>
+            </a>
           </Button>
           <UserButtons />
         </div>
