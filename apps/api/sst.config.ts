@@ -49,7 +49,7 @@ export default {
             "trpc-batch-mode",
             "x-trpc-source",
           ],
-          allowOrigins: ["https://aniways.xyz"],
+          allowOrigins: ["https://aniways.xyz", "https://manga.aniways.xyz"],
           allowMethods: ["GET", "POST"],
         },
         defaults: {
