@@ -16,6 +16,7 @@ import { Route as SearchImport } from "./routes/search";
 import { Route as RandomImport } from "./routes/random";
 import { Route as LibraryImport } from "./routes/library";
 import { Route as IndexImport } from "./routes/index";
+import { Route as MangaIdImport } from "./routes/manga.$id";
 
 // Create/Update Routes
 
@@ -41,6 +42,11 @@ const LibraryRoute = LibraryImport.update({
 
 const IndexRoute = IndexImport.update({
   path: "/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const MangaIdRoute = MangaIdImport.update({
+  path: "/manga/$id",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -83,6 +89,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof SettingsImport;
       parentRoute: typeof rootRoute;
     };
+    "/manga/$id": {
+      id: "/manga/$id";
+      path: "/manga/$id";
+      fullPath: "/manga/$id";
+      preLoaderRoute: typeof MangaIdImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
@@ -94,6 +107,7 @@ export const routeTree = rootRoute.addChildren({
   RandomRoute,
   SearchRoute,
   SettingsRoute,
+  MangaIdRoute,
 });
 
 /* prettier-ignore-end */
@@ -108,7 +122,8 @@ export const routeTree = rootRoute.addChildren({
         "/library",
         "/random",
         "/search",
-        "/settings"
+        "/settings",
+        "/manga/$id"
       ]
     },
     "/": {
@@ -125,6 +140,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/settings": {
       "filePath": "settings.tsx"
+    },
+    "/manga/$id": {
+      "filePath": "manga.$id.tsx"
     }
   }
 }
