@@ -9,7 +9,7 @@
     "vite:build": "tsc && vite build",
     "aws:dev": "bun with-env sst bind vite --stage dev",
     "clean": "rm -rf .turbo node_modules .sst dist",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "prettier --check . --ignore-path ../../.prettierignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "deploy:prod": "bun sst deploy --stage prod",

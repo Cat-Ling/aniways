@@ -21,7 +21,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules dist",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "prettier --check . --ignore-path ../../.prettierignore",
     "lint": "eslint",
     "push": "bun with-env drizzle-kit push",
     "studio": "bun with-env drizzle-kit studio",

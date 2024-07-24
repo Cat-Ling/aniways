@@ -24,5 +24,6 @@
     "next/dist/client/router.d.ts"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
-  "prettier.configPath": "./tooling/prettier/index.js"
+  "prettier.configPath": "tooling/prettier/index.js",
+  "prettier.ignorePath": ".prettierignore"
 }
