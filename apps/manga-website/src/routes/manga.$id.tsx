@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
 import { cn } from "@aniways/ui";
@@ -62,12 +62,21 @@ function MangaInfoPage() {
           </div>
           <Description description={mangaInfo.data?.description} />
           <h2 className="text-xl font-bold">Chapters</h2>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="flex flex-col gap-2">
             {mangaInfo.data?.chapters.map(chapter => (
-              <div key={chapter.id} className="flex justify-between">
-                <span>{chapter.title}</span>
-                <span>{chapter.uploaded}</span>
-              </div>
+              <Button
+                key={chapter.id}
+                variant="navlink"
+                className="w-full justify-between rounded-none border-b border-border"
+                asChild
+              >
+                <Link to="/read/$id" params={chapter}>
+                  <span className="w-full truncate">{chapter.title}</span>
+                  <span className="text-muted-foreground">
+                    {chapter.uploaded}
+                  </span>
+                </Link>
+              </Button>
             ))}
           </div>
         </div>

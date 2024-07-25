@@ -16,6 +16,7 @@ import { Route as SearchImport } from "./routes/search";
 import { Route as RandomImport } from "./routes/random";
 import { Route as LibraryImport } from "./routes/library";
 import { Route as IndexImport } from "./routes/index";
+import { Route as ReadIdImport } from "./routes/read.$id";
 import { Route as MangaIdImport } from "./routes/manga.$id";
 
 // Create/Update Routes
@@ -42,6 +43,11 @@ const LibraryRoute = LibraryImport.update({
 
 const IndexRoute = IndexImport.update({
   path: "/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const ReadIdRoute = ReadIdImport.update({
+  path: "/read/$id",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -96,6 +102,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof MangaIdImport;
       parentRoute: typeof rootRoute;
     };
+    "/read/$id": {
+      id: "/read/$id";
+      path: "/read/$id";
+      fullPath: "/read/$id";
+      preLoaderRoute: typeof ReadIdImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
@@ -108,6 +121,7 @@ export const routeTree = rootRoute.addChildren({
   SearchRoute,
   SettingsRoute,
   MangaIdRoute,
+  ReadIdRoute,
 });
 
 /* prettier-ignore-end */
@@ -123,7 +137,8 @@ export const routeTree = rootRoute.addChildren({
         "/random",
         "/search",
         "/settings",
-        "/manga/$id"
+        "/manga/$id",
+        "/read/$id"
       ]
     },
     "/": {
@@ -143,6 +158,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/manga/$id": {
       "filePath": "manga.$id.tsx"
+    },
+    "/read/$id": {
+      "filePath": "read.$id.tsx"
     }
   }
 }
