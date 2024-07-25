@@ -5,7 +5,7 @@ import {
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
 import { FunctionUrlOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { FunctionUrl } from "aws-cdk-lib/aws-lambda";
+import { FunctionUrl, FunctionUrlAuthType } from "aws-cdk-lib/aws-lambda";
 import { Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Function, StaticSite } from "sst/constructs";
@@ -33,6 +33,7 @@ export default {
 
       const imageProxyUrl = new FunctionUrl(stack, "image-proxy-url", {
         function: imageProxy,
+        authType: FunctionUrlAuthType.NONE,
       });
 
       const website = new StaticSite(stack, "manga-website", {
