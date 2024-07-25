@@ -1,7 +1,7 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
-import { StaticSite } from "sst/constructs";
+import { Function, StaticSite } from "sst/constructs";
 
 export default {
   config: _input => ({
@@ -20,6 +20,10 @@ export default {
         process.env.HEALTHCHECK_AWS_SSL_CERT_ARN!
       );
 
+      const imageProxy = new Function(stack, "image-proxy", {
+        handler: "api/proxy.handler",
+      });
+
       const website = new StaticSite(stack, "manga-website", {
         buildOutput: "dist",
         buildCommand: "bun run vite:build",
@@ -28,6 +32,18 @@ export default {
           isExternalDomain: true,
           cdk: {
             certificate: certificateUSEast,
+          },
+        },
+        cdk: {
+          distribution: {
+            additionalBehaviors: {
+              "/image/*": {
+                origin: imageProxy.bind,
+                allowedMethods: {
+                  methods: ["GET"],
+                },
+              },
+            },
           },
         },
       });

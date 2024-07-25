@@ -1,4 +1,3 @@
-import { MANGA } from "@consumet/extensions";
 import { load } from "cheerio";
 import { z } from "zod";
 
@@ -136,8 +135,55 @@ export const mangaRouter = createTRPCRouter({
   getChapterPages: publicProcedure
     .input(z.object({ chapterId: z.string() }))
     .query(async ({ input }) => {
-      const manga = new MANGA.MangaKakalot();
+      const url = convertFromBase64(input.chapterId);
 
-      return manga.fetchChapterPages(input.chapterId);
+      console.log(url);
+
+      const $ = await fetch(url)
+        .then(res => res.text())
+        .then(load);
+
+      const prevUrl = $(
+        ".navi-change-chapter-btn .navi-change-chapter-btn-prev"
+      ).attr("href");
+      const nextUrl = $(
+        ".navi-change-chapter-btn .navi-change-chapter-btn-next"
+      ).attr("href");
+
+      const chapterList = $(".navi-change-chapter option")
+        .map((i, el) => {
+          const $el = $(el);
+          const title = $el.text();
+          const chapter = $el.attr("data-c");
+          const chapterUrl = url.replace(/chapter-\d+/, `chapter-${chapter}`);
+
+          return {
+            id: convertToBase64(chapterUrl),
+            title,
+            chapter,
+            url: chapterUrl,
+          };
+        })
+        .get();
+
+      const images = $(".container-chapter-reader > img")
+        .map((i, el) => {
+          const url = $(el).attr("src");
+          const alt = $(el).attr("alt")?.replace("- MangaNato.com", "").trim();
+
+          return {
+            url,
+            alt,
+          };
+        })
+        .get();
+
+      return {
+        prev: prevUrl ? convertToBase64(prevUrl) : null,
+        next: nextUrl ? convertToBase64(nextUrl) : null,
+        images,
+        pages: images.length,
+        chapterList,
+      };
     }),
 });
