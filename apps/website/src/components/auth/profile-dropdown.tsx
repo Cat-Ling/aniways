@@ -48,6 +48,7 @@ export const ProfileDropdown = ({ mobile }: { mobile?: boolean }) => {
             </Link>
           </Button>
         </SheetClose>
+        <DropdownMenuSeparator />
         <SheetClose asChild>
           <Button
             variant="navlink"

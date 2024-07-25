@@ -1,5 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Library, LogOut, Menu, Settings, Shuffle, Tv2 } from "lucide-react";
+import {
+  Home,
+  Library,
+  LogOut,
+  Menu,
+  Settings,
+  Shuffle,
+  Tv2,
+} from "lucide-react";
 
 import { Button } from "@aniways/ui/button";
 import {
@@ -10,23 +18,86 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@aniways/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@aniways/ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from "@aniways/ui/sheet";
 import { Skeleton } from "@aniways/ui/skeleton";
 
 import { api } from "../trpc";
 import { LoginModal } from "./login-modal";
+import { ProfileHeader } from "./profile-header";
 import { SearchBar } from "./search-bar";
 
-const UserDropdown = () => {
+interface UserDropdownProps {
+  mobile?: boolean;
+}
+
+const UserDropdown = (props: UserDropdownProps) => {
   const routerState = useRouterState();
   const { data: session, isLoading } = api.auth.getSession.useQuery();
 
   if (isLoading) {
+    if (props.mobile) return <Skeleton className="h-8 w-full rounded-md" />;
     return <Skeleton className="h-12 w-12 rounded-full" />;
   }
 
   if (!session) {
-    return <LoginModal />;
+    return <LoginModal mobile={props.mobile} />;
+  }
+
+  if (props.mobile) {
+    return (
+      <>
+        <SheetClose asChild>
+          <Button
+            asChild
+            variant={"navlink"}
+            className="h-fit w-full justify-start"
+          >
+            <Link to={"/library"}>
+              <Library className="mr-2 size-4" />
+              Your Library
+            </Link>
+          </Button>
+        </SheetClose>
+        <SheetClose asChild>
+          <Button
+            asChild
+            variant={"navlink"}
+            className="h-fit w-full justify-start"
+          >
+            <Link to={"/settings"}>
+              <Settings className="mr-2 size-4" />
+              Settings
+            </Link>
+          </Button>
+        </SheetClose>
+        <DropdownMenuSeparator />
+        <SheetClose asChild>
+          <Button
+            asChild
+            variant={"navlink"}
+            className="h-fit w-full justify-start"
+          >
+            <a
+              href={
+                // eslint-disable-next-line turbo/no-undeclared-env-vars
+                import.meta.env.DEV ?
+                  `http://localhost:3000/auth/signout?redirect=${window.location.origin + routerState.location.href}`
+                : `https://aniways.xyz/auth/signout?redirect=${window.location.origin + routerState.location.href}`
+              }
+            >
+              <LogOut className="mr-2 size-4" />
+              Log Out
+            </a>
+          </Button>
+        </SheetClose>
+      </>
+    );
   }
 
   return (
@@ -129,7 +200,57 @@ export const Navbar = () => {
             </div>
           </div>
         </nav>
-        <SheetContent side="left"></SheetContent>
+        <SheetContent side="left">
+          <SheetHeader className="mb-4">
+            <ProfileHeader />
+          </SheetHeader>
+          <div className="space-y-3">
+            <SheetClose asChild>
+              <Button
+                asChild
+                variant={"navlink"}
+                className="h-fit w-full justify-start"
+              >
+                <Link to={"/"}>
+                  <Home className="mr-2 size-4" />
+                  Home
+                </Link>
+              </Button>
+            </SheetClose>
+            <SheetClose asChild>
+              <Button
+                asChild
+                variant="navlink"
+                className="h-fit w-full justify-start"
+              >
+                <a
+                  href={
+                    // eslint-disable-next-line turbo/no-undeclared-env-vars
+                    import.meta.env.DEV ?
+                      "http://localhost:3000"
+                    : "https://aniways.xyz"
+                  }
+                >
+                  <Tv2 className="mr-2 size-4" />
+                  Watch Anime
+                </a>
+              </Button>
+            </SheetClose>
+            <SheetClose asChild>
+              <Button
+                asChild
+                variant="navlink"
+                className="h-fit w-full justify-start"
+              >
+                <Link to="/random">
+                  <Shuffle className="mr-2 size-4" />
+                  Random
+                </Link>
+              </Button>
+            </SheetClose>
+            <UserDropdown mobile />
+          </div>
+        </SheetContent>
       </Sheet>
       <div className="h-16 md:h-20" />
     </>
