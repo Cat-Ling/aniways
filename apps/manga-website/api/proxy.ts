@@ -8,13 +8,6 @@ export const handler: APIGatewayProxyHandlerV2 = async event => {
     };
   }
 
-  if (event.headers.referer !== "https://manga.aniways.xyz") {
-    return {
-      statusCode: 403,
-      body: "Forbidden",
-    };
-  }
-
   // get image hash from url => /image/:imageHash
   const [parentPath, hash] = event.rawPath.split("/").filter(Boolean).slice(-2);
 
