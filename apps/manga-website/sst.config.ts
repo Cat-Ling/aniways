@@ -1,4 +1,9 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import {
+  AllowedMethods,
+  OriginRequestPolicy,
+  ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
 import { FunctionUrlOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { FunctionUrl } from "aws-cdk-lib/aws-lambda";
 import { Tags } from "aws-cdk-lib/core";
@@ -45,9 +50,10 @@ export default {
             additionalBehaviors: {
               "/images/*": {
                 origin: new FunctionUrlOrigin(imageProxyUrl),
-                allowedMethods: {
-                  methods: ["HEAD", "GET"],
-                },
+                viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                allowedMethods: AllowedMethods.ALLOW_ALL,
+                originRequestPolicy:
+                  OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
               },
             },
           },

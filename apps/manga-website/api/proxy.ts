@@ -26,7 +26,7 @@ export const handler: APIGatewayProxyHandlerV2 = async event => {
   }
 
   // convert base64 to utf-8
-  const url = Buffer.from(hash, "base64").toString("utf-8");
+  const url = Buffer.from(hash, "base64url").toString("utf-8");
 
   const blob = await fetch(url, {
     headers: {

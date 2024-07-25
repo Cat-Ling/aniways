@@ -172,7 +172,7 @@ export const mangaRouter = createTRPCRouter({
           const alt = $(el).attr("alt")?.replace("- MangaNato.com", "").trim();
 
           return {
-            url,
+            url: convertToBase64(`${url}`),
             alt,
           };
         })

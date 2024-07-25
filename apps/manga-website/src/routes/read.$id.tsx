@@ -28,7 +28,7 @@ function ReadMangaPage() {
       {chapter.data?.images.map(image => (
         <img
           key={image.url}
-          src={image.url}
+          src={`/images/${image.url}`}
           alt={image.alt}
           className="w-full"
         />
