@@ -36,7 +36,7 @@
     "@aniways/typescript-config": "workspace:*",
     "@tanstack/router-devtools": "^1.45.8",
     "@tanstack/router-plugin": "^1.45.8",
-    "@types/aws-lambda": "^8.10.142",
+    "@types/aws-lambda": "^8.10.140",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^9.4.0",
     "jiti": "^1.21.0",
