@@ -1,6 +1,7 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { FunctionUrlOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { Duration, Tags } from "aws-cdk-lib/core";
+import { FunctionUrl } from "aws-cdk-lib/aws-lambda";
+import { Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Function, StaticSite } from "sst/constructs";
 
@@ -25,6 +26,10 @@ export default {
         handler: "api/proxy.handler",
       });
 
+      const imageProxyUrl = new FunctionUrl(stack, "image-proxy-url", {
+        function: imageProxy,
+      });
+
       const website = new StaticSite(stack, "manga-website", {
         buildOutput: "dist",
         buildCommand: "bun run vite:build",
@@ -39,10 +44,7 @@ export default {
           distribution: {
             additionalBehaviors: {
               "/images/*": {
-                origin: new FunctionUrlOrigin(imageProxy as any, {
-                  connectionTimeout: Duration.minutes(1),
-                  connectionAttempts: 3,
-                }),
+                origin: new FunctionUrlOrigin(imageProxyUrl),
                 allowedMethods: {
                   methods: ["GET"],
                 },
