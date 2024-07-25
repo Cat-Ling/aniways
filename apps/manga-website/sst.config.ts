@@ -46,7 +46,7 @@ export default {
               "/images/*": {
                 origin: new FunctionUrlOrigin(imageProxyUrl),
                 allowedMethods: {
-                  methods: ["GET"],
+                  methods: ["HEAD", "GET"],
                 },
               },
             },
