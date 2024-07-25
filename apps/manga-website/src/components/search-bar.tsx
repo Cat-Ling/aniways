@@ -5,8 +5,34 @@ import { Search } from "lucide-react";
 import { cn } from "@aniways/ui";
 import { Button } from "@aniways/ui/button";
 import { Input } from "@aniways/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@aniways/ui/popover";
 
-export const SearchBar = () => {
+interface SearchBarProps {
+  mobile?: boolean;
+}
+
+export const SearchBar = ({ mobile }: SearchBarProps) => {
+  return mobile ? <MobileSearchInput /> : <SearchInput />;
+};
+
+const MobileSearchInput = () => {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant={"ghost"} size="icon">
+          <span className="sr-only">Search</span>
+          <Search />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="mt-3 w-screen rounded-none bg-background">
+        <p className="mb-2 font-bold">Search for manga</p>
+        <SearchInput />
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+const SearchInput = () => {
   const ref = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [hasText, setHasText] = useState(false);
