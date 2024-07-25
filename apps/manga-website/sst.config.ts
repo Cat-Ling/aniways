@@ -1,5 +1,6 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
-import { Tags } from "aws-cdk-lib/core";
+import { FunctionUrlOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { Duration, Tags } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Function, StaticSite } from "sst/constructs";
 
@@ -37,8 +38,11 @@ export default {
         cdk: {
           distribution: {
             additionalBehaviors: {
-              "/image/*": {
-                origin: imageProxy.bind,
+              "/images/*": {
+                origin: new FunctionUrlOrigin(imageProxy as any, {
+                  connectionTimeout: Duration.minutes(1),
+                  connectionAttempts: 3,
+                }),
                 allowedMethods: {
                   methods: ["GET"],
                 },
