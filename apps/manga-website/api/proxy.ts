@@ -1,4 +1,4 @@
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async event => {
   if (event.requestContext.http.method !== "GET") {
@@ -8,7 +8,7 @@ export const handler: APIGatewayProxyHandlerV2 = async event => {
     };
   }
 
-  if (event.headers["referer"] !== "https://manga.aniways.xyz") {
+  if (event.headers.referer !== "https://manga.aniways.xyz") {
     return {
       statusCode: 403,
       body: "Forbidden",
@@ -39,7 +39,7 @@ export const handler: APIGatewayProxyHandlerV2 = async event => {
   return {
     statusCode: 200,
     headers: {
-      "Content-Type": blob.headers.get("Content-Type")!,
+      "Content-Type": blob.headers.get("Content-Type") ?? "image/jpeg",
       "Cache-Control": "public, max-age=31536000, immutable", // 1 year
     },
     body: Buffer.from(blobBuffer).toString("base64"),
