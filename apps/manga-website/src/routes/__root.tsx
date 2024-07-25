@@ -4,12 +4,16 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Navbar } from "../components/navbar";
 
 export const Route = createRootRoute({
-  component: () => (
+  component: RootLayout,
+});
+
+function RootLayout() {
+  return (
     <>
       <Navbar />
       <Outlet />
       {/* eslint-disable-next-line turbo/no-undeclared-env-vars */}
       {import.meta.env.DEV && <TanStackRouterDevtools />}
     </>
-  ),
-});
+  );
+}

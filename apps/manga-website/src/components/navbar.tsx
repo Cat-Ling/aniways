@@ -75,7 +75,7 @@ const UserDropdown = () => {
 export const Navbar = () => {
   return (
     <>
-      <nav className="fixed top-0 w-full border-b border-border bg-background">
+      <nav className="fixed top-0 z-10 w-full border-b border-border bg-background">
         <div className="container mx-auto flex items-center justify-between gap-3 px-3 md:container">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center">
