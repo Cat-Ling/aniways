@@ -1,13 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Home,
-  Library,
-  LogOut,
-  Menu,
-  Settings,
-  Shuffle,
-  Tv2,
-} from "lucide-react";
+import { Home, Library, LogOut, Menu, Settings, Tv2 } from "lucide-react";
 
 import { Button } from "@aniways/ui/button";
 import {
@@ -184,12 +176,6 @@ export const Navbar = () => {
                     Watch Anime
                   </a>
                 </Button>
-                <Button asChild variant="navlink">
-                  <Link to="/random">
-                    <Shuffle className="mr-2 size-4" />
-                    Random
-                  </Link>
-                </Button>
               </div>
             </div>
             <div className="md:hidden">
@@ -234,18 +220,6 @@ export const Navbar = () => {
                   <Tv2 className="mr-2 size-4" />
                   Watch Anime
                 </a>
-              </Button>
-            </SheetClose>
-            <SheetClose asChild>
-              <Button
-                asChild
-                variant="navlink"
-                className="h-fit w-full justify-start"
-              >
-                <Link to="/random">
-                  <Shuffle className="mr-2 size-4" />
-                  Random
-                </Link>
               </Button>
             </SheetClose>
             <UserDropdown mobile />
