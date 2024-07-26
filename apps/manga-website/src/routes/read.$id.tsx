@@ -92,11 +92,7 @@ function MangaImage(props: { src?: string; alt?: string }) {
   return (
     <img
       ref={imageRef}
-      src={
-        showImage ? src : (
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
-        )
-      }
+      src={showImage ? src : ""}
       alt={props.alt}
       className={cn(
         "w-full object-contain object-center",
@@ -106,6 +102,10 @@ function MangaImage(props: { src?: string; alt?: string }) {
       loading="lazy"
       onLoad={() => setIsLoading(false)}
       onError={() => {
+        if (!showImage) {
+          // If the image is not visible, we don't try to reload it
+          return setIsLoading(true);
+        }
         // Usually this is caused by 429 so we wait for a while and try again
         setTimeout(() => {
           if (!imageRef.current) return;
@@ -133,7 +133,7 @@ function Navigation(props: {
       <div>
         <h2 className="mb-2 text-lg font-bold md:text-xl">Chapters</h2>
         <Select
-          defaultValue={chapter.id}
+          value={chapter.id}
           onValueChange={value => {
             void navigate({
               to: "/read/$id",
@@ -158,13 +158,19 @@ function Navigation(props: {
       </div>
 
       <div className="mb-6 flex w-full justify-between">
-        {chapter.prevId && (
-          <Button asChild>
-            <Link to={`/read/$id`} params={{ id: chapter.prevId }} resetScroll>
-              {"< Previous Chapter"}
-            </Link>
-          </Button>
-        )}
+        {
+          chapter.prevId ?
+            <Button asChild>
+              <Link
+                to={`/read/$id`}
+                params={{ id: chapter.prevId }}
+                resetScroll
+              >
+                {"< Previous Chapter"}
+              </Link>
+            </Button>
+          : <div /> // To keep the layout consistent
+        }
         {chapter.nextId && (
           <Button asChild>
             <Link to={`/read/$id`} params={{ id: chapter.nextId }} resetScroll>

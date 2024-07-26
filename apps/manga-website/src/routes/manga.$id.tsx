@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { Book } from "lucide-react";
 
 import { cn } from "@aniways/ui";
 import { Button } from "@aniways/ui/button";
@@ -34,7 +35,7 @@ function MangaInfoPage() {
             description={mangaInfo.data?.description}
           />
         </div>
-        <div className="flex flex-col gap-3 md:col-span-3">
+        <div className="relative flex flex-col gap-3 md:col-span-3">
           <h1 className="text-3xl font-bold">{mangaInfo.data?.title}</h1>
           <div className="flex flex-col gap-1 text-sm">
             <div>
@@ -62,6 +63,28 @@ function MangaInfoPage() {
           </div>
           <Description description={mangaInfo.data?.description} />
           <h2 className="text-xl font-bold">Chapters</h2>
+          <div className="flex w-full gap-2 md:w-fit">
+            <Button asChild variant={"default"} className="flex-1">
+              <Link
+                to="/read/$id"
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                params={mangaInfo.data!.chapters.at(-1)!}
+                resetScroll
+              >
+                Read First Chapter
+              </Link>
+            </Button>
+            <Button asChild variant={"secondary"} className="flex-1">
+              <Link
+                to="/read/$id"
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                params={mangaInfo.data!.chapters.at(0)!}
+                resetScroll
+              >
+                Read Latest Chapter
+              </Link>
+            </Button>
+          </div>
           <div className="flex flex-col gap-2">
             {mangaInfo.data?.chapters.map(chapter => (
               <Button
@@ -70,7 +93,7 @@ function MangaInfoPage() {
                 className="w-full justify-between rounded-none border-b border-border"
                 asChild
               >
-                <Link to="/read/$id" params={chapter}>
+                <Link to="/read/$id" params={chapter} resetScroll>
                   <span className="w-full truncate">{chapter.title}</span>
                   <span className="text-muted-foreground">
                     {chapter.uploaded}
@@ -79,6 +102,19 @@ function MangaInfoPage() {
               </Button>
             ))}
           </div>
+          {mangaInfo.data?.chapters.at(-1) && (
+            <Button className="sticky bottom-3 left-full mt-3 w-fit" asChild>
+              <Link
+                to="/read/$id"
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                params={mangaInfo.data.chapters.at(-1)!}
+                resetScroll
+              >
+                <Book className="mr-2 size-4" />
+                Read Now
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </MainLayout>

@@ -28,7 +28,9 @@ function SearchPage() {
         <span className="text-foreground">{search.query}</span>
       </p>
       <Button asChild variant={"link"} className="h-fit px-0">
-        <Link to="/">{"<<< Go back to home"}</Link>
+        <Link to="/" resetScroll>
+          {"<<< Go back to home"}
+        </Link>
       </Button>
       <div className="my-6 grid h-full grid-cols-2 gap-3 md:grid-cols-5">
         {results.isLoading &&
@@ -41,6 +43,7 @@ function SearchPage() {
             to={"/manga/$id"}
             params={{ id: manga.id }}
             className="group flex flex-col gap-3 rounded-md border border-border bg-background p-2"
+            resetScroll
           >
             <div className="relative">
               <div className="pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
