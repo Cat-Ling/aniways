@@ -28,11 +28,9 @@ function ReadMangaPage() {
     <MainLayout>
       <h1>Read Manga Page</h1>
       <p>Reading manga with ID: {params.id}</p>
-      <div className="mx-auto max-w-lg">
-        {chapter.data?.images.map(image => (
-          <MangaImage key={image.url} src={image.url} alt={image.alt} />
-        ))}
-      </div>
+      {chapter.data?.images.map(image => (
+        <MangaImage key={image.url} src={image.url} alt={image.alt} />
+      ))}
       <pre>{JSON.stringify(chapter.data, null, 2)}</pre>
     </MainLayout>
   );
@@ -47,7 +45,8 @@ function MangaImage(props: { src?: string; alt?: string }) {
       alt={props.alt}
       className={cn(
         "w-full object-contain object-center",
-        isLoading && "h-[calc(100vw-64px*(2/3))] lg:h-[calc(32rem*(2/3))]"
+        isLoading &&
+          "h-[calc((100vw-64px)*1.5)] bg-muted 2xl:h-[calc((1400px-64px)*1.5)]"
       )}
       loading="lazy"
       onLoad={() => setIsLoading(false)}
