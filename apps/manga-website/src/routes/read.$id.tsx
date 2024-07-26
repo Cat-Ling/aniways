@@ -31,6 +31,7 @@ function ReadMangaPage() {
           src={`/images/${image.url}`}
           alt={image.alt}
           className="w-full"
+          loading="lazy"
         />
       ))}
       <pre>{JSON.stringify(chapter.data, null, 2)}</pre>
