@@ -47,9 +47,88 @@ export const mangaRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const url = convertFromBase64(input.id);
+
       const $ = await fetch(url)
         .then(res => res.text())
         .then(load);
+
+      if (url.includes("mangakakalot")) {
+        const title = $(
+          "div.manga-info-top > ul > li:nth-child(1) > h1"
+        ).text();
+
+        const image = $("div.manga-info-top > div.manga-info-pic > img").attr(
+          "src"
+        );
+
+        const description = $("#noidungm")
+          .text()
+          .replace(`${title} summary:`, "")
+          .trim();
+
+        const altTitles = $(
+          ".manga-info-top > ul > li:nth-child(1) > h2.story-alternative"
+        )
+          .text()
+          .replace("Alternative :", "")
+          .trim()
+          .split(";")
+          .map(title => title.trim());
+
+        const author = $(".manga-info-top > ul > li:nth-child(2)")
+          .text()
+          .replace("Author(s) :", "")
+          .trim();
+
+        const status = $(".manga-info-top > ul > li:nth-child(3)")
+          .text()
+          .replace("Status :", "")
+          .trim();
+
+        const genres = $(".manga-info-top > ul > li:nth-child(7)")
+          .text()
+          .replace("Genres :", "")
+          .trim()
+          .split(",")
+          .map(genre => genre.trim());
+
+        const lastUpdated = $(".manga-info-top > ul > li:nth-child(4)")
+          .text()
+          .replace("Last updated :", "")
+          .trim();
+
+        const chapters = $(".chapter-list > div.row")
+          .map((i, el) => {
+            const $el = $(el);
+            const title = $el.find("span:nth-child(1)").text();
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const url = $el.find("a").attr("href")!;
+            const uploaded = $el.find("span:nth-child(3)").text();
+
+            return {
+              title,
+              url,
+              uploaded,
+            };
+          })
+          .get();
+
+        return {
+          id: input.id,
+          title,
+          image,
+          description,
+          altTitles,
+          author,
+          status,
+          genres,
+          lastUpdated,
+          chapters: chapters.map(chapter => ({
+            ...chapter,
+            id: convertToBase64(chapter.url),
+          })),
+        };
+      }
 
       const title = $("div.story-info-right > h1").text();
 
@@ -137,34 +216,64 @@ export const mangaRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const url = convertFromBase64(input.chapterId);
 
-      console.log(url);
-
       const $ = await fetch(url)
         .then(res => res.text())
         .then(load);
 
-      const prevUrl = $(
-        ".navi-change-chapter-btn .navi-change-chapter-btn-prev"
-      ).attr("href");
-      const nextUrl = $(
-        ".navi-change-chapter-btn .navi-change-chapter-btn-next"
-      ).attr("href");
+      const mangaId = convertToBase64(
+        $(
+          "body > div.body-site > div:nth-child(1) > div.panel-breadcrumb > a:nth-child(3)"
+        ).attr("href") ??
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          $("body > div:nth-child(2) > p > span:nth-child(3) > a").attr("href")!
+      );
 
-      const chapterList = $(".navi-change-chapter option")
-        .map((i, el) => {
-          const $el = $(el);
-          const title = $el.text();
-          const chapter = $el.attr("data-c");
-          const chapterUrl = url.replace(/chapter-\d+/, `chapter-${chapter}`);
+      const title =
+        $(".info-top-chapter > h2").text() ||
+        $("div.panel-chapter-info-top > h1").text();
 
-          return {
-            id: convertToBase64(chapterUrl),
-            title,
-            chapter,
-            url: chapterUrl,
-          };
-        })
-        .get();
+      const prevUrl =
+        $(".navi-change-chapter-btn .navi-change-chapter-btn-prev").attr(
+          "href"
+        ) ?? $(".btn-navigation-chap > a:nth-child(1)").attr("href");
+
+      const nextUrl =
+        $(".navi-change-chapter-btn .navi-change-chapter-btn-next").attr(
+          "href"
+        ) ?? $(".btn-navigation-chap > a:nth-child(2)").attr("href");
+
+      const chapterList = [
+        ...new Set(
+          $(".navi-change-chapter option")
+            .map((i, el) => {
+              const $el = $(el);
+              const title = $el.text();
+              const chapter = $el.attr("data-c");
+              const chapterUrl = url
+                .replace(/chapter-[0-9]+(\.[0-9]+)?/, `chapter-${chapter}`)
+                .replace(/chapter_[0-9]+(\.[0-9]+)?/, `chapter_${chapter}`);
+
+              return JSON.stringify({
+                title,
+                chapter,
+                chapterUrl,
+              });
+            })
+            .get()
+        ),
+      ].map(c => {
+        const { title, chapter, chapterUrl } = JSON.parse(c) as {
+          title: string;
+          chapter: string;
+          chapterUrl: string;
+        };
+
+        return {
+          id: convertToBase64(chapterUrl),
+          title,
+          chapter: Number(chapter),
+        };
+      });
 
       const images = $(".container-chapter-reader > img")
         .map((i, el) => {
@@ -179,8 +288,11 @@ export const mangaRouter = createTRPCRouter({
         .get();
 
       return {
-        prev: prevUrl ? convertToBase64(prevUrl) : null,
-        next: nextUrl ? convertToBase64(nextUrl) : null,
+        id: input.chapterId,
+        mangaId,
+        title,
+        prevId: prevUrl ? convertToBase64(prevUrl) : null,
+        nextId: nextUrl ? convertToBase64(nextUrl) : null,
         images,
         pages: images.length,
         chapterList,

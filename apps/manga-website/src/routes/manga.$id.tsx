@@ -181,11 +181,33 @@ function SidebarDescription(props: { description?: string; title?: string }) {
           setIsOverflow(ref.scrollHeight > ref.clientHeight);
         }}
         className={cn(
-          "hidden max-h-56 w-full overflow-auto whitespace-pre text-wrap bg-background text-muted-foreground md:block"
+          "hidden max-h-56 w-full overflow-y-auto whitespace-pre text-wrap break-words bg-background text-muted-foreground md:block"
         )}
         layout="position"
       >
-        {props.description?.split("\n").filter(Boolean).join("\n\n")}
+        {props.description
+          ?.split("\n")
+          .filter(Boolean)
+          .join("\n\n")
+          .split(" ")
+          .map((word, index) => {
+            // return anchor if word is a link
+            if (word.startsWith("http")) {
+              return (
+                <a
+                  key={index}
+                  href={word}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mr-1 text-blue-500 underline"
+                >
+                  {word}
+                </a>
+              );
+            }
+
+            return `${word} `;
+          })}
       </motion.p>
     </>
   );

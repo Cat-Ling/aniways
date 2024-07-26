@@ -1,5 +1,5 @@
+import type { NextRequest } from "next/server";
 import { redirect, RedirectType } from "next/navigation";
-import { NextRequest } from "next/server";
 
 export const GET = (req: NextRequest) => {
   const redirectUrl = req.nextUrl.searchParams.get("redirect");
