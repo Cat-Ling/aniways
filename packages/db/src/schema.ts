@@ -10,6 +10,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -158,21 +159,31 @@ interface MangaData {
   image: string;
 }
 
-export const library = pgTable("library", {
-  id: varchar("id", { length: 25 }).primaryKey(),
-  userId: varchar("user_id", { length: 25 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  mangaId: text("manga_id").notNull(),
-  mangaData: jsonb("manga_data").notNull().$type<MangaData>(),
-  chapter: numeric("chapter").notNull(),
-  page: numeric("page").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
-    .notNull()
-    .defaultNow()
-    .$onUpdateFn(() => new Date()),
-});
+export const library = pgTable(
+  "library",
+  {
+    id: varchar("id", { length: 25 }).primaryKey(),
+    userId: varchar("user_id", { length: 25 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    mangaId: text("manga_id").notNull(),
+    mangaData: jsonb("manga_data").notNull().$type<MangaData>(),
+    chapterId: text("chapter_id").notNull(),
+    chapter: numeric("chapter").notNull(),
+    page: numeric("page").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdateFn(() => new Date()),
+  },
+  table => ({
+    userIdMangaIdIdx: uniqueIndex("library_user_id_manga_id_index").on(
+      table.userId,
+      table.mangaId
+    ),
+  })
+);
 
 export type Library = InferSelectModel<typeof library>;
 

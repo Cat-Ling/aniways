@@ -1,7 +1,10 @@
+import { TRPCError } from "@trpc/server";
 import { load } from "cheerio";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createId, orm, schema } from "@aniways/db";
+
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { convertFromBase64, convertToBase64 } from "../utils/base64";
 
 const SearchOutput = z.object({
@@ -297,5 +300,62 @@ export const mangaRouter = createTRPCRouter({
         pages: images.length,
         chapterList,
       };
+    }),
+
+  saveToLibrary: protectedProcedure
+    .input(
+      z.object({
+        mangaId: z.string(),
+        name: z.string(),
+        image: z.string(),
+        chapterId: z.string(),
+        chapter: z.string(),
+        page: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: orm.eq(schema.users.malId, ctx.session.user.id),
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      const existingMangaLibrary = await ctx.db.query.library.findFirst({
+        where: orm.and(
+          orm.eq(schema.library.userId, user.id),
+          orm.eq(schema.library.mangaId, input.mangaId)
+        ),
+      });
+
+      if (existingMangaLibrary) {
+        await ctx.db
+          .update(schema.library)
+          .set({
+            chapterId: input.chapterId,
+            chapter: input.chapter,
+            page: input.page,
+          })
+          .where(orm.eq(schema.library.id, existingMangaLibrary.id));
+
+        return;
+      }
+
+      await ctx.db.insert(schema.library).values({
+        id: createId(),
+        userId: user.id,
+        chapter: input.chapter,
+        chapterId: input.chapterId,
+        mangaData: {
+          title: input.name,
+          image: input.image,
+        },
+        mangaId: input.mangaId,
+        page: input.page,
+      });
     }),
 });
