@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aniways/ui/select";
+import { toast } from "@aniways/ui/sonner";
 
 import { MainLayout } from "../components/layout";
 import { api } from "../trpc";
@@ -20,12 +21,53 @@ export const Route = createFileRoute("/read/$id")({
 });
 
 function ReadMangaPage() {
+  const scrolledRef = useRef(false);
   const params = Route.useParams();
   const chapter = api.manga.getChapterPages.useQuery({
     chapterId: params.id,
   });
 
-  if (chapter.isLoading) {
+  const user = api.auth.getLoggedInUser.useQuery();
+  const userLibrary = api.manga.getCurrentMangaLibrary.useQuery(
+    {
+      mangaId: chapter.data?.mangaId ?? "",
+    },
+    {
+      enabled: !!chapter.data?.mangaId,
+    }
+  );
+
+  const utils = api.useUtils();
+
+  const updateLibrary = api.manga.saveToLibrary.useMutation({
+    onSuccess: () => {
+      void utils.manga.getLibrary.invalidate();
+      void utils.manga.getCurrentMangaLibrary.invalidate();
+    },
+    onError: error => {
+      toast.error(error.message);
+    },
+  });
+
+  useEffect(() => {
+    if (scrolledRef.current) return;
+    if (!userLibrary.data) return;
+    const page = userLibrary.data.page;
+    if (userLibrary.data.chapterId !== chapter.data?.id) return;
+    if (!page) return;
+    if (isNaN(Number(page))) return;
+    const currentPage = chapter.data.images[Number(page) - 1]?.url;
+    if (!currentPage) return;
+    const currentImage = document.getElementById(currentPage);
+    if (currentImage) {
+      currentImage.scrollIntoView({
+        block: "start",
+      });
+      scrolledRef.current = true;
+    }
+  }, [userLibrary.data, chapter.data]);
+
+  if (chapter.isLoading || user.isLoading || userLibrary.isLoading) {
     return (
       <MainLayout className="max-w-3xl md:max-w-3xl">
         <h1>Loading...</h1>
@@ -47,8 +89,22 @@ function ReadMangaPage() {
 
       <Navigation chapter={chapter.data} />
 
-      {chapter.data.images.map(image => (
-        <MangaImage key={image.url} src={image.url} alt={image.alt} />
+      {chapter.data.images.map((image, index) => (
+        <MangaImage
+          key={image.url}
+          src={image.url}
+          alt={image.alt}
+          onVisible={() => {
+            if (!user.data) return;
+            if (updateLibrary.isPending) return;
+            if (updateLibrary.variables?.page === String(index + 1)) return;
+            updateLibrary.mutate({
+              mangaId: chapter.data.mangaId,
+              page: String(index + 1),
+              chapterId: chapter.data.id,
+            });
+          }}
+        />
       ))}
 
       <Navigation chapter={chapter.data} />
@@ -56,7 +112,11 @@ function ReadMangaPage() {
   );
 }
 
-function MangaImage(props: { src?: string; alt?: string }) {
+function MangaImage(props: {
+  src?: string;
+  alt?: string;
+  onVisible: () => void;
+}) {
   const imageRef = useRef<HTMLImageElement>(null);
   const [showImage, setShowImage] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,6 +129,7 @@ function MangaImage(props: { src?: string; alt?: string }) {
     return `/images/${props.src}`;
   }, [props.src]);
 
+  // Show the image before it is visible
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -89,8 +150,31 @@ function MangaImage(props: { src?: string; alt?: string }) {
     };
   }, [props]);
 
+  // Update isReading when the image is visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          props.onVisible();
+        }
+      },
+      {
+        threshold: 1,
+      }
+    );
+
+    if (imageRef.current) {
+      observer.observe(imageRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [props]);
+
   return (
     <img
+      id={props.src}
       ref={imageRef}
       src={showImage ? src : ""}
       alt={props.alt}

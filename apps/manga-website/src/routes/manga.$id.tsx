@@ -17,7 +17,11 @@ function MangaInfoPage() {
   const params = Route.useParams();
   const mangaInfo = api.manga.getMangaInfo.useQuery(params);
 
-  if (mangaInfo.isLoading) {
+  const library = api.manga.getCurrentMangaLibrary.useQuery({
+    mangaId: params.id,
+  });
+
+  if (mangaInfo.isLoading || library.isLoading) {
     return <MainLayout>Loading...</MainLayout>;
   }
 
@@ -86,32 +90,49 @@ function MangaInfoPage() {
             </Button>
           </div>
           <div className="flex flex-col gap-2">
-            {mangaInfo.data?.chapters.map(chapter => (
-              <Button
-                key={chapter.id}
-                variant="navlink"
-                className="w-full justify-between rounded-none border-b border-border"
-                asChild
-              >
-                <Link to="/read/$id" params={chapter} resetScroll>
-                  <span className="w-full truncate">{chapter.title}</span>
-                  <span className="text-muted-foreground">
-                    {chapter.uploaded}
-                  </span>
-                </Link>
-              </Button>
-            ))}
+            {mangaInfo.data?.chapters.map(chapter => {
+              const currentChapterIndex = mangaInfo.data.chapters.findIndex(
+                chap => chap.id === library.data?.chapterId
+              );
+
+              const chapterIndex = mangaInfo.data.chapters.indexOf(chapter);
+
+              const isRead = chapterIndex > currentChapterIndex;
+
+              return (
+                <Button
+                  key={chapter.id}
+                  variant="navlink"
+                  className={cn(
+                    "relative w-full justify-between rounded-none border-b border-border",
+                    isRead && "text-muted-foreground"
+                  )}
+                  asChild
+                >
+                  <Link to="/read/$id" params={chapter} resetScroll>
+                    <span className="w-full truncate">{chapter.title}</span>
+                    <span className="text-muted-foreground">
+                      {chapter.uploaded}
+                    </span>
+                  </Link>
+                </Button>
+              );
+            })}
           </div>
           {mangaInfo.data?.chapters.at(-1) && (
             <Button className="sticky bottom-3 left-full mt-3 w-fit" asChild>
               <Link
                 to="/read/$id"
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                params={mangaInfo.data.chapters.at(-1)!}
+                params={
+                  mangaInfo.data.chapters.find(
+                    chap => chap.id === library.data?.chapterId
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  ) ?? mangaInfo.data.chapters.at(-1)!
+                }
                 resetScroll
               >
                 <Book className="mr-2 size-4" />
-                Read Now
+                {library.data ? "Continue Reading" : "Read Now"}
               </Link>
             </Button>
           )}

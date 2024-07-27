@@ -154,7 +154,7 @@ export const userRelations = relations(users, ({ many }) => ({
   library: many(library),
 }));
 
-interface MangaData {
+export interface MangaData {
   title: string;
   image: string;
 }
