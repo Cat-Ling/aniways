@@ -148,3 +148,37 @@ export const users = pgTable("users", {
 });
 
 export type User = InferSelectModel<typeof users>;
+
+export const userRelations = relations(users, ({ many }) => ({
+  library: many(library),
+}));
+
+interface MangaData {
+  title: string;
+  image: string;
+}
+
+export const library = pgTable("library", {
+  id: varchar("id", { length: 25 }).primaryKey(),
+  userId: varchar("user_id", { length: 25 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  mangaId: text("manga_id").notNull(),
+  mangaData: jsonb("manga_data").notNull().$type<MangaData>(),
+  chapter: numeric("chapter").notNull(),
+  page: numeric("page").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdateFn(() => new Date()),
+});
+
+export type Library = InferSelectModel<typeof library>;
+
+export const LibraryRelations = relations(library, ({ one }) => ({
+  user: one(users, {
+    fields: [library.userId],
+    references: [users.id],
+  }),
+}));
