@@ -129,11 +129,12 @@ export const useVideoPlayer = ({
       const autoUpdateMal = settings?.autoUpdateMal ?? false;
       const listStatus = listStatusRef.current;
 
+      const canUpdateList = autoUpdateMal && malId && listStatus;
+
       if (
-        autoUpdateMal &&
-        malId &&
-        listStatus &&
-        listStatus.status === "watching" &&
+        canUpdateList &&
+        (listStatus.status === "watching" ||
+          listStatus.status === "plan_to_watch") &&
         listStatus.num_episodes_watched < episode
       ) {
         toastRef.current = toast.loading("Updating list", {
