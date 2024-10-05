@@ -54,13 +54,26 @@ export const animeRouter = createTRPCRouter({
     }),
 
   continueWatching: protectedProcedure.query(async ({ ctx }) => {
-    const animeList = await getAnimeList(
+    const currentlyWatchingAnimeList = await getAnimeList(
       ctx.session.accessToken,
       ctx.session.user.name,
       1,
       50,
       "watching"
     );
+
+    const planToWatchAnimeList = await getAnimeList(
+      ctx.session.accessToken,
+      ctx.session.user.name,
+      1,
+      50,
+      "plan_to_watch"
+    );
+
+    const animeList = [
+      ...currentlyWatchingAnimeList.data,
+      ...planToWatchAnimeList.data,
+    ];
 
     const currentlyWatchingAnime = await ctx.db
       .select({
@@ -74,14 +87,14 @@ export const animeRouter = createTRPCRouter({
       .where(
         orm.inArray(
           schema.anime.malAnimeId,
-          animeList.data.map(({ node }) => node.id)
+          animeList.map(({ node }) => node.id)
         )
       );
 
     const embeddedCurrentlyWatchingAnime = currentlyWatchingAnime
       // embed last watched episode and last updated at
       .map(anime => {
-        const malAnime = animeList.data.find(
+        const malAnime = animeList.find(
           ({ node }) => node.id === anime.malAnimeId
         );
 
