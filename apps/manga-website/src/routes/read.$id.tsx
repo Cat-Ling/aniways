@@ -27,7 +27,6 @@ function ReadMangaPage() {
     chapterId: params.id,
   });
 
-  const user = api.auth.getLoggedInUser.useQuery();
   const userLibrary = api.manga.getCurrentMangaLibrary.useQuery(
     {
       mangaId: chapter.data?.mangaId ?? "",
@@ -42,7 +41,6 @@ function ReadMangaPage() {
   const updateLibrary = api.manga.saveToLibrary.useMutation({
     onSuccess: () => {
       void utils.manga.getLibrary.invalidate();
-      void utils.manga.getCurrentMangaLibrary.invalidate();
     },
     onError: error => {
       toast.error(error.message);
@@ -67,7 +65,7 @@ function ReadMangaPage() {
     }
   }, [userLibrary.data, chapter.data]);
 
-  if (chapter.isLoading || user.isLoading || userLibrary.isLoading) {
+  if (chapter.isLoading || userLibrary.isLoading) {
     return (
       <MainLayout className="max-w-3xl md:max-w-3xl">
         <h1>Loading...</h1>
@@ -89,23 +87,24 @@ function ReadMangaPage() {
 
       <Navigation chapter={chapter.data} />
 
-      {chapter.data.images.map((image, index) => (
-        <MangaImage
-          key={image.url}
-          src={image.url}
-          alt={image.alt}
-          onVisible={() => {
-            if (!user.data) return;
-            if (updateLibrary.isPending) return;
-            if (updateLibrary.variables?.page === String(index + 1)) return;
-            updateLibrary.mutate({
-              mangaId: chapter.data.mangaId,
-              page: String(index + 1),
-              chapterId: chapter.data.id,
-            });
-          }}
-        />
-      ))}
+      {chapter.data.images.map((image, index) => {
+        return (
+          <MangaImage
+            key={image.url}
+            src={image.url}
+            alt={image.alt}
+            onVisible={() => {
+              if (updateLibrary.isPending) return;
+              if (updateLibrary.variables?.page === String(index + 1)) return;
+              updateLibrary.mutate({
+                chapterId: chapter.data.id,
+                mangaId: chapter.data.mangaId,
+                page: String(index + 1),
+              });
+            }}
+          />
+        );
+      })}
 
       <Navigation chapter={chapter.data} />
     </MainLayout>
@@ -152,16 +151,10 @@ function MangaImage(props: {
 
   // Update isReading when the image is visible
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          props.onVisible();
-        }
-      },
-      {
-        threshold: 1,
-      }
-    );
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting || !showImage) return;
+      props.onVisible();
+    });
 
     if (imageRef.current) {
       observer.observe(imageRef.current);
@@ -170,7 +163,7 @@ function MangaImage(props: {
     return () => {
       observer.disconnect();
     };
-  }, [props]);
+  }, [props, showImage]);
 
   return (
     <img

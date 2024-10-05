@@ -97,7 +97,9 @@ function MangaInfoPage() {
 
               const chapterIndex = mangaInfo.data.chapters.indexOf(chapter);
 
-              const isRead = chapterIndex > currentChapterIndex;
+              const isRead =
+                currentChapterIndex !== -1 &&
+                chapterIndex >= currentChapterIndex;
 
               return (
                 <Button
