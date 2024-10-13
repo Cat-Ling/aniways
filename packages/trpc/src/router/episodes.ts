@@ -154,22 +154,7 @@ export const episodesRouter = createTRPCRouter({
         });
       }
 
-      if (episode.streamingSources) {
-        return episode.streamingSources as Awaited<
-          ReturnType<typeof getStreamingUrl>
-        >;
-      }
-
       const streamingSources = await getStreamingUrl(episode.slug);
-
-      if (!episode.streamingSources) {
-        await ctx.db
-          .update(schema.video)
-          .set({
-            streamingSources,
-          })
-          .where(orm.eq(schema.video.id, episode.id));
-      }
 
       return streamingSources;
     }),
