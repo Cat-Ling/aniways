@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import { api } from "~/trpc/server";
-import { VideoPlayerClient } from "./player";
 
 import "./streaming.css";
 
@@ -12,12 +11,7 @@ interface VideoFrameProps {
   malId: number | null;
 }
 
-export const VideoPlayer = async ({
-  animeId,
-  episode,
-  nextEpisode,
-  malId,
-}: VideoFrameProps) => {
+export const VideoPlayer = async ({ animeId, episode }: VideoFrameProps) => {
   const streamingSources = await api.episodes
     .getStreamingSources({
       animeId,
@@ -28,11 +22,18 @@ export const VideoPlayer = async ({
     });
 
   return (
-    <VideoPlayerClient
-      streamingSources={streamingSources}
-      nextEpisodeUrl={nextEpisode}
-      episode={Number(episode)}
-      malId={malId}
+    <iframe
+      src={streamingSources.iframe.default}
+      className="aspect-video w-full"
     />
   );
+
+  // return (
+  //   <VideoPlayerClient
+  //     streamingSources={streamingSources}
+  //     nextEpisodeUrl={nextEpisode}
+  //     episode={Number(episode)}
+  //     malId={malId}
+  //   />
+  // );
 };
