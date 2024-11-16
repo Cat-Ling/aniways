@@ -29,16 +29,6 @@ export const VideoPlayer = async ({
       notFound();
     });
 
-  // return (
-  //   <iframe
-  //     src={streamingSources.iframe.default}
-  //     className="aspect-video w-full border-0"
-  //     allowFullScreen
-  //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  //     frameBorder="0"
-  //   />
-  // );
-
   return (
     <VideoPlayerClient
       streamingSources={{

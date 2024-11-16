@@ -7,6 +7,8 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@aniways/ui/dialog";
@@ -77,7 +79,14 @@ export const VideoPlayerClient = (props: VideoPlayerClientProps) => {
           </Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogTitle>Select Source</DialogTitle>
+          <DialogHeader>
+            <DialogTitle>Select Source</DialogTitle>
+            <DialogDescription>
+              Select the source you want to use to watch this episode. Note that
+              only the Aniways Stream supports auto-play, auto-update and auto
+              next features.
+            </DialogDescription>
+          </DialogHeader>
           <div className="mt-3 flex flex-col gap-2 md:flex-row">
             {["Aniways Stream", "VidStreaming", "StreamWish"].map(s => (
               <DialogClose asChild key={s}>
