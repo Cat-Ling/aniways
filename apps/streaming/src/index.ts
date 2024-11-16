@@ -35,7 +35,7 @@ app.get("/:url", async (req, res) => {
         .split("\n")
         .map(line => {
           if (!line.includes(".m3u8") && !line.includes(".ts")) return line;
-          return `${req.protocol}://${req.get("host")}/${encodeURIComponent(
+          return `https://${req.get("host")}/${encodeURIComponent(
             base + "/" + line
           )}`;
         })
