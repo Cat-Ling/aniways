@@ -1,0 +1,9 @@
+{
+  "extends": "@aniways/typescript-config/base.json",
+  "compilerOptions": {
+    "lib": ["es2022"],
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+  },
+  "include": ["src", "*.ts"],
+  "exclude": ["node_modules"]
+}
