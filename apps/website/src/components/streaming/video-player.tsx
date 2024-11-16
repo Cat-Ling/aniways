@@ -24,7 +24,10 @@ export const VideoPlayer = async ({ animeId, episode }: VideoFrameProps) => {
   return (
     <iframe
       src={streamingSources.iframe.default}
-      className="aspect-video w-full"
+      className="aspect-video w-full border-0"
+      allowFullScreen
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      frameBorder="0"
     />
   );
 
