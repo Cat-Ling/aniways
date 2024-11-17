@@ -17,32 +17,36 @@ app.get("/:url", async (req, res) => {
     return;
   }
 
-  if (url.includes(".ts")) {
-    const response = await fetch(url);
-    const blob = await response.blob();
+  try {
+    if (url.includes(".ts")) {
+      const response = await fetch(url);
+      const blob = await response.blob();
+  
+      res.type(blob.type);
+      const buffer = await blob.arrayBuffer();
+      res.send(Buffer.from(buffer));
+  
+      return;
+    }
 
-    res.type(blob.type);
-    const buffer = await blob.arrayBuffer();
-    res.send(Buffer.from(buffer));
+    const response = await fetch(url)
+      .then(response => response.text())
+      .then(content => {
+        return content
+          .split("\n")
+          .map(line => {
+            if (!line.includes(".m3u8") && !line.includes(".ts")) return line;
+            return `https://${req.get("host")}/${encodeURIComponent(
+              base + "/" + line
+            )}`;
+          })
+          .join("\n");
+      });
 
-    return;
+    res.send(response);
+  } catch {
+    res.status(500).send("Internal Server Error");
   }
-
-  const response = await fetch(url)
-    .then(response => response.text())
-    .then(content => {
-      return content
-        .split("\n")
-        .map(line => {
-          if (!line.includes(".m3u8") && !line.includes(".ts")) return line;
-          return `https://${req.get("host")}/${encodeURIComponent(
-            base + "/" + line
-          )}`;
-        })
-        .join("\n");
-    });
-
-  res.send(response);
 });
 
 app.listen(4545, () => {
