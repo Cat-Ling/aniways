@@ -21,11 +21,11 @@ app.get("/:url", async (req, res) => {
     if (url.includes(".ts")) {
       const response = await fetch(url);
       const blob = await response.blob();
-  
+
       res.type(blob.type);
       const buffer = await blob.arrayBuffer();
       res.send(Buffer.from(buffer));
-  
+
       return;
     }
 
