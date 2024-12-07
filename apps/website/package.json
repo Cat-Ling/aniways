@@ -18,6 +18,7 @@
     "@aniways/auth": "workspace:*",
     "@aniways/db": "workspace:*",
     "@aniways/ui": "workspace:*",
+    "@aniways/hianime": "workspace:*",
     "@hookform/resolvers": "3.3.4",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.21.7",
