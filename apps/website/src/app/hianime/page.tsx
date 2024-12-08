@@ -13,6 +13,13 @@ const TestPage = async ({
   const episodes = await hiAnimeScraper.getEpisodes(anime[0]!.id);
 
   const info = await hiAnimeScraper.getInfo(anime[0]!.id);
+  const servers = await hiAnimeScraper.getServer(
+    episodes.episodes[0]!.episodeId!
+  );
+  const sources = await hiAnimeScraper.getEpisodeSources(
+    episodes.episodes[0]!.episodeId!,
+    "hd-1"
+  );
 
   return (
     <>
@@ -37,6 +44,10 @@ const TestPage = async ({
       <pre>{JSON.stringify(episodes, null, 2)}</pre>
       <h1>Info of first</h1>
       <pre>{JSON.stringify(info, null, 2)}</pre>
+      <h1>Servers of first</h1>
+      <pre>{JSON.stringify(servers, null, 2)}</pre>
+      <h1>Sources of first episode</h1>
+      <pre>{JSON.stringify(sources, null, 2)}</pre>
     </>
   );
 };
