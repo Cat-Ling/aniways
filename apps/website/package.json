@@ -50,7 +50,7 @@
     "@aniways/typescript-config": "workspace:*",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.12.9",
-    "@types/react": "^18.3.3",
+    "@types/react": "18.3.3",
     "@types/react-dom": "^18.3.0",
     "dotenv-cli": "^7.4.2",
     "eslint": "^9.4.0",
