@@ -51,7 +51,7 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
       <p className="text-lg text-muted-foreground">
         {}
         {env.NODE_ENV === "development" ?
-          error?.message ?? "An unknown error occurred"
+          (error?.message ?? "An unknown error occurred")
         : "Please try again later"}
       </p>
     </div>

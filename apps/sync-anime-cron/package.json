@@ -31,7 +31,7 @@
     "typescript": "^5.4.5",
     "aws-cdk-lib": "2.142.1",
     "constructs": "10.3.0",
-    "sst": "^2.43.1"
+    "sst": "2.43.1"
   },
   "prettier": "@aniways/prettier-config"
 }
