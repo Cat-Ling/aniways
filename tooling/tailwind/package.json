@@ -14,17 +14,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
-    "tailwindcss-animate": "^1.0.7"
+    "postcss": "8.4.38",
+    "tailwindcss": "3.4.3",
+    "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
     "@aniways/prettier-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
-    "eslint": "^9.4.0",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5"
+    "eslint": "9.4.0",
+    "prettier": "3.3.1",
+    "typescript": "5.4.5"
   },
   "prettier": "@aniways/prettier-config"
 }

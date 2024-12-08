@@ -18,17 +18,17 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "node-html-parser": "^6.1.12"
+    "lodash": "4.17.21",
+    "node-html-parser": "6.1.12"
   },
   "devDependencies": {
     "@aniways/eslint-config": "workspace:*",
     "@aniways/prettier-config": "workspace:*",
     "@aniways/typescript-config": "workspace:*",
-    "eslint": "^9.4.0",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5",
-    "@types/lodash": "^4.14.202"
+    "eslint": "9.4.0",
+    "prettier": "3.3.1",
+    "typescript": "5.4.5",
+    "@types/lodash": "4.14.202"
   },
   "prettier": "@aniways/prettier-config"
 }
