@@ -21,7 +21,7 @@
     "@aniways/trpc": "workspace:*",
     "@aniways/ui": "workspace:*",
     "@tanstack/react-query": "^5.21.7",
-    "@tanstack/react-router": "^1.45.8",
+    "@tanstack/react-router": "1.45.8",
     "@trpc/client": "11.0.0-rc.364",
     "framer-motion": "^11.3.17",
     "lucide-react": "^0.316.0",
