@@ -28,7 +28,6 @@
   "prettier": "@aniways/prettier-config",
   "dependencies": {
     "aniwatch": "^2.4.1",
-    "cheerio": "^1.0.0-rc.12",
-    "node-html-parser": "^6.1.13"
+    "node-html-parser": "^6.1.12"
   }
 }
