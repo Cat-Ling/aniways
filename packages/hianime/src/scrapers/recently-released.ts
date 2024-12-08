@@ -11,7 +11,6 @@ export const getRecentlyReleasedAnime = async (page = 1) => {
     const poster =
       el.querySelector(".film-poster img")?.getAttribute("data-src") ?? "";
     const url = el.querySelector(".film-poster a")?.getAttribute("href") ?? "";
-    const id = url.split("-").pop() ?? "";
 
     const anchor = el.querySelector(".film-detail .film-name a");
     const title = anchor?.text ?? "";
@@ -22,16 +21,22 @@ export const getRecentlyReleasedAnime = async (page = 1) => {
       ".film-detail .fd-infor .fdi-duration"
     )?.text;
 
+    const currentEpisode = el.querySelector(
+      ".film-poster .tick.ltr .tick-sub"
+    )?.innerText;
+    const totalEpisodes = el.querySelector(
+      ".film-poster .tick.ltr .tick-eps"
+    )?.innerText;
+
     return {
-      id,
+      id: url.split("/").pop()!,
       title,
       japaneseTitle,
       poster,
-      url,
-      metadata: {
-        type,
-        duration,
-      },
+      currentEpisode,
+      totalEpisodes,
+      type,
+      duration: duration === "m" ? undefined : duration,
     };
   });
 
