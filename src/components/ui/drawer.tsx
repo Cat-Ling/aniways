@@ -1,26 +1,98 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Drawer as DrawerPrimitive } from "vaul"
+import * as React from "react";
+import { Drawer as DrawerPrimitive } from "vaul";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+
+interface DrawerContextValue {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  open: () => void;
+  close: () => void;
+}
+
+const DrawerContext = React.createContext<DrawerContextValue | undefined>(
+  undefined,
+);
+
+export const useDrawerContext = () => {
+  const context = React.useContext(DrawerContext);
+  if (!context) {
+    throw new Error("useDrawerContext must be used within a DrawerProvider");
+  }
+  return context;
+};
+
+const DrawerProvider = ({
+  children,
+  defaultValues,
+}: {
+  children: React.ReactNode;
+  defaultValues?: Partial<DrawerContextValue>;
+}) => {
+  const [open, setOpen] = React.useState(defaultValues?.isOpen ?? false);
+
+  React.useEffect(() => {
+    if (!defaultValues?.isOpen) return;
+    setOpen(defaultValues.isOpen);
+  }, [defaultValues?.isOpen]);
+
+  return (
+    <DrawerContext.Provider
+      value={{
+        isOpen: open,
+        setIsOpen: (value: boolean) => {
+          defaultValues?.setIsOpen?.(value);
+          setOpen(value);
+        },
+        open: () => {
+          defaultValues?.open?.();
+          setOpen(true);
+        },
+        close: () => {
+          defaultValues?.close?.();
+          setOpen(false);
+        },
+      }}
+    >
+      {children}
+    </DrawerContext.Provider>
+  );
+};
 
 const Drawer = ({
   shouldScaleBackground = true,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
-)
-Drawer.displayName = "Drawer"
+  <DrawerProvider
+    defaultValues={{
+      isOpen: props.open,
+      setIsOpen: props.onOpenChange,
+      open: props.onOpenChange?.bind(null, true),
+      close: props.onOpenChange?.bind(null, false),
+    }}
+  >
+    <DrawerRoot shouldScaleBackground={shouldScaleBackground} {...props} />
+  </DrawerProvider>
+);
+Drawer.displayName = "Drawer";
 
-const DrawerTrigger = DrawerPrimitive.Trigger
+const DrawerRoot: React.FC<
+  React.ComponentProps<typeof DrawerPrimitive.Root>
+> = (props) => {
+  const { isOpen, setIsOpen } = useDrawerContext();
 
-const DrawerPortal = DrawerPrimitive.Portal
+  return (
+    <DrawerPrimitive.Root {...props} open={isOpen} onOpenChange={setIsOpen} />
+  );
+};
 
-const DrawerClose = DrawerPrimitive.Close
+const DrawerTrigger = DrawerPrimitive.Trigger;
+
+const DrawerPortal = DrawerPrimitive.Portal;
+
+const DrawerClose = DrawerPrimitive.Close;
 
 const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
@@ -31,8 +103,8 @@ const DrawerOverlay = React.forwardRef<
     className={cn("fixed inset-0 z-50 bg-black/80", className)}
     {...props}
   />
-))
-DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
+));
+DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
@@ -44,7 +116,7 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
-        className
+        className,
       )}
       {...props}
     >
@@ -52,8 +124,8 @@ const DrawerContent = React.forwardRef<
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
-))
-DrawerContent.displayName = "DrawerContent"
+));
+DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({
   className,
@@ -63,8 +135,8 @@ const DrawerHeader = ({
     className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
     {...props}
   />
-)
-DrawerHeader.displayName = "DrawerHeader"
+);
+DrawerHeader.displayName = "DrawerHeader";
 
 const DrawerFooter = ({
   className,
@@ -74,8 +146,8 @@ const DrawerFooter = ({
     className={cn("mt-auto flex flex-col gap-2 p-4", className)}
     {...props}
   />
-)
-DrawerFooter.displayName = "DrawerFooter"
+);
+DrawerFooter.displayName = "DrawerFooter";
 
 const DrawerTitle = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Title>,
@@ -85,12 +157,12 @@ const DrawerTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     {...props}
   />
-))
-DrawerTitle.displayName = DrawerPrimitive.Title.displayName
+));
+DrawerTitle.displayName = DrawerPrimitive.Title.displayName;
 
 const DrawerDescription = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Description>,
@@ -101,8 +173,8 @@ const DrawerDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-))
-DrawerDescription.displayName = DrawerPrimitive.Description.displayName
+));
+DrawerDescription.displayName = DrawerPrimitive.Description.displayName;
 
 export {
   Drawer,
@@ -115,4 +187,4 @@ export {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
-}
+};
