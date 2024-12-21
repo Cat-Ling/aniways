@@ -7,6 +7,8 @@ import NextTopLoader from "nextjs-toploader";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/navigation/footer";
+import { Navbar } from "@/components/navigation/navbar";
+import { ThemeSetter } from "@/components/theme-setter";
 
 export const metadata: Metadata = {
   title: {
@@ -47,8 +49,10 @@ export default function RootLayout({
         <div className="min-h-screen">
           <NextTopLoader showSpinner={false} color="#e11d48" />
           <Providers>
+            <Navbar />
             {children}
             <Toaster richColors={true} />
+            <ThemeSetter />
           </Providers>
         </div>
         <Footer />
