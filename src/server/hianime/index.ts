@@ -2,6 +2,7 @@ import { HiAnime } from "aniwatch";
 import { z } from "zod";
 
 const SYNC_URL = `https://raw.githubusercontent.com/bal-mackup/mal-backup/refs/heads/master/mal/anime`;
+const BASE_URL = "https://hianime.to";
 
 const SyncDataSchema = z.object({
   id: z.number(),
@@ -46,5 +47,15 @@ export class HiAnimeScraper {
       .catch(() => {
         throw new Error("No MAL ID found");
       });
+  }
+
+  async getRandomAnime() {
+    const random = await fetch(`${BASE_URL}/random`, {
+      redirect: "manual",
+    }).then(async (res) => res.headers.get("Location"));
+
+    const id = random?.split("/").pop();
+
+    return id ?? null;
   }
 }
