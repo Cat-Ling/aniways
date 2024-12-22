@@ -12,6 +12,8 @@ import { ZodError } from "zod";
 import { auth } from "../auth";
 import { cookies } from "next/headers";
 import { db } from "../db";
+import { MalScraper } from "../myanimelist";
+import { HiAnimeScraper } from "../hianime";
 
 /**
  * 1. CONTEXT
@@ -27,10 +29,14 @@ import { db } from "../db";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth(await cookies());
+  const malScraper = new MalScraper(session?.accessToken);
+  const hiAnimeScraper = new HiAnimeScraper();
 
   return {
     session,
     db,
+    malScraper,
+    hiAnimeScraper,
     ...opts,
   };
 };

@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
+import { Inter } from "next/font/google";
 import { type Viewport, type Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 
@@ -40,12 +40,14 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+const inter = Inter({ subsets: ["latin"] });
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+    <html lang="en">
+      <body className={inter.className}>
         <div className="min-h-screen">
           <NextTopLoader showSpinner={false} color="#e11d48" />
           <Providers>

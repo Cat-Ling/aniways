@@ -78,13 +78,13 @@ export const Navbar = () => {
                         : "https://manga.aniways.xyz"
                     }
                   >
-                    <BookOpen className="mr-2 size-4" />
+                    <BookOpen className="size-4" />
                     Read Manga
                   </a>
                 </Button>
                 <Button asChild variant={"navlink"}>
                   <a href="/random">
-                    <Shuffle className="mr-2 size-4" />
+                    <Shuffle className="size-4" />
                     Random
                   </a>
                 </Button>
