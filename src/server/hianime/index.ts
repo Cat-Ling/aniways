@@ -58,4 +58,8 @@ export class HiAnimeScraper {
 
     return id ?? null;
   }
+
+  async search(query: string, page = 1) {
+    return this.scraper.search(query, page);
+  }
 }
