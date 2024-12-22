@@ -70,4 +70,14 @@ export class HiAnimeScraper {
   async getEpisodes(id: string) {
     return this.scraper.getEpisodes(id);
   }
+
+  async getEpisodeSrc(id: string, episode: number) {
+    const { episodes } = await this.scraper.getEpisodes(id);
+
+    const episodeId = episodes.find((ep) => ep.number === episode)?.episodeId;
+
+    if (!episodeId) throw new Error("Episode not found");
+
+    return this.scraper.getEpisodeSources(episodeId);
+  }
 }
