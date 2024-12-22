@@ -62,6 +62,8 @@ export const malRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const info = await ctx.malScraper.getInfo(input.malId);
 
+      if (!info) return;
+
       return {
         ...info,
         recommendations: await Promise.all(

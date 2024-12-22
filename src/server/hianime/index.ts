@@ -62,4 +62,12 @@ export class HiAnimeScraper {
   async search(query: string, page = 1) {
     return this.scraper.search(query, page);
   }
+
+  async getInfo(id: string) {
+    return this.scraper.getInfo(id);
+  }
+
+  async getEpisodes(id: string) {
+    return this.scraper.getEpisodes(id);
+  }
 }

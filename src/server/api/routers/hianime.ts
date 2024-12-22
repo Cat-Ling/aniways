@@ -17,4 +17,12 @@ export const hiAnimeRouter = createTRPCRouter({
 
       return results;
     }),
+
+  getInfo: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => ctx.hiAnimeScraper.getInfo(input.id)),
+
+  getEpisodes: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => ctx.hiAnimeScraper.getEpisodes(input.id)),
 });
