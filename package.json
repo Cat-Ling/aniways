@@ -37,6 +37,7 @@
     "artplayer": "^5.2.1",
     "artplayer-plugin-hls-control": "^1.0.1",
     "artplayer-plugin-vtt-thumbnail": "^1.0.3",
+    "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-cuid2": "^1.0.5",

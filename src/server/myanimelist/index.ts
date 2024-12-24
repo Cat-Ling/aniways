@@ -1,6 +1,8 @@
 import { env } from "@/env";
 import { type AnimeNode, MALClient, type WatchStatus } from "@animelist/client";
 import { Jikan4 } from "node-myanimelist";
+import { HiAnimeScraper } from "../hianime";
+import { load } from "cheerio";
 
 type GetAnimeListArgs = {
   username: string;
@@ -172,5 +174,57 @@ export class MalScraper {
     return await Jikan4.anime(malId)
       .info()
       .then((res) => res.data.trailer.embed_url);
+  }
+
+  async getContinueWatching({ username }: { username: string }) {
+    if (!this.isLoggedIn) {
+      throw new Error("Not logged in");
+    }
+
+    const currentlyWatchingAnimeList = await this.getAnimeList({
+      username,
+      page: 1,
+      limit: 18,
+      status: "watching",
+    });
+
+    const continueWatchingAnime = await Promise.all(
+      currentlyWatchingAnimeList.data.map(async (anime) => {
+        const scraper = new HiAnimeScraper();
+        const animeId = await scraper.getHiAnimeIdFromMalId(anime.node.id);
+
+        if (!animeId) return null;
+
+        const totalEpisodes = await fetch(`https://hianime.to/${animeId}`)
+          .then((res) => res.text())
+          .then(load)
+          .then(($) => {
+            const episodes = $(
+              "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
+            ).text();
+            return Number(episodes);
+          });
+
+        const lastWatchedEpisode =
+          anime.node.my_list_status?.num_episodes_watched ?? 0;
+
+        return {
+          animeId,
+          malAnime: anime,
+          totalEpisodes,
+          lastWatchedEpisode,
+          lastUpdated: anime.node.my_list_status?.updated_at,
+        };
+      }),
+    );
+
+    return continueWatchingAnime
+      .filter((anime) => anime !== null)
+      .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
+      .sort((a, b) => {
+        if (!a?.lastUpdated || !b?.lastUpdated) return 0;
+
+        return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
+      });
   }
 }

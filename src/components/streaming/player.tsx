@@ -122,7 +122,7 @@ export const Player = ({ sources }: PlayerProps) => {
         loading: LOADING_SVG,
       },
       subtitle: {
-        url: defaultSubtitle?.file,
+        url: defaultSubtitle?.file ?? "",
         type: "vtt",
         encoding: "utf-8",
         escape: false,
@@ -159,17 +159,26 @@ export const Player = ({ sources }: PlayerProps) => {
           icon: SUBTITLE_ICON,
           html: "Captions",
           tooltip: defaultSubtitle?.label,
-          selector: sources.tracks
-            .filter((track) => track.kind === "captions")
-            .map((track) => ({
-              default: track.default,
-              html: track.label,
-              url: track.file,
-            })),
+          selector: [
+            {
+              html: "Off",
+              default: false,
+              url: "",
+              off: true,
+            },
+            ...sources.tracks
+              .filter((track) => track.kind === "captions")
+              .map((track) => ({
+                default: track.default,
+                html: track.label,
+                url: track.file,
+              })),
+          ],
           onSelect: (item) => {
             const url = item.url as unknown;
-            if (!url || typeof url !== "string") return;
+            if (typeof url !== "string") return;
             art.subtitle.url = url;
+            art.subtitle.show = !!url;
             return item.html;
           },
         },

@@ -138,4 +138,10 @@ export const malRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       return await ctx.malScraper.deleteEntry({ malId: input.malId });
     }),
+
+  getContinueWatching: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.malScraper.getContinueWatching({
+      username: ctx.session.user.name,
+    });
+  }),
 });
