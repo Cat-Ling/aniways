@@ -75,9 +75,28 @@ export class HiAnimeScraper {
     const { episodes } = await this.scraper.getEpisodes(id);
 
     const episodeId = episodes.find((ep) => ep.number === episode)?.episodeId;
+    const currentEpisodeIndex = episodes.findIndex(
+      (ep) => ep.number === episode,
+    );
+    const nextEpisode = episodes[currentEpisodeIndex + 1]?.number ?? null;
 
     if (!episodeId) throw new Error("Episode not found");
 
-    return this.scraper.getEpisodeSources(episodeId);
+    const sources = (await this.scraper.getEpisodeSources(
+      episodeId,
+    )) as HiAnime.ScrapedAnimeEpisodesSources & {
+      anilistID: number | null;
+      malID: number | null;
+      tracks: {
+        file: string;
+        label: string;
+        kind: "captions" | "thumbnails";
+        default?: true;
+      }[];
+    };
+    return {
+      ...sources,
+      nextEpisode,
+    };
   }
 }
