@@ -19,7 +19,7 @@ export const AddToListButton = ({ metadata: { id } }: AddToListButtonProps) => {
   const utils = api.useUtils();
   const addToList = api.mal.addEntryToMal.useMutation({
     onSuccess: async () => {
-      // await utils.anime.continueWatching.invalidate();
+      await utils.mal.getContinueWatching.invalidate();
       await utils.mal.getAnimeInfo.invalidate();
       toast.success("Added to list", {
         description: "Anime has been added to your list",
