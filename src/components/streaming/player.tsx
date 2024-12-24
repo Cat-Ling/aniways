@@ -1,7 +1,7 @@
 "use client";
 
-import { type RouterOutputs } from "@/trpc/react";
-import { useEffect, useRef } from "react";
+import { api, type RouterOutputs } from "@/trpc/react";
+import { useEffect, useMemo, useRef } from "react";
 import Artplayer from "artplayer";
 import Hls from "hls.js";
 import artplayerPluginHlsControl from "artplayer-plugin-hls-control";
@@ -9,13 +9,84 @@ import { ANIWAYS_LOGO, LOADING_SVG, SUBTITLE_ICON } from "./icons";
 import artplayerPluginVttThumbnail from "artplayer-plugin-vtt-thumbnail";
 
 import "./artplayer.css";
+import { toast } from "sonner";
+import { type Settings } from "@/server/db/schema";
+import { type MyListStatus } from "@animelist/client";
+import { usePathname, useRouter } from "next/navigation";
+import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
 
 type PlayerProps = {
   sources: RouterOutputs["hiAnime"]["getEpisodeSources"];
 };
 
+type DataRef = {
+  settings: Omit<Settings, "darkMode">;
+  listStatus: MyListStatus | undefined;
+};
+
 export const Player = ({ sources }: PlayerProps) => {
+  const pathname = usePathname();
+  const router = useRouter();
   const artRef = useRef<HTMLDivElement>(null);
+  const toastRef = useRef<string | number | null>(null);
+
+  const dataRef = useRef<DataRef | null>(null);
+  const settings = api.settings.getSettings.useQuery();
+  const listStatus = api.mal.getAnimeStatusInMAL.useQuery(
+    { malId: sources.malID! },
+    { enabled: !!sources.malID },
+  );
+
+  const utils = api.useUtils();
+  const { mutate: updateEntryInMal } = api.mal.updateEntryInMal.useMutation({
+    onSuccess: async () => {
+      await utils.mal.getAnimeInfo.invalidate();
+      if (toastRef.current) toast.dismiss(toastRef.current);
+      toast.success("List updated", {
+        description: "Your list has been updated successfully",
+      });
+    },
+  });
+
+  const currentEpisode = useMemo(() => {
+    return pathname.split("/").pop()!;
+  }, [pathname]);
+
+  useEffect(() => {
+    if (settings.isLoading || listStatus.isLoading) return;
+
+    dataRef.current = {
+      settings: settings.data ?? {
+        autoNext: true,
+        autoPlay: true,
+        autoUpdateMal: false,
+      },
+      listStatus: listStatus.data,
+    };
+
+    const autoNext = dataRef.current.settings.autoNext;
+    if (!autoNext || !sources.nextEpisode) return;
+
+    const nextEpisode = sources.nextEpisode;
+    const nextUrl = pathname
+      .split("/")
+      .map((part) => {
+        if (part === currentEpisode) return String(nextEpisode);
+        return part;
+      })
+      .join("/");
+
+    router.prefetch(nextUrl, {
+      kind: PrefetchKind.FULL,
+    });
+  }, [
+    settings,
+    listStatus,
+    currentEpisode,
+    pathname,
+    router,
+    sources.nextEpisode,
+  ]);
 
   useEffect(() => {
     if (!artRef.current) return;
@@ -130,10 +201,74 @@ export const Player = ({ sources }: PlayerProps) => {
       art.subtitle.style("fontSize", fontSize);
     });
 
+    art.on("ready", () => {
+      const settings = dataRef.current?.settings;
+      const autoPlay = settings?.autoPlay ?? true;
+      if (!autoPlay) return;
+      void art.play();
+    });
+
+    art.on("video:play", () => {
+      art.layers.show = false;
+    });
+
+    art.on("play", () => {
+      art.layers.show = false;
+    });
+
+    art.on("pause", () => {
+      art.layers.show = true;
+    });
+
+    art.on("video:pause", () => {
+      art.layers.show = true;
+    });
+
+    art.on("video:ended", () => {
+      art.layers.show = true;
+
+      const autoUpdateMal = dataRef.current?.settings.autoUpdateMal ?? false;
+      const autoNext = dataRef.current?.settings.autoNext ?? false;
+      const listStatus = dataRef.current?.listStatus;
+
+      const canUpdateList = autoUpdateMal && sources.malID && listStatus;
+
+      if (
+        canUpdateList &&
+        (listStatus.status === "watching" ||
+          listStatus.status === "plan_to_watch") &&
+        listStatus.num_episodes_watched < Number(currentEpisode)
+      ) {
+        toastRef.current = toast.loading("Updating list", {
+          description: "Updating your list...",
+        });
+
+        updateEntryInMal({
+          malId: sources.malID!,
+          numWatchedEpisodes: Number(currentEpisode),
+          status: "watching",
+          score: listStatus.score,
+        });
+      }
+
+      if (!autoNext || !sources.nextEpisode) return;
+
+      const nextEpisode = sources.nextEpisode;
+      const nextUrl = pathname
+        .split("/")
+        .map((part) => {
+          if (part === currentEpisode) return String(nextEpisode);
+          return part;
+        })
+        .join("/");
+
+      router.push(nextUrl);
+    });
+
     return () => {
       art.destroy();
     };
-  }, [sources]);
+  }, [sources, pathname, currentEpisode, updateEntryInMal, router]);
 
   return <div ref={artRef} className="aspect-video w-full" />;
 };
