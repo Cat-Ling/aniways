@@ -101,6 +101,11 @@ export const Player = ({ sources }: PlayerProps) => {
       (track) => track.kind === "captions" && track.default,
     );
 
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+
     if (!sourceUrl) return;
 
     const art = new Artplayer({
@@ -128,7 +133,7 @@ export const Player = ({ sources }: PlayerProps) => {
         encoding: "utf-8",
         escape: false,
         style: {
-          fontSize: "1.8rem",
+          fontSize: isMobile ? "1rem" : "1.8rem",
         },
       },
       plugins: [
@@ -201,11 +206,12 @@ export const Player = ({ sources }: PlayerProps) => {
     });
 
     art.on("fullscreen", (isFullScreen) => {
+      const base = isMobile ? 1 : 1.8;
       const screenWidth = window.screen.width;
       const videoWidth = artRef.current?.clientWidth ?? 0;
       const fontSize = isFullScreen
-        ? `${(screenWidth / videoWidth) * 1.8}rem`
-        : "1.8rem";
+        ? `${(screenWidth / videoWidth) * base}rem`
+        : `${base}rem`;
       art.subtitle.style("fontSize", fontSize);
     });
 
