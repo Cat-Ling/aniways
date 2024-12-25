@@ -5,7 +5,7 @@ require("./src/env");
 export default $config({
   app(input) {
     return {
-      name: "aniways",
+      name: "sst-aniways",
       removal: input?.stage === "production" ? "retain" : "remove",
       protect: ["production"].includes(input?.stage),
       home: "aws",
