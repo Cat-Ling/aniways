@@ -22,7 +22,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
 
   if (isLoading) return <AnimeGridLoader />;
 
-  if (error) return null;
+  if (error || !continueWatchingAnime.length) return null;
 
   return (
     <>

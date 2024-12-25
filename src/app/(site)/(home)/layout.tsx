@@ -36,7 +36,7 @@ const AnimeCarousel = async () => {
 };
 
 const ContinueWatching = async () => {
-  const initalData = await api.mal.getContinueWatching();
+  const initalData = await api.mal.getContinueWatching().catch(() => []);
 
   return <ContinueWatchingClient initialData={initalData} />;
 };
