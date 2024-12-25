@@ -37,9 +37,6 @@ jobs:
         uses: oven-sh/setup-bun@v1
 
       - shell: bash
-        run: bun add -g turbo
-
-      - shell: bash
         run: bun install
 
       - name: Set up Next.js Cache for website
