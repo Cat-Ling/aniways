@@ -15,7 +15,13 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
       <Suspense fallback={<Skeleton className="mb-6 h-[450px] w-full" />}>
         <AnimeCarousel />
       </Suspense>
-      <Suspense fallback={<AnimeGridLoader />}>
+      <Suspense
+        fallback={
+          <div className="mb-6">
+            <AnimeGridLoader />
+          </div>
+        }
+      >
         <ContinueWatching />
       </Suspense>
       {children}

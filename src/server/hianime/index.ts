@@ -1,4 +1,5 @@
 import { HiAnime } from "aniwatch";
+import { load } from "cheerio";
 import { z } from "zod";
 
 const SYNC_URL = `https://raw.githubusercontent.com/bal-mackup/mal-backup/refs/heads/master/mal/anime`;
@@ -97,6 +98,43 @@ export class HiAnimeScraper {
     return {
       ...sources,
       nextEpisode,
+    };
+  }
+
+  async getRecentlyReleased(page = 1) {
+    const $ = await fetch(`${BASE_URL}/recently-updated?page=${page}`)
+      .then((res) => res.text())
+      .then(load);
+
+    const animes = $(".film_list-wrap .flw-item").map((i, el) => {
+      const $el = $(el);
+
+      const id = $el
+        .find(".film-detail .film-name a")
+        .attr("href")!
+        .split("/")
+        .pop()!;
+      const title =
+        $el.find(".film-detail .film-name a").attr("data-jname") ??
+        $el.find(".film-detail .film-name a").text() ??
+        "";
+      const image = $el.find("img.film-poster-img").attr("data-src") ?? "";
+      const episode = $el.find(".tick-item.tick-sub").text() ?? "";
+
+      const description = $el.find(".description").text() ?? null;
+
+      return {
+        id,
+        title,
+        image,
+        episode: Number(episode),
+        description,
+      };
+    });
+
+    return {
+      animes: animes.get(),
+      hasNextPage: !!$('.pre-pagination a[title="Next"]').length,
     };
   }
 }

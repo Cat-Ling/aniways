@@ -3,10 +3,16 @@ import { Play } from "lucide-react";
 
 import { Image } from "@/components/ui/image";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type HiAnime } from "aniwatch";
 
 type AnimeGridProps = {
-  animes: HiAnime.Anime[];
+  animes: {
+    id: string;
+    jname: string;
+    poster: string;
+    episodes: {
+      sub: number;
+    };
+  }[];
 };
 
 export const AnimeGrid = ({ animes }: AnimeGridProps) => {
