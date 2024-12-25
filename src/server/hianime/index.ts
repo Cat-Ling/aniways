@@ -72,6 +72,44 @@ export class HiAnimeScraper {
     return this.scraper.getEpisodes(id);
   }
 
+  private async getSourceFromServer(server: HiAnime.ScrapedEpisodeServers) {
+    let isError = false;
+    let currentIndex = 0;
+
+    let sources = await this.scraper
+      .getEpisodeSources(server.episodeId)
+      .catch(() => {
+        isError = true;
+        return undefined;
+      });
+
+    if (!isError) return sources;
+
+    while (isError && currentIndex <= server.raw.length) {
+      const raw = server.raw[currentIndex];
+
+      if (!raw?.serverName) {
+        isError = true;
+        currentIndex++;
+        continue;
+      }
+
+      try {
+        sources = await this.scraper.getEpisodeSources(
+          server.episodeId,
+          raw?.serverName as HiAnime.AnimeServers,
+          "raw",
+        );
+        isError = false;
+      } catch {
+        isError = true;
+        currentIndex++;
+      }
+    }
+
+    return sources;
+  }
+
   async getEpisodeSrc(id: string, episode: number) {
     const { episodes } = await this.scraper.getEpisodes(id);
 
@@ -83,18 +121,24 @@ export class HiAnimeScraper {
 
     if (!episodeId) throw new Error("Episode not found");
 
-    const sources = (await this.scraper.getEpisodeSources(
-      episodeId,
-    )) as HiAnime.ScrapedAnimeEpisodesSources & {
-      anilistID: number | null;
-      malID: number | null;
-      tracks: {
-        file: string;
-        label: string;
-        kind: "captions" | "thumbnails";
-        default?: true;
-      }[];
-    };
+    const servers = await this.scraper.getEpisodeServers(episodeId);
+    console.log({ servers: servers.raw });
+
+    const sources = (await this.getSourceFromServer(servers)) as
+      | (HiAnime.ScrapedAnimeEpisodesSources & {
+          anilistID: number | null;
+          malID: number | null;
+          tracks: {
+            file: string;
+            label: string;
+            kind: "captions" | "thumbnails";
+            default?: true;
+          }[];
+        })
+      | undefined;
+
+    if (!sources) throw new Error("No sources found");
+
     return {
       ...sources,
       nextEpisode,
