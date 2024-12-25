@@ -11,7 +11,6 @@ export default $config({
         aws: {
           region: "ap-southeast-1",
         },
-        cloudflare: true,
       },
     };
   },
@@ -26,9 +25,8 @@ export default $config({
       },
       domain: {
         name: "aniways.xyz",
-        dns: sst.cloudflare.dns({
-          zone: process.env.CLOUDFLARE_ZONE_ID!,
-        }),
+        dns: false,
+        cert: process.env.CERT_ARN!,
       },
     });
     return {
