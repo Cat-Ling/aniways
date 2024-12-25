@@ -22,6 +22,10 @@ env:
   MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
   MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
   MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
+  # Cloudflare dns
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_DEFAULT_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_DEFAULT_ACCOUNT_ID }}
+  CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
   # AWS Cert for domain
   CERT_ARN: ${{ secrets.CERT_ARN }}
 
