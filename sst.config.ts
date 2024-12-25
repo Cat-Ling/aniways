@@ -1,7 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
-
 require("./src/env");
-
 export default $config({
   app(input) {
     return {
@@ -13,6 +11,7 @@ export default $config({
         aws: {
           region: "ap-southeast-1",
         },
+        cloudflare: true,
       },
     };
   },
@@ -32,7 +31,6 @@ export default $config({
         }),
       },
     });
-
     return {
       SiteUrl: website.url,
     };
