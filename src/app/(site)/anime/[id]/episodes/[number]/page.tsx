@@ -29,6 +29,7 @@ const AnimeStreamingPage = () => {
 
   return (
     <div className="mb-2 flex-1">
+      <pre>{JSON.stringify(sources, null, 2)}</pre>
       <Player sources={sources} />
     </div>
   );

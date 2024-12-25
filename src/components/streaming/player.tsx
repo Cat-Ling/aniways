@@ -6,7 +6,6 @@ import Artplayer from "artplayer";
 import Hls from "hls.js";
 import artplayerPluginHlsControl from "artplayer-plugin-hls-control";
 import { ANIWAYS_LOGO, LOADING_SVG, SUBTITLE_ICON } from "./icons";
-import artplayerPluginVttThumbnail from "artplayer-plugin-vtt-thumbnail";
 
 import "./artplayer.css";
 import { toast } from "sonner";
@@ -14,6 +13,7 @@ import { type Settings } from "@/server/db/schema";
 import { type MyListStatus } from "@animelist/client";
 import { usePathname, useRouter } from "next/navigation";
 import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
+import { thumbnailPlugin } from "./thumbnail";
 
 type PlayerProps = {
   sources: RouterOutputs["hiAnime"]["getEpisodeSources"];
@@ -140,9 +140,7 @@ export const Player = ({ sources }: PlayerProps) => {
             auto: "Auto",
           },
         }),
-        artplayerPluginVttThumbnail({
-          vtt: thumbnails?.file,
-        }),
+        thumbnailPlugin(thumbnails!),
       ],
       layers: [
         {
