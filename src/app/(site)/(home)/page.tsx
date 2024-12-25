@@ -89,7 +89,7 @@ const RecentlyReleasedAnime = async ({
                   <p className="line-clamp-2 text-xs transition group-hover:text-primary md:text-sm">
                     {anime.title ?? "????"}
                   </p>
-                  <p className="my-1 line-clamp-3 hidden text-xs text-muted-foreground md:block md:text-sm">
+                  <p className="my-1 hidden text-xs text-muted-foreground md:relative md:line-clamp-3 md:text-sm">
                     {anime.description}
                   </p>
                   <p className="mt-1 flex-1 text-xs text-muted-foreground md:text-sm">
