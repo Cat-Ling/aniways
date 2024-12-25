@@ -13,9 +13,7 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
-    "unlock": "sst unlock",
-    "deploy:prod": "sst deploy --stage prod"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@animelist/auth-next": "^0.1.1",
@@ -59,7 +57,6 @@
     "react-hook-form": "^7.54.2",
     "server-only": "^0.0.1",
     "sonner": "^1.7.1",
-    "sst": "3.4.30",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
