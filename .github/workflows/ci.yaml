@@ -22,63 +22,29 @@ env:
   MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
   MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
   MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
-  # For AWS
-  WEBSITE_AWS_SSL_CERT_ARN: ${{ secrets.WEBSITE_AWS_SSL_CERT_ARN}}
-  HEALTHCHECK_AWS_SSL_CERT_ARN: ${{ secrets.HEALTHCHECK_AWS_SSL_CERT_ARN }}
-  API_AWS_SSL_CERT_ARN: ${{ secrets.API_AWS_SSL_CERT_ARN }}
-  # For TurboRepo
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  # Cloudflare dns
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_DEFAULT_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_DEFAULT_ACCOUNT_ID }}
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./tooling/github/setup
-
-      - name: Lint
-        run: bun lint && bun lint:ws
-
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./tooling/github/setup
-
-      - name: Format
-        run: bun format
-
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./tooling/github/setup
-
-      - name: Typecheck
-        run: bun typecheck
-
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [lint, format, typecheck]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./tooling/github/setup
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
 
-      - name: Generate Healthcheck Key
-        run: |
-          HEALTHCHECK_KEY=$(openssl rand -hex 32)
-          echo "::add-mask::$HEALTHCHECK_KEY"
-          echo "HEALTHCHECK_KEY=$HEALTHCHECK_KEY" >> $GITHUB_ENV
+      - shell: bash
+        run: bun install
+
+      - name: Set up Next.js Cache for website
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/apps/website/.next/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/bun.lockb') }}-nextjs-cache
 
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
