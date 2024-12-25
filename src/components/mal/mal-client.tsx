@@ -82,7 +82,7 @@ export const MalClient = ({ initialData, status }: AnimeListClientProps) => {
   }
 
   return (
-    <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-5">
+    <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-6">
       {animeList.pages.map((page) =>
         page.anime.map((anime) => {
           const url = anime.hiAnimeId
