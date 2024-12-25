@@ -25,7 +25,7 @@ export default $config({
         DATABASE_URL: process.env.DATABASE_URL!,
       },
       domain: {
-        name: "aniways.xyz",
+        name: "@.aniways.xyz",
         dns: sst.cloudflare.dns({
           zone: process.env.CLOUDFLARE_ZONE_ID!,
         }),
