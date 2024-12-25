@@ -29,7 +29,7 @@ export const malRouter = createTRPCRouter({
       const animeList = await ctx.malScraper.getAnimeList({
         username,
         page,
-        limit: 50,
+        limit: 48,
         status: status === "all" ? undefined : status,
       });
 
