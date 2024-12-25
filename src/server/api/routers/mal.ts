@@ -144,4 +144,8 @@ export const malRouter = createTRPCRouter({
       username: ctx.session.user.name,
     });
   }),
+
+  getCurrentSeasonalAnime: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.malScraper.getCurrentSeason();
+  }),
 });

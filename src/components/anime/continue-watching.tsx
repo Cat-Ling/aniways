@@ -1,18 +1,24 @@
 "use client";
 
-import { api } from "@/trpc/react";
+import { api, type RouterOutputs } from "@/trpc/react";
 import { AnimeGridLoader } from "../layouts/anime-grid-loader";
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { Image } from "../ui/image";
 import { Play } from "lucide-react";
 
-export const ContinueWatching = () => {
+type ContinueWatchingProps = {
+  initialData: RouterOutputs["mal"]["getContinueWatching"];
+};
+
+export const ContinueWatching = (props: ContinueWatchingProps) => {
   const {
     data: continueWatchingAnime,
     isLoading,
     error,
-  } = api.mal.getContinueWatching.useQuery();
+  } = api.mal.getContinueWatching.useQuery(undefined, {
+    initialData: props.initialData,
+  });
 
   if (isLoading) return <AnimeGridLoader />;
 

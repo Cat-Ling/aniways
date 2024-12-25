@@ -227,4 +227,34 @@ export class MalScraper {
         return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
       });
   }
+
+  async getCurrentSeason() {
+    const currentSeason = await Jikan4.seasonNow();
+
+    const ids = currentSeason.data
+      .map((anime) => anime.mal_id)
+      .filter((id) => id !== undefined);
+
+    const dedupedIds = Array.from(new Set(ids));
+
+    const seasonalAnimes = dedupedIds
+      .map((id) => currentSeason.data.find((anime) => anime.mal_id === id))
+      .filter((anime) => anime !== undefined);
+
+    const scraper = new HiAnimeScraper();
+
+    return await Promise.all(
+      seasonalAnimes.map(async (anime) => {
+        const animeId = await scraper.getHiAnimeIdFromMalId(anime.mal_id!);
+
+        if (!animeId) return null;
+
+        return {
+          ...anime,
+          animeId,
+          mal_id: anime.mal_id!,
+        };
+      }),
+    ).then((res) => res.filter((anime) => anime !== null));
+  }
 }
