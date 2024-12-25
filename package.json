@@ -13,7 +13,8 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy:prod": "sst deploy --stage prod"
   },
   "dependencies": {
     "@animelist/auth-next": "^0.1.1",

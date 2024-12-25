@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["*"]
+  push:
+    branches: ["*"]
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # ENV Variables for the project
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+  MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+  MAL_SECRET_KEY: ${{ secrets.MAL_SECRET_KEY }}
+
+jobs:
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
+      - shell: bash
+        run: bun add -g turbo
+
+      - shell: bash
+        run: bun install
+
+      - name: Set up Next.js Cache for website
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/apps/website/.next/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/bun.lockb') }}-nextjs-cache
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-southeast-1
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-duration-seconds: 1800
+
+      - name: Deploy to AWS
+        run: bun run deploy:prod
