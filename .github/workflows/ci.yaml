@@ -54,5 +54,8 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-duration-seconds: 1800
 
+      - name: Ensure no lock
+        run: bun run unlock
+
       - name: Deploy to AWS
         run: bun run deploy:prod
