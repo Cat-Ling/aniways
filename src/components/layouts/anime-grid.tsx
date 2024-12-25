@@ -6,11 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type AnimeGridProps = {
   animes: {
-    id: string;
-    jname: string;
-    poster: string;
+    id: string | null;
+    jname: string | null;
+    poster: string | null;
     episodes: {
-      sub: number;
+      sub: number | null;
     };
   }[];
 };
