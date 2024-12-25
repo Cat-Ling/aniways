@@ -26,7 +26,9 @@ export default $config({
       },
       domain: {
         name: "aniways.xyz",
-        dns: sst.cloudflare.dns(),
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE_ID!,
+        }),
       },
     });
     return {
