@@ -9,6 +9,11 @@ export default $config({
       removal: input?.stage === "production" ? "retain" : "remove",
       protect: ["production"].includes(input?.stage),
       home: "aws",
+      providers: {
+        aws: {
+          region: "ap-southeast-1",
+        },
+      },
     };
   },
   async run() {
@@ -22,7 +27,9 @@ export default $config({
       },
       domain: {
         name: "aniways.xyz",
-        dns: sst.cloudflare.dns(),
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE!,
+        }),
       },
     });
 
