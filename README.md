@@ -1,29 +1,55 @@
-# Create T3 App
+<h1 align="center">
+  <img src="./apps/website/public/logo.png" width="200" height="200" /><br>
+  AniWays<br>
+  An anime streaming website with built-in MyAnimeList support
+</h1>
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## 📦 Installation
 
-## What's next? How do I make an app with this?
+```bash
+# Clone the repository
+git clone https://github.com/Coeeter/aniways.git
+```
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🚀 Usage
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+```bash
+# Install dependencies
+bun install
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+# Start the dev server
+bun dev
+```
 
-## Learn More
+NOTE: You will need to create a `.env` file in the root directory with the following content:
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+```properties
+# MyAnimeList API
+MAL_CLIENT_ID=<mal-client-id>
+MAL_CLIENT_SECRET=<mal-client-secret>
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+# JWT Secret for MAL Authentication
+MAL_SECRET_KEY=<mal-secret-key>
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+# Postgres Database Connection String
+DATABASE_URL=<postgres-database-url>
+```
 
-## How do I deploy this?
+To get the `MAL_CLIENT_ID` and `MAL_CLIENT_SECRET`, you will need to create a new application on the [MyAnimeList API](https://myanimelist.net/apiconfig).
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+To get the `MAL_SECRET_KEY`, you can generate a random string using a tool like [randomkeygen](https://randomkeygen.com/).
+
+To get the `DATABASE_URL`, you will need to create a new postgres database and get the connection string.
+
+## 🔨 Built With
+
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Shadcn/ui](https://ui.shadcn.com/)
+- [Drizzle](https://orm.drizzle.team/)
+- [tRPC](https://trpc.io/)
+- [T3](https://create.t3.gg/)
+- [@animelist](https://github.com/Neo-Ciber94/animelist)
+- [aniwatch](https://github.com/ghoshRitesh12/aniwatch)
+- [MyAnimeList API](https://myanimelist.net/apiconfig/references/api/v2)
+- [Jikan API](https://jikan.moe/)
