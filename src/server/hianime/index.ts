@@ -181,4 +181,8 @@ export class HiAnimeScraper {
       hasNextPage: !!$('.pre-pagination a[title="Next"]').length,
     };
   }
+
+  async getTrendingAnime() {
+    return this.scraper.getHomePage().then((page) => page.trendingAnimes);
+  }
 }

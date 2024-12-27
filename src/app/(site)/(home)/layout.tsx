@@ -1,5 +1,6 @@
 import { ContinueWatching as ContinueWatchingClient } from "@/components/anime/continue-watching";
 import { PlanToWatch as PlanToWatchClient } from "@/components/anime/plan-to-watch";
+import { TrendingAnime as TrendingAnimeClient } from "@/components/anime/trending-anime";
 import { AnimeCarousel as AnimeCarouselClient } from "@/components/anime/seasonal-anime-carousel";
 import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,6 +39,18 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
           </>
         }
       >
+        <TrendingAnime />
+      </Suspense>
+      <Suspense
+        fallback={
+          <>
+            <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
+            <div className="mb-6">
+              <AnimeGridLoader length={6} />
+            </div>
+          </>
+        }
+      >
         <ContinueWatching />
       </Suspense>
       <Suspense
@@ -61,6 +74,12 @@ const AnimeCarousel = async () => {
   const seasonalAnime = await api.mal.getCurrentSeasonalAnime();
 
   return <AnimeCarouselClient seasonalAnime={seasonalAnime.slice(0, 10)} />;
+};
+
+const TrendingAnime = async () => {
+  const trendingAnime = await api.hiAnime.getTrendingAnime();
+
+  return <TrendingAnimeClient trendingAnime={trendingAnime} />;
 };
 
 const ContinueWatching = async () => {

@@ -41,6 +41,7 @@ export const Player = ({ sources }: PlayerProps) => {
   const { mutate: updateEntryInMal } = api.mal.updateEntryInMal.useMutation({
     onSuccess: async () => {
       await utils.mal.getContinueWatching.invalidate();
+      await utils.mal.getPlanToWatch.invalidate();
       await utils.mal.getAnimeInfo.invalidate();
       if (toastRef.current) toast.dismiss(toastRef.current);
       toast.success("List updated", {

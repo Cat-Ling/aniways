@@ -22,7 +22,7 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
 
   return (
     <Carousel
-      className="relative mb-12"
+      className="relative md:mb-12"
       setApi={setCarouselApi}
       opts={{
         loop: true,
@@ -32,12 +32,12 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
         {props.seasonalAnime.map((anime) => {
           return (
             <CarouselItem key={anime.animeId}>
-              <div className="flex w-full flex-col-reverse gap-3 md:grid md:grid-cols-5 md:gap-6">
-                <div className="col-span-2 flex select-none flex-col justify-center">
-                  <h1 className="mb-2 line-clamp-3 text-2xl font-bold md:mb-5 md:text-5xl">
+              <div className="relative flex w-full flex-col-reverse gap-3 md:static md:grid md:grid-cols-5 md:gap-6">
+                <div className="absolute bottom-3 left-3 z-20 col-span-2 flex w-full select-none flex-col justify-center md:static md:z-0">
+                  <h1 className="mb-2 line-clamp-1 text-xl font-bold md:mb-5 md:line-clamp-3 md:text-5xl">
                     {anime.title}
                   </h1>
-                  <div className="mb-3 flex gap-2">
+                  <div className="mb-3 hidden gap-2 md:flex">
                     <span className="rounded-md bg-muted p-2 text-sm text-primary">
                       {anime.rating}
                     </span>
@@ -48,7 +48,7 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
                       {anime.episodes ?? "???"} episodes
                     </span>
                   </div>
-                  <p className="mb-2 line-clamp-3 text-sm text-muted-foreground md:mb-5">
+                  <p className="mb-2 line-clamp-3 hidden text-sm text-muted-foreground md:mb-5 md:[display:-webkit-box]">
                     {anime.synopsis}
                   </p>
                   <Button className="flex w-fit items-center gap-2" asChild>
@@ -58,18 +58,19 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
                     </Link>
                   </Button>
                 </div>
-                <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md p-3">
+                <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md md:p-3">
                   <div
-                    className="absolute bottom-0 left-0 right-0 top-0 -m-3 h-full w-full bg-cover bg-center bg-no-repeat blur-sm"
+                    className="absolute bottom-0 left-0 right-0 top-0 -m-3 hidden h-full w-full bg-cover bg-center bg-no-repeat blur-sm md:block"
                     style={{
                       backgroundImage: `url(${anime.images.jpg.image_url})`,
                     }}
                   />
                   <div className="relative z-10 flex aspect-video h-full w-full items-center justify-center">
+                    <div className="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-black to-transparent md:bg-none"></div>
                     <Image
                       src={anime.images.jpg.image_url}
                       alt={anime.title}
-                      className="h-full rounded-lg object-contain shadow-lg"
+                      className="h-full w-full rounded-lg object-cover object-center shadow-lg md:w-fit md:object-contain"
                     />
                   </div>
                 </div>
@@ -78,7 +79,7 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
           );
         })}
       </CarouselContent>
-      <div className="bottom-0 left-0 m-2 mt-6 flex w-full justify-center md:absolute md:m-2 md:w-fit">
+      <div className="bottom-0 left-0 m-3 flex w-full justify-center md:absolute md:m-2 md:w-fit">
         {Array.from({ length: count }).map((_, i) => (
           <Button
             key={i}
