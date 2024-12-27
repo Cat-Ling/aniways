@@ -139,11 +139,14 @@ export const malRouter = createTRPCRouter({
       return await ctx.malScraper.deleteEntry({ malId: input.malId });
     }),
 
-  getContinueWatching: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.malScraper.getContinueWatching({
-      username: ctx.session.user.name,
-    });
-  }),
+  getContinueWatching: protectedProcedure
+    .input(z.object({ page: z.number().optional() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.malScraper.getContinueWatching({
+        username: ctx.session.user.name,
+        page: input.page,
+      });
+    }),
 
   getCurrentSeasonalAnime: publicProcedure.query(async ({ ctx }) => {
     return await ctx.malScraper.getCurrentSeason();

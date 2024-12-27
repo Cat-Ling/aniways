@@ -176,14 +176,20 @@ export class MalScraper {
       .then((res) => res.data.trailer.embed_url);
   }
 
-  async getContinueWatching({ username }: { username: string }) {
+  async getContinueWatching({
+    username,
+    page = 1,
+  }: {
+    username: string;
+    page?: number;
+  }) {
     if (!this.isLoggedIn) {
       throw new Error("Not logged in");
     }
 
     const currentlyWatchingAnimeList = await this.getAnimeList({
       username,
-      page: 1,
+      page,
       limit: 18,
       status: "watching",
     });
@@ -218,7 +224,7 @@ export class MalScraper {
       }),
     );
 
-    return continueWatchingAnime
+    const anime = continueWatchingAnime
       .filter((anime) => anime !== null)
       .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
       .sort((a, b) => {
@@ -226,6 +232,11 @@ export class MalScraper {
 
         return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
       });
+
+    return {
+      anime,
+      hasNext: !!currentlyWatchingAnimeList.paging.next,
+    };
   }
 
   async getCurrentSeason() {

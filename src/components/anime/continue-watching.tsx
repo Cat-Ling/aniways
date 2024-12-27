@@ -5,20 +5,36 @@ import { AnimeGridLoader } from "../layouts/anime-grid-loader";
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { Image } from "../ui/image";
-import { Play } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
+import { Button } from "../ui/button";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { Pagination } from "../pagination";
 
 type ContinueWatchingProps = {
   initialData: RouterOutputs["mal"]["getContinueWatching"];
 };
 
 export const ContinueWatching = (props: ContinueWatchingProps) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = useMemo(() => {
+    if (pathname !== "/anime/watching") return 1;
+    const page = parseInt(searchParams.get("page") ?? "1");
+    return isNaN(page) ? 1 : page;
+  }, [searchParams, pathname]);
+
   const {
-    data: continueWatchingAnime,
+    data: { anime: continueWatchingAnime, hasNext },
     isLoading,
     error,
-  } = api.mal.getContinueWatching.useQuery(undefined, {
-    initialData: props.initialData,
-  });
+  } = api.mal.getContinueWatching.useQuery(
+    { page },
+    {
+      initialData: props.initialData,
+    },
+  );
 
   if (isLoading) return <AnimeGridLoader />;
 
@@ -26,12 +42,28 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
 
   return (
     <>
-      <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
-        Continue Watching
-      </h1>
-      <div className="mb-6">
-        <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-6">
-          {continueWatchingAnime?.map((anime) => (
+      <div className="flex w-full items-center justify-between">
+        <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
+          Continue Watching
+        </h1>
+        {pathname === "/anime/watching"
+          ? hasNext && <Pagination hasNext={hasNext} />
+          : continueWatchingAnime.length > 6 && (
+              <Button asChild variant={"link"} className="flex gap-2">
+                <Link href="/anime/watching">
+                  View All
+                  <ArrowRight />
+                </Link>
+              </Button>
+            )}
+      </div>
+      <ul className="mb-6 grid h-full grid-cols-2 gap-3 md:grid-cols-6">
+        {continueWatchingAnime
+          ?.slice(
+            0,
+            pathname === "/anime/watching" ? continueWatchingAnime.length : 6,
+          )
+          .map((anime) => (
             <li
               key={anime.malAnime.node.id}
               className="group rounded-md border border-border bg-background p-2"
@@ -69,8 +101,10 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
               </Link>
             </li>
           ))}
-        </ul>
-      </div>
+      </ul>
+      {pathname === "/anime/watching"
+        ? hasNext && <Pagination hasNext={hasNext} />
+        : null}
     </>
   );
 };

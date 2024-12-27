@@ -32,7 +32,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
           <>
             <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
             <div className="mb-6">
-              <AnimeGridLoader />
+              <AnimeGridLoader length={6} />
             </div>
           </>
         }
@@ -51,7 +51,11 @@ const AnimeCarousel = async () => {
 };
 
 const ContinueWatching = async () => {
-  const initalData = await api.mal.getContinueWatching().catch(() => []);
+  const initalData = await api.mal
+    .getContinueWatching({ page: 1 })
+    .catch(() => null);
+
+  if (!initalData) return null;
 
   return <ContinueWatchingClient initialData={initalData} />;
 };
