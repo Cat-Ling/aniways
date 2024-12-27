@@ -136,7 +136,7 @@ export const MalClient = ({ initialData, status }: AnimeListClientProps) => {
         }),
       )}
       {hasNextPage && (
-        <li className="col-span-2 flex items-center justify-center md:col-span-5">
+        <li className="col-span-2 flex items-center justify-center md:col-span-6">
           <Button
             onClick={() => !isFetching && fetchNextPage()}
             variant={"ghost"}
