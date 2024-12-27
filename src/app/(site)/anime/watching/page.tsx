@@ -7,8 +7,6 @@ const CurrentlyWatchingPage = async () => {
     .getContinueWatching({ page: 1 })
     .catch(() => null);
 
-  console.log(initalData);
-
   if (!initalData) return notFound();
 
   return <ContinueWatching initialData={initalData} />;

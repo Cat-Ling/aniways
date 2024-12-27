@@ -239,6 +239,69 @@ export class MalScraper {
     };
   }
 
+  async getPlannedToWatch({
+    username,
+    page = 1,
+  }: {
+    username: string;
+    page?: number;
+  }) {
+    if (!this.isLoggedIn) {
+      throw new Error("Not logged in");
+    }
+
+    const planToWatchList = await this.getAnimeList({
+      username,
+      page,
+      limit: 18,
+      status: "plan_to_watch",
+    });
+
+    const planToWatchAnime = await Promise.all(
+      planToWatchList.data.map(async (anime) => {
+        const scraper = new HiAnimeScraper();
+        const animeId = await scraper.getHiAnimeIdFromMalId(anime.node.id);
+
+        if (!animeId) return null;
+
+        const totalEpisodes = await fetch(`https://hianime.to/${animeId}`)
+          .then((res) => res.text())
+          .then(load)
+          .then(($) => {
+            const episodes = $(
+              "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
+            ).text();
+            return Number(episodes);
+          });
+
+        const lastWatchedEpisode =
+          anime.node.my_list_status?.num_episodes_watched ?? 0;
+
+        return {
+          animeId,
+          malAnime: anime,
+          totalEpisodes,
+          lastWatchedEpisode,
+          lastUpdated: anime.node.my_list_status?.updated_at,
+        };
+      }),
+    );
+
+    const anime = planToWatchAnime
+      .filter((anime) => anime !== null)
+      .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
+      .sort((a, b) => {
+        if (!a?.lastUpdated || !b?.lastUpdated) return 0;
+
+        return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
+      });
+
+    return {
+      anime,
+      hasNext: !!planToWatchList.paging.next,
+    };
+  }
+
   async getCurrentSeason() {
     const currentSeason = await Jikan4.seasonNow();
 

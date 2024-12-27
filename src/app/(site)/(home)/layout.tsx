@@ -1,4 +1,5 @@
 import { ContinueWatching as ContinueWatchingClient } from "@/components/anime/continue-watching";
+import { PlanToWatch as PlanToWatchClient } from "@/components/anime/plan-to-watch";
 import { AnimeCarousel as AnimeCarouselClient } from "@/components/anime/seasonal-anime-carousel";
 import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,6 +40,18 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
       >
         <ContinueWatching />
       </Suspense>
+      <Suspense
+        fallback={
+          <>
+            <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
+            <div className="mb-6">
+              <AnimeGridLoader length={6} />
+            </div>
+          </>
+        }
+      >
+        <PlanToWatch />
+      </Suspense>
       {children}
     </>
   );
@@ -58,6 +71,16 @@ const ContinueWatching = async () => {
   if (!initalData) return null;
 
   return <ContinueWatchingClient initialData={initalData} />;
+};
+
+const PlanToWatch = async () => {
+  const initalData = await api.mal
+    .getPlanToWatch({ page: 1 })
+    .catch(() => null);
+
+  if (!initalData) return null;
+
+  return <PlanToWatchClient initialData={initalData} />;
 };
 
 export default HomeLayout;
