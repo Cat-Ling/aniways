@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { Pagination } from "../pagination";
+import { cn } from "@/lib/utils";
 
 type PlanToWatchProps = {
   initialData: RouterOutputs["mal"]["getPlanToWatch"];
@@ -57,7 +58,13 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
               </Button>
             )}
       </div>
-      <ul className="mb-6 grid h-full grid-cols-2 gap-3 md:grid-cols-6">
+      <ul
+        className={cn(
+          "mb-6 grid h-full grid-cols-2 gap-3 md:grid-cols-6",
+          pathname !== "/anime/plan-to-watch" &&
+            "flex flex-col md:grid md:grid-cols-6",
+        )}
+      >
         {planToWatchAnime
           ?.slice(
             0,
@@ -70,9 +77,17 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
             >
               <Link
                 href={`/anime/${anime.animeId}/episodes/${anime.lastWatchedEpisode + 1}`}
-                className="flex h-full flex-col gap-3"
+                className={cn(
+                  "flex h-full flex-col gap-3",
+                  pathname !== "/anime/plan-to-watch" && "flex-row md:flex-col",
+                )}
               >
-                <div className="relative">
+                <div
+                  className={cn(
+                    "relative",
+                    pathname !== "/anime/plan-to-watch" && "w-1/6 md:w-full",
+                  )}
+                >
                   <div className="relative aspect-[450/650] w-full overflow-hidden rounded-md">
                     <Skeleton className="absolute z-0 h-full w-full rounded-md" />
                     <Image
@@ -83,15 +98,32 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
                       className="absolute h-full w-full object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
+                  <div
+                    className={cn(
+                      "pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100",
+                      pathname !== "/anime/plan-to-watch" && "hidden",
+                    )}
+                  >
                     <Play className="h-8 w-8 text-primary" />
                     <p className="mt-2 text-lg font-bold text-foreground">
                       Watch Now
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-1 flex-col justify-between">
-                  <p className="line-clamp-2 text-xs transition group-hover:text-primary md:text-sm">
+                <div
+                  className={cn(
+                    "flex flex-1 flex-col justify-between",
+                    pathname !== "/anime/plan-to-watch" &&
+                      "justify-center md:justify-between",
+                  )}
+                >
+                  <p
+                    className={cn(
+                      "line-clamp-2 text-xs transition group-hover:text-primary md:text-sm",
+                      pathname !== "/anime/plan-to-watch" &&
+                        "group-hover:text-foreground",
+                    )}
+                  >
                     {anime.malAnime.node.title ?? "????"}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground md:text-sm">
