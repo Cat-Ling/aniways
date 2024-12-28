@@ -4,20 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
 import { type RouterOutputs } from "@/trpc/react";
-import { Button } from "../ui/button";
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
-  type CarouselApi,
-} from "../ui/carousel";
-import { Image } from "../ui/image";
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { Image } from "@/components/ui/image";
 
-interface AnimeCarouselProps {
+interface SeasonalAnimeCarouselClientProps {
   seasonalAnime: RouterOutputs["mal"]["getCurrentSeasonalAnime"];
 }
 
-export const AnimeCarousel = (props: AnimeCarouselProps) => {
+export const SeasonalAnimeCarouselClient = (
+  props: SeasonalAnimeCarouselClientProps,
+) => {
   const { carouselApi, setCarouselApi, count, current } = useCarouselApi();
 
   return (

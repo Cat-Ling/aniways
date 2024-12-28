@@ -1,11 +1,14 @@
 import { ContinueWatching as ContinueWatchingClient } from "@/components/anime/continue-watching";
 import { PlanToWatch as PlanToWatchClient } from "@/components/anime/plan-to-watch";
 import { TrendingAnime as TrendingAnimeClient } from "@/components/anime/trending-anime";
-import { AnimeCarousel as AnimeCarouselClient } from "@/components/anime/seasonal-anime-carousel";
 import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/server";
 import { Suspense, type ReactNode } from "react";
+import {
+  SeasonalAnimeCarousel,
+  SeasonalAnimeCarouselLoader,
+} from "@/components/anime/carousel";
 
 type HomeLayoutProps = {
   children: ReactNode;
@@ -14,20 +17,8 @@ type HomeLayoutProps = {
 const HomeLayout = ({ children }: HomeLayoutProps) => {
   return (
     <>
-      <Suspense
-        fallback={
-          <div className="mb-6 flex w-full flex-col-reverse gap-3 md:grid md:grid-cols-5 md:gap-6">
-            <div className="col-span-2 hidden select-none flex-col justify-center md:flex">
-              <Skeleton className="mb-2 line-clamp-3 h-6 w-1/2 text-2xl font-bold md:mb-5 md:h-12 md:text-5xl" />
-              <Skeleton className="mb-3 flex h-10 w-3/4 gap-2" />
-              <Skeleton className="mb-2 line-clamp-3 h-16 w-full text-sm text-muted-foreground md:mb-5" />
-              <Skeleton className="flex h-10 w-36 items-center gap-2" />
-            </div>
-            <Skeleton className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md p-3" />
-          </div>
-        }
-      >
-        <AnimeCarousel />
+      <Suspense fallback={<SeasonalAnimeCarouselLoader />}>
+        <SeasonalAnimeCarousel />
       </Suspense>
       <Suspense
         fallback={
@@ -68,12 +59,6 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
       {children}
     </>
   );
-};
-
-const AnimeCarousel = async () => {
-  const seasonalAnime = await api.mal.getCurrentSeasonalAnime();
-
-  return <AnimeCarouselClient seasonalAnime={seasonalAnime.slice(0, 10)} />;
 };
 
 const TrendingAnime = async () => {
