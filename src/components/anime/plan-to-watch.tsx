@@ -21,7 +21,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
   const searchParams = useSearchParams();
 
   const page = useMemo(() => {
-    if (pathname !== "/anime/plan-to-watch") return 1;
+    if (pathname !== "/plan-to-watch") return 1;
     const page = parseInt(searchParams.get("page") ?? "1");
     return isNaN(page) ? 1 : page;
   }, [searchParams, pathname]);
@@ -47,11 +47,11 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
         <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">
           Your Plan to Watch
         </h1>
-        {pathname === "/anime/plan-to-watch"
+        {pathname === "/plan-to-watch"
           ? hasNext && <Pagination hasNext={hasNext} />
           : planToWatchAnime.length > 6 && (
               <Button asChild variant={"link"} className="flex gap-2">
-                <Link href="/anime/plan-to-watch">
+                <Link href="/plan-to-watch">
                   View All
                   <ArrowRight />
                 </Link>
@@ -61,14 +61,14 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
       <ul
         className={cn(
           "mb-6 grid h-full grid-cols-2 gap-3 md:grid-cols-6",
-          pathname !== "/anime/plan-to-watch" &&
+          pathname !== "/plan-to-watch" &&
             "flex flex-col md:grid md:grid-cols-6",
         )}
       >
         {planToWatchAnime
           ?.slice(
             0,
-            pathname === "/anime/plan-to-watch" ? planToWatchAnime.length : 6,
+            pathname === "/plan-to-watch" ? planToWatchAnime.length : 6,
           )
           .map((anime) => (
             <li
@@ -79,13 +79,13 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
                 href={`/anime/${anime.animeId}/episodes/${anime.lastWatchedEpisode + 1}`}
                 className={cn(
                   "flex h-full flex-col gap-3",
-                  pathname !== "/anime/plan-to-watch" && "flex-row md:flex-col",
+                  pathname !== "/plan-to-watch" && "flex-row md:flex-col",
                 )}
               >
                 <div
                   className={cn(
                     "relative",
-                    pathname !== "/anime/plan-to-watch" && "w-1/6 md:w-full",
+                    pathname !== "/plan-to-watch" && "w-1/6 md:w-full",
                   )}
                 >
                   <div className="relative aspect-[450/650] w-full overflow-hidden rounded-md">
@@ -101,7 +101,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
                   <div
                     className={cn(
                       "pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100",
-                      pathname !== "/anime/plan-to-watch" && "hidden md:flex",
+                      pathname !== "/plan-to-watch" && "hidden md:flex",
                     )}
                   >
                     <Play className="h-8 w-8 text-primary" />
@@ -113,14 +113,14 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
                 <div
                   className={cn(
                     "flex flex-1 flex-col justify-between",
-                    pathname !== "/anime/plan-to-watch" &&
+                    pathname !== "/plan-to-watch" &&
                       "justify-center md:justify-between",
                   )}
                 >
                   <p
                     className={cn(
                       "line-clamp-2 text-xs transition group-hover:text-primary md:text-sm",
-                      pathname !== "/anime/plan-to-watch" &&
+                      pathname !== "/plan-to-watch" &&
                         "group-hover:text-foreground md:group-hover:text-primary",
                     )}
                   >
@@ -134,7 +134,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
             </li>
           ))}
       </ul>
-      {pathname === "/anime/plan-to-watch"
+      {pathname === "/plan-to-watch"
         ? hasNext && <Pagination hasNext={hasNext} />
         : null}
     </>
