@@ -1,18 +1,22 @@
 import { MalScraper } from "@/server/myanimelist";
-import { unstable_cacheLife } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { SeasonalAnimeCarouselClient } from "./seasonal-anime-carousel-client";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const getCurrentSeason = unstable_cache(
+  () => new MalScraper().getCurrentSeason(),
+  ["getCurrentSeason"],
+  {
+    revalidate: 60 * 60 * 24, // 1 day
+  },
+);
 
 /**
  * Not using trpc and directly calling scraper class
  * cos of cache and cookie issues which trpc gives
  */
 export const SeasonalAnimeCarousel = async () => {
-  "use cache";
-
-  unstable_cacheLife("days");
-
-  const data = await new MalScraper().getCurrentSeason();
+  const data = await getCurrentSeason();
 
   return <SeasonalAnimeCarouselClient seasonalAnime={data.slice(0, 10)} />;
 };
