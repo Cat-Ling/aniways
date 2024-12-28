@@ -322,11 +322,16 @@ export class MalScraper {
 
     const seasonalAnimes = dedupedIds
       .map((id) => currentSeason.data.find((anime) => anime.mal_id === id))
-      .filter((anime) => anime !== undefined);
+      .filter((anime) => anime !== undefined)
+      .sort((a, b) => {
+        if (!a.rank || !b.rank) return 0;
+
+        return a.rank < b.rank ? -1 : 1;
+      });
 
     const mapper = new Mapper();
 
-    return await Promise.all(
+    const animes = await Promise.all(
       seasonalAnimes.map(async (anime) => {
         const mapping = await mapper.map({ malId: anime.mal_id! });
 
@@ -349,5 +354,13 @@ export class MalScraper {
         };
       }),
     ).then((res) => res.filter((anime) => anime !== null));
+
+    const countOfBanners = animes.filter(
+      (anime) => !!anime.bannerImage?.length,
+    ).length;
+
+    return countOfBanners >= 10
+      ? animes.filter((a) => a.bannerImage?.length)
+      : animes;
   }
 }

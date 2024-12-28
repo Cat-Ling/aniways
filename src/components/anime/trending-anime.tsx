@@ -4,7 +4,7 @@ import { type RouterOutputs } from "@/trpc/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Image } from "../ui/image";
 import { Button } from "../ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import Link from "next/link";
 
 type TrendingAnimeProps = {
@@ -48,9 +48,11 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
   const container = useRef<HTMLDivElement>(null);
 
   const width = useMemo(() => {
-    const { width } = document
-      .querySelector("main div")!
-      .getBoundingClientRect();
+    const container = document.querySelector("main div");
+
+    if (!container) return 0;
+
+    const { width } = container.getBoundingClientRect();
 
     return (width - 56) / 5 - 16;
   }, []);
@@ -76,12 +78,12 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
       <div className="flex w-full gap-2">
         <div
           ref={container}
-          className="flex w-full max-w-full gap-4 md:overflow-hidden"
+          className="flex w-full max-w-full gap-4 py-3 md:overflow-x-hidden"
         >
           {trendingAnime.map((anime, i) => (
             <Link
               key={anime.id}
-              className="flex flex-shrink-0 gap-2"
+              className="group flex flex-shrink-0 gap-2"
               style={{ width: `${width}px`, height: `${height}px` }}
               href={`/anime/${anime.id}`}
             >
@@ -93,13 +95,22 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
                   {`0${i + 1}`.slice(-2)}
                 </p>
               </div>
-              <Image
-                src={anime.poster ?? ""}
-                width={imageWidth}
-                height={height}
-                alt={anime.jname ?? anime.name ?? ""}
-                className="rounded-md"
-              />
+              <div
+                className="relative transition group-hover:scale-105"
+                style={{ width: `${imageWidth}px`, height: `${height}px` }}
+              >
+                <div className="pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
+                  <Play className="h-8 w-8 text-primary" />
+                  <p className="mt-2 text-lg font-bold text-foreground">
+                    Watch Now
+                  </p>
+                </div>
+                <Image
+                  src={anime.poster ?? ""}
+                  alt={anime.jname ?? anime.name ?? ""}
+                  className="h-full w-full rounded-md"
+                />
+              </div>
             </Link>
           ))}
         </div>
