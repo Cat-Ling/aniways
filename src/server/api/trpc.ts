@@ -14,6 +14,7 @@ import { cookies } from "next/headers";
 import { db } from "../db";
 import { MalScraper } from "../myanimelist";
 import { HiAnimeScraper } from "../hianime";
+import { Mapper } from "../mapper";
 
 /**
  * 1. CONTEXT
@@ -31,12 +32,14 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth(await cookies());
   const malScraper = new MalScraper(session?.accessToken);
   const hiAnimeScraper = new HiAnimeScraper();
+  const mapper = new Mapper();
 
   return {
     session,
     db,
     malScraper,
     hiAnimeScraper,
+    mapper,
     ...opts,
   };
 };

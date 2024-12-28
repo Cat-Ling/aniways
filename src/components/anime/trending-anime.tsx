@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Image } from "../ui/image";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 type TrendingAnimeProps = {
   trendingAnime: RouterOutputs["hiAnime"]["getTrendingAnime"];
@@ -78,10 +79,11 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
           className="flex w-full max-w-full gap-4 md:overflow-hidden"
         >
           {trendingAnime.map((anime, i) => (
-            <div
+            <Link
               key={anime.id}
               className="flex flex-shrink-0 gap-2"
               style={{ width: `${width}px`, height: `${height}px` }}
+              href={`/anime/${anime.id}`}
             >
               <div className="flex h-full flex-1 flex-col items-center justify-end">
                 <h2 className="rotate-180 truncate text-lg font-bold [writing-mode:vertical-rl]">
@@ -98,7 +100,7 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
                 alt={anime.jname ?? anime.name ?? ""}
                 className="rounded-md"
               />
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -131,7 +133,11 @@ const TrendingAnimeMobile = ({ trendingAnime }: TrendingAnimeProps) => {
       <h1 className="mb-2 text-lg font-bold md:mb-5 md:text-2xl">Trending</h1>
       <div className="flex w-full overflow-scroll">
         {trendingAnime.map((anime, i) => (
-          <div key={anime.id} className="relative w-[calc(25%)] flex-shrink-0">
+          <Link
+            key={anime.id}
+            className="relative w-[calc(25%)] flex-shrink-0"
+            href={`/anime/${anime.id}`}
+          >
             <Image
               src={anime.poster ?? ""}
               alt={anime.jname ?? anime.name ?? ""}
@@ -142,7 +148,7 @@ const TrendingAnimeMobile = ({ trendingAnime }: TrendingAnimeProps) => {
                 {`0${i + 1}`.slice(-2)}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

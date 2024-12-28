@@ -43,9 +43,9 @@ export const malRouter = createTRPCRouter({
       return {
         anime: await Promise.all(
           animeList.data.map(async (anime) => {
-            const hiAnimeId = await ctx.hiAnimeScraper.getHiAnimeIdFromMalId(
-              anime.node.id,
-            );
+            const { hiAnimeId } = await ctx.mapper.map({
+              malId: anime.node.id,
+            });
 
             return {
               ...anime.node,
@@ -68,9 +68,9 @@ export const malRouter = createTRPCRouter({
         ...info,
         recommendations: await Promise.all(
           info?.recommendations?.map(async (rec) => {
-            const hiAnimeId = await ctx.hiAnimeScraper.getHiAnimeIdFromMalId(
-              rec.node.id,
-            );
+            const { hiAnimeId } = await ctx.mapper.map({
+              malId: rec.node.id,
+            });
 
             return {
               ...rec,
@@ -80,9 +80,9 @@ export const malRouter = createTRPCRouter({
         ),
         relatedAnime: await Promise.all(
           info?.relatedAnime?.map(async (related) => {
-            const hiAnimeId = await ctx.hiAnimeScraper.getHiAnimeIdFromMalId(
-              related.node.id,
-            );
+            const { hiAnimeId } = await ctx.mapper.map({
+              malId: related.node.id,
+            });
 
             return {
               ...related,

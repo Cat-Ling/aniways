@@ -1,8 +1,9 @@
 import { env } from "@/env";
 import { type AnimeNode, MALClient, type WatchStatus } from "@animelist/client";
 import { Jikan4 } from "node-myanimelist";
-import { HiAnimeScraper } from "../hianime";
 import { load } from "cheerio";
+import { Mapper } from "../mapper";
+import { z } from "zod";
 
 type GetAnimeListArgs = {
   username: string;
@@ -21,6 +22,10 @@ type UpdateMalStatusArgs = {
 type DeleteMalStatusArgs = {
   malId: number;
 };
+
+const AnifyInfoSchema = z.object({
+  bannerImage: z.string(),
+});
 
 export class MalScraper {
   private client: MALClient;
@@ -196,8 +201,10 @@ export class MalScraper {
 
     const continueWatchingAnime = await Promise.all(
       currentlyWatchingAnimeList.data.map(async (anime) => {
-        const scraper = new HiAnimeScraper();
-        const animeId = await scraper.getHiAnimeIdFromMalId(anime.node.id);
+        const mapper = new Mapper();
+        const animeId = await mapper
+          .map({ malId: anime.node.id })
+          .then((mapping) => mapping.hiAnimeId);
 
         if (!animeId) return null;
 
@@ -259,8 +266,10 @@ export class MalScraper {
 
     const planToWatchAnime = await Promise.all(
       planToWatchList.data.map(async (anime) => {
-        const scraper = new HiAnimeScraper();
-        const animeId = await scraper.getHiAnimeIdFromMalId(anime.node.id);
+        const mapper = new Mapper();
+        const animeId = await mapper
+          .map({ malId: anime.node.id })
+          .then((mapping) => mapping.hiAnimeId);
 
         if (!animeId) return null;
 
@@ -315,18 +324,28 @@ export class MalScraper {
       .map((id) => currentSeason.data.find((anime) => anime.mal_id === id))
       .filter((anime) => anime !== undefined);
 
-    const scraper = new HiAnimeScraper();
+    const mapper = new Mapper();
 
     return await Promise.all(
       seasonalAnimes.map(async (anime) => {
-        const animeId = await scraper.getHiAnimeIdFromMalId(anime.mal_id!);
+        const mapping = await mapper.map({ malId: anime.mal_id! });
 
-        if (!animeId) return null;
+        if (!mapping.hiAnimeId) return null;
+
+        const data = await fetch(
+          `https://anify.eltik.cc/info/${mapping.aniListId}`,
+        )
+          .then((res) => res.json())
+          .then((data) => AnifyInfoSchema.safeParse(data));
+
+        const bannerImage = data.success ? data.data.bannerImage : null;
 
         return {
           ...anime,
-          animeId,
+          animeId: mapping.hiAnimeId,
           mal_id: anime.mal_id!,
+          aniListId: mapping.aniListId,
+          bannerImage,
         };
       }),
     ).then((res) => res.filter((anime) => anime !== null));

@@ -58,21 +58,21 @@ export const AnimeCarousel = (props: AnimeCarouselProps) => {
                     </Link>
                   </Button>
                 </div>
-                <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md md:p-3">
-                  <div
-                    className="absolute bottom-0 left-0 right-0 top-0 -m-3 hidden h-full w-full bg-cover bg-center bg-no-repeat blur-sm md:block"
-                    style={{
-                      backgroundImage: `url(${anime.images.jpg.image_url})`,
+                <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md">
+                  <div className="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-black to-transparent md:bg-none"></div>
+                  <Image
+                    src={
+                      anime.bannerImage?.length
+                        ? anime.bannerImage
+                        : anime.images.webp.large_image_url
+                    }
+                    alt={anime.title}
+                    className="h-full w-full rounded-lg object-cover object-center shadow-lg"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        anime.images.webp.large_image_url ?? "";
                     }}
                   />
-                  <div className="relative z-10 flex aspect-video h-full w-full items-center justify-center">
-                    <div className="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-black to-transparent md:bg-none"></div>
-                    <Image
-                      src={anime.images.jpg.image_url}
-                      alt={anime.title}
-                      className="h-full w-full rounded-lg object-cover object-center shadow-lg md:w-fit md:object-contain"
-                    />
-                  </div>
                 </div>
               </div>
             </CarouselItem>

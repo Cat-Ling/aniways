@@ -17,7 +17,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
       <Suspense
         fallback={
           <div className="mb-6 flex w-full flex-col-reverse gap-3 md:grid md:grid-cols-5 md:gap-6">
-            <div className="col-span-2 flex select-none flex-col justify-center">
+            <div className="col-span-2 hidden select-none flex-col justify-center md:flex">
               <Skeleton className="mb-2 line-clamp-3 h-6 w-1/2 text-2xl font-bold md:mb-5 md:h-12 md:text-5xl" />
               <Skeleton className="mb-3 flex h-10 w-3/4 gap-2" />
               <Skeleton className="mb-2 line-clamp-3 h-16 w-full text-sm text-muted-foreground md:mb-5" />
