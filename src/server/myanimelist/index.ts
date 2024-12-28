@@ -4,6 +4,7 @@ import { Jikan4 } from "node-myanimelist";
 import { load } from "cheerio";
 import { Mapper } from "../mapper";
 import { z } from "zod";
+import { HiAnimeScraper } from "../hianime";
 
 type GetAnimeListArgs = {
   username: string;
@@ -208,7 +209,9 @@ export class MalScraper {
 
         if (!animeId) return null;
 
-        const totalEpisodes = await fetch(`https://hianime.to/${animeId}`)
+        const totalEpisodes = await fetch(
+          `${HiAnimeScraper.BASE_URL}/${animeId}`,
+        )
           .then((res) => res.text())
           .then(load)
           .then(($) => {
@@ -273,7 +276,9 @@ export class MalScraper {
 
         if (!animeId) return null;
 
-        const totalEpisodes = await fetch(`https://hianime.to/${animeId}`)
+        const totalEpisodes = await fetch(
+          `${HiAnimeScraper.BASE_URL}/${animeId}`,
+        )
           .then((res) => res.text())
           .then(load)
           .then(($) => {

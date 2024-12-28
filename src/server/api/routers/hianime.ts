@@ -37,4 +37,10 @@ export const hiAnimeRouter = createTRPCRouter({
   getTrendingAnime: publicProcedure.query(({ ctx }) =>
     ctx.hiAnimeScraper.getTrendingAnime(),
   ),
+
+  getTopAnime: publicProcedure.query(({ ctx }) =>
+    ctx.hiAnimeScraper.getTopAnime(),
+  ),
+
+  getGenres: publicProcedure.query(({ ctx }) => ctx.hiAnimeScraper.getGenres()),
 });

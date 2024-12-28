@@ -3,6 +3,7 @@ import { Play } from "lucide-react";
 
 import { Image } from "@/components/ui/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 type AnimeGridProps = {
   animes: {
@@ -13,11 +14,17 @@ type AnimeGridProps = {
       sub: number | null;
     };
   }[];
+  type?: "featured" | "normal";
 };
 
-export const AnimeGrid = ({ animes }: AnimeGridProps) => {
+export const AnimeGrid = ({ animes, type = "normal" }: AnimeGridProps) => {
   return (
-    <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-6">
+    <ul
+      className={cn(
+        "grid h-full grid-cols-2 gap-3 md:grid-cols-6",
+        type === "featured" && "md:grid-cols-4",
+      )}
+    >
       {animes.map((anime) => {
         return (
           <li

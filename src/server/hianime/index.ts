@@ -1,9 +1,8 @@
 import { HiAnime } from "aniwatch";
-import { load } from "cheerio";
-
-const BASE_URL = "https://hianime.to";
+import { cache } from "react";
 
 export class HiAnimeScraper {
+  static BASE_URL = "https://hianime.to";
   private scraper: HiAnime.Scraper;
 
   constructor() {
@@ -11,7 +10,7 @@ export class HiAnimeScraper {
   }
 
   async getRandomAnime() {
-    const random = await fetch(`${BASE_URL}/random`, {
+    const random = await fetch(`${HiAnimeScraper.BASE_URL}/random`, {
       redirect: "manual",
     }).then(async (res) => res.headers.get("Location"));
 
@@ -105,44 +104,24 @@ export class HiAnimeScraper {
     };
   }
 
+  private getHomePage = cache(() => {
+    console.log("Fetching home page");
+    return this.scraper.getHomePage();
+  });
+
   async getRecentlyReleased(page = 1) {
-    const $ = await fetch(`${BASE_URL}/recently-updated?page=${page}`)
-      .then((res) => res.text())
-      .then(load);
-
-    const animes = $(".film_list-wrap .flw-item").map((i, el) => {
-      const $el = $(el);
-
-      const id = $el
-        .find(".film-detail .film-name a")
-        .attr("href")!
-        .split("/")
-        .pop()!;
-      const title =
-        $el.find(".film-detail .film-name a").attr("data-jname") ??
-        $el.find(".film-detail .film-name a").text() ??
-        "";
-      const image = $el.find("img.film-poster-img").attr("data-src") ?? "";
-      const episode = $el.find(".tick-item.tick-sub").text() ?? "";
-
-      const description = $el.find(".description").text() ?? null;
-
-      return {
-        id,
-        title,
-        image,
-        episode: Number(episode),
-        description,
-      };
-    });
-
-    return {
-      animes: animes.get(),
-      hasNextPage: !!$('.pre-pagination a[title="Next"]').length,
-    };
+    return this.scraper.getCategoryAnime("recently-updated", page);
   }
 
   async getTrendingAnime() {
-    return this.scraper.getHomePage().then((page) => page.trendingAnimes);
+    return this.getHomePage().then((page) => page.trendingAnimes);
+  }
+
+  async getTopAnime() {
+    return this.getHomePage().then((page) => page.top10Animes);
+  }
+
+  async getGenres() {
+    return this.getHomePage().then((page) => page.genres);
   }
 }
