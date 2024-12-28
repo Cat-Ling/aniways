@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimeMetadataLoader } from "@/components/anime/metadata/anime-metadata-details";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 import { useParams, useRouter } from "next/navigation";
@@ -37,9 +38,18 @@ const AnimeRedirectPage = () => {
       <div className="flex-1">
         <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
       </div>
-      <Skeleton className="mb-6 mt-3 h-10 w-full" />
+      <div className="mb-6 flex w-full items-center justify-between">
+        <Skeleton className="h-10 w-28" />
+        <Skeleton className="h-10 w-28" />
+      </div>
       <h2 className="mb-3 text-lg font-semibold">Episodes</h2>
-      <Skeleton className="mb-6 h-10 w-full" />
+      <div className="grid h-fit max-h-[500px] w-full grid-cols-3 gap-2 overflow-scroll rounded-md sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12">
+        {Array.from({ length: 24 }).map((_, i) => (
+          <Skeleton key={i} className="h-10 w-full" />
+        ))}
+      </div>
+      <h3 className="mb-3 mt-6 text-lg font-semibold">Anime Information</h3>
+      <AnimeMetadataLoader />
     </div>
   );
 };
