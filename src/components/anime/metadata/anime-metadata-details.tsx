@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 import { MalButton } from "./mal-button";
 import { Trailer } from "./trailer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AnimeMetadataProps {
   metadata: Exclude<RouterOutputs["mal"]["getAnimeInfo"], undefined>;
@@ -29,7 +30,7 @@ export const AnimeMetadataDetails = ({ metadata }: AnimeMetadataProps) => {
           <p className="text-sm text-muted-foreground">
             {metadata.alternative_titles?.en}
           </p>
-          <div className="mt-2 flex flex-col justify-start gap-3 md:flex-row">
+          <div className="mt-2 flex flex-col justify-start gap-1 md:flex-row">
             {[
               metadata.media_type,
               metadata.rating,
@@ -114,6 +115,37 @@ export const AnimeMetadataDetails = ({ metadata }: AnimeMetadataProps) => {
           </Button>
           <Trailer malId={metadata.id} title={metadata.title} />
           <MalButton metadata={metadata} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const AnimeMetadataLoader = () => {
+  return (
+    <div className="mb-6 grid min-h-[400px] w-full grid-cols-1 gap-6 md:grid-cols-4">
+      <Skeleton className="aspect-[3/4] w-full rounded-md border border-border object-cover" />
+      <div className="flex flex-col gap-3 md:col-span-3">
+        <div>
+          <Skeleton className="mb-2 h-6 w-1/3 text-2xl font-bold" />
+          <Skeleton className="h-4 w-1/4 text-sm text-muted-foreground" />
+          <Skeleton className="mt-2 flex h-10 w-3/5 flex-col justify-start gap-3 md:flex-row" />
+          <div className="mt-2 grid w-full grid-cols-2 gap-1 md:w-1/2">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <Skeleton key={index} className="h-4 w-full text-sm" />
+            ))}
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-2">
+          <Skeleton className="h-4 w-full text-sm" />
+          <Skeleton className="h-4 w-full text-sm" />
+          <Skeleton className="h-4 w-full text-sm" />
+          <Skeleton className="h-4 w-3/4 text-sm" />
+        </div>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-10 w-32" />
         </div>
       </div>
     </div>

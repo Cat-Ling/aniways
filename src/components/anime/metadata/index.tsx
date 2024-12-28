@@ -2,8 +2,10 @@
 
 import ErrorPage from "@/app/error";
 import { api } from "@/trpc/react";
-import { AnimeMetadataDetails } from "./anime-metadata-details";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AnimeMetadataDetails,
+  AnimeMetadataLoader,
+} from "./anime-metadata-details";
 
 export const AnimeMetadata = (props: { malId: number }) => {
   const {
@@ -16,7 +18,12 @@ export const AnimeMetadata = (props: { malId: number }) => {
   });
 
   if (isLoading || !metadata) {
-    return <Skeleton className="mb-6 h-[500px] w-full" />;
+    return (
+      <>
+        <h3 className="mb-3 mt-6 text-lg font-semibold">Anime Information</h3>
+        <AnimeMetadataLoader />
+      </>
+    );
   }
 
   if (isError) {
