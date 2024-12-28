@@ -101,7 +101,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
                   <div
                     className={cn(
                       "pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100",
-                      pathname !== "/anime/watching" && "hidden",
+                      pathname !== "/anime/watching" && "hidden md:flex",
                     )}
                   >
                     <Play className="h-8 w-8 text-primary" />
@@ -121,7 +121,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
                     className={cn(
                       "line-clamp-2 text-xs transition group-hover:text-primary md:text-sm",
                       pathname !== "/anime/watching" &&
-                        "group-hover:text-foreground",
+                        "group-hover:text-foreground md:group-hover:text-primary",
                     )}
                   >
                     {anime.malAnime.node.title ?? "????"}
