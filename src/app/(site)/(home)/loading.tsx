@@ -6,7 +6,7 @@ const HomePageLoading = () => {
     <>
       <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
       <div className="mb-6">
-        <AnimeGridLoader />
+        <AnimeGridLoader featured />
       </div>
     </>
   );

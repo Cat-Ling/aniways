@@ -31,7 +31,7 @@ const HomePage = async ({ searchParams }: HomePageProps) => {
         </Suspense>
       </div>
       <div className="mb-6">
-        <Suspense key={page} fallback={<AnimeGridLoader />}>
+        <Suspense key={page} fallback={<AnimeGridLoader featured />}>
           <RecentlyReleasedAnime result={recentlyReleased} />
         </Suspense>
       </div>

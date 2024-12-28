@@ -124,4 +124,8 @@ export class HiAnimeScraper {
   async getGenres() {
     return this.getHomePage().then((page) => page.genres);
   }
+
+  async getGenreAnime(genre: string, page = 1) {
+    return this.scraper.getGenreAnime(genre, page);
+  }
 }

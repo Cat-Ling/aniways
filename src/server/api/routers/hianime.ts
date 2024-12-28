@@ -43,4 +43,10 @@ export const hiAnimeRouter = createTRPCRouter({
   ),
 
   getGenres: publicProcedure.query(({ ctx }) => ctx.hiAnimeScraper.getGenres()),
+
+  getGenreAnime: publicProcedure
+    .input(z.object({ genre: z.string(), page: z.number().default(1) }))
+    .query(({ ctx, input }) =>
+      ctx.hiAnimeScraper.getGenreAnime(input.genre, input.page),
+    ),
 });
