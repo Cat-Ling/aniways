@@ -48,6 +48,8 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
   const container = useRef<HTMLDivElement>(null);
 
   const width = useMemo(() => {
+    if (!document) return 0;
+
     const container = document.querySelector("main div");
 
     if (!container) return 0;
