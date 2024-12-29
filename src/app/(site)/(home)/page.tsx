@@ -54,9 +54,9 @@ const RecentlyReleasedAnime = async ({
   return (
     <>
       <div className="mb-3">
-        <AnimeGrid animes={animes.slice(0, 4)} type="featured" />
+        <AnimeGrid animes={animes.slice(0, 4)} type="featured" episodeInUrl />
       </div>
-      <AnimeGrid animes={animes.slice(4)} />
+      <AnimeGrid animes={animes.slice(4)} episodeInUrl />
     </>
   );
 };

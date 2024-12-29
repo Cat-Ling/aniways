@@ -15,9 +15,14 @@ type AnimeGridProps = {
     };
   }[];
   type?: "featured" | "normal";
+  episodeInUrl?: boolean;
 };
 
-export const AnimeGrid = ({ animes, type = "normal" }: AnimeGridProps) => {
+export const AnimeGrid = ({
+  animes,
+  type = "normal",
+  episodeInUrl,
+}: AnimeGridProps) => {
   return (
     <ul
       className={cn(
@@ -32,7 +37,9 @@ export const AnimeGrid = ({ animes, type = "normal" }: AnimeGridProps) => {
             className="group rounded-md border border-border bg-background p-2"
           >
             <Link
-              href={`/anime/${anime.id}`}
+              href={`/anime/${anime.id}${
+                episodeInUrl ? `/episodes/${anime.episodes.sub}` : ""
+              }`}
               className="flex h-full flex-col gap-3"
             >
               <div className="relative">
