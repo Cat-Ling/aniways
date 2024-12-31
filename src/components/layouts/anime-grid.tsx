@@ -38,7 +38,7 @@ export const AnimeGrid = ({
           >
             <Link
               href={`/anime/${anime.id}${
-                episodeInUrl ? `/episodes/${anime.episodes.sub}` : ""
+                episodeInUrl ? `?episode=${anime.episodes.sub ?? 1}` : ""
               }`}
               className="flex h-full flex-col gap-3"
             >
@@ -65,7 +65,7 @@ export const AnimeGrid = ({
                   {anime.jname ?? "????"}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-                  {anime.episodes.sub} episodes
+                  {anime.episodes.sub ?? "1"} episodes
                 </p>
               </div>
             </Link>

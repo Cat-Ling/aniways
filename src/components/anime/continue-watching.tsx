@@ -75,7 +75,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
               className="group rounded-md border border-border bg-background p-2"
             >
               <Link
-                href={`/anime/${anime.animeId}/episodes/${anime.lastWatchedEpisode + 1}`}
+                href={`/anime/${anime.animeId}?episode=${anime.lastWatchedEpisode + 1}`}
                 className={cn(
                   "flex h-full flex-col gap-3",
                   pathname !== "/watching" && "flex-row md:flex-col",

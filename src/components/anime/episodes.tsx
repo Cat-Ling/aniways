@@ -7,7 +7,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import type { RouterOutputs } from "@/trpc/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface EpisodesSidbarProps {
   animeId: string;
@@ -15,18 +15,20 @@ interface EpisodesSidbarProps {
 }
 
 export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const currentVideoRef = useRef<HTMLButtonElement>(null);
 
   const currentEpisode = useMemo(() => {
-    const match = /episodes\/(\d+)/.exec(pathname);
-    return match ? match[1] : null;
-  }, [pathname]);
+    const ep = searchParams.get("episode");
+    const firstEp = episodes.episodes[0]?.number;
+
+    return Number(ep ?? firstEp ?? 1);
+  }, [episodes, searchParams]);
 
   const nextEpisode = useMemo(() => {
     const currentIndex = episodes.episodes.findIndex(
-      (ep) => ep.number === Number(currentEpisode),
+      (ep) => ep.number === currentEpisode,
     );
 
     if (currentIndex === episodes.episodes.length - 1) return null;
@@ -36,7 +38,7 @@ export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
 
   const prevEpisode = useMemo(() => {
     const currentIndex = episodes.episodes.findIndex(
-      (ep) => ep.number === Number(currentEpisode),
+      (ep) => ep.number === currentEpisode,
     );
 
     if (currentIndex === 0) return null;
@@ -59,12 +61,21 @@ export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
     });
   }, [sidebarRef, currentVideoRef, currentEpisode]);
 
+  useEffect(() => {
+    const ep = searchParams.get("episode") ?? undefined;
+    if (Number(ep) === currentEpisode) return;
+    window.history.replaceState(null, "", `?episode=${currentEpisode}`);
+  }, [searchParams, currentEpisode]);
+
   return (
     <div className="mt-3">
       <div className="mb-6 flex w-full justify-between">
         {prevEpisode ? (
           <Button className="flex items-center gap-2" asChild>
-            <Link href={`/anime/${animeId}/episodes/${prevEpisode.number}`}>
+            <Link
+              href={`/anime/${animeId}?episode=${prevEpisode.number}`}
+              scroll={false}
+            >
               <ChevronLeftIcon className="h-5 w-5" />
               Previous
             </Link>
@@ -74,7 +85,10 @@ export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
         )}
         {nextEpisode && (
           <Button className="flex items-center gap-2" asChild>
-            <Link href={`/anime/${animeId}/episodes/${nextEpisode.number}`}>
+            <Link
+              href={`/anime/${animeId}?episode=${nextEpisode.number}`}
+              scroll={false}
+            >
               Next
               <ChevronRightIcon className="h-5 w-5" />
             </Link>
@@ -87,7 +101,7 @@ export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
         className="grid h-fit max-h-[500px] w-full grid-cols-3 gap-2 overflow-scroll rounded-md sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12"
       >
         {episodes.episodes.map((video) => {
-          const isCurrentVideo = Number(currentEpisode) === video.number;
+          const isCurrentVideo = currentEpisode === video.number;
 
           return (
             <Button
@@ -101,7 +115,10 @@ export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
               {isCurrentVideo ? (
                 `Episode ${video.number}`
               ) : (
-                <Link href={`/anime/${animeId}/episodes/${video.number}`}>
+                <Link
+                  href={`/anime/${animeId}?episode=${video.number}`}
+                  scroll={false}
+                >
                   Episode {video.number}
                 </Link>
               )}

@@ -7,9 +7,7 @@ import { api } from "@/trpc/server";
 
 interface AnimeStreamingLayoutProps {
   children: ReactNode;
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
 const AnimeStreamingLayout = async ({
