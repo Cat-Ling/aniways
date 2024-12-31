@@ -1,43 +1,61 @@
-"use client";
-
-import { Player } from "@/components/streaming/player";
+import { Player as PlayerClient } from "@/components/streaming/player";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/react";
-import { useParams, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { HiAnimeScraper } from "@/server/hianime";
+import { unstable_cache } from "next/cache";
+import { Suspense } from "react";
 
-const AnimeStreamingPage = () => {
-  const { id } = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
+type AnimeStreamingPageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ episode: string | undefined }>;
+};
 
-  const currentEpisode = useMemo(() => {
-    const ep = searchParams.get("episode") ?? 1;
-    return Number(ep);
-  }, [searchParams]);
-
-  const { data: sources, isLoading } = api.hiAnime.getEpisodeSources.useQuery(
-    {
-      id,
-      episode: currentEpisode,
-    },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    },
-  );
-
-  if (isLoading || !sources) {
-    return (
-      <div className="mb-2 flex-1">
-        <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
-      </div>
-    );
-  }
+const AnimeStreamingPage = async ({
+  params,
+  searchParams,
+}: AnimeStreamingPageProps) => {
+  const [{ id }, episode] = await Promise.all([
+    params,
+    searchParams.then((searchParams) => Number(searchParams.episode ?? 1)),
+  ]);
 
   return (
     <div className="mb-2 flex-1">
-      <Player sources={sources} />
+      <Suspense
+        key={episode}
+        fallback={
+          <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
+        }
+      >
+        <Player id={id} episode={episode} />
+      </Suspense>
     </div>
+  );
+};
+
+const getSources = unstable_cache(
+  (id: string, episode: number) => {
+    return new HiAnimeScraper().getEpisodeSrc(id, episode);
+  },
+  ["sources"],
+  {
+    revalidate: 60 * 60 * 24, // 1 day
+  },
+);
+
+type PlayerProps = {
+  id: string;
+  episode: number;
+};
+
+const Player = async ({ id, episode }: PlayerProps) => {
+  const sources = await getSources(id, episode);
+
+  if (sources.nextEpisode) {
+    void getSources(id, sources.nextEpisode);
+  }
+
+  return (
+    <PlayerClient sources={sources} animeId={id} currentEpisode={episode} />
   );
 };
 

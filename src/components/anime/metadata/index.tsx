@@ -1,7 +1,7 @@
 "use client";
 
 import ErrorPage from "@/app/error";
-import { api } from "@/trpc/react";
+import { api, type RouterOutputs } from "@/trpc/react";
 import {
   AnimeMetadataDetails,
   AnimeMetadataLoader,
@@ -9,15 +9,21 @@ import {
 import { RelatedAnime } from "./related-anime";
 import { RecommendedAnime } from "./recommended-anime";
 
-export const AnimeMetadata = (props: { malId: number }) => {
+export const AnimeMetadata = (props: {
+  malId: number;
+  initialData: RouterOutputs["mal"]["getAnimeInfo"];
+}) => {
   const {
     data: metadata,
     isLoading,
     error,
     isError,
-  } = api.mal.getAnimeInfo.useQuery({
-    malId: props.malId,
-  });
+  } = api.mal.getAnimeInfo.useQuery(
+    {
+      malId: props.malId,
+    },
+    props,
+  );
 
   if (isLoading || !metadata) {
     return (

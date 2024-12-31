@@ -1,22 +1,24 @@
 "use client";
 
 import { api, type RouterOutputs } from "@/trpc/react";
-import { useEffect, useMemo, useRef } from "react";
 import Artplayer from "artplayer";
-import Hls from "hls.js";
 import artplayerPluginHlsControl from "artplayer-plugin-hls-control";
+import Hls from "hls.js";
+import { useEffect, useMemo, useRef } from "react";
 import { ANIWAYS_LOGO, LOADING_SVG, SUBTITLE_ICON } from "./icons";
 
-import "./artplayer.css";
-import { toast } from "sonner";
 import { type Settings } from "@/server/db/schema";
 import { type MyListStatus } from "@animelist/client";
-import { usePathname, useRouter } from "next/navigation";
 import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import "./artplayer.css";
 import { thumbnailPlugin } from "./thumbnail";
 
 type PlayerProps = {
   sources: RouterOutputs["hiAnime"]["getEpisodeSources"];
+  animeId: string;
+  currentEpisode: number;
 };
 
 type DataRef = {
@@ -24,8 +26,7 @@ type DataRef = {
   listStatus: MyListStatus | undefined;
 };
 
-export const Player = ({ sources }: PlayerProps) => {
-  const pathname = usePathname();
+export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
   const router = useRouter();
   const artRef = useRef<HTMLDivElement>(null);
   const toastRef = useRef<string | number | null>(null);
@@ -36,6 +37,11 @@ export const Player = ({ sources }: PlayerProps) => {
     { malId: sources.malID! },
     { enabled: !!sources.malID },
   );
+
+  const nextUrl = useMemo(() => {
+    if (!sources.nextEpisode) return null;
+    return `/anime/${animeId}?episode=${sources.nextEpisode}`;
+  }, [sources.nextEpisode, animeId]);
 
   const utils = api.useUtils();
   const { mutate: updateEntryInMal } = api.mal.updateEntryInMal.useMutation({
@@ -50,10 +56,6 @@ export const Player = ({ sources }: PlayerProps) => {
     },
   });
 
-  const currentEpisode = useMemo(() => {
-    return pathname.split("/").pop()!;
-  }, [pathname]);
-
   useEffect(() => {
     if (settings.isLoading || listStatus.isLoading) return;
 
@@ -66,29 +68,13 @@ export const Player = ({ sources }: PlayerProps) => {
       listStatus: listStatus.data,
     };
 
-    const autoNext = dataRef.current.settings.autoNext;
-    if (!autoNext || !sources.nextEpisode) return;
-
-    const nextEpisode = sources.nextEpisode;
-    const nextUrl = pathname
-      .split("/")
-      .map((part) => {
-        if (part === currentEpisode) return String(nextEpisode);
-        return part;
-      })
-      .join("/");
+    const autoNext = settings.data?.autoNext ?? true;
+    if (!autoNext || !nextUrl) return;
 
     router.prefetch(nextUrl, {
       kind: PrefetchKind.FULL,
     });
-  }, [
-    settings,
-    listStatus,
-    currentEpisode,
-    pathname,
-    router,
-    sources.nextEpisode,
-  ]);
+  }, [settings, listStatus, nextUrl, router]);
 
   useEffect(() => {
     if (!artRef.current) return;
@@ -252,7 +238,7 @@ export const Player = ({ sources }: PlayerProps) => {
         canUpdateList &&
         (listStatus.status === "watching" ||
           listStatus.status === "plan_to_watch") &&
-        listStatus.num_episodes_watched < Number(currentEpisode)
+        listStatus.num_episodes_watched < currentEpisode
       ) {
         toastRef.current = toast.loading("Updating list", {
           description: "Updating your list...",
@@ -260,22 +246,13 @@ export const Player = ({ sources }: PlayerProps) => {
 
         updateEntryInMal({
           malId: sources.malID!,
-          numWatchedEpisodes: Number(currentEpisode),
+          numWatchedEpisodes: currentEpisode,
           status: "watching",
           score: listStatus.score,
         });
       }
 
-      if (!autoNext || !sources.nextEpisode) return;
-
-      const nextEpisode = sources.nextEpisode;
-      const nextUrl = pathname
-        .split("/")
-        .map((part) => {
-          if (part === currentEpisode) return String(nextEpisode);
-          return part;
-        })
-        .join("/");
+      if (!autoNext || !nextUrl) return;
 
       router.push(nextUrl);
     });
@@ -283,7 +260,7 @@ export const Player = ({ sources }: PlayerProps) => {
     return () => {
       art.destroy();
     };
-  }, [sources, pathname, currentEpisode, updateEntryInMal, router]);
+  }, [sources, nextUrl, currentEpisode, updateEntryInMal, router]);
 
   return <div ref={artRef} className="aspect-video w-full" />;
 };
