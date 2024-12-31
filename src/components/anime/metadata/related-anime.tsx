@@ -51,7 +51,6 @@ export const RelatedAnime: FC<RelatedAnimeProps> = (props) => {
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground md:text-sm">
                   {anime.relation_type_formatted}
-                  {JSON.stringify(anime, null, 2)}
                 </p>
               </div>
             </Link>
