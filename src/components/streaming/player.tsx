@@ -9,7 +9,6 @@ import { ANIWAYS_LOGO, LOADING_SVG, SUBTITLE_ICON } from "./icons";
 
 import { type Settings } from "@/server/db/schema";
 import { type MyListStatus } from "@animelist/client";
-import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import "./artplayer.css";
@@ -69,12 +68,13 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
     };
 
     const autoNext = settings.data?.autoNext ?? true;
-    if (!autoNext || !nextUrl) return;
+    if (!autoNext || !sources.nextEpisode) return;
 
-    router.prefetch(nextUrl, {
-      kind: PrefetchKind.FULL,
+    void utils.hiAnime.getEpisodeSources.prefetch({
+      id: animeId,
+      episode: sources.nextEpisode,
     });
-  }, [settings, listStatus, nextUrl, router]);
+  }, [settings, listStatus, sources.nextEpisode, animeId, utils]);
 
   useEffect(() => {
     if (!artRef.current) return;

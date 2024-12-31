@@ -1,61 +1,51 @@
-import { Player as PlayerClient } from "@/components/streaming/player";
+"use client";
+
+import { Player } from "@/components/streaming/player";
 import { Skeleton } from "@/components/ui/skeleton";
-import { HiAnimeScraper } from "@/server/hianime";
-import { unstable_cache } from "next/cache";
-import { Suspense } from "react";
+import { api } from "@/trpc/react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useMemo } from "react";
 
-type AnimeStreamingPageProps = {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ episode: string | undefined }>;
-};
+const AnimeStreamingPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
 
-const AnimeStreamingPage = async ({
-  params,
-  searchParams,
-}: AnimeStreamingPageProps) => {
-  const [{ id }, episode] = await Promise.all([
-    params,
-    searchParams.then((searchParams) => Number(searchParams.episode ?? 1)),
-  ]);
+  const currentEpisode = useMemo(() => {
+    const ep = searchParams.get("episode") ?? 1;
+    return Number(ep);
+  }, [searchParams]);
 
-  return (
-    <div className="mb-2 flex-1">
-      <Suspense
-        key={episode}
-        fallback={
-          <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
-        }
-      >
-        <Player id={id} episode={episode} />
-      </Suspense>
-    </div>
+  const { data: sources, isLoading } = api.hiAnime.getEpisodeSources.useQuery(
+    {
+      id,
+      episode: currentEpisode,
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
   );
-};
 
-const getSources = unstable_cache(
-  (id: string, episode: number) => {
-    return new HiAnimeScraper().getEpisodeSrc(id, episode);
-  },
-  ["sources"],
-  {
-    revalidate: 60 * 60 * 24, // 1 day
-  },
-);
+  const utils = api.useUtils();
 
-type PlayerProps = {
-  id: string;
-  episode: number;
-};
+  useEffect(() => {
+    const nextEpisode = sources?.nextEpisode;
+    if (!nextEpisode) return;
+    void utils.hiAnime.getEpisodeSources.prefetch({ id, episode: nextEpisode });
+  }, [sources, id, utils]);
 
-const Player = async ({ id, episode }: PlayerProps) => {
-  const sources = await getSources(id, episode);
-
-  if (sources.nextEpisode) {
-    void getSources(id, sources.nextEpisode);
+  if (isLoading || !sources) {
+    return (
+      <div className="mb-2 flex-1">
+        <Skeleton className="min-h-[260px] w-full md:aspect-video md:min-h-0" />
+      </div>
+    );
   }
 
   return (
-    <PlayerClient sources={sources} animeId={id} currentEpisode={episode} />
+    <div className="mb-2 flex-1">
+      <Player animeId={id} currentEpisode={currentEpisode} sources={sources} />
+    </div>
   );
 };
 
