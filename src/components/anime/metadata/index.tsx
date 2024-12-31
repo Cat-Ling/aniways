@@ -6,6 +6,8 @@ import {
   AnimeMetadataDetails,
   AnimeMetadataLoader,
 } from "./anime-metadata-details";
+import { RelatedAnime } from "./related-anime";
+import { RecommendedAnime } from "./recommended-anime";
 
 export const AnimeMetadata = (props: { malId: number }) => {
   const {
@@ -34,8 +36,8 @@ export const AnimeMetadata = (props: { malId: number }) => {
     <>
       <h3 className="mb-3 mt-6 text-lg font-semibold">Anime Information</h3>
       <AnimeMetadataDetails metadata={metadata} />
-      {/* <RelatedAnime relatedAnime={metadata.relatedAnime} />
-      <RecommendedAnime recommendedAnime={metadata.recommendations} /> */}
+      <RelatedAnime relatedAnime={metadata.relatedAnime} />
+      <RecommendedAnime recommendedAnime={metadata.recommendations} />
     </>
   );
 };
