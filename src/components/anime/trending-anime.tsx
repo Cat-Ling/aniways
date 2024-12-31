@@ -46,27 +46,12 @@ export const TrendingAnime = ({ trendingAnime }: TrendingAnimeProps) => {
 const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
   const [scrollValue, setScrollValue] = useState(0);
   const container = useRef<HTMLDivElement>(null);
-
-  const width = useMemo(() => {
-    if (!document) return 0;
-
-    const container = document.querySelector("main div");
-
-    if (!container) return 0;
-
-    const { width } = container.getBoundingClientRect();
-
-    return (width - 56) / 5 - 16;
-  }, []);
-
-  const imageWidth = useMemo(() => {
-    return width - 28;
-  }, [width]);
+  const [width, setWidth] = useState(0);
 
   const height = useMemo(() => {
-    // 3/4 ratio
-    return imageWidth * (4 / 3);
-  }, [imageWidth]);
+    if (!width) return undefined;
+    return (width - 28) * (4 / 3);
+  }, [width]);
 
   useEffect(() => {
     if (!container.current) return;
@@ -85,8 +70,15 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
           {trendingAnime.map((anime, i) => (
             <Link
               key={anime.id}
-              className="group flex flex-shrink-0 gap-2"
-              style={{ width: `${width}px`, height: `${height}px` }}
+              ref={(ref) => {
+                const rect = ref?.getBoundingClientRect();
+                if (!rect) return;
+                setWidth(rect.width);
+              }}
+              className="group flex aspect-[3/4] w-[calc((100%-72px)/5)] flex-shrink-0 gap-2"
+              style={{
+                height,
+              }}
               href={`/anime/${anime.id}`}
             >
               <div className="flex h-full flex-1 flex-col items-center justify-end">
@@ -97,10 +89,7 @@ const TrendingAnimeDesktop = ({ trendingAnime }: TrendingAnimeProps) => {
                   {`0${i + 1}`.slice(-2)}
                 </p>
               </div>
-              <div
-                className="relative transition group-hover:scale-105"
-                style={{ width: `${imageWidth}px`, height: `${height}px` }}
-              >
+              <div className="relative transition group-hover:scale-105">
                 <div className="pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
                   <Play className="h-8 w-8 text-primary" />
                   <p className="mt-2 text-lg font-bold text-foreground">

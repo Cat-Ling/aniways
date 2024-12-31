@@ -46,7 +46,7 @@ export const Navbar = () => {
     <>
       <Sheet>
         <nav className="fixed top-0 z-10 w-full border-b border-border bg-background">
-          <div className="container mx-auto flex items-center justify-between px-3 md:container">
+          <div className="flex items-center justify-between px-3 md:container">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
                 <SheetTrigger asChild>
