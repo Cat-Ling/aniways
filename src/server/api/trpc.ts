@@ -30,9 +30,9 @@ import { Mapper } from "../mapper";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth(await cookies());
-  const malScraper = new MalScraper(session?.accessToken);
   const hiAnimeScraper = new HiAnimeScraper();
-  const mapper = new Mapper();
+  const mapper = new Mapper(db, hiAnimeScraper);
+  const malScraper = new MalScraper(mapper, session?.accessToken);
 
   return {
     session,

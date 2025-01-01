@@ -1,10 +1,14 @@
-import { HiAnime } from "aniwatch";
 import { z } from "zod";
+import { type schema } from "../db";
+import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { mappings } from "../db/schema";
+import { eq } from "drizzle-orm";
+import { type HiAnimeScraper } from "../hianime";
 
 const SYNC_URL = `https://raw.githubusercontent.com/bal-mackup/mal-backup/refs/heads/master/mal/anime`;
 
 const SyncDataSchema = z.object({
-  id: z.number(),
+  id: z.number().nullable(),
   aniId: z.number(),
   Sites: z.object({
     Zoro: z.record(
@@ -17,38 +21,69 @@ const SyncDataSchema = z.object({
 });
 
 export class Mapper {
-  async map(
-    args:
-      | {
-          malId: number;
-        }
-      | {
-          hiAnimeId: string;
-        },
+  private db: PostgresJsDatabase<typeof schema>;
+  private hiAnimeScraper: HiAnimeScraper;
+
+  constructor(
+    db: PostgresJsDatabase<typeof schema>,
+    hiAnimeScraper: HiAnimeScraper,
   ) {
+    this.db = db;
+    this.hiAnimeScraper = hiAnimeScraper;
+  }
+
+  async map(args: { malId: number } | { hiAnimeId: string }) {
     if ("malId" in args) {
-      const response = await fetch(`${SYNC_URL}/${args.malId}.json`)
+      const response = fetch(`${SYNC_URL}/${args.malId}.json`)
         .then((res) => res.json())
         .then((data) => SyncDataSchema.parse(data))
+        .then((data) => {
+          const hiAnimeId =
+            Object.values(data?.Sites.Zoro ?? {})[0]
+              ?.url?.split("/")
+              .pop() ?? null;
+
+          return {
+            hiAnimeId,
+            anilistId: data.aniId,
+            malId: data.id,
+          };
+        })
         .catch(() => null);
 
-      const hiAnimeId = Object.values(response?.Sites.Zoro ?? {})[0]
-        ?.url?.split("/")
-        .pop();
+      const mapping = await this.db
+        .select()
+        .from(mappings)
+        .where(eq(mappings.malId, args.malId))
+        .then((rows) => rows[0]);
 
       return {
-        hiAnimeId: hiAnimeId ?? null,
-        aniListId: response?.aniId ?? null,
-        malId: args.malId ?? null,
+        type: "malId" as const,
+        malId: args.malId,
+        anilistId: mapping?.anilistId ?? (await response)?.anilistId ?? null,
+        hiAnimeId: mapping?.hiAnimeId ?? (await response)?.hiAnimeId ?? null,
       };
     }
 
-    const scraper = new HiAnime.Scraper();
+    const response = this.hiAnimeScraper
+      .getInfo(args.hiAnimeId)
+      .then((data) => ({
+        malId: data.anime.info.malId,
+        hiAnimeId: args.hiAnimeId,
+        aniistId: data.anime.info.anilistId,
+      }));
 
-    return scraper.getInfo(args.hiAnimeId).then((data) => ({
-      malId: data.anime.info.malId,
+    const mapping = await this.db
+      .select()
+      .from(mappings)
+      .where(eq(mappings.hiAnimeId, args.hiAnimeId))
+      .then((rows) => rows[0]);
+
+    return {
+      type: "hiAnimeId" as const,
       hiAnimeId: args.hiAnimeId,
-      aniListId: data.anime.info.anilistId,
-    }));
+      malId: mapping?.malId ?? (await response).malId ?? null,
+      anilistId: mapping?.anilistId ?? (await response).aniistId ?? null,
+    };
   }
 }

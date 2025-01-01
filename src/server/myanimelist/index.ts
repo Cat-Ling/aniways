@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { type AnimeNode, MALClient, type WatchStatus } from "@animelist/client";
 import { Jikan4 } from "node-myanimelist";
 import { load } from "cheerio";
-import { Mapper } from "../mapper";
+import { type Mapper } from "../mapper";
 import { z } from "zod";
 import { HiAnimeScraper } from "../hianime";
 
@@ -30,9 +30,11 @@ const AnifyInfoSchema = z.object({
 
 export class MalScraper {
   private client: MALClient;
+  private mapper: Mapper;
   private isLoggedIn = false;
 
-  constructor(accessToken?: string) {
+  constructor(mapper: Mapper, accessToken?: string) {
+    this.mapper = mapper;
     this.client = new MALClient(
       accessToken ? { accessToken } : { clientId: env.MAL_CLIENT_ID },
     );
@@ -202,8 +204,7 @@ export class MalScraper {
 
     const continueWatchingAnime = await Promise.all(
       currentlyWatchingAnimeList.data.map(async (anime) => {
-        const mapper = new Mapper();
-        const animeId = await mapper
+        const animeId = await this.mapper
           .map({ malId: anime.node.id })
           .then((mapping) => mapping.hiAnimeId);
 
@@ -269,8 +270,7 @@ export class MalScraper {
 
     const planToWatchAnime = await Promise.all(
       planToWatchList.data.map(async (anime) => {
-        const mapper = new Mapper();
-        const animeId = await mapper
+        const animeId = await this.mapper
           .map({ malId: anime.node.id })
           .then((mapping) => mapping.hiAnimeId);
 
@@ -323,7 +323,7 @@ export class MalScraper {
     (Jikan4.Types.Anime & {
       animeId: string;
       mal_id: number;
-      aniListId: number | null;
+      anilistId: number | null;
       bannerImage: string | null;
     })[]
   > {
@@ -346,16 +346,14 @@ export class MalScraper {
         return a.rank < b.rank ? -1 : 1;
       });
 
-    const mapper = new Mapper();
-
     const animes = await Promise.all(
       seasonalAnimes.map(async (anime) => {
-        const mapping = await mapper.map({ malId: anime.mal_id! });
+        const mapping = await this.mapper.map({ malId: anime.mal_id! });
 
         if (!mapping.hiAnimeId) return null;
 
         const data = await fetch(
-          `https://anify.eltik.cc/info/${mapping.aniListId}`,
+          `https://anify.eltik.cc/info/${mapping.anilistId}`,
         )
           .then((res) => res.json())
           .then((data) => AnifyInfoSchema.safeParse(data));
@@ -366,7 +364,7 @@ export class MalScraper {
           ...anime,
           animeId: mapping.hiAnimeId,
           mal_id: anime.mal_id!,
-          aniListId: mapping.aniListId,
+          anilistId: mapping.anilistId,
           bannerImage,
         };
       }),
