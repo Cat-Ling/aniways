@@ -6,7 +6,8 @@ export const thumbnailPlugin = (thumbnails: { file: string }) => {
       template: { $progress },
     } = art;
 
-    let timer: NodeJS.Timeout | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let timer: any = null;
 
     const url = thumbnails?.file;
     if (!url) return;
@@ -108,6 +109,7 @@ export const thumbnailPlugin = (thumbnails: { file: string }) => {
             }
 
             if (isMobileDragging) {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               if (timer) clearTimeout(timer);
               timer = setTimeout(() => {
                 $control.style.display = "none";
