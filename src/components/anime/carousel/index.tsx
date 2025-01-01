@@ -1,25 +1,24 @@
-import { MalScraper } from "@/server/myanimelist";
-import { unstable_cache } from "next/cache";
 import { SeasonalAnimeCarouselClient } from "./seasonal-anime-carousel-client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Mapper } from "@/server/mapper";
-import { db } from "@/server/db";
-import { HiAnimeScraper } from "@/server/hianime";
-
-const getCurrentSeason = unstable_cache(
-  () => new MalScraper(new Mapper(db, new HiAnimeScraper())).getCurrentSeason(),
-  ["getCurrentSeason"],
-  {
-    revalidate: 60 * 60 * 24, // 1 day
-  },
-);
+import { type RouterOutputs } from "@/trpc/react";
+import { env } from "@/env";
 
 /**
- * Not using trpc and directly calling scraper class
- * cos of cache and cookie issues which trpc gives
+ * Not using trpc and calling api which wraps trpc
+ * so that vercel can cache the reponse
  */
 export const SeasonalAnimeCarousel = async () => {
-  const data = await getCurrentSeason();
+  const data = (await fetch(
+    `${env.NODE_ENV === "development" ? "http://localhost:3000" : "https://aniways.xyz"}/seasonal`,
+    {
+      cache: "force-cache",
+      next: {
+        revalidate: 60 * 60 * 24, // 1 day
+      },
+    },
+  ).then((res) =>
+    res.json(),
+  )) as RouterOutputs["mal"]["getCurrentSeasonalAnime"];
 
   return <SeasonalAnimeCarouselClient seasonalAnime={data.slice(0, 10)} />;
 };

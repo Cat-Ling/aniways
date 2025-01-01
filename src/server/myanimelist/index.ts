@@ -379,7 +379,7 @@ export class MalScraper {
         ? animes.filter((a) => a.bannerImage?.length)
         : animes;
 
-    if (result.length === 0) {
+    if (result.length < 10) {
       const season = currentSeason.data[0]?.season;
       const prevSeason =
         season === "winter"
