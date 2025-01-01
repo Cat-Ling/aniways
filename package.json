@@ -40,7 +40,7 @@
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-cuid2": "^1.0.5",
+    "drizzle-cuid2": "^2.0.0",
     "drizzle-orm": "^0.38.2",
     "embla-carousel-react": "^8.5.1",
     "geist": "^1.3.0",
