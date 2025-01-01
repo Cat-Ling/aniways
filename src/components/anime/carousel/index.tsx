@@ -2,9 +2,12 @@ import { MalScraper } from "@/server/myanimelist";
 import { unstable_cache } from "next/cache";
 import { SeasonalAnimeCarouselClient } from "./seasonal-anime-carousel-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Mapper } from "@/server/mapper";
+import { db } from "@/server/db";
+import { HiAnimeScraper } from "@/server/hianime";
 
 const getCurrentSeason = unstable_cache(
-  () => new MalScraper().getCurrentSeason(),
+  () => new MalScraper(new Mapper(db, new HiAnimeScraper())).getCurrentSeason(),
   ["getCurrentSeason"],
   {
     revalidate: 60 * 60 * 24, // 1 day

@@ -79,7 +79,8 @@ async function scrapeAZList(page = 1) {
   });
 }
 
-console.time("Mapping function");
-void scrapeAZList().finally(() => {
+export async function handler() {
+  console.time("Mapping function");
+  await scrapeAZList();
   console.timeEnd("Mapping function");
-});
+}
