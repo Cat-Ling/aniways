@@ -316,8 +316,20 @@ export class MalScraper {
     };
   }
 
-  async getCurrentSeason() {
-    const currentSeason = await Jikan4.seasonNow();
+  async getCurrentSeason(options?: {
+    year: number;
+    season: "spring" | "summer" | "fall" | "winter";
+  }): Promise<
+    (Jikan4.Types.Anime & {
+      animeId: string;
+      mal_id: number;
+      aniListId: number | null;
+      bannerImage: string | null;
+    })[]
+  > {
+    const currentSeason = options
+      ? await Jikan4.season(options.year, options.season)
+      : await Jikan4.seasonNow();
 
     const ids = currentSeason.data
       .map((anime) => anime.mal_id)
@@ -364,8 +376,32 @@ export class MalScraper {
       (anime) => !!anime.bannerImage?.length,
     ).length;
 
-    return countOfBanners >= 10
-      ? animes.filter((a) => a.bannerImage?.length)
-      : animes;
+    const result =
+      countOfBanners >= 10
+        ? animes.filter((a) => a.bannerImage?.length)
+        : animes;
+
+    if (result.length === 0) {
+      const season = currentSeason.data[0]?.season;
+      const prevSeason =
+        season === "winter"
+          ? "fall"
+          : season === "fall"
+            ? "summer"
+            : season === "summer"
+              ? "spring"
+              : season === "spring"
+                ? "winter"
+                : undefined;
+      const year = currentSeason.data[0]!.year;
+      const prevYear = season === "winter" && year ? year - 1 : year;
+
+      return this.getCurrentSeason({
+        year: prevYear!,
+        season: prevSeason!,
+      });
+    }
+
+    return result;
   }
 }
