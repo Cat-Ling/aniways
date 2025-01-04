@@ -35,13 +35,14 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
         <section className="col-span-3">{children}</section>
         <section className="flex flex-col justify-start gap-6 pl-2 md:flex-col-reverse md:justify-end">
           <Suspense
-            fallback={<Skeleton className="h-[1000px] w-full rounded-md" />}
+            fallback={
+              <>
+                <Skeleton className="h-[1000px] w-full rounded-md" />
+                <Skeleton className="h-[500px] w-full rounded-md" />
+              </>
+            }
           >
             <TopAnime />
-          </Suspense>
-          <Suspense
-            fallback={<Skeleton className="h-[500px] w-full rounded-md" />}
-          >
             <Genres />
           </Suspense>
         </section>

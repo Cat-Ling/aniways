@@ -17,7 +17,7 @@ export const GenreMenu = ({ genres }: GenreMenuProps) => {
 
   const selectedIndex = useMemo(() => {
     return genres.findIndex((genre) =>
-      pathname.includes(`/genre/${genre.toLowerCase().split(" ").join("-")}`),
+      pathname.split("/").includes(genre.toLowerCase().split(" ").join("-")),
     );
   }, [genres, pathname]);
 
@@ -32,40 +32,25 @@ export const GenreMenu = ({ genres }: GenreMenuProps) => {
       <h1 className="text-lg font-bold md:text-2xl">Genres</h1>
       <div className="rounded-md bg-muted p-3">
         <div className="grid w-full grid-cols-3 gap-3">
-          {genres.slice(0, 24).map((genre) => (
-            <Button
-              key={genre}
-              variant="ghost"
-              asChild
-              className={cn(
-                "h-fit justify-start rounded-md p-2 text-xs text-muted-foreground hover:bg-background/50 hover:text-primary",
-                pathname.includes(
-                  `/genre/${genre.toLowerCase().split(" ").join("-")}`,
-                ) && "bg-background/50 text-primary",
-              )}
-            >
-              <Link href={`/genre/${genre.toLowerCase().split(" ").join("-")}`}>
-                {genre}
-              </Link>
-            </Button>
-          ))}
-          {genres.slice(showMore ? 24 : genres.length).map((genre) => (
-            <Button
-              key={genre}
-              variant="ghost"
-              asChild
-              className={cn(
-                "h-fit justify-start rounded-md p-2 text-xs text-muted-foreground hover:bg-background/50 hover:text-primary",
-                pathname.includes(
-                  `/genre/${genre.toLowerCase().split(" ").join("-")}`,
-                ) && "bg-background/50 text-primary",
-              )}
-            >
-              <Link href={`/genre/${genre.toLowerCase().split(" ").join("-")}`}>
-                {genre}
-              </Link>
-            </Button>
-          ))}
+          {genres
+            .filter((_, index) => showMore || index < 24)
+            .map((genre, i) => (
+              <Button
+                key={genre}
+                variant="ghost"
+                asChild
+                className={cn(
+                  "h-fit justify-start rounded-md p-2 text-xs text-muted-foreground hover:bg-background/50 hover:text-primary",
+                  selectedIndex === i && "bg-background/50 text-primary",
+                )}
+              >
+                <Link
+                  href={`/genre/${genre.toLowerCase().split(" ").join("-")}`}
+                >
+                  {genre}
+                </Link>
+              </Button>
+            ))}
         </div>
         <Button
           className="mt-3 w-full bg-muted-foreground/20 hover:bg-muted-foreground/40"

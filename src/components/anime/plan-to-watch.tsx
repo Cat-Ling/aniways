@@ -3,14 +3,14 @@
 import { api, type RouterOutputs } from "@/trpc/react";
 import { AnimeGridLoader } from "../layouts/anime-grid-loader";
 import Link from "next/link";
-import { Skeleton } from "../ui/skeleton";
-import { Image } from "../ui/image";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { Pagination } from "../pagination";
 import { cn } from "@/lib/utils";
+import { AnimeGrid } from "../layouts/anime-grid";
+import { AnimeCard } from "../layouts/anime-card";
 
 type PlanToWatchProps = {
   initialData: RouterOutputs["mal"]["getPlanToWatch"];
@@ -58,9 +58,9 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
               </Button>
             )}
       </div>
-      <ul
+      <AnimeGrid
         className={cn(
-          "mb-6 grid h-full grid-cols-2 gap-3 md:grid-cols-6",
+          "mb-6",
           pathname !== "/plan-to-watch" &&
             "flex flex-col md:grid md:grid-cols-6",
         )}
@@ -71,69 +71,16 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
             pathname === "/plan-to-watch" ? planToWatchAnime.length : 6,
           )
           .map((anime) => (
-            <li
-              key={anime.malAnime.node.id}
-              className="group rounded-md border border-border bg-background p-2"
-            >
-              <Link
-                href={`/anime/${anime.animeId}?episode=${anime.lastWatchedEpisode + 1}`}
-                className={cn(
-                  "flex h-full flex-col gap-3",
-                  pathname !== "/plan-to-watch" && "flex-row md:flex-col",
-                )}
-              >
-                <div
-                  className={cn(
-                    "relative",
-                    pathname !== "/plan-to-watch" && "w-1/6 md:w-full",
-                  )}
-                >
-                  <div className="relative aspect-[450/650] w-full overflow-hidden rounded-md">
-                    <Skeleton className="absolute z-0 h-full w-full rounded-md" />
-                    <Image
-                      src={anime.malAnime.node.main_picture.large ?? ""}
-                      alt={anime.malAnime.node.title ?? ""}
-                      width={450}
-                      height={650}
-                      className="absolute h-full w-full object-cover"
-                    />
-                  </div>
-                  <div
-                    className={cn(
-                      "pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100",
-                      pathname !== "/plan-to-watch" && "hidden md:flex",
-                    )}
-                  >
-                    <Play className="h-8 w-8 text-primary" />
-                    <p className="mt-2 text-lg font-bold text-foreground">
-                      Watch Now
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={cn(
-                    "flex flex-1 flex-col justify-between",
-                    pathname !== "/plan-to-watch" &&
-                      "justify-center md:justify-between",
-                  )}
-                >
-                  <p
-                    className={cn(
-                      "line-clamp-2 text-xs transition group-hover:text-primary md:text-sm",
-                      pathname !== "/plan-to-watch" &&
-                        "group-hover:text-foreground md:group-hover:text-primary",
-                    )}
-                  >
-                    {anime.malAnime.node.title ?? "????"}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-                    Episode {anime.lastWatchedEpisode + 1}
-                  </p>
-                </div>
-              </Link>
-            </li>
+            <AnimeCard
+              key={anime.animeId}
+              poster={anime.malAnime.node.main_picture.large ?? ""}
+              title={anime.malAnime.node.title ?? "???"}
+              subtitle={`Episode ${anime.lastWatchedEpisode + 1}`}
+              url={`/anime/${anime.animeId}?episode=${anime.lastWatchedEpisode + 1}`}
+              type={pathname === "/plan-to-watch" ? "vertical" : "horizontal"}
+            />
           ))}
-      </ul>
+      </AnimeGrid>
       {pathname === "/plan-to-watch"
         ? hasNext && <Pagination hasNext={hasNext} />
         : null}

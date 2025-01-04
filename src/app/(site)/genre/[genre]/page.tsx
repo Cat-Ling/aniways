@@ -1,3 +1,4 @@
+import { AnimeCard } from "@/components/layouts/anime-card";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { Pagination } from "@/components/pagination";
 import { api } from "@/trpc/server";
@@ -22,10 +23,28 @@ const GenrePage = async ({ params, searchParams }: GenrePageProps) => {
         <Pagination hasNext={hasNextPage} />
       </div>
       <div className="mb-6">
-        <div className="mb-3">
-          <AnimeGrid animes={animes.slice(0, 4)} type="featured" />
-        </div>
-        <AnimeGrid animes={animes.slice(4)} />
+        <AnimeGrid className="mb-3 md:grid-cols-4">
+          {animes.slice(0, 4).map((anime) => (
+            <AnimeCard
+              key={anime.id}
+              title={anime.jname ?? anime.name ?? "???"}
+              subtitle={`${anime.episodes.sub ?? "???"} episodes`}
+              poster={anime.poster ?? ""}
+              url={`/anime/${anime.id}`}
+            />
+          ))}
+        </AnimeGrid>
+        <AnimeGrid>
+          {animes.slice(4).map((anime) => (
+            <AnimeCard
+              key={anime.id}
+              title={anime.jname ?? anime.name ?? "???"}
+              subtitle={`${anime.episodes.sub ?? "???"} episodes`}
+              poster={anime.poster ?? ""}
+              url={`/anime/${anime.id}`}
+            />
+          ))}
+        </AnimeGrid>
       </div>
       <Pagination hasNext={hasNextPage} />
     </>

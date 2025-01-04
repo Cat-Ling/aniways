@@ -1,16 +1,15 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import Link from "next/link";
-import { Loader2, Play, Shell } from "lucide-react";
+import { Loader2, Shell } from "lucide-react";
 
 import type { RouterInputs, RouterOutputs } from "@/trpc/react";
-import { Image } from "@/components/ui/image";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { api } from "@/trpc/react";
 import { AnimeGridLoader } from "../layouts/anime-grid-loader";
+import { AnimeGrid } from "../layouts/anime-grid";
+import { AnimeCard } from "../layouts/anime-card";
 
 type Status = RouterInputs["mal"]["getAnimeListOfUser"]["status"];
 
@@ -82,58 +81,34 @@ export const MalClient = ({ initialData, status }: AnimeListClientProps) => {
   }
 
   return (
-    <ul className="grid h-full grid-cols-2 gap-3 md:grid-cols-6">
+    <AnimeGrid>
       {animeList.pages.map((page) =>
-        page.anime.map((anime) => {
-          const url = anime.hiAnimeId
-            ? `/anime/${anime.hiAnimeId}`
-            : `/search?query=${anime.title}`;
-
-          return (
-            <li
-              key={anime.id}
-              ref={lastElementRef}
-              className="group rounded-md border border-border bg-background p-2"
-            >
-              <Link href={url} className="flex h-full flex-col gap-3">
-                <div className="relative">
-                  <div className="relative aspect-[450/650] w-full overflow-hidden rounded-md">
-                    <Skeleton className="absolute z-0 h-full w-full rounded-md" />
-                    <Image
-                      src={anime.main_picture.large}
-                      alt={anime.title}
-                      width={450}
-                      height={650}
-                      className="absolute h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="pointer-events-none absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-muted/70 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
-                    <Play className="h-8 w-8 text-primary" />
-                    <p className="mt-2 text-lg font-bold text-foreground">
-                      Watch Now
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-1 flex-col justify-between">
-                  <p className="line-clamp-2 text-xs transition group-hover:text-primary md:text-sm">
-                    {anime.title}
-                  </p>
-                  <div className="flex w-full justify-between">
-                    <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-                      {convertStatus(
-                        anime.my_list_status?.status ?? "plan_to_watch",
-                      )}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-                      {anime.my_list_status?.num_episodes_watched ?? 0} of{" "}
-                      {anime.num_episodes || "???"}ep
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          );
-        }),
+        page.anime.map((anime) => (
+          <AnimeCard
+            key={anime.id}
+            ref={lastElementRef}
+            title={anime.title}
+            poster={anime.main_picture.large}
+            url={
+              anime.hiAnimeId
+                ? `/anime/${anime.hiAnimeId}`
+                : `/search?query=${anime.title}`
+            }
+            subtitle={
+              <div className="flex w-full justify-between">
+                <p className="mt-1 text-xs text-muted-foreground md:text-sm">
+                  {convertStatus(
+                    anime.my_list_status?.status ?? "plan_to_watch",
+                  )}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground md:text-sm">
+                  {anime.my_list_status?.num_episodes_watched ?? 0} of{" "}
+                  {anime.num_episodes || "???"}ep
+                </p>
+              </div>
+            }
+          />
+        )),
       )}
       {hasNextPage && (
         <li className="col-span-2 flex items-center justify-center md:col-span-6">
@@ -153,6 +128,6 @@ export const MalClient = ({ initialData, status }: AnimeListClientProps) => {
           </Button>
         </li>
       )}
-    </ul>
+    </AnimeGrid>
   );
 };
