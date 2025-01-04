@@ -121,7 +121,7 @@ export class MalScraper {
       ...anime,
       media_type: anime.media_type.toUpperCase(),
       rating: this.formatRating(anime.rating ?? ""),
-      season: `${anime.start_season?.season.replace(/^.{0,1}/g, (s) => s.toUpperCase())} ${anime.start_season?.year}`,
+      season: anime.start_season ? `${anime.start_season?.season.replace(/^.{0,1}/g, (s) => s.toUpperCase())} ${anime.start_season?.year}` : undefined,
       average_episode_duration:
         anime.average_episode_duration &&
         `${Math.floor(anime.average_episode_duration / 60)} min per ep`,
