@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { SearchFilterSchema } from "@/server/hianime/search";
 
 export const hiAnimeRouter = createTRPCRouter({
   random: publicProcedure.query(({ ctx }) =>
@@ -7,11 +8,17 @@ export const hiAnimeRouter = createTRPCRouter({
   ),
 
   search: publicProcedure
-    .input(z.object({ query: z.string(), page: z.number().optional() }))
+    .input(
+      z.object({
+        query: z.string(),
+        page: z.number().optional(),
+        filters: SearchFilterSchema.optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const { query, page } = input;
+      const { query, page, filters } = input;
 
-      return await ctx.hiAnimeScraper.search(query, page);
+      return await ctx.hiAnimeScraper.search(query, page, filters);
     }),
 
   getInfo: publicProcedure

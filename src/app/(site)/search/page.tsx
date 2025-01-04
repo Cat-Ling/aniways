@@ -6,10 +6,16 @@ import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { api } from "@/trpc/server";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { Pagination, PaginationLoader } from "@/components/pagination";
-import { type HiAnime } from "aniwatch";
+import { FilterForm } from "@/components/anime/search/filter-form";
+import { type RouterOutputs } from "@/trpc/react";
+import { type SearchFilters } from "@/server/hianime/search";
 
 type SearchPageParams = {
-  searchParams: Promise<{ query: string; page: string }>;
+  searchParams: Promise<
+    { query: string; page: string } & Exclude<SearchFilters, "genres"> & {
+        genres?: string;
+      }
+  >;
 };
 
 export const generateMetadata = async ({ searchParams }: SearchPageParams) => {
@@ -25,10 +31,24 @@ const SearchPage = async ({ searchParams }: SearchPageParams) => {
   const { query, ...params } = await searchParams;
   const page = Math.max(Number(params.page || "1"));
 
-  const searchResult = api.hiAnime.search({ query, page });
+  Object.entries(params).map(([key, value]) => {
+    if (value === "all") delete params[key as keyof SearchFilters];
+  });
+
+  const searchResult = api.hiAnime.search({
+    query,
+    page,
+    filters: {
+      ...params,
+      genres: params.genres?.split(",") as SearchFilters["genres"] | undefined,
+    },
+  });
+
+  const key = `${query}-${page}-${JSON.stringify(params)}`;
 
   return (
     <>
+      <FilterForm />
       <div className="mb-6 flex w-full flex-col justify-between gap-3 md:mb-5 md:flex-row md:items-center">
         <div>
           <h1 className="text-2xl font-bold">Search</h1>
@@ -40,7 +60,7 @@ const SearchPage = async ({ searchParams }: SearchPageParams) => {
           <PaginationWrapper result={searchResult} />
         </Suspense>
       </div>
-      <Suspense key={query + page} fallback={<AnimeGridLoader />}>
+      <Suspense key={key} fallback={<AnimeGridLoader />}>
         <SearchResults result={searchResult} />
       </Suspense>
       <div className="mt-6">
@@ -55,7 +75,7 @@ const SearchPage = async ({ searchParams }: SearchPageParams) => {
 const SearchResults = async ({
   result,
 }: {
-  result: Promise<HiAnime.ScrapedAnimeSearchResult>;
+  result: Promise<RouterOutputs["hiAnime"]["search"]>;
 }) => {
   const { animes } = await result;
 
@@ -89,11 +109,13 @@ const SearchResults = async ({
 const PaginationWrapper = async ({
   result,
 }: {
-  result: Promise<HiAnime.ScrapedAnimeSearchResult>;
+  result: Promise<RouterOutputs["hiAnime"]["search"]>;
 }) => {
-  const { hasNextPage, animes } = await result;
+  const { hasNextPage, animes, currentPage } = await result;
 
   if (!animes.length) return null;
+
+  if (!hasNextPage && currentPage === 1) return null;
 
   return <Pagination hasNext={hasNextPage} />;
 };

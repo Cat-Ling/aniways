@@ -47,7 +47,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
           Continue Watching
         </h1>
         {pathname === "/watching"
-          ? hasNext && <Pagination hasNext={hasNext} />
+          ? (hasNext || page != 1) && <Pagination hasNext={hasNext} />
           : continueWatchingAnime.length > 6 && (
               <Button asChild variant={"link"} className="flex gap-2">
                 <Link href="/watching">
@@ -80,7 +80,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
           ))}
       </AnimeGrid>
       {pathname === "/watching"
-        ? hasNext && <Pagination hasNext={hasNext} />
+        ? (hasNext || page != 1) && <Pagination hasNext={hasNext} />
         : null}
     </>
   );

@@ -47,7 +47,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
           Your Plan to Watch
         </h1>
         {pathname === "/plan-to-watch"
-          ? hasNext && <Pagination hasNext={hasNext} />
+          ? (hasNext || page != 1) && <Pagination hasNext={hasNext} />
           : planToWatchAnime.length > 6 && (
               <Button asChild variant={"link"} className="flex gap-2">
                 <Link href="/plan-to-watch">
@@ -81,7 +81,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
           ))}
       </AnimeGrid>
       {pathname === "/plan-to-watch"
-        ? hasNext && <Pagination hasNext={hasNext} />
+        ? (hasNext || page != 1) && <Pagination hasNext={hasNext} />
         : null}
     </>
   );

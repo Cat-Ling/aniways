@@ -1,5 +1,7 @@
 import { HiAnime } from "aniwatch";
 import { cache } from "react";
+import { type SearchFilters } from "./search";
+import { load } from "cheerio";
 
 export class HiAnimeScraper {
   static BASE_URL = "https://hianime.to";
@@ -19,8 +21,60 @@ export class HiAnimeScraper {
     return id ?? null;
   }
 
-  async search(query: string, page = 1) {
-    return this.scraper.search(query, page);
+  async search(query: string, page = 1, searchFilters?: SearchFilters) {
+    console.log(searchFilters);
+
+    const searchParams = new URLSearchParams({
+      keyword: query,
+      page: page.toString(),
+    });
+
+    if (searchFilters) {
+      Object.entries(searchFilters).forEach(([key, value]) => {
+        if (!value) return;
+        if (typeof value === "string") {
+          searchParams.set(key, value);
+          return;
+        }
+        searchParams.set(key, value.join(","));
+      });
+    }
+
+    const search = searchParams.toString();
+
+    const $ = await fetch(
+      `${HiAnimeScraper.BASE_URL}/search${search ? `?${search}` : ""}`,
+    )
+      .then((res) => res.text())
+      .then(load);
+
+    const animes = $(
+      "#main-content > section > div.tab-content > div > div.film_list-wrap > div.flw-item",
+    ).map((_, el) => {
+      const $el = $(el);
+
+      const id = $el
+        .find(".film-poster a")
+        .attr("href")!
+        .replace("/watch/", "");
+      const name = $el.find(".film-detail .film-name a").text();
+      const jname =
+        $el.find(".film-detail .film-name a").attr("data-jname") ?? null;
+      const sub = $el.find(".film-poster .tick.ltr .tick-sub").text();
+      const poster = $el.find(".film-poster img").attr("data-src") ?? null;
+
+      return { id, name, jname, episodes: { sub }, poster };
+    });
+
+    const result = {
+      animes: animes.get(),
+      hasNextPage: $('.pagination a[title="Next"]').length > 0,
+      currentPage: page,
+    };
+
+    console.log(result);
+
+    return result;
   }
 
   async getInfo(id: string) {
