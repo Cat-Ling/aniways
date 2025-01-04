@@ -43,12 +43,14 @@ export const FilterForm = () => {
   useEffect(() => {
     const params = { sort: "default" } as SearchFilters;
 
-    searchParams.entries().forEach(([key, value]) => {
+    searchParams.keys().forEach((key) => {
       if (key === "genres") {
+        const value = searchParams.get(key);
+        if (!value) return;
         Object.assign(params, { genres: value.split(",") });
-        return;
       }
 
+      const value = searchParams.get(key);
       Object.assign(params, { [key]: value });
     });
 
