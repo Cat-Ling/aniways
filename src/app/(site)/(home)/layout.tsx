@@ -22,13 +22,13 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
       <Suspense fallback={<SeasonalAnimeCarouselLoader />}>
         <SeasonalAnimeCarousel />
       </Suspense>
-      <Suspense fallback={<AnimeLoader />}>
+      <Suspense
+        fallback={Array.from({ length: 3 }).map((_, i) => (
+          <AnimeLoader key={i} />
+        ))}
+      >
         <TrendingAnime />
-      </Suspense>
-      <Suspense fallback={<AnimeLoader />}>
         <ContinueWatching />
-      </Suspense>
-      <Suspense fallback={<AnimeLoader />}>
         <PlanToWatch />
       </Suspense>
       <div className="w-full md:grid md:grid-cols-4">

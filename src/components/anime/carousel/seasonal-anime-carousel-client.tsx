@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
-import { type RouterOutputs } from "@/trpc/react";
 import {
   Carousel,
   type CarouselApi,
@@ -12,9 +11,19 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
+import { cn } from "@/lib/utils";
 
 interface SeasonalAnimeCarouselClientProps {
-  seasonalAnime: RouterOutputs["mal"]["getCurrentSeasonalAnime"];
+  seasonalAnime: {
+    animeId: string;
+    title: string;
+    rating?: string | null;
+    type?: string | null;
+    episodes?: number | null;
+    synopsis?: string | null;
+    bannerImage: string | null;
+    backUpImage?: string | null;
+  }[];
 }
 
 export const SeasonalAnimeCarouselClient = (
@@ -40,18 +49,26 @@ export const SeasonalAnimeCarouselClient = (
                     {anime.title}
                   </h1>
                   <div className="mb-3 hidden gap-2 md:flex">
-                    <span className="rounded-md bg-muted p-2 text-sm text-primary">
-                      {anime.rating}
-                    </span>
-                    <span className="rounded-md bg-muted p-2 text-sm text-primary">
-                      {anime.type}
-                    </span>
-                    <span className="rounded-md bg-muted p-2 text-sm text-primary">
-                      {anime.episodes ?? "???"} episodes
-                    </span>
+                    {[anime.rating, anime.type, anime.episodes ?? "???"]
+                      .filter((data) => data)
+                      .map((data, i) => (
+                        <span
+                          key={i}
+                          className="rounded-md bg-muted p-2 text-sm text-primary"
+                        >
+                          {data}
+                        </span>
+                      ))}
                   </div>
-                  <p className="mb-2 line-clamp-3 hidden text-sm text-muted-foreground md:mb-5 md:[display:-webkit-box]">
-                    {anime.synopsis}
+                  <p
+                    className={cn(
+                      "mb-2 line-clamp-3 hidden text-sm text-muted-foreground md:mb-5 md:[display:-webkit-box]",
+                      {
+                        italic: !anime.synopsis,
+                      },
+                    )}
+                  >
+                    {anime.synopsis ?? "No description available"}
                   </p>
                   <Button className="flex w-fit items-center gap-2" asChild>
                     <Link href={`/anime/${anime.animeId}`}>
@@ -66,13 +83,12 @@ export const SeasonalAnimeCarouselClient = (
                     src={
                       anime.bannerImage?.length
                         ? anime.bannerImage
-                        : anime.images.webp.large_image_url
+                        : (anime.backUpImage ?? "")
                     }
                     alt={anime.title}
                     className="h-full w-full rounded-lg object-cover object-center shadow-lg"
                     onError={(e) => {
-                      e.currentTarget.src =
-                        anime.images.webp.large_image_url ?? "";
+                      e.currentTarget.src = anime.backUpImage ?? "";
                     }}
                   />
                 </div>

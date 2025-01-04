@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { seasonalAnimes } from "@/server/db/schema";
 
 const watchStatus = [
   "watching",
@@ -26,7 +27,7 @@ export const malRouter = createTRPCRouter({
         user: { name: username },
       } = ctx.session;
 
-      const animeList = await ctx.malScraper.getAnimeList({
+      const animeList = await ctx.malScraper.getAnimeListOfUser({
         username,
         page,
         limit: 48,
@@ -142,22 +143,37 @@ export const malRouter = createTRPCRouter({
   getContinueWatching: protectedProcedure
     .input(z.object({ page: z.number().optional() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.malScraper.getContinueWatching({
+      return await ctx.malScraper.getAnimeListByStatus({
         username: ctx.session.user.name,
-        page: input.page,
+        status: "watching",
+        page: input.page ?? 1,
       });
     }),
 
   getPlanToWatch: protectedProcedure
     .input(z.object({ page: z.number().optional() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.malScraper.getPlannedToWatch({
+      return await ctx.malScraper.getAnimeListByStatus({
         username: ctx.session.user.name,
-        page: input.page,
+        status: "plan_to_watch",
+        page: input.page ?? 1,
       });
     }),
 
-  getCurrentSeasonalAnime: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.malScraper.getCurrentSeason();
+  getCachedSeasonalSpotlightAnime: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.seasonalAnimes.findMany();
+  }),
+
+  saveSeasonalSpotlightAnime: publicProcedure.query(async ({ ctx }) => {
+    const data = await ctx.malScraper.getSeasonalSpotlightAnime();
+
+    await ctx.db.delete(seasonalAnimes);
+    await ctx.db
+      .insert(seasonalAnimes)
+      .values(
+        data.map((data) => ({ ...data, bannerImage: data.bannerImage! })),
+      );
+
+    return data;
   }),
 });

@@ -3,11 +3,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/server";
 
 export const SeasonalAnimeCarousel = async () => {
-  const data = await api.mal.getCurrentSeasonalAnime().catch(() => null);
+  const data = await api.mal.getCachedSeasonalSpotlightAnime().catch(() => []);
 
-  if (!data) return null;
+  if (!data.length) {
+    await api.mal.saveSeasonalSpotlightAnime().catch(() => []);
+    const data = await api.mal
+      .getCachedSeasonalSpotlightAnime()
+      .catch(() => []);
 
-  return <SeasonalAnimeCarouselClient seasonalAnime={data.slice(0, 10)} />;
+    if (!data.length) return null;
+
+    return <SeasonalAnimeCarouselClient seasonalAnime={data} />;
+  }
+
+  // If the data is older than 24 hours, refetch
+  if (
+    data[0] &&
+    data[0].createdAt.getTime() < Date.now() - 1000 * 60 * 60 * 24
+  ) {
+    await api.mal.saveSeasonalSpotlightAnime().catch(() => []);
+  }
+
+  return <SeasonalAnimeCarouselClient seasonalAnime={data} />;
 };
 
 export const SeasonalAnimeCarouselLoader = () => {

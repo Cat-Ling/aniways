@@ -41,15 +41,18 @@ export class MalScraper {
     this.isLoggedIn = !!accessToken;
   }
 
-  async getAnimeList({
+  private ensureLoggedIn() {
+    if (this.isLoggedIn) return;
+    throw new Error("Not logged in");
+  }
+
+  async getAnimeListOfUser({
     username,
     page = 1,
     limit = 20,
     status = undefined,
   }: GetAnimeListArgs) {
-    if (!this.isLoggedIn) {
-      throw new Error("Not logged in");
-    }
+    this.ensureLoggedIn();
 
     return await this.client.getUserAnimeList(username, {
       limit,
@@ -68,15 +71,75 @@ export class MalScraper {
     });
   }
 
+  async getAnimeListByStatus({
+    username,
+    status,
+    page = 1,
+  }: Pick<GetAnimeListArgs, "username" | "page"> & {
+    status: "watching" | "plan_to_watch";
+  }) {
+    this.ensureLoggedIn();
+
+    const list = await this.getAnimeListOfUser({
+      username,
+      page,
+      limit: 18,
+      status,
+    });
+
+    const anime = await Promise.all(
+      list.data.map(async (anime) => {
+        const animeId = await this.mapper
+          .map({ malId: anime.node.id })
+          .then((mapping) => mapping.hiAnimeId);
+
+        if (!animeId) return null;
+
+        const totalEpisodes = await fetch(
+          `${HiAnimeScraper.BASE_URL}/${animeId}`,
+        )
+          .then((res) => res.text())
+          .then(load)
+          .then(($) => {
+            const episodes = $(
+              "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
+            ).text();
+            return Number(episodes);
+          });
+
+        const lastWatchedEpisode =
+          anime.node.my_list_status?.num_episodes_watched ?? 0;
+
+        return {
+          animeId,
+          malAnime: anime,
+          totalEpisodes,
+          lastWatchedEpisode,
+          lastUpdated: anime.node.my_list_status?.updated_at,
+        };
+      }),
+    );
+
+    return {
+      hasNext: !!list.paging.next,
+      anime: anime
+        .filter((anime) => anime !== null)
+        .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
+        .sort((a, b) => {
+          if (!a?.lastUpdated || !b?.lastUpdated) return 0;
+
+          return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
+        }),
+    };
+  }
+
   async updateEntry({
     malId,
     status = "watching",
     numWatchedEpisodes = 0,
     score,
   }: UpdateMalStatusArgs) {
-    if (!this.isLoggedIn) {
-      throw new Error("Not logged in");
-    }
+    this.ensureLoggedIn();
 
     return await this.client.updateMyAnimeListStatus(malId, {
       status,
@@ -86,9 +149,7 @@ export class MalScraper {
   }
 
   async deleteEntry({ malId }: DeleteMalStatusArgs) {
-    if (!this.isLoggedIn) {
-      throw new Error("Not logged in");
-    }
+    this.ensureLoggedIn();
 
     return await this.client.deleteMyAnimeListStatus(malId);
   }
@@ -112,32 +173,59 @@ export class MalScraper {
     }
   }
 
-  private transformResponse(res: AnimeNode | null) {
-    if (!res) return undefined;
+  private getAnimeFields() {
+    return [
+      "my_list_status",
+      "related_anime",
+      "genres",
+      "alternative_titles",
+      "start_season",
+      "start_date",
+      "end_date",
+      "media_type",
+      "rating",
+      "average_episode_duration",
+      "status",
+      "num_episodes",
+      "studios",
+      "rank",
+      "num_scoring_users",
+      "popularity",
+      "source",
+      "synopsis",
+      "mean",
+      "recommendations",
+    ];
+  }
 
-    const { my_list_status, related_anime, ...anime } = res;
+  private transformAnimeInfo(animeNode: AnimeNode | null) {
+    if (!animeNode) return undefined;
+
+    const { my_list_status, related_anime, ...animeInfo } = animeNode;
 
     return {
-      ...anime,
-      media_type: anime.media_type.toUpperCase(),
-      rating: this.formatRating(anime.rating ?? ""),
-      season: anime.start_season ? `${anime.start_season?.season.replace(/^.{0,1}/g, (s) => s.toUpperCase())} ${anime.start_season?.year}` : undefined,
+      ...animeInfo,
+      media_type: animeInfo.media_type.toUpperCase(),
+      rating: this.formatRating(animeInfo.rating ?? ""),
+      season:
+        animeInfo.start_season &&
+        `${animeInfo.start_season?.season.replace(/^.{0,1}/g, (s) => s.toUpperCase())} ${animeInfo.start_season?.year}`,
       average_episode_duration:
-        anime.average_episode_duration &&
-        `${Math.floor(anime.average_episode_duration / 60)} min per ep`,
-      airingStatus: anime.status
+        animeInfo.average_episode_duration &&
+        `${Math.floor(animeInfo.average_episode_duration / 60)} min per ep`,
+      airingStatus: animeInfo.status
         .replace(/_/g, " ")
         .split(" ")
         .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
         .join(" "),
-      totalEpisodes: anime.num_episodes || "???",
-      genreString: anime.genres.map((genre) => genre.name).join(", "),
-      studiosString: anime.studios.map((studio) => studio.name).join(", "),
-      num_scoring_users: anime.num_scoring_users || 0,
-      airingDate: anime.start_date
-        ? `${anime.start_date} to ${anime.end_date ?? "?"}`
+      totalEpisodes: animeInfo.num_episodes || "???",
+      genreString: animeInfo.genres.map((genre) => genre.name).join(", "),
+      studiosString: animeInfo.studios.map((studio) => studio.name).join(", "),
+      num_scoring_users: animeInfo.num_scoring_users || 0,
+      airingDate: animeInfo.start_date
+        ? `${animeInfo.start_date} to ${animeInfo.end_date ?? "?"}`
         : "Not aired yet",
-      source: anime.source
+      source: animeInfo.source
         ?.replace(/_/g, " ")
         .replace(/^.{0,1}/g, (s) => s.toUpperCase()),
       listStatusFormatted: my_list_status
@@ -151,31 +239,8 @@ export class MalScraper {
 
   async getInfo(malId: number) {
     return await this.client
-      .getAnimeDetails(malId, {
-        fields: [
-          "my_list_status",
-          "related_anime",
-          "genres",
-          "alternative_titles",
-          "start_season",
-          "start_date",
-          "end_date",
-          "media_type",
-          "rating",
-          "average_episode_duration",
-          "status",
-          "num_episodes",
-          "studios",
-          "rank",
-          "num_scoring_users",
-          "popularity",
-          "source",
-          "synopsis",
-          "mean",
-          "recommendations",
-        ],
-      })
-      .then((data) => this.transformResponse(data));
+      .getAnimeDetails(malId, { fields: this.getAnimeFields() })
+      .then((data) => this.transformAnimeInfo(data));
   }
 
   async getTrailer(malId: number) {
@@ -184,170 +249,59 @@ export class MalScraper {
       .then((res) => res.data.trailer.embed_url);
   }
 
-  async getContinueWatching({
-    username,
-    page = 1,
-  }: {
-    username: string;
-    page?: number;
-  }) {
-    if (!this.isLoggedIn) {
-      throw new Error("Not logged in");
-    }
-
-    const currentlyWatchingAnimeList = await this.getAnimeList({
-      username,
-      page,
-      limit: 18,
-      status: "watching",
-    });
-
-    const continueWatchingAnime = await Promise.all(
-      currentlyWatchingAnimeList.data.map(async (anime) => {
-        const animeId = await this.mapper
-          .map({ malId: anime.node.id })
-          .then((mapping) => mapping.hiAnimeId);
-
-        if (!animeId) return null;
-
-        const totalEpisodes = await fetch(
-          `${HiAnimeScraper.BASE_URL}/${animeId}`,
-        )
-          .then((res) => res.text())
-          .then(load)
-          .then(($) => {
-            const episodes = $(
-              "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
-            ).text();
-            return Number(episodes);
-          });
-
-        const lastWatchedEpisode =
-          anime.node.my_list_status?.num_episodes_watched ?? 0;
-
-        return {
-          animeId,
-          malAnime: anime,
-          totalEpisodes,
-          lastWatchedEpisode,
-          lastUpdated: anime.node.my_list_status?.updated_at,
-        };
-      }),
-    );
-
-    const anime = continueWatchingAnime
-      .filter((anime) => anime !== null)
-      .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
-      .sort((a, b) => {
-        if (!a?.lastUpdated || !b?.lastUpdated) return 0;
-
-        return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
-      });
-
-    return {
-      anime,
-      hasNext: !!currentlyWatchingAnimeList.paging.next,
-    };
-  }
-
-  async getPlannedToWatch({
-    username,
-    page = 1,
-  }: {
-    username: string;
-    page?: number;
-  }) {
-    if (!this.isLoggedIn) {
-      throw new Error("Not logged in");
-    }
-
-    const planToWatchList = await this.getAnimeList({
-      username,
-      page,
-      limit: 18,
-      status: "plan_to_watch",
-    });
-
-    const planToWatchAnime = await Promise.all(
-      planToWatchList.data.map(async (anime) => {
-        const animeId = await this.mapper
-          .map({ malId: anime.node.id })
-          .then((mapping) => mapping.hiAnimeId);
-
-        if (!animeId) return null;
-
-        const totalEpisodes = await fetch(
-          `${HiAnimeScraper.BASE_URL}/${animeId}`,
-        )
-          .then((res) => res.text())
-          .then(load)
-          .then(($) => {
-            const episodes = $(
-              "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
-            ).text();
-            return Number(episodes);
-          });
-
-        const lastWatchedEpisode =
-          anime.node.my_list_status?.num_episodes_watched ?? 0;
-
-        return {
-          animeId,
-          malAnime: anime,
-          totalEpisodes,
-          lastWatchedEpisode,
-          lastUpdated: anime.node.my_list_status?.updated_at,
-        };
-      }),
-    );
-
-    const anime = planToWatchAnime
-      .filter((anime) => anime !== null)
-      .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
-      .sort((a, b) => {
-        if (!a?.lastUpdated || !b?.lastUpdated) return 0;
-
-        return new Date(a.lastUpdated) > new Date(b.lastUpdated) ? -1 : 1;
-      });
-
-    return {
-      anime,
-      hasNext: !!planToWatchList.paging.next,
-    };
-  }
-
-  async getCurrentSeason(options?: {
+  getCurrentSeason(): {
     year: number;
     season: "spring" | "summer" | "fall" | "winter";
-  }): Promise<
-    (Jikan4.Types.Anime & {
-      animeId: string;
-      mal_id: number;
-      anilistId: number | null;
-      bannerImage: string | null;
-    })[]
-  > {
-    const currentSeason = options
-      ? await Jikan4.season(options.year, options.season)
-      : await Jikan4.seasonNow();
+  } {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
 
-    const ids = currentSeason.data
-      .map((anime) => anime.mal_id)
-      .filter((id) => id !== undefined);
+    if (month >= 0 && month <= 2) return { year, season: "winter" };
+    if (month >= 3 && month <= 5) return { year, season: "spring" };
+    if (month >= 6 && month <= 8) return { year, season: "summer" };
+    if (month >= 9 && month <= 11) return { year, season: "fall" };
 
-    const dedupedIds = Array.from(new Set(ids));
+    return { year, season: "winter" };
+  }
 
-    const seasonalAnimes = dedupedIds
-      .map((id) => currentSeason.data.find((anime) => anime.mal_id === id))
-      .filter((anime) => anime !== undefined)
-      .sort((a, b) => {
-        if (!a.rank || !b.rank) return 0;
+  getPrevSeason(): {
+    year: number;
+    season: "spring" | "summer" | "fall" | "winter";
+  } {
+    const { year, season } = this.getCurrentSeason();
 
-        return a.rank < b.rank ? -1 : 1;
-      });
+    switch (season) {
+      case "spring":
+        return { year, season: "winter" };
+      case "summer":
+        return { year, season: "spring" };
+      case "fall":
+        return { year, season: "summer" };
+      case "winter":
+        return { year: year - 1, season: "fall" };
+    }
+  }
+
+  async getSeasonalAnime(options: {
+    year: number;
+    season: "spring" | "summer" | "fall" | "winter";
+  }) {
+    const seasonalAnime = await Jikan4.season(
+      options.year,
+      options.season,
+    ).then((anime) =>
+      anime.data.sort((a, b) => {
+        if (!a.popularity || !b.popularity) return 0;
+
+        return a.popularity < b.popularity ? -1 : 1;
+      }),
+    );
 
     const animes = await Promise.all(
-      seasonalAnimes.map(async (anime) => {
+      seasonalAnime.map(async (anime) => {
+        if (!anime.title) return null;
+
         const mapping = await this.mapper.map({ malId: anime.mal_id! });
 
         if (!mapping.hiAnimeId) return null;
@@ -362,44 +316,45 @@ export class MalScraper {
 
         return {
           ...anime,
+          title: anime.title,
           animeId: mapping.hiAnimeId,
-          mal_id: anime.mal_id!,
+          mal_id: anime.mal_id,
           anilistId: mapping.anilistId,
           bannerImage,
         };
       }),
-    ).then((res) => res.filter((anime) => anime !== null));
+    );
 
-    const countOfBanners = animes.filter(
-      (anime) => !!anime.bannerImage?.length,
-    ).length;
+    return animes.filter((anime) => anime !== null);
+  }
+
+  async getSeasonalSpotlightAnime() {
+    const currentSeason = this.getCurrentSeason();
+    const prevSeason = this.getPrevSeason();
+
+    const prevSeasonalAnime = this.getSeasonalAnime(prevSeason);
+    const currentSeasonalAnime = await this.getSeasonalAnime(
+      currentSeason,
+    ).then((data) => data.filter((a) => a.bannerImage?.length));
 
     const result =
-      countOfBanners >= 10
-        ? animes.filter((a) => a.bannerImage?.length)
-        : animes;
+      currentSeasonalAnime.length < 10
+        ? await prevSeasonalAnime.then((data) =>
+            data.filter((a) => a.bannerImage?.length),
+          )
+        : currentSeasonalAnime;
 
-    if (result.length < 10) {
-      const season = currentSeason.data[0]?.season;
-      const prevSeason =
-        season === "winter"
-          ? "fall"
-          : season === "fall"
-            ? "summer"
-            : season === "summer"
-              ? "spring"
-              : season === "spring"
-                ? "winter"
-                : undefined;
-      const year = currentSeason.data[0]!.year;
-      const prevYear = season === "winter" && year ? year - 1 : year;
-
-      return this.getCurrentSeason({
-        year: prevYear!,
-        season: prevSeason!,
-      });
-    }
-
-    return result;
+    return result
+      .map((anime) => ({
+        animeId: anime.animeId,
+        title: anime.title,
+        rating: anime.rating,
+        type: anime.type,
+        episodes: anime.episodes,
+        synopsis: anime.synopsis,
+        bannerImage: anime.bannerImage,
+        backUpImage: anime.images.webp.large_image_url,
+      }))
+      .slice(0, 10);
   }
 }

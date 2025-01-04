@@ -31,6 +31,20 @@ export const mappings = pgTable(
 
 export type Mappings = InferSelectModel<typeof mappings>;
 
+export const seasonalAnimes = pgTable("seasonal_animes", {
+  animeId: text().notNull().primaryKey(),
+  title: text().notNull(),
+  rating: text(),
+  type: text(),
+  episodes: integer(),
+  synopsis: text(),
+  bannerImage: text().notNull(),
+  backUpImage: text(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type SeasonalAnime = InferSelectModel<typeof seasonalAnimes>;
+
 export interface Settings {
   autoPlay: boolean;
   autoNext: boolean;
