@@ -9,7 +9,6 @@ import { TopAnime as TopAnimeClient } from "@/components/anime/top-anime";
 import { TrendingAnime as TrendingAnimeClient } from "@/components/anime/trending-anime";
 import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type RouterOutputs } from "@/trpc/react";
 import { api } from "@/trpc/server";
 import { Suspense, type ReactNode } from "react";
 
@@ -18,48 +17,18 @@ type HomeLayoutProps = {
 };
 
 const HomeLayout = ({ children }: HomeLayoutProps) => {
-  const topAnime = api.hiAnime.getTopAnime();
-  const genre = api.hiAnime.getGenres();
-
   return (
     <>
       <Suspense fallback={<SeasonalAnimeCarouselLoader />}>
         <SeasonalAnimeCarousel />
       </Suspense>
-      <Suspense
-        fallback={
-          <>
-            <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
-            <div className="mb-6">
-              <AnimeGridLoader length={6} />
-            </div>
-          </>
-        }
-      >
+      <Suspense fallback={<AnimeLoader />}>
         <TrendingAnime />
       </Suspense>
-      <Suspense
-        fallback={
-          <>
-            <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
-            <div className="mb-6">
-              <AnimeGridLoader length={6} />
-            </div>
-          </>
-        }
-      >
+      <Suspense fallback={<AnimeLoader />}>
         <ContinueWatching />
       </Suspense>
-      <Suspense
-        fallback={
-          <>
-            <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
-            <div className="mb-6">
-              <AnimeGridLoader length={6} />
-            </div>
-          </>
-        }
-      >
+      <Suspense fallback={<AnimeLoader />}>
         <PlanToWatch />
       </Suspense>
       <div className="w-full md:grid md:grid-cols-4">
@@ -68,14 +37,25 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
           <Suspense
             fallback={<Skeleton className="h-[1000px] w-full rounded-md" />}
           >
-            <TopAnime result={topAnime} />
+            <TopAnime />
           </Suspense>
           <Suspense
             fallback={<Skeleton className="h-[500px] w-full rounded-md" />}
           >
-            <Genres result={genre} />
+            <Genres />
           </Suspense>
         </section>
+      </div>
+    </>
+  );
+};
+
+const AnimeLoader = () => {
+  return (
+    <>
+      <Skeleton className="mb-2 h-7 w-60 font-bold md:mb-5 md:h-8" />
+      <div className="mb-6">
+        <AnimeGridLoader length={6} />
       </div>
     </>
   );
@@ -107,22 +87,14 @@ const PlanToWatch = async () => {
   return <PlanToWatchClient initialData={initalData} />;
 };
 
-const TopAnime = async ({
-  result,
-}: {
-  result: Promise<RouterOutputs["hiAnime"]["getTopAnime"]>;
-}) => {
-  const topAnime = await result;
+const TopAnime = async () => {
+  const topAnime = await api.hiAnime.getTopAnime();
 
   return <TopAnimeClient topAnime={topAnime} />;
 };
 
-const Genres = async ({
-  result,
-}: {
-  result: Promise<RouterOutputs["hiAnime"]["getGenres"]>;
-}) => {
-  const genres = await result;
+const Genres = async () => {
+  const genres = await api.hiAnime.getGenres();
 
   return <GenreMenu genres={genres} />;
 };

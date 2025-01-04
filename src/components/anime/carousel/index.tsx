@@ -3,7 +3,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/server";
 
 export const SeasonalAnimeCarousel = async () => {
-  const data = await api.mal.getCurrentSeasonalAnime();
+  const data = await api.mal.getCurrentSeasonalAnime().catch(() => null);
+
+  if (!data) return null;
 
   return <SeasonalAnimeCarouselClient seasonalAnime={data.slice(0, 10)} />;
 };
