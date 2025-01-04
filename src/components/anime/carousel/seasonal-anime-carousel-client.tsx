@@ -62,7 +62,11 @@ export const SeasonalAnimeCarouselClient = (
                     {anime.title}
                   </h1>
                   <div className="mb-3 hidden gap-2 md:flex">
-                    {[anime.rating, anime.type, anime.episodes ?? "???"]
+                    {[
+                      anime.rating,
+                      anime.type,
+                      `${anime.episodes ?? "???"} episodes`,
+                    ]
                       .filter((data) => data)
                       .map((data, i) => (
                         <span
