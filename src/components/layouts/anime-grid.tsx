@@ -100,4 +100,4 @@ AnimeGrid.Item = forwardRef<HTMLLIElement, AnimeGridItemProps>(
   },
 );
 
-AnimeGrid.Item.displayName = "AnimeCard";
+AnimeGrid.Item.displayName = "AnimeGrid.Item";
