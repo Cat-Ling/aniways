@@ -1,14 +1,29 @@
 import { client, db } from "@/server/db";
 import { mappings } from "@/server/db/schema";
-import { HiAnime } from "aniwatch";
 import { load } from "cheerio";
 import { inArray } from "drizzle-orm";
+import { z } from "zod";
 
 const BASE_URL = `https://hianime.to`;
 const AZ_URL = `${BASE_URL}/az-list`;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 console.error = () => {};
+
+const InfoSchema = z.object({
+  mal_id: z.coerce.number(),
+  anilist_id: z.coerce.number(),
+});
+
+async function getInfo(id: string) {
+  const $ = await fetch(`${BASE_URL}/watch/${id}`)
+    .then((res) => res.text())
+    .then(load);
+
+  const data = InfoSchema.parse(JSON.parse($("#syncData").text()));
+
+  return data;
+}
 
 async function scrapeAZList(page = 1) {
   console.log(`Fetching page ${page}`);
@@ -43,18 +58,18 @@ async function scrapeAZList(page = 1) {
       })
       .map(async (id) => {
         console.log(`Getting info of ${id}`);
-        let info = await new HiAnime.Scraper().getInfo(id).catch(() => null);
+        let info = await getInfo(id).catch(() => null);
 
         while (!info) {
           await new Promise((res) => setTimeout(res, 200));
           console.log(`Retrying ${id}`);
-          info = await new HiAnime.Scraper().getInfo(id).catch(() => null);
+          info = await getInfo(id).catch(() => null);
         }
 
         return {
           hiAnimeId: id,
-          malId: info.anime.info.malId,
-          anilistId: info.anime.info.anilistId,
+          malId: info.mal_id,
+          anilistId: info.anilist_id,
         };
       }),
   );
