@@ -16,6 +16,7 @@ export default $config({
         timeout: "10 minutes",
         environment: {
           DATABASE_URL: process.env.DATABASE_URL!,
+          SKIP_ENV_VALIDATION: "true",
         },
       },
       schedule: "rate(1 day)",
