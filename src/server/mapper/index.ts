@@ -86,4 +86,32 @@ export class Mapper {
       anilistId: mapping?.anilistId ?? (await response).aniistId ?? null,
     };
   }
+
+  async hasInDB(args: { malId: number } | { hiAnimeId: string }) {
+    if ("malId" in args) {
+      return await this.db
+        .select()
+        .from(mappings)
+        .where(eq(mappings.malId, args.malId))
+        .then((rows) => rows.length > 0);
+    }
+
+    return await this.db
+      .select()
+      .from(mappings)
+      .where(eq(mappings.hiAnimeId, args.hiAnimeId))
+      .then((rows) => rows.length > 0);
+  }
+
+  async addMapping(args: {
+    hiAnimeId: string;
+    malId: number | null;
+    anilistId: number | null;
+  }) {
+    await this.db.insert(mappings).values({
+      malId: args.malId,
+      hiAnimeId: args.hiAnimeId,
+      anilistId: args.anilistId,
+    });
+  }
 }

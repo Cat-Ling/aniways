@@ -16,7 +16,21 @@ export const hiAnimeRouter = createTRPCRouter({
 
   getInfo: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => ctx.hiAnimeScraper.getInfo(input.id)),
+    .query(async ({ ctx, input }) => {
+      const info = await ctx.hiAnimeScraper.getInfo(input.id);
+
+      const isInDB = await ctx.mapper.hasInDB({ hiAnimeId: input.id });
+
+      if (!isInDB) {
+        await ctx.mapper.addMapping({
+          hiAnimeId: input.id,
+          malId: info?.anime.info.malId,
+          anilistId: info?.anime.info.anilistId,
+        });
+      }
+
+      return info;
+    }),
 
   getEpisodes: publicProcedure
     .input(z.object({ id: z.string() }))
