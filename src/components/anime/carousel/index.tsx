@@ -6,25 +6,22 @@ export const SeasonalAnimeCarousel = async () => {
   const data = await api.mal.getCachedSeasonalSpotlightAnime().catch(() => []);
 
   if (!data.length) {
-    await api.mal.saveSeasonalSpotlightAnime().catch(() => []);
-    const data = await api.mal
-      .getCachedSeasonalSpotlightAnime()
-      .catch(() => []);
-
+    const data = await api.mal.saveSeasonalSpotlightAnime().catch(() => []);
     if (!data.length) return null;
-
-    return <SeasonalAnimeCarouselClient seasonalAnime={data} />;
+    return (
+      <SeasonalAnimeCarouselClient
+        seasonalAnime={data}
+        lastUpdated={new Date()}
+      />
+    );
   }
 
-  // If the data is older than 24 hours, refetch
-  if (
-    data[0] &&
-    data[0].createdAt.getTime() < Date.now() - 1000 * 60 * 60 * 24
-  ) {
-    await api.mal.saveSeasonalSpotlightAnime().catch(() => []);
-  }
-
-  return <SeasonalAnimeCarouselClient seasonalAnime={data} />;
+  return (
+    <SeasonalAnimeCarouselClient
+      seasonalAnime={data}
+      lastUpdated={data[0]!.createdAt}
+    />
+  );
 };
 
 export const SeasonalAnimeCarouselLoader = () => {
