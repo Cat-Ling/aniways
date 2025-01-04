@@ -95,17 +95,41 @@ export class MalScraper {
 
         if (!animeId) return null;
 
-        const totalEpisodes = await fetch(
-          `${HiAnimeScraper.BASE_URL}/${animeId}`,
-        )
+        const getTotalEpisodes = async () => {
+          const totalEpisodes = await fetch(
+            `${HiAnimeScraper.BASE_URL}/${animeId}`,
+          )
+            .then((res) => res.text())
+            .then(load)
+            .then(($) => {
+              const episodes = $(
+                "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
+              ).text();
+
+              return Number(episodes);
+            });
+
+          return totalEpisodes;
+        };
+
+        let retryCount = 0;
+        let totalEpisodes = await fetch(`${HiAnimeScraper.BASE_URL}/${animeId}`)
           .then((res) => res.text())
           .then(load)
           .then(($) => {
             const episodes = $(
               "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
             ).text();
+
             return Number(episodes);
           });
+
+        while (!totalEpisodes) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          totalEpisodes = await getTotalEpisodes();
+          retryCount += 1;
+          if (retryCount > 20) break;
+        }
 
         const lastWatchedEpisode =
           anime.node.my_list_status?.num_episodes_watched ?? 0;
