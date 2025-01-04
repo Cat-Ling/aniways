@@ -37,7 +37,7 @@ export const AnimeMetadataDetails = ({ metadata }: AnimeMetadataProps) => {
               metadata.season,
               metadata.average_episode_duration,
               metadata.airingStatus,
-            ].map((info, index) =>
+            ].filter(info => info).map((info, index) =>
               info ? (
                 <div
                   key={index}
