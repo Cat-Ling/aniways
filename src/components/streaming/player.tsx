@@ -11,7 +11,6 @@ import { type Settings } from "@/server/db/schema";
 import { type MyListStatus } from "@animelist/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import "./artplayer.css";
 import { thumbnailPlugin } from "./thumbnail";
 
 type PlayerProps = {

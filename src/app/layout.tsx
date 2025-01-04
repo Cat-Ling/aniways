@@ -1,14 +1,14 @@
 import "@/styles/globals.css";
 
+import { type Metadata, type Viewport } from "next";
 import { Inter } from "next/font/google";
-import { type Viewport, type Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 
-import { Providers } from "@/components/providers";
-import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/navigation/footer";
 import { Navbar } from "@/components/navigation/navbar";
+import { Providers } from "@/components/providers";
 import { ThemeSetter } from "@/components/theme-setter";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: {
