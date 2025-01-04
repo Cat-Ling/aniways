@@ -87,11 +87,15 @@ export class MalScraper {
       status,
     });
 
+    const mappedList = await this.mapper.mapAll({
+      malId: list.data.map((anime) => anime.node.id),
+    });
+
     const anime = await Promise.all(
       list.data.map(async (anime) => {
-        const animeId = await this.mapper
-          .map({ malId: anime.node.id })
-          .then((mapping) => mapping.hiAnimeId);
+        const animeId = mappedList.find(
+          (mapping) => mapping.malId === anime.node.id,
+        )?.hiAnimeId;
 
         if (!animeId) return null;
 
@@ -322,13 +326,21 @@ export class MalScraper {
       }),
     );
 
+    const mapList = await this.mapper.mapAll({
+      malId: seasonalAnime
+        .map((anime) => anime.mal_id)
+        .filter((id) => id !== undefined),
+    });
+
     const animes = await Promise.all(
       seasonalAnime.map(async (anime) => {
         if (!anime.title) return null;
 
-        const mapping = await this.mapper.map({ malId: anime.mal_id! });
+        const mapping = mapList.find(
+          (mapping) => mapping.malId === anime.mal_id,
+        );
 
-        if (!mapping.hiAnimeId) return null;
+        if (!mapping?.hiAnimeId) return null;
 
         const data = await fetch(
           `https://anify.eltik.cc/info/${mapping.anilistId}`,

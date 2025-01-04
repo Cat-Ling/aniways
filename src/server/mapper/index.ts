@@ -2,7 +2,7 @@ import { z } from "zod";
 import { type schema } from "../db";
 import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { mappings } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { type HiAnimeScraper } from "../hianime";
 
 const SYNC_URL = `https://raw.githubusercontent.com/bal-mackup/mal-backup/refs/heads/master/mal/anime`;
@@ -85,6 +85,42 @@ export class Mapper {
       malId: mapping?.malId ?? (await response).malId ?? null,
       anilistId: mapping?.anilistId ?? (await response).aniistId ?? null,
     };
+  }
+
+  async mapAll(args: { malId: number[] } | { hiAnimeId: string[] }) {
+    if ("malId" in args) {
+      const mapping = await this.db
+        .select()
+        .from(mappings)
+        .where(inArray(mappings.malId, args.malId));
+
+      return args.malId.map((malId) => {
+        const map = mapping.find((m) => m.malId === malId);
+
+        return {
+          type: "malId" as const,
+          malId,
+          hiAnimeId: map?.hiAnimeId ?? null,
+          anilistId: map?.anilistId ?? null,
+        };
+      });
+    }
+
+    const mapping = await this.db
+      .select()
+      .from(mappings)
+      .where(inArray(mappings.hiAnimeId, args.hiAnimeId));
+
+    return args.hiAnimeId.map((hiAnimeId) => {
+      const map = mapping.find((m) => m.hiAnimeId === hiAnimeId);
+
+      return {
+        type: "hiAnimeId" as const,
+        hiAnimeId,
+        malId: map?.malId ?? null,
+        anilistId: map?.anilistId ?? null,
+      };
+    });
   }
 
   async hasInDB(args: { malId: number } | { hiAnimeId: string }) {
