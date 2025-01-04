@@ -1,7 +1,6 @@
 import { useState, type FC } from "react";
 import { type RouterOutputs } from "@/trpc/react";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
-import { AnimeCard } from "@/components/layouts/anime-card";
 import { Button } from "@/components/ui/button";
 
 interface RelatedAnimeProps {
@@ -26,7 +25,7 @@ export const RelatedAnime: FC<RelatedAnimeProps> = (props) => {
           .filter((anime) => anime.hiAnimeId)
           .filter((_, i) => (showMore ? true : i < 6))
           .map((anime) => (
-            <AnimeCard
+            <AnimeGrid.Item
               key={anime.node.id}
               url={`/anime/${anime.hiAnimeId}`}
               poster={anime.node.main_picture.large}

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
 import { AnimeGridLoader } from "../layouts/anime-grid-loader";
 import { AnimeGrid } from "../layouts/anime-grid";
-import { AnimeCard } from "../layouts/anime-card";
 
 type Status = RouterInputs["mal"]["getAnimeListOfUser"]["status"];
 
@@ -84,7 +83,7 @@ export const MalClient = ({ initialData, status }: AnimeListClientProps) => {
     <AnimeGrid>
       {animeList.pages.map((page) =>
         page.anime.map((anime) => (
-          <AnimeCard
+          <AnimeGrid.Item
             key={anime.id}
             ref={lastElementRef}
             title={anime.title}

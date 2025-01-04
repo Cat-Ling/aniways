@@ -1,4 +1,3 @@
-import { AnimeCard } from "@/components/layouts/anime-card";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { Pagination, PaginationLoader } from "@/components/pagination";
@@ -56,23 +55,23 @@ const RecentlyReleasedAnime = async ({
     <>
       <AnimeGrid className="mb-3 md:grid-cols-4">
         {animes.slice(0, 4).map((anime) => (
-          <AnimeCard
+          <AnimeGrid.Item
             key={anime.id}
             title={anime.jname ?? anime.name ?? "???"}
             subtitle={`Episode ${anime.episodes.sub ?? "???"}`}
             poster={anime.poster ?? ""}
-            url={`/anime/${anime.id}/${anime.episodes.sub}`}
+            url={`/anime/${anime.id}?episode=${anime.episodes.sub}`}
           />
         ))}
       </AnimeGrid>
       <AnimeGrid>
         {animes.slice(4).map((anime) => (
-          <AnimeCard
+          <AnimeGrid.Item
             key={anime.id}
             title={anime.jname ?? anime.name ?? "???"}
             subtitle={`Episode ${anime.episodes.sub ?? "???"}`}
             poster={anime.poster ?? ""}
-            url={`/anime/${anime.id}/${anime.episodes.sub}`}
+            url={`/anime/${anime.id}?episode=${anime.episodes.sub}`}
           />
         ))}
       </AnimeGrid>

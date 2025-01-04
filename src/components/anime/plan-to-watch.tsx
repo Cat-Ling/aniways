@@ -10,7 +10,6 @@ import { useMemo } from "react";
 import { Pagination } from "../pagination";
 import { cn } from "@/lib/utils";
 import { AnimeGrid } from "../layouts/anime-grid";
-import { AnimeCard } from "../layouts/anime-card";
 
 type PlanToWatchProps = {
   initialData: RouterOutputs["mal"]["getPlanToWatch"];
@@ -71,7 +70,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
             pathname === "/plan-to-watch" ? planToWatchAnime.length : 6,
           )
           .map((anime) => (
-            <AnimeCard
+            <AnimeGrid.Item
               key={anime.animeId}
               poster={anime.malAnime.node.main_picture.large ?? ""}
               title={anime.malAnime.node.title ?? "???"}

@@ -1,4 +1,3 @@
-import { AnimeCard } from "@/components/layouts/anime-card";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { Button } from "@/components/ui/button";
 import { type RouterOutputs } from "@/trpc/react";
@@ -28,7 +27,7 @@ export const RecommendedAnime = ({
           .filter((anime) => anime.hiAnimeId)
           .filter((_, i) => (showMore ? true : i < 6))
           .map((anime) => (
-            <AnimeCard
+            <AnimeGrid.Item
               key={anime.node.id}
               url={`/anime/${anime.hiAnimeId}`}
               poster={anime.node.main_picture.large}

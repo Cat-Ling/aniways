@@ -7,7 +7,6 @@ import { api } from "@/trpc/server";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { Pagination, PaginationLoader } from "@/components/pagination";
 import { type HiAnime } from "aniwatch";
-import { AnimeCard } from "@/components/layouts/anime-card";
 
 type SearchPageParams = {
   searchParams: Promise<{ query: string; page: string }>;
@@ -75,7 +74,7 @@ const SearchResults = async ({
   return (
     <AnimeGrid>
       {animes.map((anime) => (
-        <AnimeCard
+        <AnimeGrid.Item
           key={anime.id}
           title={anime.jname ?? anime.name ?? "???"}
           subtitle={`${anime.episodes.sub ?? "???"} episodes`}

@@ -10,7 +10,6 @@ import { useMemo } from "react";
 import { Pagination } from "../pagination";
 import { cn } from "@/lib/utils";
 import { AnimeGrid } from "../layouts/anime-grid";
-import { AnimeCard } from "../layouts/anime-card";
 
 type ContinueWatchingProps = {
   initialData: RouterOutputs["mal"]["getContinueWatching"];
@@ -70,7 +69,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
             pathname === "/watching" ? continueWatchingAnime.length : 6,
           )
           .map((anime) => (
-            <AnimeCard
+            <AnimeGrid.Item
               key={anime.malAnime.node.id}
               poster={anime.malAnime.node.main_picture.large ?? ""}
               title={anime.malAnime.node.title ?? "???"}
