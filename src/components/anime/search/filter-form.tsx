@@ -41,22 +41,16 @@ export const FilterForm = () => {
   }, [state, searchParams]);
 
   useEffect(() => {
-    const params = searchParams
-      .entries()
-      .map(([key, value]) => {
-        if (key === "genres") {
-          return [key, value.split(",")];
-        }
-        return [key, value];
-      })
-      .reduce(
-        (acc, [key, value]) => {
-          if (key === "page") return acc;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return { ...acc, [key as any]: value };
-        },
-        { sort: "default" } as SearchFilters,
-      );
+    const params = { sort: "default" } as SearchFilters;
+
+    searchParams.entries().forEach(([key, value]) => {
+      if (key === "genres") {
+        Object.assign(params, { genres: value.split(",") });
+        return;
+      }
+
+      Object.assign(params, { [key]: value });
+    });
 
     setState(params);
   }, [searchParams]);
