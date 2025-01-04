@@ -22,8 +22,6 @@ export class HiAnimeScraper {
   }
 
   async search(query: string, page = 1, searchFilters?: SearchFilters) {
-    console.log(searchFilters);
-
     const searchParams = new URLSearchParams({
       keyword: query,
       page: page.toString(),
@@ -66,15 +64,11 @@ export class HiAnimeScraper {
       return { id, name, jname, episodes: { sub }, poster };
     });
 
-    const result = {
+    return {
       animes: animes.get(),
       hasNextPage: $('.pagination a[title="Next"]').length > 0,
       currentPage: page,
     };
-
-    console.log(result);
-
-    return result;
   }
 
   async getInfo(id: string) {
