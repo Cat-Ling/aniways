@@ -119,7 +119,7 @@ export class MalScraper {
         let totalEpisodes = await getTotalEpisodes();
 
         while (!totalEpisodes) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 500));
           totalEpisodes = await getTotalEpisodes();
         }
 
