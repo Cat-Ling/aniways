@@ -116,11 +116,14 @@ export class MalScraper {
           return totalEpisodes;
         };
 
+        let retryCount = 0;
         let totalEpisodes = await getTotalEpisodes();
 
         while (!totalEpisodes) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, 200));
           totalEpisodes = await getTotalEpisodes();
+          retryCount++;
+          if (retryCount > 30) break;
         }
 
         const lastWatchedEpisode =
