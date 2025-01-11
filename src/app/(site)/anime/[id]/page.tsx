@@ -3,11 +3,18 @@
 import { Player } from "@/components/streaming/player";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
-import { useParams, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 const AnimeStreamingPage = () => {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const currentEpisode = useMemo(() => {
@@ -33,6 +40,11 @@ const AnimeStreamingPage = () => {
     if (!nextEpisode) return;
     void utils.hiAnime.getEpisodeSources.prefetch({ id, episode: nextEpisode });
   }, [sources, id, utils]);
+
+  useEffect(() => {
+    if (!Number.isNaN(currentEpisode)) return;
+    router.replace(`${pathname}?episode=1`);
+  }, [currentEpisode, router, pathname]);
 
   if (isLoading || !sources) {
     return (

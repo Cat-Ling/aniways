@@ -94,16 +94,61 @@ export class Mapper {
         .from(mappings)
         .where(inArray(mappings.malId, args.malId));
 
-      return args.malId.map((malId) => {
-        const map = mapping.find((m) => m.malId === malId);
+      return await Promise.all(
+        args.malId.map(async (malId) => {
+          const map = mapping.find((m) => m.malId === malId);
 
-        return {
-          type: "malId" as const,
-          malId,
-          hiAnimeId: map?.hiAnimeId ?? null,
-          anilistId: map?.anilistId ?? null,
-        };
-      });
+          if (!map) {
+            const response = await fetch(`${SYNC_URL}/${malId}.json`)
+              .then((res) => res.json())
+              .then((data) => SyncDataSchema.parse(data))
+              .then((data) => {
+                const hiAnimeId =
+                  Object.values(data?.Sites.Zoro ?? {})[0]
+                    ?.url?.split("/")
+                    .pop() ?? null;
+
+                return {
+                  hiAnimeId,
+                  anilistId: data.aniId,
+                  malId: data.id,
+                };
+              })
+              .catch(() => null);
+
+            if (response) {
+              await this.db
+                .insert(mappings)
+                .values({
+                  hiAnimeId: response.hiAnimeId ?? "",
+                  anilistId: response.anilistId,
+                  malId: response.malId,
+                })
+                .onConflictDoUpdate({
+                  target: mappings.hiAnimeId,
+                  set: {
+                    anilistId: response.anilistId,
+                    malId: response.malId,
+                  },
+                });
+            }
+
+            return {
+              type: "malId" as const,
+              malId,
+              hiAnimeId: response?.hiAnimeId ?? null,
+              anilistId: response?.anilistId ?? null,
+            };
+          }
+
+          return {
+            type: "malId" as const,
+            malId,
+            hiAnimeId: map?.hiAnimeId ?? null,
+            anilistId: map?.anilistId ?? null,
+          };
+        }),
+      );
     }
 
     const mapping = await this.db
@@ -144,10 +189,19 @@ export class Mapper {
     malId: number | null;
     anilistId: number | null;
   }) {
-    await this.db.insert(mappings).values({
-      malId: args.malId,
-      hiAnimeId: args.hiAnimeId,
-      anilistId: args.anilistId,
-    });
+    await this.db
+      .insert(mappings)
+      .values({
+        malId: args.malId,
+        hiAnimeId: args.hiAnimeId,
+        anilistId: args.anilistId,
+      })
+      .onConflictDoUpdate({
+        target: mappings.hiAnimeId,
+        set: {
+          malId: args.malId,
+          anilistId: args.anilistId,
+        },
+      });
   }
 }

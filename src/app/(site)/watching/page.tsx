@@ -2,11 +2,17 @@ import { ContinueWatching } from "@/components/anime/continue-watching";
 import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
+type CurrentlyWatchingPageProps = {
+  searchParams: Promise<{ page: string | undefined }>;
+};
 
-const CurrentlyWatchingPage = async () => {
+const CurrentlyWatchingPage = async ({
+  searchParams,
+}: CurrentlyWatchingPageProps) => {
+  const page = await searchParams.then(({ page }) => Number(page ?? 1));
+
   const initalData = await api.mal
-    .getContinueWatching({ page: 1 })
+    .getContinueWatching({ page })
     .catch(() => null);
 
   if (!initalData) return notFound();

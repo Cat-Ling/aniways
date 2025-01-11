@@ -1,10 +1,8 @@
 import { env } from "@/env";
 import { type AnimeNode, MALClient, type WatchStatus } from "@animelist/client";
 import { Jikan4 } from "node-myanimelist";
-import { load } from "cheerio";
 import { type Mapper } from "../mapper";
 import { z } from "zod";
-import { HiAnimeScraper } from "../hianime";
 
 type GetAnimeListArgs = {
   username: string;
@@ -26,6 +24,29 @@ type DeleteMalStatusArgs = {
 
 const AnifyInfoSchema = z.object({
   bannerImage: z.string(),
+});
+
+const AnilistApiResponseSchema = z.object({
+  data: z.object({
+    Page: z.object({
+      media: z.array(
+        z.object({
+          id: z.number(),
+          idMal: z.number().nullable(),
+          episodes: z.number().nullable(),
+          status: z.string(),
+          airingSchedule: z.object({
+            nodes: z.array(
+              z.object({
+                episode: z.number(),
+                timeUntilAiring: z.number(),
+              }),
+            ),
+          }),
+        }),
+      ),
+    }),
+  }),
 });
 
 export class MalScraper {
@@ -71,6 +92,69 @@ export class MalScraper {
     });
   }
 
+  private async getAnilistMedia(ids: number[], malIds: number[]) {
+    const url = "https://graphql.anilist.co";
+
+    const fields = `
+      id
+      idMal
+      episodes
+      status
+      airingSchedule {
+        nodes {
+          episode
+          timeUntilAiring
+        }
+      }
+    `;
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    const [anilistMedia, malMedia] = await Promise.all([
+      fetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          query: `query($idIn: [Int]) {
+            Page {
+              media(id_in: $idIn) {
+                ${fields}
+              }
+            }
+          }`,
+          variables: {
+            idIn: ids,
+          },
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => AnilistApiResponseSchema.parse(data)),
+      fetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          query: `query($idMalIn: [Int]) {
+            Page {
+              media(idMal_in: $idMalIn) {
+                ${fields}
+              }
+            }
+          }`,
+          variables: {
+            idMalIn: malIds,
+          },
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => AnilistApiResponseSchema.parse(data)),
+    ]);
+
+    return [...anilistMedia.data.Page.media, ...malMedia.data.Page.media];
+  }
+
   async getAnimeListByStatus({
     username,
     status,
@@ -83,7 +167,7 @@ export class MalScraper {
     const list = await this.getAnimeListOfUser({
       username,
       page,
-      limit: 18,
+      limit: 60,
       status,
     });
 
@@ -91,53 +175,53 @@ export class MalScraper {
       malId: list.data.map((anime) => anime.node.id),
     });
 
-    const anime = await Promise.all(
-      list.data.map(async (anime) => {
-        const animeId = mappedList.find(
-          (mapping) => mapping.malId === anime.node.id,
-        )?.hiAnimeId;
-
-        if (!animeId) return null;
-
-        const getTotalEpisodes = async () => {
-          const totalEpisodes = await fetch(
-            `${HiAnimeScraper.BASE_URL}/${animeId}`,
-          )
-            .then((res) => res.text())
-            .then(load)
-            .then(($) => {
-              const episodes = $(
-                "#ani_detail > div > div > div.anis-content > div.anisc-detail > div.film-stats > div > div.tick-item.tick-sub",
-              ).text();
-
-              return Number(episodes);
-            });
-
-          return totalEpisodes;
-        };
-
-        let retryCount = 0;
-        let totalEpisodes = await getTotalEpisodes();
-
-        while (!totalEpisodes) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          totalEpisodes = await getTotalEpisodes();
-          retryCount++;
-          if (retryCount > 20) break;
-        }
-
-        const lastWatchedEpisode =
-          anime.node.my_list_status?.num_episodes_watched ?? 0;
-
-        return {
-          animeId,
-          malAnime: anime,
-          totalEpisodes,
-          lastWatchedEpisode,
-          lastUpdated: anime.node.my_list_status?.updated_at,
-        };
-      }),
+    const media = await this.getAnilistMedia(
+      mappedList
+        .map((mapping) => mapping.anilistId)
+        .filter((id) => id) as number[],
+      list.data.map((anime) => anime.node.id).filter((id) => id !== 0),
     );
+
+    const anime = list.data.map((anime) => {
+      const mapping = mappedList.find(
+        (mapping) => mapping.malId === anime.node.id,
+      );
+
+      // Ensure the anime is in hianime
+      if (!mapping?.hiAnimeId) return null;
+
+      // Find the anilist media to calculate the total episodes released
+      const currentMedia = media.find(
+        ({ idMal, id }) => idMal === anime.node.id || id === mapping.anilistId,
+      );
+
+      if (!currentMedia) return null;
+
+      // hopefully accurate to hianime episodes
+      let totalEpisodes: number;
+
+      if (currentMedia.status === "FINISHED") {
+        totalEpisodes = currentMedia.episodes ?? 0;
+      } else {
+        const airedEpisodes = currentMedia.airingSchedule.nodes.filter(
+          (node) => node.timeUntilAiring <= 0,
+        );
+
+        totalEpisodes =
+          airedEpisodes.sort((a, b) => b.episode - a.episode)[0]?.episode ?? 1;
+      }
+
+      const lastWatchedEpisode =
+        anime.node.my_list_status?.num_episodes_watched ?? 0;
+
+      return {
+        animeId: mapping.hiAnimeId,
+        malAnime: anime,
+        totalEpisodes,
+        lastWatchedEpisode,
+        lastUpdated: anime.node.my_list_status?.updated_at,
+      };
+    });
 
     return {
       hasNext: !!list.paging.next,
