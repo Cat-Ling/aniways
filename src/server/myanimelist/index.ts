@@ -143,7 +143,22 @@ export class MalScraper {
       hasNext: !!list.paging.next,
       anime: anime
         .filter((anime) => anime !== null)
-        .filter((anime) => anime.lastWatchedEpisode !== anime.totalEpisodes)
+        .filter((anime) => {
+          if (status === "watching")
+            console.log({
+              name: anime?.malAnime.node.title,
+              lastWatchedEpisode: {
+                type: typeof anime?.lastWatchedEpisode,
+                value: anime?.lastWatchedEpisode,
+              },
+              totalEpisodes: {
+                type: typeof anime?.totalEpisodes,
+                value: anime?.totalEpisodes,
+              },
+            });
+
+          return anime.lastWatchedEpisode !== anime.totalEpisodes;
+        })
         .sort((a, b) => {
           if (!a?.lastUpdated || !b?.lastUpdated) return 0;
 
