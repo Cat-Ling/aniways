@@ -167,12 +167,14 @@ export const malRouter = createTRPCRouter({
   saveSeasonalSpotlightAnime: publicProcedure.mutation(async ({ ctx }) => {
     const data = await ctx.malScraper.getSeasonalSpotlightAnime();
 
-    await ctx.db.delete(seasonalAnimes);
-    await ctx.db
-      .insert(seasonalAnimes)
-      .values(
-        data.map((data) => ({ ...data, bannerImage: data.bannerImage! })),
-      );
+    await ctx.db.transaction(async (tx) => {
+      await tx.delete(seasonalAnimes);
+      await tx
+        .insert(seasonalAnimes)
+        .values(
+          data.map((data) => ({ ...data, bannerImage: data.bannerImage! })),
+        );
+    });
 
     return data;
   }),
