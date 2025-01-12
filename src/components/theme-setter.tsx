@@ -6,7 +6,9 @@ import { useTheme } from "next-themes";
 import { api } from "@/trpc/react";
 
 export const ThemeSetter = () => {
-  const settings = api.settings.getSettings.useQuery();
+  const settings = api.settings.getSettings.useQuery(undefined, {
+    retry: false,
+  });
   const { setTheme } = useTheme();
 
   useEffect(() => {

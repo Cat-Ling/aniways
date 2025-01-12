@@ -1,7 +1,6 @@
 "use client";
 
-import { api, type RouterOutputs } from "@/trpc/react";
-import { AnimeGridLoader } from "../layouts/anime-grid-loader";
+import { api } from "@/trpc/react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
@@ -11,11 +10,7 @@ import { Pagination } from "../pagination";
 import { cn } from "@/lib/utils";
 import { AnimeGrid } from "../layouts/anime-grid";
 
-type PlanToWatchProps = {
-  initialData: RouterOutputs["mal"]["getPlanToWatch"];
-};
-
-export const PlanToWatch = (props: PlanToWatchProps) => {
+export const PlanToWatch = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -25,20 +20,11 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
     return isNaN(page) ? 1 : page;
   }, [searchParams, pathname]);
 
-  const {
-    data: { anime: planToWatchAnime, hasNext },
-    isLoading,
-    error,
-  } = api.mal.getPlanToWatch.useQuery(
-    { page },
-    {
-      initialData: props.initialData,
-    },
-  );
+  const [{ anime, hasNext }] = api.mal.getPlanToWatch.useSuspenseQuery({
+    page,
+  });
 
-  if (isLoading) return <AnimeGridLoader />;
-
-  if (error || !planToWatchAnime.length) return null;
+  if (!anime.length) return null;
 
   return (
     <>
@@ -48,7 +34,7 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
         </h1>
         {pathname === "/plan-to-watch"
           ? (hasNext || page != 1) && <Pagination hasNext={hasNext} />
-          : planToWatchAnime.length > 6 && (
+          : anime.length > 6 && (
               <Button asChild variant={"link"} className="flex gap-2">
                 <Link href="/plan-to-watch">
                   View All
@@ -64,11 +50,8 @@ export const PlanToWatch = (props: PlanToWatchProps) => {
             "flex flex-col md:grid md:grid-cols-6",
         )}
       >
-        {planToWatchAnime
-          ?.slice(
-            0,
-            pathname === "/plan-to-watch" ? planToWatchAnime.length : 6,
-          )
+        {anime
+          ?.slice(0, pathname === "/plan-to-watch" ? anime.length : 6)
           .map((anime) => (
             <AnimeGrid.Item
               key={anime.animeId}

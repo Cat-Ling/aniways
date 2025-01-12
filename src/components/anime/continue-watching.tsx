@@ -1,7 +1,6 @@
 "use client";
 
-import { api, type RouterOutputs } from "@/trpc/react";
-import { AnimeGridLoader } from "../layouts/anime-grid-loader";
+import { api } from "@/trpc/react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
@@ -11,11 +10,7 @@ import { Pagination } from "../pagination";
 import { cn } from "@/lib/utils";
 import { AnimeGrid } from "../layouts/anime-grid";
 
-type ContinueWatchingProps = {
-  initialData: RouterOutputs["mal"]["getContinueWatching"];
-};
-
-export const ContinueWatching = (props: ContinueWatchingProps) => {
+export const ContinueWatching = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -25,20 +20,11 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
     return isNaN(page) ? 1 : page;
   }, [searchParams, pathname]);
 
-  const {
-    data: { anime: continueWatchingAnime, hasNext },
-    isLoading,
-    error,
-  } = api.mal.getContinueWatching.useQuery(
-    { page },
-    {
-      initialData: props.initialData,
-    },
-  );
+  const [{ anime, hasNext }] = api.mal.getContinueWatching.useSuspenseQuery({
+    page,
+  });
 
-  if (isLoading) return <AnimeGridLoader />;
-
-  if (error || !continueWatchingAnime.length) return null;
+  if (!anime.length) return null;
 
   return (
     <>
@@ -48,7 +34,7 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
         </h1>
         {pathname === "/watching"
           ? (hasNext || page != 1) && <Pagination hasNext={hasNext} />
-          : continueWatchingAnime.length > 6 && (
+          : anime.length > 6 && (
               <Button asChild variant={"link"} className="flex gap-2">
                 <Link href="/watching">
                   View All
@@ -63,11 +49,8 @@ export const ContinueWatching = (props: ContinueWatchingProps) => {
           pathname !== "/watching" && "flex flex-col md:grid md:grid-cols-6",
         )}
       >
-        {continueWatchingAnime
-          ?.slice(
-            0,
-            pathname === "/watching" ? continueWatchingAnime.length : 6,
-          )
+        {anime
+          ?.slice(0, pathname === "/watching" ? anime.length : 6)
           .map((anime) => (
             <AnimeGrid.Item
               key={anime.malAnime.node.id}

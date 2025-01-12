@@ -2,14 +2,15 @@ import {
   SeasonalAnimeCarousel,
   SeasonalAnimeCarouselLoader,
 } from "@/components/anime/carousel";
-import { ContinueWatching as ContinueWatchingClient } from "@/components/anime/continue-watching";
+import { ContinueWatching } from "@/components/anime/continue-watching";
 import { GenreMenu } from "@/components/anime/genre-menu";
-import { PlanToWatch as PlanToWatchClient } from "@/components/anime/plan-to-watch";
+import { PlanToWatch } from "@/components/anime/plan-to-watch";
 import { TopAnime as TopAnimeClient } from "@/components/anime/top-anime";
 import { TrendingAnime as TrendingAnimeClient } from "@/components/anime/trending-anime";
+import Authenticated from "@/components/auth";
 import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/server";
+import { api, HydrateClient } from "@/trpc/server";
 import { Suspense, type ReactNode } from "react";
 
 type HomeLayoutProps = {
@@ -17,6 +18,9 @@ type HomeLayoutProps = {
 };
 
 const HomeLayout = ({ children }: HomeLayoutProps) => {
+  void api.mal.getContinueWatching.prefetch({ page: 1 });
+  void api.mal.getPlanToWatch.prefetch({ page: 1 });
+
   return (
     <>
       <Suspense fallback={<SeasonalAnimeCarouselLoader />}>
@@ -28,8 +32,7 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
         ))}
       >
         <TrendingAnime />
-        <ContinueWatching />
-        <PlanToWatch />
+        <Authenticated authenticatedElement={UserLibrarySections} />
       </Suspense>
       <div className="w-full md:grid md:grid-cols-4">
         <section className="col-span-3">{children}</section>
@@ -51,6 +54,20 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
   );
 };
 
+const UserLibrarySections = () => {
+  console.log("I should not be called bruh");
+
+  void api.mal.getContinueWatching.prefetch({ page: 1 });
+  void api.mal.getPlanToWatch.prefetch({ page: 1 });
+
+  return (
+    <HydrateClient>
+      <ContinueWatching />
+      <PlanToWatch />
+    </HydrateClient>
+  );
+};
+
 const AnimeLoader = () => {
   return (
     <>
@@ -66,26 +83,6 @@ const TrendingAnime = async () => {
   const trendingAnime = await api.hiAnime.getTrendingAnime();
 
   return <TrendingAnimeClient trendingAnime={trendingAnime} />;
-};
-
-const ContinueWatching = async () => {
-  const initalData = await api.mal
-    .getContinueWatching({ page: 1 })
-    .catch(() => null);
-
-  if (!initalData) return null;
-
-  return <ContinueWatchingClient initialData={initalData} />;
-};
-
-const PlanToWatch = async () => {
-  const initalData = await api.mal
-    .getPlanToWatch({ page: 1 })
-    .catch(() => null);
-
-  if (!initalData) return null;
-
-  return <PlanToWatchClient initialData={initalData} />;
 };
 
 const TopAnime = async () => {

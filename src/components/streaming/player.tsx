@@ -30,7 +30,9 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
   const toastRef = useRef<string | number | null>(null);
 
   const dataRef = useRef<DataRef | null>(null);
-  const settings = api.settings.getSettings.useQuery();
+  const settings = api.settings.getSettings.useQuery(undefined, {
+    retry: false,
+  });
   const listStatus = api.mal.getAnimeStatusInMAL.useQuery(
     { malId: sources.malID! },
     { enabled: !!sources.malID },
