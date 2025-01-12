@@ -167,7 +167,7 @@ export class MalScraper {
     const list = await this.getAnimeListOfUser({
       username,
       page,
-      limit: 60,
+      limit: 30,
       status,
     });
 

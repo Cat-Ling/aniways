@@ -1,5 +1,5 @@
 import { PlanToWatch } from "@/components/anime/plan-to-watch";
-import { api } from "@/trpc/server";
+import { api, HydrateClient } from "@/trpc/server";
 
 type PlanToWatchPageProps = {
   searchParams: Promise<{ page: string | undefined }>;
@@ -10,7 +10,11 @@ const PlanToWatchPage = async ({ searchParams }: PlanToWatchPageProps) => {
 
   void api.mal.getPlanToWatch.prefetch({ page });
 
-  return <PlanToWatch />;
+  return (
+    <HydrateClient>
+      <PlanToWatch />
+    </HydrateClient>
+  );
 };
 
 export default PlanToWatchPage;

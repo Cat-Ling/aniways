@@ -1,5 +1,5 @@
 import { ContinueWatching } from "@/components/anime/continue-watching";
-import { api } from "@/trpc/server";
+import { api, HydrateClient } from "@/trpc/server";
 
 type CurrentlyWatchingPageProps = {
   searchParams: Promise<{ page: string | undefined }>;
@@ -12,7 +12,11 @@ const CurrentlyWatchingPage = async ({
 
   void api.mal.getContinueWatching.prefetch({ page });
 
-  return <ContinueWatching />;
+  return (
+    <HydrateClient>
+      <ContinueWatching />
+    </HydrateClient>
+  );
 };
 
 export default CurrentlyWatchingPage;
