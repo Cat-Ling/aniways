@@ -34,7 +34,7 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
     retry: false,
   });
   const listStatus = api.mal.getAnimeStatusInMAL.useQuery(
-    { malId: sources.malID! },
+    { malId: sources.malID },
     { enabled: !!sources.malID },
   );
 
@@ -162,7 +162,7 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
               .filter((track) => track.kind === "captions")
               .map((track) => ({
                 default: track.default,
-                html: track.label,
+                html: track.label ?? "Unknown",
                 url: track.file,
               })),
           ],
@@ -246,7 +246,7 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
         });
 
         updateEntryInMal({
-          malId: sources.malID!,
+          malId: sources.malID,
           numWatchedEpisodes: currentEpisode,
           status: "watching",
           score: listStatus.score,

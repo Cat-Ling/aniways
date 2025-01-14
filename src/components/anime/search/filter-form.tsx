@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SearchFilterItems, type SearchFilters } from "@/server/hianime/search";
+import { SearchFilterItems, type SearchFilters } from "@/lib/hianime";
 import { Filter, RotateCw } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";

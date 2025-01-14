@@ -58,9 +58,9 @@ const RecentlyReleasedAnime = async ({
           <AnimeGrid.Item
             key={anime.id}
             title={anime.jname ?? anime.name ?? "???"}
-            subtitle={`Episode ${anime.episodes.sub ?? "???"}`}
+            subtitle={`Episode ${anime.episodes ?? "???"}`}
             poster={anime.poster ?? ""}
-            url={`/anime/${anime.id}?episode=${anime.episodes.sub}`}
+            url={`/anime/${anime.id}?episode=${anime.episodes}`}
           />
         ))}
       </AnimeGrid>
@@ -69,9 +69,9 @@ const RecentlyReleasedAnime = async ({
           <AnimeGrid.Item
             key={anime.id}
             title={anime.jname ?? anime.name ?? "???"}
-            subtitle={`Episode ${anime.episodes.sub ?? "???"}`}
+            subtitle={`Episode ${anime.episodes ?? "???"}`}
             poster={anime.poster ?? ""}
-            url={`/anime/${anime.id}?episode=${anime.episodes.sub}`}
+            url={`/anime/${anime.id}?episode=${anime.episodes}`}
           />
         ))}
       </AnimeGrid>

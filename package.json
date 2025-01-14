@@ -34,6 +34,7 @@
     "@trpc/client": "^11.0.0-rc.446",
     "@trpc/react-query": "^11.0.0-rc.446",
     "@trpc/server": "^11.0.0-rc.446",
+    "@types/crypto-js": "^4.2.2",
     "aniwatch": "^2.15.2",
     "artplayer": "^5.2.1",
     "artplayer-plugin-hls-control": "^1.0.1",

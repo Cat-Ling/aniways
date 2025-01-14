@@ -1,17 +1,56 @@
 "use client";
 
-import { type RouterOutputs } from "@/trpc/react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
-type GenreMenuProps = {
-  genres: RouterOutputs["hiAnime"]["getGenres"];
-};
+const genres = [
+  "Action",
+  "Adventure",
+  "Cars",
+  "Comedy",
+  "Dementia",
+  "Demons",
+  "Drama",
+  "Ecchi",
+  "Fantasy",
+  "Game",
+  "Harem",
+  "Historical",
+  "Horror",
+  "Isekai",
+  "Josei",
+  "Kids",
+  "Magic",
+  "Martial Arts",
+  "Mecha",
+  "Military",
+  "Music",
+  "Mystery",
+  "Parody",
+  "Police",
+  "Psychological",
+  "Romance",
+  "Samurai",
+  "School",
+  "Sci-Fi",
+  "Seinen",
+  "Shoujo",
+  "Shoujo Ai",
+  "Shounen",
+  "Shounen Ai",
+  "Slice of Life",
+  "Space",
+  "Sports",
+  "Super Power",
+  "Supernatural",
+  "Thriller",
+  "Vampire",
+];
 
-export const GenreMenu = ({ genres }: GenreMenuProps) => {
+export const GenreMenu = () => {
   const [showMore, setShowMore] = useState(false);
   const pathname = usePathname();
 
@@ -19,7 +58,7 @@ export const GenreMenu = ({ genres }: GenreMenuProps) => {
     return genres.findIndex((genre) =>
       pathname.split("/").includes(genre.toLowerCase().split(" ").join("-")),
     );
-  }, [genres, pathname]);
+  }, [pathname]);
 
   useEffect(() => {
     if (selectedIndex > 24) {

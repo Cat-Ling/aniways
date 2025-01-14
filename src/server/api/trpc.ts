@@ -12,9 +12,9 @@ import { ZodError } from "zod";
 import { auth } from "../auth";
 import { cookies } from "next/headers";
 import { db } from "../db";
-import { MalScraper } from "../myanimelist";
-import { HiAnimeScraper } from "../hianime";
-import { Mapper } from "../mapper";
+import { MalScraper } from "../../lib/myanimelist";
+import { Mapper } from "../../lib/mapper";
+import { HiAnimeScraper } from "@/lib/hianime";
 
 /**
  * 1. CONTEXT

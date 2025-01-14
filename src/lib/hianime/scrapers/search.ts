@@ -1,4 +1,7 @@
+import { scrapeHtml } from "@/lib/utils";
 import { z } from "zod";
+import { hiAnimeUrls } from "../constants";
+import { extractAnimes } from "../utils";
 
 export const SearchFilterItems = {
   type: [
@@ -395,3 +398,36 @@ export const SearchFilterSchema = z.object({
     .array()
     .optional(),
 });
+
+export const searchAnime = async (
+  query: string,
+  page = 1,
+  searchFilters?: SearchFilters,
+) => {
+  const searchParams = new URLSearchParams({
+    keyword: query,
+    page: page.toString(),
+  });
+
+  if (searchFilters) {
+    Object.entries(searchFilters).forEach(([key, value]) => {
+      if (!value) return;
+      if (typeof value === "string") {
+        searchParams.set(key, value);
+        return;
+      }
+      searchParams.set(key, value.join(","));
+    });
+  }
+
+  const animes = await scrapeHtml({
+    url: hiAnimeUrls.search,
+    searchParams: searchParams,
+    extract: extractAnimes,
+  });
+
+  return {
+    ...animes,
+    currentPage: page,
+  };
+};

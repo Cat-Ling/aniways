@@ -20,7 +20,7 @@ const AnimeStreamingLayout = async ({
   const { id } = await params;
 
   const episodes = api.hiAnime.getEpisodes({ id });
-  const anime = api.hiAnime.getInfo({ id });
+  const anime = api.hiAnime.getSyncData({ id });
 
   return (
     <>
@@ -47,15 +47,11 @@ const EpisodesSection = async ({ animeId, episodes }: EpisodesSectionProps) => {
 };
 
 type AnimeMetadataProps = {
-  anime: Promise<RouterOutputs["hiAnime"]["getInfo"]>;
+  anime: Promise<RouterOutputs["hiAnime"]["getSyncData"]>;
 };
 
 const AnimeMetadata = async (props: AnimeMetadataProps) => {
-  const {
-    anime: {
-      info: { malId },
-    },
-  } = await props.anime.catch(() => notFound());
+  const { malId } = await props.anime.catch(() => notFound());
 
   if (!malId) notFound();
 
