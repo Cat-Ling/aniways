@@ -1,6 +1,6 @@
 /* eslint-disable */
 // @ts-nocheck
-// solution inspired from https://github.com/drblgn/rabbit_wasm/blob/main/rabbit.ts
+// File copied from https://github.com/ghoshRitesh12/aniwatch/blob/main/src/extractors/megacloud.getsrcs.ts
 
 import { decoded_png } from "./decoded-png";
 import util from "util";
@@ -19,7 +19,6 @@ type intro_outro = {
   end: number;
 };
 
-
 type unencryptedSrc = {
   file: string;
   type: string;
@@ -34,8 +33,9 @@ type extractedSrc = {
   server: number;
 };
 
-const SRC_BASE_URL = "https://hianime.to"
-const USER_AGENT_HEADER = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+const SRC_BASE_URL = "https://hianime.to";
+const USER_AGENT_HEADER =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 const embed_url = "https://megacloud.tv/embed-2/e-1/";
 const referrer = SRC_BASE_URL;
@@ -301,12 +301,12 @@ async function QN(QP: Response, Qn: WebAssembly.Imports) {
       (Qt = await WebAssembly.instantiate(QT, Qn)),
       Object.assign(Qt, { bytes: QT }))
     : (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof
-      WebAssembly.Instance
-    ? {
-        instance: Qt,
-        module: QP,
-      }
-    : Qt;
+        WebAssembly.Instance
+      ? {
+          instance: Qt,
+          module: QP,
+        }
+      : Qt;
 }
 
 function initWasm() {
@@ -332,7 +332,7 @@ function initWasm() {
         let val = parse(
           str,
           wasm.__wbindgen_export_0,
-          wasm.__wbindgen_export_1
+          wasm.__wbindgen_export_1,
         );
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, val, true);
@@ -363,7 +363,7 @@ function initWasm() {
       __wbg_subarray_adc418253d76e2f1: function (
         index: number,
         num1: number,
-        num2: number
+        num2: number,
       ) {
         return addToStack(get(index).subarray(num1 >>> 0, num2 >>> 0));
       },
@@ -434,7 +434,7 @@ function initWasm() {
           // @ts-ignore
           decodeIndex: number,
           // @ts-ignore
-          decodeIndexOffset: number
+          decodeIndexOffset: number,
         ) {
           return addToStack(canvas);
         }, arguments);
@@ -446,7 +446,7 @@ function initWasm() {
           // @ts-ignore
           decodeIndex: number,
           // @ts-ignore
-          decodeOffset: number
+          decodeOffset: number,
         ) {
           //let item = get(index).querySelector(decodeSub(decodeIndex, decodeOffset));
           //return isNull(item) ? 0 : addToStack(item);
@@ -465,7 +465,7 @@ function initWasm() {
         // @ts-ignore
         decodeIndex: number,
         // @ts-ignore
-        decodeOffset: number
+        decodeOffset: number,
       ) {
         //let attr = get(index).getAttribute(decodeSub(decodeIndex, decodeOffset));
         let attr = meta.content;
@@ -501,7 +501,7 @@ function initWasm() {
           let _dataUrl = parse(
             dataURL,
             wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1
+            wasm.__wbindgen_export_1,
           );
           getDataView().setInt32(offset + 4, size, true);
           getDataView().setInt32(offset, _dataUrl, true);
@@ -520,7 +520,7 @@ function initWasm() {
         let _src = parse(
           get(index).src,
           wasm.__wbindgen_export_0,
-          wasm.__wbindgen_export_1
+          wasm.__wbindgen_export_1,
         );
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, _src, true);
@@ -544,7 +544,7 @@ function initWasm() {
           let _origin = parse(
             get(index).origin,
             wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1
+            wasm.__wbindgen_export_1,
           );
           getDataView().setInt32(offset + 4, size, true);
           getDataView().setInt32(offset, _origin, true);
@@ -578,7 +578,7 @@ function initWasm() {
         let _origin = parse(
           get(index).origin,
           wasm.__wbindgen_export_0,
-          wasm.__wbindgen_export_1
+          wasm.__wbindgen_export_1,
         );
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, _origin, true);
@@ -586,7 +586,7 @@ function initWasm() {
       __wbg_get_8986951b1ee310e0: function (
         index: number,
         decode1: number,
-        decode2: number
+        decode2: number,
       ) {
         let data = get(index)[decodeSub(decode1, decode2)];
         return isNull(data) ? 0 : addToStack(data);
@@ -618,7 +618,7 @@ function initWasm() {
       },
       __wbg_newnoargs_cfecb3965268594c: function (
         index: number,
-        offset: number
+        offset: number,
       ) {
         return addToStack(new Function(decodeSub(index, offset)));
       },
@@ -641,21 +641,19 @@ function initWasm() {
         return applyToWindow(function (
           index: number,
           index2: number,
-          index3: number
+          index3: number,
         ) {
           return addToStack(get(index).call(get(index2), get(index3)));
-        },
-        arguments);
+        }, arguments);
       },
       __wbg_set_961700853a212a39: function () {
         return applyToWindow(function (
           index: number,
           index2: number,
-          index3: number
+          index3: number,
         ) {
           return Reflect.set(get(index), get(index2), get(index3));
-        },
-        arguments);
+        }, arguments);
       },
       __wbg_buffer_b914fb8b50ebbc3e: function (index: number) {
         return addToStack(get(index).buffer);
@@ -663,7 +661,7 @@ function initWasm() {
       __wbg_newwithbyteoffsetandlength_0de9ee56e9f6ee6e: function (
         index: number,
         val: number,
-        val2: number
+        val2: number,
       ) {
         return addToStack(new Uint8Array(get(index), val >>> 0, val2 >>> 0));
       },
@@ -682,7 +680,7 @@ function initWasm() {
       __wbg_set_7d988c98e6ced92d: function (
         index: number,
         index2: number,
-        val: number
+        val: number,
       ) {
         get(index).set(get(index2), val >>> 0);
       },
@@ -781,7 +779,7 @@ function r(z: number) {
 const V = async () => {
   try {
     let Q0 = await wasmLoader(
-      "https://megacloud.tv/images/loading.png?v=0.0.9"
+      "https://megacloud.tv/images/loading.png?v=0.0.9",
     );
 
     fake_window.bytes = Q0;
