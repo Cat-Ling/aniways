@@ -8,12 +8,13 @@ import {
   getTopAnime,
   getTrendingAnime,
   searchAnime,
+  SearchFilterItems,
   type SearchFilters,
   SearchFilterSchema,
 } from "./scrapers";
 
+export { SearchFilterItems, SearchFilterSchema };
 export type { SearchFilters };
-export { SearchFilterSchema };
 
 export class HiAnimeScraper {
   getRandomAnime() {

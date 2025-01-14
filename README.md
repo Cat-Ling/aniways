@@ -50,6 +50,5 @@ To get the `DATABASE_URL`, you will need to create a new postgres database and g
 - [tRPC](https://trpc.io/)
 - [T3](https://create.t3.gg/)
 - [@animelist](https://github.com/Neo-Ciber94/animelist)
-- [aniwatch](https://github.com/ghoshRitesh12/aniwatch)
 - [MyAnimeList API](https://myanimelist.net/apiconfig/references/api/v2)
 - [Jikan API](https://jikan.moe/)

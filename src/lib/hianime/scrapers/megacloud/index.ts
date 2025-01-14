@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 // solution inspired from https://github.com/drblgn/rabbit_wasm/blob/main/rabbit.ts
 
 import { decoded_png } from "./decoded-png";
