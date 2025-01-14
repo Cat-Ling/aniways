@@ -1,6 +1,11 @@
 import { scrapeHtml } from "@/lib/utils";
 import { getEpisodes } from "./episodes";
-import { AjaxSchema, hiAnimeUrls, selectors } from "../constants";
+import {
+  AjaxSchema,
+  EpisodeSourceSchema,
+  hiAnimeUrls,
+  selectors,
+} from "../constants";
 
 export const getEpisodeSrc = async (animeId: string, episode: number) => {
   const { episodes } = await getEpisodes(animeId);
@@ -23,9 +28,8 @@ export const getEpisodeSrc = async (animeId: string, episode: number) => {
     extract: ($) => {
       const extractServer = (type: "sub" | "raw") => {
         return $(selectors.servers[type]).map((_, el) => ({
-          type,
-          serverName: $(el).find("a").text().toLowerCase().trim(),
-          serverId: Number($(el)?.attr("data-server-id")?.trim()) || null,
+          serverIndex: Number($(el)?.attr("data-server-id")?.trim()) || null,
+          serverId: $(el)?.attr("data-id")?.trim() ?? null,
         }));
       };
 
@@ -36,9 +40,75 @@ export const getEpisodeSrc = async (animeId: string, episode: number) => {
     },
   });
 
-  const order = [...sources.sub, ...sources.raw];
+  const order = [...sources.sub, ...sources.raw].filter(
+    (src) => src.serverIndex === 1 || src.serverIndex === 4, // filter out all servers except VidStreaming and VidCloud
+  );
 
-  const $ = await scrapeHtml({
-    url: hiAnimeUrls.watch(episodeId),
-  });
+  const firstSource = order[0];
+  if (!firstSource?.serverId) throw new Error("No source found");
+
+  let videoSource = await extractEpisodeVideoUrl(firstSource.serverId).catch(
+    () => null,
+  );
+
+  while (!videoSource && order.length > 0) {
+    const nextSource = order.shift();
+    if (!nextSource?.serverId) continue;
+    videoSource = await extractEpisodeVideoUrl(nextSource.serverId).catch(
+      () => null,
+    );
+  }
+
+  if (!videoSource) throw new Error("No source found");
+
+  return {
+    ...videoSource,
+    nextEpisode,
+  };
+};
+
+const extractEpisodeVideoUrl = async (serverId: string) => {
+  const episodeSource = await fetch(
+    `${hiAnimeUrls.episodeSourcesAjax}?id=${serverId}`,
+  )
+    .then((res) => res.json())
+    .then((data) => EpisodeSourceSchema.parse(data));
+
+  const getSources = await import("./megacloud").then((mod) => mod.getSources);
+
+  const source = await getSources(
+    new URL(episodeSource.link).pathname.split("/").pop()!,
+  );
+
+  if (!source)
+    return {
+      tracks: [],
+      intro: {
+        start: 0,
+        end: 0,
+      },
+      outro: {
+        start: 0,
+        end: 0,
+      },
+      sources: [],
+    };
+
+  return {
+    sources: Array.isArray(source.sources)
+      ? source.sources.map((src) => ({
+          url: src.file,
+          type: src.type,
+        }))
+      : [],
+    intro: {
+      start: source.intro?.start ?? 0,
+      end: source.intro?.end ?? 0,
+    },
+    outro: {
+      start: source.outro?.start ?? 0,
+      end: source.outro?.end ?? 0,
+    },
+    tracks: source.tracks,
+  };
 };

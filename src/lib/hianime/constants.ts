@@ -17,9 +17,10 @@ export const hiAnimeUrls = {
     return `${BASE_URL}/genre/${genre}`;
   },
   episodesListAjax: (id: string) => {
-    return `${BASE_URL}/ajax/v2/episode/list/${id.split("-")[0]}`;
+    return `${BASE_URL}/ajax/v2/episode/list/${id.split("-").pop()}`;
   },
   episodeServerAjax: `${BASE_URL}/ajax/v2/episode/servers`,
+  episodeSourcesAjax: `${BASE_URL}/ajax/v2/episode/sources`,
 };
 
 export const selectors = {
@@ -53,4 +54,9 @@ export const SyncDataSchema = z.object({
 
 export const AjaxSchema = z.object({
   html: z.string(),
+});
+
+export const EpisodeSourceSchema = z.object({
+  link: z.string().url(),
+  server: z.number(),
 });

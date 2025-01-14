@@ -7,6 +7,7 @@ import { api } from "@/trpc/server";
 import { type RouterOutputs } from "@/trpc/react";
 import { AnimeMetadataLoader } from "@/components/anime/metadata/anime-metadata-details";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getEpisodeSrc } from "@/lib/hianime/scrapers/episode-src";
 
 interface AnimeStreamingLayoutProps {
   children: ReactNode;
@@ -22,9 +23,11 @@ const AnimeStreamingLayout = async ({
   const episodes = api.hiAnime.getEpisodes({ id });
   const anime = api.hiAnime.getInfo({ id });
 
+  await getEpisodeSrc(id, 1);
+
   return (
     <>
-      {children}
+      {/* {children} */}
       <Suspense fallback={<LayoutLoader />}>
         <EpisodesSection animeId={id} episodes={episodes} />
         <AnimeMetadata anime={anime} />
