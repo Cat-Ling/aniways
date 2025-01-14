@@ -8,7 +8,7 @@ import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { Pagination, PaginationLoader } from "@/components/pagination";
 import { FilterForm } from "@/components/anime/search/filter-form";
 import { type RouterOutputs } from "@/trpc/react";
-import { type SearchFilters } from "@/server/hianime/search";
+import { type SearchFilters } from "@/lib/hianime";
 
 type SearchPageParams = {
   searchParams: Promise<
@@ -97,7 +97,7 @@ const SearchResults = async ({
         <AnimeGrid.Item
           key={anime.id}
           title={anime.jname ?? anime.name ?? "???"}
-          subtitle={`${anime.episodes.sub ?? "???"} episodes`}
+          subtitle={`${anime.episodes ?? "???"} episodes`}
           poster={anime.poster ?? ""}
           url={`/anime/${anime.id}`}
         />

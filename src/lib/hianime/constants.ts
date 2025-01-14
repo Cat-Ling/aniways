@@ -4,6 +4,7 @@ const BASE_URL = "https://hianime.to";
 
 export const hiAnimeUrls = {
   base: BASE_URL,
+  home: `${BASE_URL}/home`,
   random: `${BASE_URL}/random`,
   search: `${BASE_URL}/search`,
   recentlyReleased: `${BASE_URL}/recently-updated`,

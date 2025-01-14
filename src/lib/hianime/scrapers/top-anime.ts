@@ -3,7 +3,7 @@ import { hiAnimeUrls, selectors } from "../constants";
 
 export const getTopAnime = async () => {
   const $ = await scrapeHtml({
-    url: hiAnimeUrls.base,
+    url: hiAnimeUrls.home,
   });
 
   const extractTopAnime = (period: "day" | "week" | "month") => {

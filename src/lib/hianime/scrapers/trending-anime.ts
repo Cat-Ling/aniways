@@ -3,7 +3,7 @@ import { hiAnimeUrls, selectors } from "../constants";
 
 export const getTrendingAnime = async () => {
   const $ = await scrapeHtml({
-    url: hiAnimeUrls.base,
+    url: hiAnimeUrls.home,
   });
 
   return $(selectors.trending)

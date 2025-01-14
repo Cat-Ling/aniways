@@ -7,7 +7,6 @@ import { api } from "@/trpc/server";
 import { type RouterOutputs } from "@/trpc/react";
 import { AnimeMetadataLoader } from "@/components/anime/metadata/anime-metadata-details";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getEpisodeSrc } from "@/lib/hianime/scrapers/episode-src";
 
 interface AnimeStreamingLayoutProps {
   children: ReactNode;
@@ -21,13 +20,11 @@ const AnimeStreamingLayout = async ({
   const { id } = await params;
 
   const episodes = api.hiAnime.getEpisodes({ id });
-  const anime = api.hiAnime.getInfo({ id });
-
-  await getEpisodeSrc(id, 1);
+  const anime = api.hiAnime.getSyncData({ id });
 
   return (
     <>
-      {/* {children} */}
+      {children}
       <Suspense fallback={<LayoutLoader />}>
         <EpisodesSection animeId={id} episodes={episodes} />
         <AnimeMetadata anime={anime} />
@@ -50,15 +47,11 @@ const EpisodesSection = async ({ animeId, episodes }: EpisodesSectionProps) => {
 };
 
 type AnimeMetadataProps = {
-  anime: Promise<RouterOutputs["hiAnime"]["getInfo"]>;
+  anime: Promise<RouterOutputs["hiAnime"]["getSyncData"]>;
 };
 
 const AnimeMetadata = async (props: AnimeMetadataProps) => {
-  const {
-    anime: {
-      info: { malId },
-    },
-  } = await props.anime.catch(() => notFound());
+  const { malId } = await props.anime.catch(() => notFound());
 
   if (!malId) notFound();
 

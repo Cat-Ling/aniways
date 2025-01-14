@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { SearchFilterSchema } from "@/server/hianime/search";
+import { SearchFilterSchema } from "@/lib/hianime";
 
 export const hiAnimeRouter = createTRPCRouter({
   random: publicProcedure.query(({ ctx }) =>
@@ -18,21 +18,21 @@ export const hiAnimeRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { query, page, filters } = input;
 
-      return await ctx.hiAnimeScraper.search(query, page, filters);
+      return await ctx.hiAnimeScraper.search(query, page ?? 1, filters);
     }),
 
-  getInfo: publicProcedure
+  getSyncData: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const info = await ctx.hiAnimeScraper.getInfo(input.id);
+      const info = await ctx.hiAnimeScraper.getSyncData(input.id);
 
       const isInDB = await ctx.mapper.hasInDB({ hiAnimeId: input.id });
 
       if (!isInDB) {
         await ctx.mapper.addMapping({
           hiAnimeId: input.id,
-          malId: info?.anime.info.malId,
-          anilistId: info?.anime.info.anilistId,
+          malId: info.malId,
+          anilistId: info.anilistId,
         });
       }
 
@@ -46,13 +46,13 @@ export const hiAnimeRouter = createTRPCRouter({
   getEpisodeSources: publicProcedure
     .input(z.object({ id: z.string(), episode: z.number() }))
     .query(({ ctx, input }) =>
-      ctx.hiAnimeScraper.getEpisodeSrc(input.id, input.episode),
+      ctx.hiAnimeScraper.getEpisodeSources(input.id, input.episode),
     ),
 
   getRecentlyAdded: publicProcedure
     .input(z.object({ page: z.number().optional() }))
     .query(({ ctx, input }) =>
-      ctx.hiAnimeScraper.getRecentlyReleased(input.page),
+      ctx.hiAnimeScraper.getRecentlyReleased(input.page ?? 1),
     ),
 
   getTrendingAnime: publicProcedure.query(({ ctx }) =>
@@ -62,8 +62,6 @@ export const hiAnimeRouter = createTRPCRouter({
   getTopAnime: publicProcedure.query(({ ctx }) =>
     ctx.hiAnimeScraper.getTopAnime(),
   ),
-
-  getGenres: publicProcedure.query(({ ctx }) => ctx.hiAnimeScraper.getGenres()),
 
   getGenreAnime: publicProcedure
     .input(z.object({ genre: z.string(), page: z.number().default(1) }))

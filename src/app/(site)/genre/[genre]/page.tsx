@@ -27,7 +27,7 @@ const GenrePage = async ({ params, searchParams }: GenrePageProps) => {
             <AnimeGrid.Item
               key={anime.id}
               title={anime.jname ?? anime.name ?? "???"}
-              subtitle={`${anime.episodes.sub ?? "???"} episodes`}
+              subtitle={`${anime.episodes ?? "???"} episodes`}
               poster={anime.poster ?? ""}
               url={`/anime/${anime.id}`}
             />
@@ -38,7 +38,7 @@ const GenrePage = async ({ params, searchParams }: GenrePageProps) => {
             <AnimeGrid.Item
               key={anime.id}
               title={anime.jname ?? anime.name ?? "???"}
-              subtitle={`${anime.episodes.sub ?? "???"} episodes`}
+              subtitle={`${anime.episodes ?? "???"} episodes`}
               poster={anime.poster ?? ""}
               url={`/anime/${anime.id}`}
             />
