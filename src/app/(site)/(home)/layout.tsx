@@ -38,16 +38,11 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
         <section className="col-span-3">{children}</section>
         <section className="flex flex-col justify-start gap-6 pl-2 md:flex-col-reverse md:justify-end">
           <Suspense
-            fallback={
-              <>
-                <Skeleton className="h-[1000px] w-full rounded-md" />
-                <Skeleton className="h-[500px] w-full rounded-md" />
-              </>
-            }
+            fallback={<Skeleton className="h-[1000px] w-full rounded-md" />}
           >
             <TopAnime />
-            <Genres />
           </Suspense>
+          <GenreMenu />
         </section>
       </div>
     </>
@@ -55,8 +50,6 @@ const HomeLayout = ({ children }: HomeLayoutProps) => {
 };
 
 const UserLibrarySections = () => {
-  console.log("I should not be called bruh");
-
   void api.mal.getContinueWatching.prefetch({ page: 1 });
   void api.mal.getPlanToWatch.prefetch({ page: 1 });
 
@@ -89,12 +82,6 @@ const TopAnime = async () => {
   const topAnime = await api.hiAnime.getTopAnime();
 
   return <TopAnimeClient topAnime={topAnime} />;
-};
-
-const Genres = async () => {
-  const genres = await api.hiAnime.getGenres();
-
-  return <GenreMenu genres={genres} />;
 };
 
 export default HomeLayout;

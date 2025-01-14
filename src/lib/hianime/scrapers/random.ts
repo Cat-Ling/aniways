@@ -1,11 +1,15 @@
 import { hiAnimeUrls, selectors, SyncDataSchema } from "../constants";
-import { loadHtmlFromUrl } from "@/lib/utils";
+import { scrapeHtml } from "@/lib/utils";
 
 export const getRandomAnime = async () => {
-  const $ = await loadHtmlFromUrl(hiAnimeUrls.random);
+  const $ = await scrapeHtml({
+    url: hiAnimeUrls.random,
+  });
 
   const rawSyncData = $(selectors.syncData).text();
   const syncData = SyncDataSchema.parse(JSON.parse(rawSyncData));
 
-  return syncData.series_url.split("/").pop() ?? null;
+  const id = syncData.series_url.split("/").pop();
+
+  return id ?? null;
 };

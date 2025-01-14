@@ -11,6 +11,7 @@ export class HiAnimeScraper {
     this.scraper = new HiAnime.Scraper();
   }
 
+  // DONE
   async getRandomAnime() {
     const random = await fetch(`${HiAnimeScraper.BASE_URL}/random`, {
       redirect: "manual",
@@ -21,6 +22,7 @@ export class HiAnimeScraper {
     return id ?? null;
   }
 
+  //DONE
   async search(query: string, page = 1, searchFilters?: SearchFilters) {
     const searchParams = new URLSearchParams({
       keyword: query,
@@ -71,10 +73,12 @@ export class HiAnimeScraper {
     };
   }
 
+  // DONE
   async getInfo(id: string) {
     return this.scraper.getInfo(id);
   }
 
+  // DONE
   async getEpisodes(id: string) {
     return this.scraper.getEpisodes(id);
   }
@@ -157,22 +161,27 @@ export class HiAnimeScraper {
     return this.scraper.getHomePage();
   });
 
+  // DONE
   async getRecentlyReleased(page = 1) {
     return this.scraper.getCategoryAnime("recently-updated", page);
   }
 
+  // DONE
   async getTrendingAnime() {
     return this.getHomePage().then((page) => page.trendingAnimes);
   }
 
+  // DONE
   async getTopAnime() {
     return this.getHomePage().then((page) => page.top10Animes);
   }
 
+  // DONE
   async getGenres() {
     return this.getHomePage().then((page) => page.genres);
   }
 
+  // DONE
   async getGenreAnime(genre: string, page = 1) {
     return this.scraper.getGenreAnime(genre, page);
   }
