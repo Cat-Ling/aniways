@@ -57,7 +57,7 @@ export const SeasonalAnimeCarouselClient = (
           return (
             <CarouselItem key={anime.animeId}>
               <div className="relative flex w-full flex-col-reverse gap-3 md:static md:grid md:grid-cols-5 md:gap-6">
-                <div className="absolute bottom-3 left-3 z-20 col-span-2 flex w-full select-none flex-col justify-center md:static md:z-0">
+                <div className="absolute bottom-0 left-0 z-20 col-span-2 flex w-full select-none flex-col justify-center p-3 md:static md:z-0">
                   <h1 className="mb-2 line-clamp-1 text-xl font-bold md:mb-5 md:line-clamp-3 md:text-5xl">
                     {anime.title}
                   </h1>
@@ -95,7 +95,7 @@ export const SeasonalAnimeCarouselClient = (
                   </Button>
                 </div>
                 <div className="relative col-span-3 aspect-video w-full overflow-hidden rounded-md">
-                  <div className="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-black to-transparent md:bg-none"></div>
+                  <div className="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-primary/50 to-transparent md:bg-none"></div>
                   <Image
                     src={
                       anime.bannerImage?.length

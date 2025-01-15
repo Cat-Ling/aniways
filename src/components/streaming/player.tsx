@@ -34,8 +34,8 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
     retry: false,
   });
   const listStatus = api.mal.getAnimeStatusInMAL.useQuery(
-    { malId: sources.malID },
-    { enabled: !!sources.malID },
+    { malId: sources.malId },
+    { enabled: !!sources.malId },
   );
 
   const nextUrl = useMemo(() => {
@@ -233,7 +233,7 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
       const autoNext = dataRef.current?.settings.autoNext ?? false;
       const listStatus = dataRef.current?.listStatus;
 
-      const canUpdateList = autoUpdateMal && sources.malID && listStatus;
+      const canUpdateList = autoUpdateMal && sources.malId && listStatus;
 
       if (
         canUpdateList &&
@@ -246,7 +246,7 @@ export const Player = ({ sources, animeId, currentEpisode }: PlayerProps) => {
         });
 
         updateEntryInMal({
-          malId: sources.malID,
+          malId: sources.malId,
           numWatchedEpisodes: currentEpisode,
           status: "watching",
           score: listStatus.score,

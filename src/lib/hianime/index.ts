@@ -57,7 +57,7 @@ export class HiAnimeScraper {
 
     return {
       ...sources,
-      malID: syncData.malId,
+      ...syncData,
     };
   }
 }
