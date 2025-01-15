@@ -56,7 +56,7 @@ AnimeGrid.Item = forwardRef<HTMLLIElement, AnimeGridItemProps>(
                 alt={props.title}
                 width={450}
                 height={650}
-                className="absolute h-full w-full object-cover"
+                className="absolute h-full w-full object-cover transition-transform group-hover:scale-105"
               />
             </div>
             <div
