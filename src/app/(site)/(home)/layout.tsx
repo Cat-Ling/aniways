@@ -17,37 +17,32 @@ type HomeLayoutProps = {
   children: ReactNode;
 };
 
-const HomeLayout = ({ children }: HomeLayoutProps) => {
-  void api.mal.getContinueWatching.prefetch({ page: 1 });
-  void api.mal.getPlanToWatch.prefetch({ page: 1 });
-
-  return (
-    <>
-      <Suspense fallback={<SeasonalAnimeCarouselLoader />}>
-        <SeasonalAnimeCarousel />
-      </Suspense>
-      <Suspense
-        fallback={Array.from({ length: 3 }).map((_, i) => (
-          <AnimeLoader key={i} />
-        ))}
-      >
-        <TrendingAnime />
-        <Authenticated authenticatedElement={UserLibrarySections} />
-      </Suspense>
-      <div className="w-full md:grid md:grid-cols-4">
-        <section className="col-span-3">{children}</section>
-        <section className="flex flex-col justify-start gap-6 pl-2 md:flex-col-reverse md:justify-end">
-          <Suspense
-            fallback={<Skeleton className="h-[1000px] w-full rounded-md" />}
-          >
-            <TopAnime />
-          </Suspense>
-          <GenreMenu />
-        </section>
-      </div>
-    </>
-  );
-};
+const HomeLayout = ({ children }: HomeLayoutProps) => (
+  <>
+    <Suspense fallback={<SeasonalAnimeCarouselLoader />}>
+      <SeasonalAnimeCarousel />
+    </Suspense>
+    <Suspense
+      fallback={Array.from({ length: 3 }).map((_, i) => (
+        <AnimeLoader key={i} />
+      ))}
+    >
+      <TrendingAnime />
+      <Authenticated authenticatedElement={UserLibrarySections} />
+    </Suspense>
+    <div className="w-full md:grid md:grid-cols-4">
+      <section className="col-span-3">{children}</section>
+      <section className="flex flex-col justify-start gap-6 pl-2 md:flex-col-reverse md:justify-end">
+        <Suspense
+          fallback={<Skeleton className="h-[1000px] w-full rounded-md" />}
+        >
+          <TopAnime />
+        </Suspense>
+        <GenreMenu />
+      </section>
+    </div>
+  </>
+);
 
 const UserLibrarySections = () => {
   void api.mal.getContinueWatching.prefetch({ page: 1 });
