@@ -23,6 +23,12 @@ export const EpisodesSection = ({ animeId, episodes }: EpisodesSidbarProps) => {
     const ep = searchParams.get("episode");
     const firstEp = episodes.episodes[0]?.number;
 
+    const currentEpisode = Number(ep ?? firstEp ?? 1);
+
+    if (!episodes.episodes.find((ep) => ep.number === currentEpisode)) {
+      return firstEp ?? 1;
+    }
+
     return Number(ep ?? firstEp ?? 1);
   }, [episodes, searchParams]);
 
