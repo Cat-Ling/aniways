@@ -1,8 +1,12 @@
 <h1 align="center">
   <img src="./public/logo.png" width="200" height="200" /><br>
   AniWays<br>
-  An anime streaming website with built-in MyAnimeList support
+  A anime streaming platform built with Next.js and TypeScript
 </h1>
+
+## ⚠️ Disclaimer
+
+Self-hosting this application is strictly limited to personal use only. Commercial utilization is prohibited, and the inclusion of advertisements on your self-hosted website may lead to serious consequences, including potential site takedown measures. Ensure compliance to avoid any legal or operational issues.
 
 ## 📦 Installation
 
