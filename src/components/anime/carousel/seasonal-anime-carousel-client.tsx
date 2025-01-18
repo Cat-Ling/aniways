@@ -41,7 +41,7 @@ export const SeasonalAnimeCarouselClient = (
       return;
     }
 
-    if (status === "pending") return;
+    if (status !== "idle") return;
     saveSeasonalSpotlightAnime();
   }, [props.lastUpdated, saveSeasonalSpotlightAnime, status]);
 
