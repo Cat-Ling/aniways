@@ -3,7 +3,7 @@
 import { useCallback, useRef } from "react";
 import { Loader2, Shell } from "lucide-react";
 
-import type { RouterInputs, RouterOutputs } from "@/trpc/react";
+import type { RouterInputs } from "@/trpc/react";
 import { Button } from "@/components/ui/button";
 
 import { api } from "@/trpc/react";
@@ -13,7 +13,6 @@ import { AnimeGrid } from "../layouts/anime-grid";
 type Status = RouterInputs["mal"]["getAnimeListOfUser"]["status"];
 
 interface AnimeListClientProps {
-  initialData: RouterOutputs["mal"]["getAnimeListOfUser"];
   status: Status;
 }
 
@@ -23,25 +22,17 @@ function convertStatus(status: Status) {
     .replace(/\b\w/g, (l) => l.toUpperCase()); // Capitalize first letter of each word
 }
 
-export const MalClient = ({ initialData, status }: AnimeListClientProps) => {
-  const {
-    data: animeList,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-  } = api.mal.getAnimeListOfUser.useInfiniteQuery(
-    {
-      status,
-    },
-    {
-      initialData: {
-        pageParams: [1],
-        pages: [initialData],
+export const MalClient = ({ status }: AnimeListClientProps) => {
+  const [animeList, { isFetching, hasNextPage, fetchNextPage }] =
+    api.mal.getAnimeListOfUser.useSuspenseInfiniteQuery(
+      {
+        status,
       },
-      getNextPageParam: (lastPage, pages) =>
-        lastPage.hasNext ? pages.length + 1 : undefined,
-    },
-  );
+      {
+        getNextPageParam: (lastPage, pages) =>
+          lastPage.hasNext ? pages.length + 1 : undefined,
+      },
+    );
 
   const observerRef = useRef<IntersectionObserver>();
 

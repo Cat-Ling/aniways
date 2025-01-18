@@ -31,10 +31,6 @@ export const Footer = () => {
           </ul>
         </div>
         <hr className="mb-6 mt-4 border-border sm:mx-auto" />
-        <span className="mb-3 block text-xs text-muted-foreground sm:text-center">
-          This site does not store any data. All data is provided by
-          non-affiliated third parties.
-        </span>
         <span className="block text-sm text-muted-foreground sm:text-center">
           © {currentYear}{" "}
           <Link href="/" className="hover:underline">

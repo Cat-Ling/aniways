@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { EpisodesSection as EpisodesSectionClient } from "@/components/anime/episodes";
 import { AnimeMetadata as AnimeMetadataClient } from "@/components/anime/metadata";
-import { api } from "@/trpc/server";
+import { api, HydrateClient } from "@/trpc/server";
 import { type RouterOutputs } from "@/trpc/react";
 import { AnimeMetadataLoader } from "@/components/anime/metadata/anime-metadata-details";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,9 +55,13 @@ const AnimeMetadata = async (props: AnimeMetadataProps) => {
 
   if (!malId) notFound();
 
-  const initialData = await api.mal.getAnimeInfo({ malId });
+  void api.mal.getAnimeInfo.prefetch({ malId });
 
-  return <AnimeMetadataClient malId={malId} initialData={initialData} />;
+  return (
+    <HydrateClient>
+      <AnimeMetadataClient malId={malId} />
+    </HydrateClient>
+  );
 };
 
 const LayoutLoader = () => {
