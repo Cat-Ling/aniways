@@ -19,13 +19,11 @@ export const Footer = () => {
           </Link>
           <ul className="mb-6 flex flex-wrap items-center text-sm font-medium text-muted-foreground sm:mb-0">
             <li>
-              <Link href="/about" className="me-4 hover:underline md:me-6">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy" className="me-4 hover:underline md:me-6">
-                Privacy Policy
+              <Link
+                href="https://github.com/Coeeter/aniways"
+                className="me-4 hover:underline md:me-6"
+              >
+                Github
               </Link>
             </li>
           </ul>
