@@ -29,6 +29,7 @@ export const MalClient = ({ status }: AnimeListClientProps) => {
         status,
       },
       {
+        initialCursor: 1,
         getNextPageParam: (lastPage, pages) =>
           lastPage.hasNext ? pages.length + 1 : undefined,
       },
