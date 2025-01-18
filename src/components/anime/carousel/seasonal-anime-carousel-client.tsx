@@ -33,7 +33,7 @@ export const SeasonalAnimeCarouselClient = (
 ) => {
   const { carouselApi, setCarouselApi, count, current } = useCarouselApi();
   // prettier-ignore
-  const { mutate: saveSeasonalSpotlightAnime } = api.mal.saveSeasonalSpotlightAnime.useMutation();
+  const { mutate: saveSeasonalSpotlightAnime, status } = api.mal.saveSeasonalSpotlightAnime.useMutation();
 
   useEffect(() => {
     // If the last update was less than a week ago, don't update
@@ -41,8 +41,9 @@ export const SeasonalAnimeCarouselClient = (
       return;
     }
 
+    if (status === "pending") return;
     saveSeasonalSpotlightAnime();
-  }, [props.lastUpdated, saveSeasonalSpotlightAnime]);
+  }, [props.lastUpdated, saveSeasonalSpotlightAnime, status]);
 
   return (
     <Carousel
