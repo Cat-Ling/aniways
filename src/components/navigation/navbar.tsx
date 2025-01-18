@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Home, Menu, Search, Shuffle } from "lucide-react";
+import { Home, Menu, Search, Shuffle } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Sheet,
@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 import { Image } from "../ui/image";
 import { Suspense } from "react";
-import { env } from "@/env";
 import { useAuth } from "@/hooks/auth";
 import { Skeleton } from "../ui/skeleton";
 import { ProfileDropdown } from "./profile-dropdown";
@@ -71,18 +70,6 @@ export const Navbar = () => {
                   <SearchBar />
                 </Suspense>
                 <Button asChild variant={"navlink"}>
-                  <a
-                    href={
-                      env.NODE_ENV === "development"
-                        ? "http://localhost:5173"
-                        : "https://manga.aniways.xyz"
-                    }
-                  >
-                    <BookOpen className="size-4" />
-                    Read Manga
-                  </a>
-                </Button>
-                <Button asChild variant={"navlink"}>
                   <a href="/random">
                     <Shuffle className="size-4" />
                     Random
@@ -124,24 +111,6 @@ export const Navbar = () => {
                   <Home className="mr-2 size-4" />
                   Home
                 </Link>
-              </Button>
-            </SheetClose>
-            <SheetClose asChild>
-              <Button
-                asChild
-                variant={"navlink"}
-                className="h-fit w-full justify-start"
-              >
-                <a
-                  href={
-                    env.NODE_ENV === "development"
-                      ? "http://localhost:5173"
-                      : "https://manga.aniways.xyz"
-                  }
-                >
-                  <BookOpen className="mr-2 size-4" />
-                  Read Manga
-                </a>
               </Button>
             </SheetClose>
             <SheetClose asChild>

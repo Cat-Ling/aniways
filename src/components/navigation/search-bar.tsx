@@ -56,7 +56,7 @@ export const SearchBar = () => {
         ref={ref}
         name="query"
         placeholder="Search for anime"
-        className={cn("h-10 w-full pl-9 pr-36 md:w-80")}
+        className={cn("h-10 w-full pl-9 pr-36 md:w-96")}
         defaultValue={query}
         autoComplete="off"
         onChange={(e) => setHasText(e.currentTarget.value !== "")}
