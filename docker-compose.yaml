@@ -5,13 +5,16 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - CRON_KEY=${CRON_KEY}
 
   cron:
     image: alpine/curl
     command: >
       sh -c "
-        echo '0 0 * * * curl -X POST http://web:3000/api/cron' > /etc/crontabs/root && \
+        echo '0 0 * * * curl -H \"X-Cron-Key: $$CRON_KEY\" -X POST http://web:3000/api/cron' > /etc/crontabs/root && \
         crond -f -l 2
       "
     depends_on:
       - web
+    environment:
+      - CRON_KEY=${CRON_KEY}
