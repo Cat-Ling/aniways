@@ -8,20 +8,10 @@ export const SeasonalAnimeCarousel = async () => {
   if (!data.length) {
     const data = await api.mal.saveSeasonalSpotlightAnime().catch(() => []);
     if (!data.length) return null;
-    return (
-      <SeasonalAnimeCarouselClient
-        seasonalAnime={data}
-        lastUpdated={new Date()}
-      />
-    );
+    return <SeasonalAnimeCarouselClient seasonalAnime={data} />;
   }
 
-  return (
-    <SeasonalAnimeCarouselClient
-      seasonalAnime={data}
-      lastUpdated={data[0]!.createdAt}
-    />
-  );
+  return <SeasonalAnimeCarouselClient seasonalAnime={data} />;
 };
 
 export const SeasonalAnimeCarouselLoader = () => {

@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { cn } from "@/lib/utils";
-import { api } from "@/trpc/react";
 
 interface SeasonalAnimeCarouselClientProps {
   seasonalAnime: {
@@ -25,25 +24,12 @@ interface SeasonalAnimeCarouselClientProps {
     bannerImage: string | null;
     backUpImage?: string | null;
   }[];
-  lastUpdated: Date;
 }
 
 export const SeasonalAnimeCarouselClient = (
   props: SeasonalAnimeCarouselClientProps,
 ) => {
   const { carouselApi, setCarouselApi, count, current } = useCarouselApi();
-  // prettier-ignore
-  const { mutate: saveSeasonalSpotlightAnime, status } = api.mal.saveSeasonalSpotlightAnime.useMutation();
-
-  useEffect(() => {
-    // If the last update was less than a week ago, don't update
-    if (props.lastUpdated.getTime() + 1000 * 60 * 60 * 24 * 7 > Date.now()) {
-      return;
-    }
-
-    if (status !== "idle") return;
-    saveSeasonalSpotlightAnime();
-  }, [props.lastUpdated, saveSeasonalSpotlightAnime, status]);
 
   return (
     <Carousel

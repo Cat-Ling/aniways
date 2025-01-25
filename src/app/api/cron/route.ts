@@ -12,15 +12,22 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  console.time("Cron Job");
-  await cron();
-  console.timeEnd("Cron Job");
-  console.log("Cron Job Finished");
+  void (async () => {
+    console.time("Cron Job");
+    await scrapeMappings();
+    await scrapeSeasonalAnimes();
+    console.timeEnd("Cron Job");
+    console.log("Cron Job Finished");
+  })().catch((err) => {
+    console.error(err);
+  });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    message: "Cron Job Started",
+  });
 };
 
-async function cron() {
+async function scrapeMappings() {
   let hasNextPage = true;
   let page = 1;
 
@@ -76,4 +83,8 @@ async function cron() {
   }
 
   console.log(`Total inserted: ${totalInserted}`);
+}
+
+async function scrapeSeasonalAnimes() {
+  await api.mal.saveSeasonalSpotlightAnime();
 }
