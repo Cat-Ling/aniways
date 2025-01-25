@@ -48,7 +48,7 @@ services:
     image: alpine/curl
     command: >
       sh -c "
-        echo '0 0 * * * curl -H \"X-Cron-Key: $$CRON_KEY\" -X POST http://$$DOMAIN/api/cron' > /etc/crontabs/root && \
+        echo '0 0 * * * curl -H \"X-Cron-Key: ${CRON_KEY}\" -X POST http://${DOMAIN}/api/cron' > /etc/crontabs/root && \
         crond -f -l 2
       "
     depends_on:
