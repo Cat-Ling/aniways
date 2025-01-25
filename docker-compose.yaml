@@ -42,7 +42,8 @@ services:
       update_config:
         order: start-first
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   cron:
     image: alpine/curl
@@ -69,6 +70,7 @@ services:
       test: ["CMD", "pg_isready"]
       interval: 10s
       timeout: 5s
+      start_period: 30s
       retries: 5
 
 secrets:
