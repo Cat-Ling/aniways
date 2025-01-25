@@ -33,3 +33,14 @@ export const env = createEnv({
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
 });
+
+console.log(
+  JSON.stringify(
+    {
+      processEnv: process.env,
+      env: env,
+    },
+    null,
+    2,
+  ),
+);
