@@ -167,6 +167,8 @@ export const malRouter = createTRPCRouter({
   saveSeasonalSpotlightAnime: publicProcedure.mutation(async ({ ctx }) => {
     const data = await ctx.malScraper.getSeasonalSpotlightAnime();
 
+    console.log(data);
+
     await ctx.db.transaction(async (tx) => {
       await tx.delete(seasonalAnimes);
       await tx

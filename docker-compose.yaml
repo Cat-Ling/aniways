@@ -41,7 +41,6 @@ services:
     deploy:
       update_config:
         order: start-first
-      replicas: 3
     depends_on:
       - db
 

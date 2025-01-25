@@ -417,9 +417,25 @@ export class MalScraper {
 
         if (!mapping?.hiAnimeId) return null;
 
-        const data = await fetch(
-          `https://anify.eltik.cc/info/${mapping.anilistId}`,
-        )
+        const data = await fetch(`https://graphql.anilist.co`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            query: `query($id: Int) {
+                Page {
+                  media(id: $id) {
+                    bannerImage
+                  }
+                }
+              }`,
+            variables: {
+              id: mapping.anilistId,
+            },
+          }),
+        })
           .then((res) => res.json())
           .then((data) => AnifyInfoSchema.safeParse(data));
 
