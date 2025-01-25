@@ -39,11 +39,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create Cron Key
+      - name: Create env file
         run: |
-          CRON_KEY=$(openssl rand -hex 32)
-          echo "::add-mask::$CRON_KEY"
-          echo "CRON_KEY=$CRON_KEY" >> $GITHUB_ENV
+          echo "GITHUB_SHA=${{ github.sha }}" >> .env
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
@@ -52,3 +50,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           user: deploy
           ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          env_file: .env
