@@ -6,7 +6,6 @@ import { AnimeGridLoader } from "@/components/layouts/anime-grid-loader";
 import { api } from "@/trpc/server";
 import { AnimeGrid } from "@/components/layouts/anime-grid";
 import { Pagination, PaginationLoader } from "@/components/pagination";
-import { FilterForm } from "@/components/anime/search/filter-form";
 import { type RouterOutputs } from "@/trpc/react";
 import { type SearchFilters } from "@/lib/hianime";
 
@@ -44,11 +43,8 @@ const SearchPage = async ({ searchParams }: SearchPageParams) => {
     },
   });
 
-  const key = `${query}-${page}-${JSON.stringify(params)}`;
-
   return (
     <>
-      <FilterForm />
       <div className="mb-6 flex w-full flex-col justify-between gap-3 md:mb-5 md:flex-row md:items-center">
         <div>
           <h1 className="text-2xl font-bold">Search</h1>
@@ -60,7 +56,13 @@ const SearchPage = async ({ searchParams }: SearchPageParams) => {
           <PaginationWrapper result={searchResult} />
         </Suspense>
       </div>
-      <Suspense key={key} fallback={<AnimeGridLoader />}>
+      <Suspense
+        key={JSON.stringify({
+          query,
+          ...params,
+        })}
+        fallback={<AnimeGridLoader />}
+      >
         <SearchResults result={searchResult} />
       </Suspense>
       <div className="mt-6">

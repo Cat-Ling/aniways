@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";

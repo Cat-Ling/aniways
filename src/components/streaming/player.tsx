@@ -9,7 +9,7 @@ import { ANIWAYS_LOGO, LOADING_SVG, SUBTITLE_ICON } from "./icons";
 
 import { type Settings } from "@/server/db/schema";
 import { type MyListStatus } from "@animelist/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { toast } from "sonner";
 import { thumbnailPlugin } from "./thumbnail";
 
