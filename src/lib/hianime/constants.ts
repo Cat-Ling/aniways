@@ -8,6 +8,7 @@ export const hiAnimeUrls = {
   random: `${BASE_URL}/random`,
   search: `${BASE_URL}/search`,
   recentlyReleased: `${BASE_URL}/recently-updated`,
+  azList: `${BASE_URL}/az-list`,
   animeInfo: (id: string) => {
     return `${BASE_URL}/${id}`;
   },

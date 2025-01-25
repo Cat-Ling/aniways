@@ -1,6 +1,15 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+import { config } from "dotenv";
+
+if (process.env.NODE_ENV === "production") {
+  config({
+    path: "/run/secrets/env",
+    override: true,
+  });
+}
+
 export const env = createEnv({
   shared: {
     NODE_ENV: z
@@ -16,6 +25,7 @@ export const env = createEnv({
         ? z.literal("true").optional()
         : z.coerce.boolean().optional(),
     DATABASE_URL: z.string().url(),
+    CRON_KEY: z.string().min(1),
   },
   client: {},
   experimental__runtimeEnv: {

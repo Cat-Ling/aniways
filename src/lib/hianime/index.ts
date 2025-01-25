@@ -1,4 +1,5 @@
 import {
+  getAZList,
   getEpisodes,
   getEpisodeSrc,
   getGenreAnimes,
@@ -59,5 +60,9 @@ export class HiAnimeScraper {
       ...sources,
       ...syncData,
     };
+  }
+
+  async getAZList(page = 1) {
+    return getAZList(page);
   }
 }
