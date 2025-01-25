@@ -3,6 +3,7 @@ services:
     image: ghcr.io/coeeter/aniways:${GITHUB_SHA:-latest}
     ports:
       - "3000:3000"
+    env_file: /run/secrets/env
     environment:
       - NODE_ENV=production
       - CRON_KEY=${CRON_KEY}
@@ -22,3 +23,7 @@ services:
       - web
     environment:
       - CRON_KEY=${CRON_KEY}
+
+secrets:
+  env:
+    external: true

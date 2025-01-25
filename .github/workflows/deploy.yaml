@@ -45,20 +45,10 @@ jobs:
           echo "::add-mask::$CRON_KEY"
           echo "CRON_KEY=$CRON_KEY" >> $GITHUB_ENV
 
-      - name: create env file
-        run: |
-          echo "GITHUB_SHA=${{ github.sha }}" >> ./env
-          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> ./env
-          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> ./env
-          echo "MAL_SECRET_KEY=${{ secrets.MAL_SECRET_KEY }}" >> ./env
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./env
-          echo "CRON_KEY=${CRON_KEY}" >> ./env
-
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
         with:
           name: aniways
           host: ${{ secrets.SSH_HOST }}
-          user: ${{ secrets.SSH_USERNAME }}
+          user: deploy
           ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          env_file: ./env
