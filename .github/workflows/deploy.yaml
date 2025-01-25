@@ -40,8 +40,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create Cron Key
-        id: cron_key
-        run: echo "::set-output name=CRON_KEY::$(openssl rand -hex 16)"
+        run: |
+          CRON_KEY=$(openssl rand -hex 32)
+          echo "::add-mask::$CRON_KEY"
+          echo "CRON_KEY=$CRON_KEY" >> $GITHUB_ENV
 
       - name: create env file
         run: |
@@ -50,7 +52,7 @@ jobs:
           echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> ./env
           echo "MAL_SECRET_KEY=${{ secrets.MAL_SECRET_KEY }}" >> ./env
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./env
-          echo "CRON_KEY=${{ steps.cron_key.outputs.CRON_KEY }}" >> ./env
+          echo "CRON_KEY=${CRON_KEY}" >> ./env
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
