@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const cronKey = req.headers.get("X-Cron-Key");
+  const mode = req.nextUrl.searchParams.get("mode");
 
   if (cronKey !== env.CRON_KEY) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,8 +15,8 @@ export const POST = async (req: NextRequest) => {
 
   void (async () => {
     console.time("Cron Job");
-    await scrapeMappings();
-    await scrapeSeasonalAnimes();
+    if (mode === "mappings" || !mode) await scrapeMappings();
+    if (mode === "seasonal" || !mode) await scrapeSeasonalAnimes();
     console.timeEnd("Cron Job");
     console.log("Cron Job Finished");
   })().catch((err) => {
