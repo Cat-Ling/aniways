@@ -31,7 +31,7 @@ async function migrateDB() {
 
   do {
     await migrate(db, {
-      migrationsFolder: config.out ?? "./src/server/db/migrations",
+      migrationsFolder: config.out ?? "drizzle",
     })
       .then(() => {
         isError = false;
