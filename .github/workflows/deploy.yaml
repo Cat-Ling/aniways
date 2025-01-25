@@ -44,6 +44,7 @@ jobs:
           echo "GITHUB_SHA=${{ github.sha }}" >> .env
           echo "LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}" >> .env
           echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
+          echo "CRON_KEY=${{ secrets.CRON_KEY }}" >> .env
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1

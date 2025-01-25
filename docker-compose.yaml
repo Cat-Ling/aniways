@@ -28,7 +28,7 @@ services:
     image: ghcr.io/coeeter/aniways:${GITHUB_SHA:-latest}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.web.loadbalancer.server.port=8080"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
       - "traefik.http.routers.web.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
