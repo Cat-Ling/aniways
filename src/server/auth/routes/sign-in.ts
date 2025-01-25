@@ -19,7 +19,7 @@ export const signIn = (handler: Handler) => async (req: Request) => {
   const authUrl = new URL(location);
 
   authUrl.searchParams.set(
-    "redirectUrl",
+    "redirect_uri",
     `${getOriginUrl()}/api/myanimelist/auth/callback`,
   );
 
