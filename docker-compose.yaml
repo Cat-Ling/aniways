@@ -1,12 +1,15 @@
 services:
   web:
     image: ghcr.io/coeeter/aniways:${GITHUB_SHA:-latest}
-    env_file: .env
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - CRON_KEY=${CRON_KEY}
+      - MAL_CLIENT_ID=${MAL_CLIENT_ID}
+      - MAL_CLIENT_SECRET=${MAL_CLIENT_SECRET}
+      - MAL_SECRET_KEY=${MAL_SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
 
   cron:
     image: alpine/curl
