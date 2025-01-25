@@ -1,5 +1,5 @@
 import { FilterForm } from "@/components/anime/search/filter-form";
-import { type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 type SearchLayoutProps = {
   children: ReactNode;
@@ -8,7 +8,9 @@ type SearchLayoutProps = {
 const SearchLayout = ({ children }: SearchLayoutProps) => {
   return (
     <>
-      <FilterForm />
+      <Suspense>
+        <FilterForm />
+      </Suspense>
       {children}
     </>
   );
