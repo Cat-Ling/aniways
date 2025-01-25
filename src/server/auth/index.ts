@@ -6,6 +6,7 @@ import { signIn } from "./routes/sign-in";
 import { signOut } from "./routes/sign-out";
 import { redirect } from "./routes/redirect";
 import { session } from "./routes/session";
+import { callback } from "./routes/callback";
 
 type Auth = typeof getUser;
 type Routes = "GET" | "POST" | "PATCH" | "DELETE";
@@ -25,6 +26,7 @@ export const createAuthRouteHandler: () => AuthRouteHandler = () => ({
       "/api/myanimelist/auth/sign-out": signOut,
       "/api/myanimelist/auth/redirect": redirect,
       "/api/myanimelist/auth/session": session(handler),
+      "/api/myanimelist/auth/callback": callback,
     };
 
     const url = new URL(req.url);

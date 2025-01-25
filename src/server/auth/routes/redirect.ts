@@ -1,10 +1,9 @@
 import { cookies } from "next/headers";
 import { auth } from "..";
 import { db, schema } from "@/server/db";
+import { getOriginUrl } from "../utils";
 
 export async function redirect(req: Request) {
-  const url = new URL(req.url);
-
   const cookieStore = await cookies();
 
   const session = await auth(cookieStore);
@@ -23,7 +22,7 @@ export async function redirect(req: Request) {
 
   const redirectUrl = cookieStore.get("redirectUrl")?.value;
 
-  req.headers.append("Location", redirectUrl ?? url.origin);
+  req.headers.append("Location", redirectUrl ?? getOriginUrl());
 
   const response = new Response(null, {
     status: 302,

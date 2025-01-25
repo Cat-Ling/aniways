@@ -1,9 +1,10 @@
 import { cookies } from "next/headers";
+import { getOriginUrl } from "../utils";
 
 export async function signOut(req: Request) {
   const url = new URL(req.url);
 
-  const redirectUrl = url.searchParams.get("redirectUrl") ?? url.origin;
+  const redirectUrl = url.searchParams.get("redirectUrl") ?? getOriginUrl();
 
   const headers = new Headers();
 
