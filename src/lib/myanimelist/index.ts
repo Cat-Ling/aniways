@@ -23,7 +23,16 @@ type DeleteMalStatusArgs = {
 };
 
 const AnifyInfoSchema = z.object({
-  bannerImage: z.string(),
+  data: z.object({
+    Page: z.object({
+      media: z.array(
+        z.object({
+          id: z.number(),
+          bannerImage: z.string().nullable().optional(),
+        }),
+      ),
+    }),
+  }),
 });
 
 const AnilistApiResponseSchema = z.object({
@@ -407,8 +416,31 @@ export class MalScraper {
         .filter((id) => id !== undefined),
     });
 
-    const animes = await Promise.all(
-      seasonalAnime.map(async (anime) => {
+    const bannerImages = await fetch(`https://graphql.anilist.co`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        query: `query($idIn: [Int]) {
+          Page {
+            media(id_in: $idIn) {
+              id
+              bannerImage
+            }
+          }
+        }`,
+        variables: {
+          idIn: mapList.map((mapping) => mapping.anilistId),
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => AnifyInfoSchema.safeParse(data));
+
+    const animes = seasonalAnime
+      .map((anime) => {
         if (!anime.title) return null;
 
         const mapping = mapList.find(
@@ -417,29 +449,12 @@ export class MalScraper {
 
         if (!mapping?.hiAnimeId) return null;
 
-        const data = await fetch(`https://graphql.anilist.co`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            query: `query($id: Int) {
-                Page {
-                  media(id: $id) {
-                    bannerImage
-                  }
-                }
-              }`,
-            variables: {
-              id: mapping.anilistId,
-            },
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => AnifyInfoSchema.safeParse(data));
-
-        const bannerImage = data.success ? data.data.bannerImage : null;
+        const bannerImage =
+          (bannerImages.success
+            ? bannerImages.data.data.Page.media.find(
+                (media) => media.id === mapping.anilistId,
+              )?.bannerImage
+            : null) ?? null;
 
         return {
           ...anime,
@@ -449,10 +464,10 @@ export class MalScraper {
           anilistId: mapping.anilistId,
           bannerImage,
         };
-      }),
-    );
+      })
+      .filter((anime) => anime !== null);
 
-    return animes.filter((anime) => anime !== null);
+    return animes;
   }
 
   async getSeasonalSpotlightAnime() {
