@@ -37,9 +37,12 @@ services:
     environment:
       - NODE_ENV=production
       - CRON_KEY=${CRON_KEY}
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     deploy:
       update_config:
         order: start-first
+    depends_on:
+      - db
 
   cron:
     image: alpine/curl
@@ -54,9 +57,24 @@ services:
       - CRON_KEY=${CRON_KEY}
       - DOMAIN=${DOMAIN}
 
+  db:
+    image: postgres
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 secrets:
   env:
     external: true
 
 volumes:
   letsencrypt:
+  db-data:
