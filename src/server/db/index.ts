@@ -25,10 +25,21 @@ const db = drizzle(client, {
   schema,
 });
 
-await migrate(db, {
-  migrationsFolder: config.out ?? "./src/server/db/migrations",
-}).catch((error) => {
-  console.error(error);
-});
+let isError = false;
+let count = 50;
+
+do {
+  await migrate(db, {
+    migrationsFolder: config.out ?? "./src/server/db/migrations",
+  })
+    .then(() => {
+      isError = false;
+    })
+    .catch(async (error) => {
+      console.error(error);
+      isError = true;
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    });
+} while (isError && count-- > 0);
 
 export { client, db, orm, schema };

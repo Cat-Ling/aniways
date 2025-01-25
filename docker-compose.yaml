@@ -42,8 +42,7 @@ services:
       update_config:
         order: start-first
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   cron:
     image: alpine/curl
