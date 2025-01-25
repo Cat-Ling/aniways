@@ -6,6 +6,7 @@ import { config } from "dotenv";
 if (process.env.NODE_ENV === "production") {
   config({
     path: "/run/secrets/env",
+    override: true,
   });
 }
 
@@ -33,14 +34,3 @@ export const env = createEnv({
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
 });
-
-console.log(
-  JSON.stringify(
-    {
-      processEnv: process.env,
-      env: env,
-    },
-    null,
-    2,
-  ),
-);
