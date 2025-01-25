@@ -24,7 +24,7 @@ export const env = createEnv({
         ? z.literal("true").optional()
         : z.coerce.boolean().optional(),
     DATABASE_URL: z.string().url(),
-    CRON_KEY: z.string().base64().length(44),
+    CRON_KEY: z.string().min(1),
   },
   client: {},
   experimental__runtimeEnv: {
