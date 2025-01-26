@@ -25,6 +25,7 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/dist ./
 COPY --from=builder /app/start-server.sh ./start-server.sh
+RUN chmod +x ./start-server.sh
 
 EXPOSE 3000
 LABEL org.opencontainers.image.source https://github.com/Coeeter/aniways
