@@ -30,4 +30,4 @@ RUN chmod +x ./start-server.sh
 EXPOSE 3000
 LABEL org.opencontainers.image.source https://github.com/Coeeter/aniways
 
-CMD ["./app/start-server.sh"]
+ENTRYPOINT [ "./start-server.sh" ]
