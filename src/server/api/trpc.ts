@@ -114,6 +114,8 @@ const loggingMiddleware = t.middleware(
       success: result.ok,
       error: result.ok ? undefined : result.error,
       user: ctx.session?.user,
+      timestamp: end,
+      date: new Date(end),
     });
 
     return result;

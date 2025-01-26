@@ -9,12 +9,16 @@ export async function middleware(req: NextRequest) {
   } = req;
 
   const user = await getUser(cookies).catch(() => undefined);
+  const date = new Date();
+  const timestamp = date.getTime();
 
   console.log({
     url,
     pathname,
     searchParams: Object.fromEntries(searchParams),
     user: user?.user,
+    timestamp,
+    date,
   });
 
   return NextResponse.next();
