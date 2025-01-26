@@ -73,8 +73,27 @@ services:
       start_period: 30s
       retries: 5
 
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: pgweb
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pgweb.rule=Host(`db.${DOMAIN}`)"
+      - "traefik.http.routers.pgweb.entrypoints=websecure"
+      - "traefik.http.routers.pgweb.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.pgweb-auth.basicauth.usersfile=/run/secrets/auth"
+      - "traefik.http.routers.pgweb.middlewares=pgweb-auth"
+    secrets:
+      - auth
+    depends_on:
+      - db
+
 secrets:
   env:
+    external: true
+  auth:
     external: true
 
 volumes:
