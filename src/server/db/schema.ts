@@ -1,4 +1,4 @@
-import type { InferSelectModel } from "drizzle-orm";
+import { relations, type InferSelectModel } from "drizzle-orm";
 import {
   index,
   integer,
@@ -11,7 +11,7 @@ import {
 import { cuid2 } from "drizzle-cuid2/postgres";
 
 export const mappings = pgTable(
-  "mapping",
+  "mappings",
   {
     hiAnimeId: text().primaryKey(),
     malId: integer(),
@@ -29,7 +29,72 @@ export const mappings = pgTable(
   ],
 );
 
+export const mappingRelations = relations(mappings, ({ one }) => ({
+  anime: one(animes),
+}));
+
 export type Mappings = InferSelectModel<typeof mappings>;
+
+export const animes = pgTable(
+  "animes",
+  {
+    id: cuid2().primaryKey().defaultRandom(),
+    mappingId: text()
+      .notNull()
+      .references(() => mappings.hiAnimeId),
+    name: text().notNull(),
+    jname: text().notNull(),
+    description: text(),
+    poster: text().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    lastEpisode: integer(),
+  },
+  (t) => [
+    {
+      mappingIdx: index("mapping_idx").on(t.mappingId),
+    },
+  ],
+);
+
+export const animeRelations = relations(animes, ({ one, many }) => ({
+  mapping: one(mappings, {
+    fields: [animes.mappingId],
+    references: [mappings.hiAnimeId],
+  }),
+  episodes: many(episodes),
+}));
+
+export type Anime = InferSelectModel<typeof animes>;
+
+export const episodes = pgTable(
+  "episodes",
+  {
+    id: cuid2().primaryKey().defaultRandom(),
+    animeId: text()
+      .notNull()
+      .references(() => animes.id),
+    episode: integer().notNull(),
+    videoUrl: text().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdateFn(() => new Date()),
+  },
+  (t) => [
+    {
+      animeIdx: index("anime_idx").on(t.animeId),
+    },
+  ],
+);
+
+export const episodeRelations = relations(episodes, ({ one }) => ({
+  anime: one(animes, {
+    fields: [episodes.animeId],
+    references: [animes.id],
+  }),
+}));
+
+export type Episode = InferSelectModel<typeof episodes>;
 
 export const seasonalAnimes = pgTable("seasonal_animes", {
   animeId: text().notNull().primaryKey(),
