@@ -19,11 +19,10 @@ async function waitForDB(client: Sql, retries = 50, delay = 5000) {
 }
 
 export async function migrateDB() {
-  if (
-    process.env.NODE_ENV !== "production" ||
-    process.env.npm_lifecycle_event === "build"
-  ) {
-    console.log("Skipping database migrations in production build");
+  const isBuilding = process.env.npm_lifecycle_event === "build";
+
+  if (isBuilding) {
+    console.log("Skipping database migrations during build");
     return;
   }
 
