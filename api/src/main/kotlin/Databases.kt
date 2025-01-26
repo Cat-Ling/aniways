@@ -1,13 +1,11 @@
 package xyz
 
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
 
 fun Application.configureDatabases() {
     val database = Database.connect(
@@ -24,7 +22,7 @@ fun Application.configureDatabases() {
             val id = userService.create(user)
             call.respond(HttpStatusCode.Created, id)
         }
-        
+
         // Read user
         get("/users/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -35,7 +33,7 @@ fun Application.configureDatabases() {
                 call.respond(HttpStatusCode.NotFound)
             }
         }
-        
+
         // Update user
         put("/users/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -43,7 +41,7 @@ fun Application.configureDatabases() {
             userService.update(id, user)
             call.respond(HttpStatusCode.OK)
         }
-        
+
         // Delete user
         delete("/users/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
