@@ -1,21 +1,20 @@
+import { getUser } from "@animelist/auth-next/server";
 import { type NextRequest, NextResponse } from "next/server";
-import { auth } from "./server/auth";
 
 export async function middleware(req: NextRequest) {
   const {
-    method,
     url,
     nextUrl: { pathname, searchParams },
     cookies,
   } = req;
-  const session = await auth(cookies);
+
+  const user = await getUser(cookies).catch(() => undefined);
 
   console.log({
     url,
     pathname,
     searchParams: Object.fromEntries(searchParams),
-    method,
-    user: session?.user,
+    user: user?.user,
   });
 
   return NextResponse.next();
