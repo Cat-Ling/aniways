@@ -1,7 +1,8 @@
-import { migrateDB } from "@/server/db/migrate";
-
 export async function register() {
-  await migrateDB();
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { migrateDB } = await import("@/server/db/migrate");
+    await migrateDB();
+  }
 
   if (
     process.env.NEXT_RUNTIME === "nodejs" &&
