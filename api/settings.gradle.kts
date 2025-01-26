@@ -1,1 +1,1 @@
-rootProject.name = "aniways"
+rootProject.name = "api"

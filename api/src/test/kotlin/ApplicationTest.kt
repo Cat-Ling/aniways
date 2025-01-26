@@ -1,4 +1,4 @@
-package xyz
+package xyz.aniways
 
 import io.ktor.client.request.*
 import io.ktor.http.*

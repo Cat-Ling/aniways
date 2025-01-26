@@ -1,4 +1,4 @@
-# aniways
+# api
 
 This project was created using the [Ktor Project Generator](https://start.ktor.io).
 
@@ -14,10 +14,9 @@ Here's a list of features included in this project:
 
 | Name                                                                   | Description                                                                        |
 | ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
+| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
 | [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
 | [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [Exposed](https://start.ktor.io/p/exposed)                             | Adds Exposed database to your application                                          |
 
 ## Building & Running
 
