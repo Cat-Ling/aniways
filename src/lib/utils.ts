@@ -1,5 +1,6 @@
 import { type CheerioAPI, load } from "cheerio";
 import { clsx, type ClassValue } from "clsx";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -28,4 +29,19 @@ export function scrapeHtml<T = CheerioAPI>(options: ScrapeHtmlOptions<T>) {
     .then(transform)
     .then(load)
     .then(after);
+}
+
+export async function getCached<T>(
+  key: string,
+  fn: () => Promise<T>,
+  expires = 1000 * 60 * 60 * 24, // 1 day
+) {
+  return unstable_cache(fn, key.split("-"), {
+    tags: key.split("-"),
+    revalidate: expires,
+  })();
+}
+
+export async function revalidateCache(key: string) {
+  return revalidateTag(key);
 }

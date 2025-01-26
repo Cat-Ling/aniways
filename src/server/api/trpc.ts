@@ -32,7 +32,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth(await cookies());
   const hiAnimeScraper = new HiAnimeScraper();
   const mapper = new Mapper(db, hiAnimeScraper);
-  const malScraper = new MalScraper(mapper, session?.accessToken);
+  const malScraper = new MalScraper(mapper, session);
 
   return {
     session,
@@ -86,21 +86,9 @@ export const createCallerFactory = t.createCallerFactory;
  */
 export const createTRPCRouter = t.router;
 
-/**
- * Middleware for timing procedure execution and adding an artificial delay in development.
- *
- * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
- * network latency that would occur in production but not in local development.
- */
 const loggingMiddleware = t.middleware(
   async ({ next, path, type, getRawInput, ctx }) => {
     const start = Date.now();
-
-    if (t._config.isDev) {
-      // artificial delay in dev
-      const waitMs = Math.floor(Math.random() * 400) + 100;
-      await new Promise((resolve) => setTimeout(resolve, waitMs));
-    }
 
     const result = await next();
 

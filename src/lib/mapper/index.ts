@@ -34,7 +34,24 @@ export class Mapper {
 
   async map(args: { malId: number } | { hiAnimeId: string }) {
     if ("malId" in args) {
-      const response = fetch(`${SYNC_URL}/${args.malId}.json`)
+      const mapping = await this.db
+        .select()
+        .from(mappings)
+        .where(eq(mappings.malId, args.malId))
+        .then((rows) => rows[0]);
+
+      if (mapping) {
+        return {
+          type: "malId" as const,
+          malId: args.malId,
+          hiAnimeId: mapping.hiAnimeId,
+          anilistId: mapping.anilistId,
+        };
+      }
+
+      const response = await fetch(`${SYNC_URL}/${args.malId}.json`, {
+        cache: "force-cache",
+      })
         .then((res) => res.json())
         .then((data) => SyncDataSchema.parse(data))
         .then((data) => {
@@ -51,27 +68,13 @@ export class Mapper {
         })
         .catch(() => null);
 
-      const mapping = await this.db
-        .select()
-        .from(mappings)
-        .where(eq(mappings.malId, args.malId))
-        .then((rows) => rows[0]);
-
       return {
         type: "malId" as const,
         malId: args.malId,
-        anilistId: mapping?.anilistId ?? (await response)?.anilistId ?? null,
-        hiAnimeId: mapping?.hiAnimeId ?? (await response)?.hiAnimeId ?? null,
+        hiAnimeId: response?.hiAnimeId ?? null,
+        anilistId: response?.anilistId ?? null,
       };
     }
-
-    const syncDataPromise = this.hiAnimeScraper
-      .getSyncData(args.hiAnimeId)
-      .then((data) => ({
-        malId: data.malId,
-        hiAnimeId: args.hiAnimeId,
-        aniistId: data.anilistId,
-      }));
 
     const mapping = await this.db
       .select()
@@ -79,13 +82,22 @@ export class Mapper {
       .where(eq(mappings.hiAnimeId, args.hiAnimeId))
       .then((rows) => rows[0]);
 
-    const syncData = await syncDataPromise;
+    if (mapping) {
+      return {
+        type: "hiAnimeId" as const,
+        hiAnimeId: args.hiAnimeId,
+        malId: mapping.malId,
+        anilistId: mapping.anilistId,
+      };
+    }
+
+    const syncData = await this.hiAnimeScraper.getSyncData(args.hiAnimeId);
 
     return {
       type: "hiAnimeId" as const,
       hiAnimeId: args.hiAnimeId,
-      malId: mapping?.malId ?? syncData.malId ?? null,
-      anilistId: mapping?.anilistId ?? syncData.aniistId ?? null,
+      malId: syncData.malId,
+      anilistId: syncData.anilistId,
     };
   }
 
@@ -101,7 +113,9 @@ export class Mapper {
           const map = mapping.find((m) => m.malId === malId);
 
           if (!map) {
-            const response = await fetch(`${SYNC_URL}/${malId}.json`)
+            const response = await fetch(`${SYNC_URL}/${malId}.json`, {
+              cache: "force-cache",
+            })
               .then((res) => res.json())
               .then((data) => SyncDataSchema.parse(data))
               .then((data) => {

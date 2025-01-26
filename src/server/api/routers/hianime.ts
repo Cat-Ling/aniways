@@ -3,9 +3,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { SearchFilterSchema } from "@/lib/hianime";
 
 export const hiAnimeRouter = createTRPCRouter({
-  random: publicProcedure.query(({ ctx }) =>
-    ctx.hiAnimeScraper.getRandomAnime(),
-  ),
+  random: publicProcedure.query(({ ctx }) => {
+    return ctx.hiAnimeScraper.getRandomAnime();
+  }),
 
   search: publicProcedure
     .input(
@@ -41,27 +41,29 @@ export const hiAnimeRouter = createTRPCRouter({
 
   getEpisodes: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => ctx.hiAnimeScraper.getEpisodes(input.id)),
+    .query(({ ctx, input }) => {
+      return ctx.hiAnimeScraper.getEpisodes(input.id);
+    }),
 
   getEpisodeSources: publicProcedure
     .input(z.object({ id: z.string(), episode: z.number() }))
-    .query(({ ctx, input }) =>
-      ctx.hiAnimeScraper.getEpisodeSources(input.id, input.episode),
-    ),
+    .query(({ ctx, input }) => {
+      return ctx.hiAnimeScraper.getEpisodeSources(input.id, input.episode);
+    }),
 
   getRecentlyAdded: publicProcedure
     .input(z.object({ page: z.number().optional() }))
-    .query(({ ctx, input }) =>
-      ctx.hiAnimeScraper.getRecentlyReleased(input.page ?? 1),
-    ),
+    .query(({ ctx, input }) => {
+      return ctx.hiAnimeScraper.getRecentlyReleased(input.page ?? 1);
+    }),
 
-  getTrendingAnime: publicProcedure.query(({ ctx }) =>
-    ctx.hiAnimeScraper.getTrendingAnime(),
-  ),
+  getTrendingAnime: publicProcedure.query(({ ctx }) => {
+    return ctx.hiAnimeScraper.getTrendingAnime();
+  }),
 
-  getTopAnime: publicProcedure.query(({ ctx }) =>
-    ctx.hiAnimeScraper.getTopAnime(),
-  ),
+  getTopAnime: publicProcedure.query(({ ctx }) => {
+    return ctx.hiAnimeScraper.getTopAnime();
+  }),
 
   getGenreAnime: publicProcedure
     .input(z.object({ genre: z.string(), page: z.number().default(1) }))

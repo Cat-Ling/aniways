@@ -1,8 +1,14 @@
 import { env } from "@/env";
-import { type AnimeNode, MALClient, type WatchStatus } from "@animelist/client";
+import {
+  type AnimeNode,
+  MALClient,
+  type User,
+  type WatchStatus,
+} from "@animelist/client";
 import { Jikan4 } from "node-myanimelist";
 import { type Mapper } from "../mapper";
 import { z } from "zod";
+import { getCached, revalidateCache } from "../utils";
 
 type GetAnimeListArgs = {
   username: string;
@@ -62,13 +68,17 @@ export class MalScraper {
   private client: MALClient;
   private mapper: Mapper;
   private isLoggedIn = false;
+  private user: { user: User; accessToken: string } | undefined;
 
-  constructor(mapper: Mapper, accessToken?: string) {
+  constructor(mapper: Mapper, user?: { user: User; accessToken: string }) {
     this.mapper = mapper;
     this.client = new MALClient(
-      accessToken ? { accessToken } : { clientId: env.MAL_CLIENT_ID },
+      user?.accessToken
+        ? { accessToken: user.accessToken }
+        : { clientId: env.MAL_CLIENT_ID },
     );
-    this.isLoggedIn = !!accessToken;
+    this.isLoggedIn = !!user;
+    this.user = user;
   }
 
   private ensureLoggedIn() {
@@ -84,20 +94,24 @@ export class MalScraper {
   }: GetAnimeListArgs) {
     this.ensureLoggedIn();
 
-    return await this.client.getUserAnimeList(username, {
-      limit,
-      offset: (page - 1) * limit,
-      fields: [
-        "alternative_titles",
-        "average_episode_duration",
-        "genres",
-        "my_list_status",
-        "synopsis",
-        "num_episodes",
-      ],
-      status,
-      nsfw: true,
-      sort: "anime_title",
+    const cacheKey = `mal${username}-${page}-${limit}-${status}`;
+
+    return await getCached(cacheKey, async () => {
+      return await this.client.getUserAnimeList(username, {
+        limit,
+        offset: (page - 1) * limit,
+        fields: [
+          "alternative_titles",
+          "average_episode_duration",
+          "genres",
+          "my_list_status",
+          "synopsis",
+          "num_episodes",
+        ],
+        status,
+        nsfw: true,
+        sort: "anime_title",
+      });
     });
   }
 
@@ -126,6 +140,7 @@ export class MalScraper {
       fetch(url, {
         method: "POST",
         headers,
+        cache: "force-cache",
         body: JSON.stringify({
           query: `query($idIn: [Int]) {
             Page {
@@ -144,6 +159,7 @@ export class MalScraper {
       fetch(url, {
         method: "POST",
         headers,
+        cache: "force-cache",
         body: JSON.stringify({
           query: `query($idMalIn: [Int]) {
             Page {
@@ -253,6 +269,8 @@ export class MalScraper {
   }: UpdateMalStatusArgs) {
     this.ensureLoggedIn();
 
+    await revalidateCache(`mal${this.user?.user.name}`);
+
     return await this.client.updateMyAnimeListStatus(malId, {
       status,
       num_watched_episodes: numWatchedEpisodes,
@@ -262,6 +280,8 @@ export class MalScraper {
 
   async deleteEntry({ malId }: DeleteMalStatusArgs) {
     this.ensureLoggedIn();
+
+    await revalidateCache(`mal${this.user?.user.name}`);
 
     return await this.client.deleteMyAnimeListStatus(malId);
   }
@@ -350,15 +370,19 @@ export class MalScraper {
   }
 
   async getInfo(malId: number) {
-    return await this.client
-      .getAnimeDetails(malId, { fields: this.getAnimeFields() })
-      .then((data) => this.transformAnimeInfo(data));
+    return getCached(`mal-info${malId}`, async () => {
+      return await this.client
+        .getAnimeDetails(malId, { fields: this.getAnimeFields() })
+        .then((data) => this.transformAnimeInfo(data));
+    });
   }
 
   async getTrailer(malId: number) {
-    return await Jikan4.anime(malId)
-      .info()
-      .then((res) => res.data.trailer.embed_url);
+    return getCached(`mal-trailer${malId}`, async () => {
+      return await Jikan4.anime(malId)
+        .info()
+        .then((res) => res.data.trailer.embed_url);
+    });
   }
 
   getCurrentSeason(): {

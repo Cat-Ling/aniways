@@ -1,3 +1,4 @@
+import { getCached } from "./cache";
 import {
   getAZList,
   getEpisodes,
@@ -23,37 +24,60 @@ export class HiAnimeScraper {
   }
 
   getSyncData(animeId: string) {
-    return getSyncData(animeId);
+    return getCached(`sync-${animeId}`, () => {
+      return getSyncData(animeId);
+    });
   }
 
   search(query: string, page: number, filters?: SearchFilters) {
-    return searchAnime(query, page, filters);
+    return getCached(
+      `search-${query}-${page}-${filters ? JSON.stringify(filters) : ""}`,
+      () => {
+        return searchAnime(query, page, filters);
+      },
+    );
   }
 
   getRecentlyReleased(page: number) {
-    return getRecentlyReleasedAnime(page);
+    return getCached(
+      `recent-${page}`,
+      () => {
+        return getRecentlyReleasedAnime(page);
+      },
+      1000 * 60 * 60 * 1, // 1 hour
+    );
   }
 
   getTrendingAnime() {
-    return getTrendingAnime();
+    return getCached("trending", getTrendingAnime);
   }
 
   getTopAnime() {
-    return getTopAnime();
+    return getCached("top", getTopAnime);
   }
 
   getGenreAnime(genre: string, page: number) {
-    return getGenreAnimes(genre, page);
+    return getCached(`genre-${genre}-${page}`, () => {
+      return getGenreAnimes(genre, page);
+    });
   }
 
   getEpisodes(animeId: string) {
-    return getEpisodes(animeId);
+    return getCached(
+      `episodes-${animeId}`,
+      () => {
+        return getEpisodes(animeId);
+      },
+      1000 * 60 * 60 * 1,
+    ); // 1 hour
   }
 
   async getEpisodeSources(animeId: string, episode: number) {
     const [syncData, sources] = await Promise.all([
       this.getSyncData(animeId),
-      getEpisodeSrc(animeId, episode),
+      getCached(`episode-${animeId}-${episode}`, () => {
+        return getEpisodeSrc(animeId, episode);
+      }),
     ]);
 
     return {
