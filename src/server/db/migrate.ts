@@ -18,7 +18,7 @@ async function waitForDB(client: Sql, retries = 50, delay = 5000) {
   throw new Error("Database not ready after multiple retries.");
 }
 
-export async function migrateDB() {
+async function migrateDB() {
   const isBuilding = process.env.npm_lifecycle_event === "build";
 
   if (isBuilding) {
@@ -44,3 +44,5 @@ export async function migrateDB() {
     await client`SELECT pg_advisory_unlock(${lockId})`;
   }
 }
+
+await migrateDB();
