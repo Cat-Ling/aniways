@@ -80,6 +80,7 @@ services:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
     labels:
       - "traefik.enable=true"
+      - "traefik.http.services.web.loadbalancer.server.port=8081"
       - "traefik.http.routers.pgweb.rule=Host(`db.${DOMAIN}`)"
       - "traefik.http.routers.pgweb.entrypoints=websecure"
       - "traefik.http.routers.pgweb.tls.certresolver=myresolver"
