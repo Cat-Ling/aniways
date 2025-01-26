@@ -19,13 +19,6 @@ async function waitForDB(client: Sql, retries = 50, delay = 5000) {
 }
 
 async function migrateDB() {
-  const isBuilding = process.env.npm_lifecycle_event === "build";
-
-  if (isBuilding) {
-    console.log("Skipping database migrations during build");
-    return;
-  }
-
   const lockId = 123456; // Unique ID for the lock
 
   try {

@@ -5,6 +5,7 @@ const config = {
     project: true,
   },
   plugins: ["@typescript-eslint"],
+  ignorePatterns: ["scripts/**.js", "dist/**.js"],
   extends: [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
