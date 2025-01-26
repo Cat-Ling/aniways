@@ -78,6 +78,7 @@ services:
     container_name: pgweb
     environment:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+      DOMAIN: ${DOMAIN}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.web.loadbalancer.server.port=8081"
