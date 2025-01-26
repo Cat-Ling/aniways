@@ -24,10 +24,9 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/dist ./
-COPY --from=builder /app/start-server.sh ./start-server.sh
-RUN chmod +x ./start-server.sh
+COPY --from=builder /app/scripts/start-server.js ./start-server.js
 
 EXPOSE 3000
 LABEL org.opencontainers.image.source https://github.com/Coeeter/aniways
 
-ENTRYPOINT [ "./start-server.sh" ]
+CMD ["bun", "run", "start-server.js"]
