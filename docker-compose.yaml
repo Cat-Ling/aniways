@@ -20,6 +20,8 @@ services:
         protocol: tcp
         published: 443
         target: 443
+    secrets:
+      - auth
     volumes:
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
@@ -75,7 +77,6 @@ services:
 
   pgweb:
     image: sosedoff/pgweb
-    container_name: pgweb
     environment:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
       DOMAIN: ${DOMAIN}
@@ -87,8 +88,6 @@ services:
       - "traefik.http.routers.pgweb.tls.certresolver=myresolver"
       - "traefik.http.middlewares.pgweb-auth.basicauth.usersfile=/run/secrets/auth"
       - "traefik.http.routers.pgweb.middlewares=pgweb-auth"
-    secrets:
-      - auth
     depends_on:
       - db
 
