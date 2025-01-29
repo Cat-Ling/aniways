@@ -33,7 +33,6 @@ class DBUserDao(
             malId = user.malId
             username = user.username
             picture = user.picture
-            gender = user.gender
         }
 
         db.users.add(entity)

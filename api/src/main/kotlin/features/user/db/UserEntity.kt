@@ -9,7 +9,6 @@ interface UserEntity: Entity<UserEntity> {
     var malId: Int
     var username: String
     var picture: String?
-    var gender: Gender
     val createdAt: LocalDateTime
 
     companion object: Entity.Factory<UserEntity>()
