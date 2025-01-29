@@ -1,11 +1,16 @@
-val koin_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.driver.postgres)
+    }
+}
 
 plugins {
-    kotlin("jvm") version "2.1.10"
-    id("io.ktor.plugin") version "3.0.3"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ktor)
 }
 
 group = "xyz.aniways"
@@ -18,27 +23,46 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+
 repositories {
     mavenCentral()
     maven { url = uri("https://packages.confluent.io/maven/") }
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core")
-    implementation("io.ktor:ktor-server-content-negotiation")
-    implementation("io.ktor:ktor-server-call-logging")
-    implementation("io.ktor:ktor-server-resources")
-    implementation("io.ktor:ktor-server-rate-limit")
-    implementation("io.ktor:ktor-server-netty")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-server-config-yaml")
-    implementation("io.insert-koin:koin-ktor:$koin_version")
-    implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-client-core")
-    implementation("io.ktor:ktor-client-cio")
-    implementation("org.jsoup:jsoup:1.18.3")
-    implementation("io.ktor:ktor-client-cio-jvm:3.0.3")
-    testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    // Ktor Server dependencies
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.resources)
+    implementation(libs.ktor.server.rate.limit)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.server.config.yaml)
+
+    // Ktor Client dependencies
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.cio.jvm)
+
+    // Dependency Injection with Koin
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger.slf4j)
+
+    // Logging Dependencies
+    implementation(libs.logback.classic)
+
+    // Web Scraping Dependencies
+    implementation(libs.jsoup)
+
+    // Database Dependencies
+    implementation(libs.ktorm.core)
+    implementation(libs.hikari.core)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.database.postgresql)
+
+    // Testing Dependencies
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.ktor.server.tests)
 }
