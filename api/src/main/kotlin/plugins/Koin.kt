@@ -12,6 +12,7 @@ import org.ktorm.database.Database
 import org.ktorm.logging.Slf4jLoggerAdapter
 import xyz.aniways.env
 import xyz.aniways.features.user.di.userModule
+import xyz.aniways.utils.TransactionService
 
 fun Application.configureKoin() {
     val mainModule = module {
@@ -31,8 +32,8 @@ fun Application.configureKoin() {
                 HikariDataSource(config),
                 logger = Slf4jLoggerAdapter(loggerName = "KtormDB")
             )
-
         }
+        factory { TransactionService(get()) }
     }
 
     install(Koin) {

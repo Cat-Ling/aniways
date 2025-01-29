@@ -6,7 +6,7 @@ import org.ktorm.schema.Table
 import org.ktorm.schema.boolean
 import org.ktorm.schema.int
 
-object SettingsTable: Table<SettingsEntity>("settings") {
+object SettingsTable: Table<Settings>("settings") {
     val userId = int("user_id").primaryKey().bindTo { it.userId }
     val autoNextEpisode = boolean("auto_next_episode").bindTo { it.autoNextEpisode }
     val autoPlayEpisode = boolean("auto_play_episode").bindTo { it.autoPlayEpisode }
