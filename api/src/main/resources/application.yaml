@@ -8,6 +8,5 @@ ktor:
 
 db:
   url: "$DATABASE_URL:jdbc:postgresql://localhost:5432/aniways"
-  driverClassName: org.postgresql.Driver
   username: "$DATABASE_USER:postgres"
   password: "$DATABASE_PASSWORD:password"
