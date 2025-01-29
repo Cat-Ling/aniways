@@ -10,7 +10,7 @@ data class CreateUserRequest(
 )
 
 data class UpdateUserRequest(
-    val id: String,
+    val malId: Int,
     val username: String,
     val picture: String?
 )

@@ -1,3 +1,3 @@
 package xyz.aniways.features.user.exceptions
 
-class UserNotFoundException(id: String): Exception("User with id $id not found")
+class UserNotFoundException(id: Int): Exception("User with MAL ID $id not found")
