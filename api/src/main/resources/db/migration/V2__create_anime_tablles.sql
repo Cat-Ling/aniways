@@ -10,6 +10,8 @@ CREATE TABLE animes
     anilist_id   INT,
     last_episode INT,
     created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_hi_anime_id UNIQUE (hi_anime_id),
+    CONSTRAINT unique_mal_id UNIQUE (mal_id)
 );
 
 CREATE TABLE anime_metadata
@@ -36,6 +38,3 @@ CREATE TABLE anime_metadata
         REFERENCES animes (mal_id)
         ON DELETE CASCADE
 );
-
-CREATE UNIQUE INDEX unique_mal_id ON animes (mal_id);
-CREATE UNIQUE INDEX unique_hi_anime_id ON animes (hi_anime_id);
