@@ -5,5 +5,7 @@ import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.dao.DbAnimeDao
 
 val animeModule = module {
-    factory<AnimeDao> { DbAnimeDao(get()) }
+    factory {
+        DbAnimeDao(get()) as AnimeDao
+    }
 }

@@ -17,7 +17,7 @@ interface Anime : Entity<Anime> {
     var malId: Int?
     var anilistId: Int?
     var lastEpisode: Int?
-    val createdAt: Instant
+    var createdAt: Instant
     var animeMetadata: AnimeMetadata?
 
     companion object : Entity.Factory<Anime>()

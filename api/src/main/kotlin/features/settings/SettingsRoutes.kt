@@ -6,12 +6,12 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import xyz.aniways.plugins.Auth
 import xyz.aniways.features.settings.dtos.SettingsDto
 import xyz.aniways.features.settings.dtos.toDto
 import xyz.aniways.features.settings.services.SettingsService
+import xyz.aniways.plugins.Auth
 
-fun Routing.settingsRoutes() {
+fun Route.settingsRoutes() {
     val settingsService by inject<SettingsService>()
 
     authenticate(Auth.SESSION) {

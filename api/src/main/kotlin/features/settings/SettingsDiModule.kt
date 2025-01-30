@@ -6,6 +6,11 @@ import xyz.aniways.features.settings.dao.SettingsDao
 import xyz.aniways.features.settings.services.SettingsService
 
 val settingsModule = module {
-    factory<SettingsDao> { DBSettingsDao(get()) }
-    factory { SettingsService(get()) }
+    factory {
+        DBSettingsDao(get()) as SettingsDao
+    }
+
+    factory {
+        SettingsService(get())
+    }
 }

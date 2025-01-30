@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
+import io.ktor.server.sessions.*
 import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 import xyz.aniways.env
@@ -49,6 +50,7 @@ fun Application.configureAuth() {
             }
 
             challenge {
+                it?.let { call.sessions.set(it) }
                 call.respond(HttpStatusCode.Unauthorized)
             }
         }

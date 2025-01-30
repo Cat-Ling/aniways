@@ -5,7 +5,7 @@ import xyz.aniways.features.auth.services.KtorMalUserService
 import xyz.aniways.features.auth.services.MalUserService
 
 val authModule = module {
-    factory<MalUserService> {
-        KtorMalUserService(get())
+    factory {
+        KtorMalUserService(get()) as MalUserService
     }
 }

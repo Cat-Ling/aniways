@@ -8,8 +8,7 @@ import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.FlywayException
 import org.ktorm.database.Database
 import org.ktorm.database.Transaction
-import org.ktorm.logging.ConsoleLogger
-import org.ktorm.logging.LogLevel
+import org.ktorm.logging.Slf4jLoggerAdapter
 import xyz.aniways.DBConfig
 import javax.sql.DataSource
 import kotlin.coroutines.CoroutineContext
@@ -25,7 +24,7 @@ class AniwaysDBImpl(
     private val db = migrateAndConnect { dataSource ->
         Database.connect(
             dataSource = dataSource,
-            logger = ConsoleLogger(threshold = LogLevel.DEBUG)
+            logger = Slf4jLoggerAdapter(loggerName = "AniwaysDB")
         )
     }
 

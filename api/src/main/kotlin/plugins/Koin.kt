@@ -7,6 +7,9 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import kotlinx.serialization.json.Json
+import org.koin.core.logger.Level
+import org.koin.core.module.dsl.createdAtStart
+import org.koin.core.module.dsl.withOptions
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -22,13 +25,15 @@ fun Application.configureKoin() {
     * Ensure that the database module is created at the start of the application
     * to avoid any issues with the database connection + migrations
     * */
-    val dbModule = module(createdAtStart = true) {
-        single<AniwaysDB> {
-            AniwaysDBImpl(config = env.dbConfig)
+    val dbModule = module {
+        single {
+            AniwaysDBImpl(env.dbConfig) as AniwaysDB
+        } withOptions {
+            createdAtStart()
         }
     }
 
-    val httpModule = module() {
+    val httpModule = module {
         single {
             HttpClient(CIO) {
                 install(Logging) {
@@ -47,7 +52,14 @@ fun Application.configureKoin() {
     }
 
     install(Koin) {
-        slf4jLogger()
-        modules(dbModule, httpModule, authModule, animeModule, settingsModule)
+        slf4jLogger(Level.DEBUG)
+
+        modules(
+            dbModule,
+            httpModule,
+            authModule,
+            animeModule,
+            settingsModule
+        )
     }
 }

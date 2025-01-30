@@ -10,7 +10,7 @@ import org.ktorm.schema.varchar
 import java.time.Instant
 
 interface AnimeMetadata : Entity<AnimeMetadata> {
-    val malId: Int
+    var malId: Int
     var mainPicture: String
     var mediaType: String
     var rating: String?
@@ -26,7 +26,7 @@ interface AnimeMetadata : Entity<AnimeMetadata> {
     var airingEnd: String?
     var source: String?
     var trailer: String?
-    val createdAt: Instant
+    var createdAt: Instant
     var lastUpdatedAt: Instant
 
     companion object : Entity.Factory<AnimeMetadata>()
