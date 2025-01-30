@@ -1,4 +1,5 @@
 ktor:
+  url: "$KTOR_URL:http://localhost:8080"
   development: true
   application:
     modules:
@@ -10,3 +11,7 @@ db:
   url: "$DATABASE_URL:jdbc:postgresql://localhost:5432/aniways"
   username: "$DATABASE_USER:postgres"
   password: "$DATABASE_PASSWORD:password"
+
+mal:
+  clientId: "$MAL_CLIENT_ID"
+  clientSecret: "$MAL_CLIENT_SECRET"

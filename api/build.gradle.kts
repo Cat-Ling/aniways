@@ -39,10 +39,13 @@ dependencies {
     implementation(libs.ktor.server.rate.limit)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.config.yaml)
+    implementation(libs.ktor.server.auth)
 
     // Ktor Client dependencies
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.cio.jvm)
 
     // Dependency Injection with Koin
