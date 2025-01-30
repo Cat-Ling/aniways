@@ -1,13 +1,15 @@
 package xyz.aniways.features.anime.db
 
+import org.ktorm.database.Database
 import org.ktorm.entity.Entity
+import org.ktorm.entity.sequenceOf
 import org.ktorm.schema.Table
 import org.ktorm.schema.int
 import org.ktorm.schema.timestamp
 import org.ktorm.schema.varchar
 import java.time.Instant
 
-interface AnimeMetadata: Entity<AnimeMetadata> {
+interface AnimeMetadata : Entity<AnimeMetadata> {
     val malId: Int
     var mainPicture: String
     var mediaType: String
@@ -27,10 +29,10 @@ interface AnimeMetadata: Entity<AnimeMetadata> {
     val createdAt: Instant
     var lastUpdatedAt: Instant
 
-    companion object: Entity.Factory<AnimeMetadata>()
+    companion object : Entity.Factory<AnimeMetadata>()
 }
 
-object AnimeMetadataTable: Table<AnimeMetadata>("anime_metadata") {
+object AnimeMetadataTable : Table<AnimeMetadata>("anime_metadata") {
     val malId = int("mal_id").primaryKey().bindTo { it.malId }
     val mainPicture = varchar("main_picture").bindTo { it.mainPicture }
     val mediaType = varchar("media_type").bindTo { it.mediaType }
@@ -50,3 +52,5 @@ object AnimeMetadataTable: Table<AnimeMetadata>("anime_metadata") {
     val createdAt = timestamp("created_at").bindTo { it.createdAt }
     val lastUpdatedAt = timestamp("last_updated_at").bindTo { it.lastUpdatedAt }
 }
+
+val Database.animeMetadata get() = this.sequenceOf(AnimeMetadataTable)

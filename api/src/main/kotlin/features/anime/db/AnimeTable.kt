@@ -1,12 +1,14 @@
 package xyz.aniways.features.anime.db
 
+import org.ktorm.database.Database
 import org.ktorm.entity.Entity
+import org.ktorm.entity.sequenceOf
 import org.ktorm.schema.*
 import java.time.Instant
 import java.util.*
 
 interface Anime : Entity<Anime> {
-    val id: UUID
+    var id: UUID
     var name: String
     var jname: String
     var description: String
@@ -33,3 +35,5 @@ object AnimeTable : Table<Anime>("animes") {
     val lastEpisode = int("last_episode").bindTo { it.lastEpisode }
     val createdAt = timestamp("created_at").bindTo { it.createdAt }
 }
+
+val Database.animes get() = this.sequenceOf(AnimeTable)

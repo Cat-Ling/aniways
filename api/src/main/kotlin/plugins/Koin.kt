@@ -13,6 +13,7 @@ import org.koin.logger.slf4jLogger
 import xyz.aniways.database.AniwaysDB
 import xyz.aniways.database.AniwaysDBImpl
 import xyz.aniways.env
+import xyz.aniways.features.anime.animeModule
 import xyz.aniways.features.auth.authModule
 import xyz.aniways.features.settings.settingsModule
 
@@ -47,6 +48,6 @@ fun Application.configureKoin() {
 
     install(Koin) {
         slf4jLogger()
-        modules(dbModule, httpModule, authModule, settingsModule)
+        modules(dbModule, httpModule, authModule, animeModule, settingsModule)
     }
 }
