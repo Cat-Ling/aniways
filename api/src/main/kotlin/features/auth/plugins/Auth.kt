@@ -1,17 +1,25 @@
 package xyz.aniways.features.auth.plugins
 
+import com.auth0.jwt.JWT
 import io.ktor.client.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 import xyz.aniways.env
 import xyz.aniways.features.auth.oauth.MalOauthProvider
 
-object Auth {
-    const val MAL_OAUTH = "mal-oauth"
-    const val SESSION = Session.UserSession.KEY
+sealed class Auth {
+    companion object {
+        const val MAL_OAUTH = "mal-oauth"
+        const val SESSION = Session.UserSession.KEY
+    }
+
+    @Serializable
+    data class UserPrincipal(val id: Int, val token: String) : Auth()
 }
 
 fun Application.configureAuth() {
@@ -37,11 +45,12 @@ fun Application.configureAuth() {
 
         session<Session.UserSession>(Auth.SESSION) {
             validate {
-                it.takeIf { it.token.isNotEmpty() }
+                val id = JWT.decode(it.token).subject
+                Auth.UserPrincipal(id.toInt(), it.token)
             }
 
             challenge {
-                call.respondRedirect("/auth/login?redirectUrl=${call.request.uri}")
+                call.respond(HttpStatusCode.Unauthorized)
             }
         }
     }

@@ -7,7 +7,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import org.koin.ktor.ext.inject
-import xyz.aniways.features.auth.oauth.MalOauthProvider
 import xyz.aniways.features.auth.plugins.Auth
 import xyz.aniways.features.auth.plugins.Session
 import xyz.aniways.features.auth.plugins.configureAuth
@@ -27,7 +26,7 @@ fun Application.authRoutes() {
 
                 get("/callback") {
                     val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()
-                        ?: return@get call.respond(HttpStatusCode.Unauthorized)
+                    currentPrincipal ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
                     call.sessions.set(Session.UserSession(currentPrincipal.accessToken))
 
@@ -41,21 +40,21 @@ fun Application.authRoutes() {
 
             authenticate(Auth.SESSION) {
                 get("/me") {
-                    val session = call.principal<Session.UserSession>()
-                        ?: return@get call.respond(HttpStatusCode.Unauthorized)
+                    val currentUser = call.principal<Auth.UserPrincipal>()
+                    currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-                    malUserService.getUserInfo(session.token).let {
+                    malUserService.getUserInfo(currentUser.token).let {
                         call.respond(it)
                     }.runCatching {
                         call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
+            }
 
-                get("/logout") {
-                    val redirectTo = call.request.queryParameters["redirectUrl"] ?: "/"
-                    call.sessions.clear(Session.UserSession.KEY)
-                    call.respondRedirect(redirectTo)
-                }
+            get("/logout") {
+                val redirectTo = call.request.queryParameters["redirectUrl"] ?: "/"
+                call.sessions.clear(Session.UserSession.KEY)
+                call.respondRedirect(redirectTo)
             }
         }
     }

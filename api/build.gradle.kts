@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.auth.jwt)
 
     // Ktor Client dependencies
     implementation(libs.ktor.client.core)
