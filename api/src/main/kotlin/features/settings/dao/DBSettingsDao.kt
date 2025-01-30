@@ -17,7 +17,7 @@ class DBSettingsDao(
                 this.userId = userId
             }.run {
                 settings.add(this)
-                this
+                getSettings(userId)
             }
         }
     }

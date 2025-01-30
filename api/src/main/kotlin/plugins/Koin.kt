@@ -17,7 +17,17 @@ import xyz.aniways.features.auth.di.authModule
 import xyz.aniways.features.settings.di.settingsModule
 
 fun Application.configureKoin() {
-    val mainModule = module {
+    /*
+    * Ensure that the database module is created at the start of the application
+    * to avoid any issues with the database connection + migrations
+    * */
+    val dbModule = module(createdAtStart = true) {
+        single<AniwaysDB> {
+            AniwaysDBImpl(config = env.dbConfig)
+        }
+    }
+
+    val httpModule = module() {
         single {
             HttpClient(CIO) {
                 install(Logging) {
@@ -33,14 +43,10 @@ fun Application.configureKoin() {
                 }
             }
         }
-
-        single<AniwaysDB> {
-            AniwaysDBImpl(env.dbConfig)
-        }
     }
 
     install(Koin) {
         slf4jLogger()
-        modules(mainModule, authModule, settingsModule)
+        modules(dbModule, httpModule, authModule, settingsModule)
     }
 }

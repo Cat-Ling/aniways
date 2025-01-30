@@ -4,10 +4,15 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.FlywayException
 import org.ktorm.database.Database
 import org.ktorm.database.Transaction
-import org.ktorm.logging.Slf4jLoggerAdapter
+import io.ktor.util.logging.Logger
+import org.ktorm.logging.ConsoleLogger
+import org.ktorm.logging.LogLevel
 import xyz.aniways.DBConfig
+import javax.sql.DataSource
 import kotlin.coroutines.CoroutineContext
 
 interface AniwaysDB {
@@ -18,10 +23,29 @@ class AniwaysDBImpl(
     private val config: DBConfig,
     private val dispatcher: CoroutineContext = Dispatchers.IO,
 ) : AniwaysDB {
-    private val db = Database.connect(
-        dataSource = hikariDatasource(),
-        logger = Slf4jLoggerAdapter(loggerName = "KtormDB")
-    )
+    private val db = migrateAndConnect { dataSource ->
+        Database.connect(
+            dataSource = dataSource,
+            logger = ConsoleLogger(threshold = LogLevel.DEBUG)
+        )
+    }
+
+    private fun migrateAndConnect(connectDb: (DataSource) -> Database): Database {
+        val dataSource = hikariDatasource()
+
+        return try {
+            val flyway = Flyway.configure()
+                .dataSource(dataSource)
+                .load()
+
+            flyway.migrate()
+
+            connectDb(hikariDatasource())
+        } catch (e: FlywayException) {
+            dataSource.close()
+            throw e
+        }
+    }
 
     private fun hikariDatasource(): HikariDataSource {
         val config = HikariConfig().apply {
