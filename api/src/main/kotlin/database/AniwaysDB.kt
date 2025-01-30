@@ -8,7 +8,6 @@ import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.FlywayException
 import org.ktorm.database.Database
 import org.ktorm.database.Transaction
-import io.ktor.util.logging.Logger
 import org.ktorm.logging.ConsoleLogger
 import org.ktorm.logging.LogLevel
 import xyz.aniways.DBConfig
