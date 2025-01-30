@@ -22,7 +22,9 @@ sealed class Session {
 
 fun Application.configureSession() {
     install(Sessions) {
-        cookie<Session.UserSession>(Session.UserSession.KEY)
+        cookie<Session.UserSession>(Session.UserSession.KEY) {
+            cookie.maxAgeInSeconds = 60 * 60 * 24 * 30 // 30 days
+        }
         cookie<Session.RedirectTo>(Session.RedirectTo.KEY)
     }
 }
