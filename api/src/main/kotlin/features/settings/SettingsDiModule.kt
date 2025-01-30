@@ -1,4 +1,4 @@
-package xyz.aniways.features.settings.di
+package xyz.aniways.features.settings
 
 import org.koin.dsl.module
 import xyz.aniways.features.settings.dao.DBSettingsDao

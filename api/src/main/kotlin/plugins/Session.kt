@@ -1,4 +1,4 @@
-package xyz.aniways.features.auth.plugins
+package xyz.aniways.plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*

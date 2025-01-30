@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.sessions.*
 import xyz.aniways.MalCredentials
-import xyz.aniways.features.auth.plugins.Session
+import xyz.aniways.plugins.Session
 
 class MalOauthProvider(
     private val ctx: ApplicationCall,
