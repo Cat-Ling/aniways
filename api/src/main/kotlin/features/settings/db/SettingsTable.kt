@@ -1,4 +1,4 @@
-package xyz.aniways.features.user.db
+package xyz.aniways.features.settings.db
 
 import org.ktorm.database.Database
 import org.ktorm.entity.sequenceOf

@@ -1,12 +1,12 @@
-package xyz.aniways.features.user.db
+package xyz.aniways.features.settings.db
 
 import org.ktorm.entity.Entity
 
-interface Settings: Entity<Settings> {
+interface Settings : Entity<Settings> {
     var userId: Int
     var autoNextEpisode: Boolean
     var autoPlayEpisode: Boolean
     var autoUpdateMal: Boolean
 
-    companion object: Entity.Factory<Settings>()
+    companion object : Entity.Factory<Settings>()
 }
