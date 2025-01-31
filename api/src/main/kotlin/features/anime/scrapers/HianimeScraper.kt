@@ -170,4 +170,16 @@ class HianimeScraper(
             items = extractAnimes(document)
         )
     }
+
+    override suspend fun getSyncData(id: String): SyncData {
+        val document = httpClient.getDocument("$baseUrl/$id")
+
+        val json = document.getElementById("syncData")
+            ?.data()
+            .toStringOrNull()
+
+        json ?: return SyncData(id)
+
+        return SyncData.fromJson(json)
+    }
 }
