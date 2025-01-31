@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 data class PageInfo(
     val totalPage: Int,
     val currentPage: Int,
-    val totalItems: Int,
-    val itemsPerPage: Int,
     val hasNextPage: Boolean,
     val hasPreviousPage: Boolean
 )

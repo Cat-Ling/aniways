@@ -54,8 +54,6 @@ fun Route.authRoutes() {
 
             malUserService.getUserInfo(currentUser.token).let {
                 call.respond(it)
-            }.runCatching {
-                call.respond(HttpStatusCode.InternalServerError)
             }
         }
     }

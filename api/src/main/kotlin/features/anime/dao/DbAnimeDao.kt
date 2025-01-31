@@ -30,8 +30,6 @@ class DbAnimeDao(
                 pageInfo = PageInfo(
                     totalPage = totalPage,
                     currentPage = page,
-                    totalItems = totalItems,
-                    itemsPerPage = itemsPerPage,
                     hasNextPage = hasNextPage,
                     hasPreviousPage = hasPreviousPage
                 ),
