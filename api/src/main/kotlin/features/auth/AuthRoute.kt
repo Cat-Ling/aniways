@@ -13,25 +13,25 @@ import xyz.aniways.plugins.Auth
 import xyz.aniways.plugins.Session
 
 @Resource("/auth")
-class AuthRoutes() {
+class AuthRoute() {
     @Resource("/login")
-    class Login(val parent: AuthRoutes)
+    class Login(val parent: AuthRoute)
 
     @Resource("/callback")
-    class Callback(val parent: AuthRoutes)
+    class Callback(val parent: AuthRoute)
 
     @Resource("/me")
-    class Me(val parent: AuthRoutes)
+    class Me(val parent: AuthRoute)
 
     @Resource("/logout")
-    class Logout(val parent: AuthRoutes)
+    class Logout(val parent: AuthRoute)
 }
 
 fun Route.authRoutes() {
     authenticate(Auth.MAL_OAUTH) {
-        get<AuthRoutes.Login> {}
+        get<AuthRoute.Login> {}
 
-        get<AuthRoutes.Callback> {
+        get<AuthRoute.Callback> {
             val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()
             currentPrincipal ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
@@ -46,7 +46,7 @@ fun Route.authRoutes() {
     }
 
     authenticate(Auth.SESSION) {
-        get<AuthRoutes.Me> {
+        get<AuthRoute.Me> {
             val malUserService by inject<MalUserService>()
 
             val currentUser = call.principal<Auth.UserPrincipal>()
@@ -60,7 +60,7 @@ fun Route.authRoutes() {
         }
     }
 
-    get<AuthRoutes.Logout> {
+    get<AuthRoute.Logout> {
         val redirectTo = call.request.queryParameters["redirectUrl"] ?: "/"
         call.sessions.clear(Session.UserSession.KEY)
         call.respondRedirect(redirectTo)
