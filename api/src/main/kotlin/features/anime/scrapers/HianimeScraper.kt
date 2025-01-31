@@ -3,9 +3,15 @@ package xyz.aniways.features.anime.scrapers
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.network.selector.*
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import xyz.aniways.features.anime.dao.AnimeDao
+import xyz.aniways.features.anime.dtos.TopAnimeDto
+import xyz.aniways.features.anime.dtos.TopAnimeNodeDto
 import xyz.aniways.features.anime.dtos.TrendingAnimeDto
+import xyz.aniways.utils.getDocument
+import xyz.aniways.utils.toStringOrNull
 
 
 class HianimeScraper(
@@ -15,9 +21,7 @@ class HianimeScraper(
     private val baseUrl = "https://hianime.to"
 
     override suspend fun getTrendingAnimes(): List<TrendingAnimeDto> {
-        val response = httpClient.get("$baseUrl/home")
-        val body = response.bodyAsText()
-        val document = Jsoup.parse(body)
+        val document = httpClient.getDocument("$baseUrl/home")
 
         val selector = "#trending-home .swiper-wrapper .swiper-slide"
         return document.select(selector).map { element ->
@@ -39,7 +43,7 @@ class HianimeScraper(
                 .attr("data-src")
                 .trim()
 
-            val id = dao.getAnimeByHiAnimeId(hiAnimeId)?.id.toString()
+            val id = dao.getAnimeByHiAnimeId(hiAnimeId)?.id.toStringOrNull()
 
             TrendingAnimeDto(
                 id = id ?: hiAnimeId,
@@ -50,5 +54,49 @@ class HianimeScraper(
                 rank = rank.toInt()
             )
         }
+    }
+
+    private suspend fun getTopAnimeNodes(
+        document: Document,
+        type: String
+    ): List<TopAnimeNodeDto> {
+        return document.select("#top-viewed-$type ul li").map { element ->
+            val link = element.select(".film-detail .dynamic-name")
+
+            val hiAnimeId = link.attr("href").removePrefix("/").trim()
+            val name = link.text().trim()
+            val jname = link.attr("data-jname").trim()
+
+            val id = dao.getAnimeByHiAnimeId(hiAnimeId)?.id.toStringOrNull()
+            val rank = element.select(".film-number span").text().toInt()
+
+            val poster = element.select(".film-poster .film-poster-img")
+                .attr("data-src")
+                .trim()
+
+            val episodes = element.select(".film-detail .fd-infor .tick-item.tick-sub")
+                .text()
+                .toInt()
+
+            TopAnimeNodeDto(
+                id = id,
+                hiAnimeId = hiAnimeId,
+                rank = rank,
+                name = name,
+                jname = jname,
+                poster = poster,
+                episodes = episodes
+            )
+        }
+    }
+
+    override suspend fun getTopAnimes(): TopAnimeDto {
+        val document = httpClient.getDocument("$baseUrl/home")
+
+        return TopAnimeDto(
+            today = getTopAnimeNodes(document, "day"),
+            week = getTopAnimeNodes(document, "week"),
+            month = getTopAnimeNodes(document, "month")
+        )
     }
 }

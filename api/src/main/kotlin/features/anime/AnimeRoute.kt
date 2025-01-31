@@ -15,6 +15,9 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/trending")
     class Trending(val parent: AnimeRoute)
 
+    @Resource("/top")
+    class Top(val parent: AnimeRoute)
+
     @Resource("/mal/{malId}")
     class ByMalId(val parent: String, val malId: Int)
 
@@ -37,8 +40,10 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.Trending> {
-        val animes = service.getTrendingAnimes()
+        call.respond(service.getTrendingAnimes())
+    }
 
-        call.respond(animes)
+    get<AnimeRoute.Top> {
+        call.respond(service.getTopAnimes())
     }
 }

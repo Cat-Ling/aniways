@@ -8,4 +8,5 @@ class AnimeService(
     private val animeDao: AnimeDao
 ) {
     suspend fun getTrendingAnimes() = animeScraper.getTrendingAnimes()
+    suspend fun getTopAnimes() = animeScraper.getTopAnimes()
 }
