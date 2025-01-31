@@ -3,7 +3,7 @@ package xyz.aniways.features.anime.dtos
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchResultDto(
+data class ScrapedAnimeDto(
     val id: String?,
     val hianimeId: String,
     val name: String,

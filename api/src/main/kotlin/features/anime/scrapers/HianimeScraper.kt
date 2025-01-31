@@ -4,10 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import org.jsoup.nodes.Document
 import xyz.aniways.features.anime.dao.AnimeDao
-import xyz.aniways.features.anime.dtos.SearchResultDto
-import xyz.aniways.features.anime.dtos.TopAnimeDto
-import xyz.aniways.features.anime.dtos.TopAnimeNodeDto
-import xyz.aniways.features.anime.dtos.TrendingAnimeDto
+import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import xyz.aniways.utils.getDocument
@@ -20,17 +17,15 @@ class HianimeScraper(
 ) : AnimeScraper {
     private val baseUrl = "https://hianime.to"
 
-    override suspend fun getTrendingAnimes(): List<TrendingAnimeDto> {
+    override suspend fun getTrendingAnimes(): List<ScrapedAnimeDto> {
         val document = httpClient.getDocument("$baseUrl/home")
 
         val selector = "#trending-home .swiper-wrapper .swiper-slide"
         return document.select(selector).map { element ->
-            val hiAnimeId = element.select(".item .film-poster")
+            val hianimeId = element.select(".item .film-poster")
                 .attr("href")
                 .removePrefix("/")
                 .trim()
-
-            val rank = element.select(".item .number span").text()
 
             val titleElement = element.select(
                 ".item .number .film-title.dynamic-name"
@@ -43,15 +38,15 @@ class HianimeScraper(
                 .attr("data-src")
                 .trim()
 
-            val id = dao.getAnimeByHiAnimeId(hiAnimeId)?.id.toStringOrNull()
+            val id = dao.getAnimeByHiAnimeId(hianimeId)?.id.toStringOrNull()
 
-            TrendingAnimeDto(
-                id = id ?: hiAnimeId,
-                hiAnimeId = hiAnimeId,
+            ScrapedAnimeDto(
+                id = id ?: hianimeId,
+                hianimeId = hianimeId,
                 name = name,
                 jname = jname,
                 poster = poster,
-                rank = rank.toInt()
+                episodes = "0",
             )
         }
     }
@@ -59,29 +54,25 @@ class HianimeScraper(
     private suspend fun getTopAnimeNodes(
         document: Document,
         type: String
-    ): List<TopAnimeNodeDto> {
+    ): List<ScrapedAnimeDto> {
         return document.select("#top-viewed-$type ul li").map { element ->
             val link = element.select(".film-detail .dynamic-name")
 
-            val hiAnimeId = link.attr("href").removePrefix("/").trim()
+            val hianimeId = link.attr("href").removePrefix("/").trim()
             val name = link.text().trim()
             val jname = link.attr("data-jname").trim()
 
-            val id = dao.getAnimeByHiAnimeId(hiAnimeId)?.id.toStringOrNull()
-            val rank = element.select(".film-number span").text().toInt()
+            val id = dao.getAnimeByHiAnimeId(hianimeId)?.id.toStringOrNull()
 
             val poster = element.select(".film-poster .film-poster-img")
                 .attr("data-src")
                 .trim()
 
-            val episodes = element.select(".film-detail .fd-infor .tick-item.tick-sub")
-                .text()
-                .toInt()
+            val episodes = element.select(".film-detail .fd-infor .tick-item.tick-sub").text()
 
-            TopAnimeNodeDto(
+            ScrapedAnimeDto(
                 id = id,
-                hiAnimeId = hiAnimeId,
-                rank = rank,
+                hianimeId = hianimeId,
                 name = name,
                 jname = jname,
                 poster = poster,
@@ -100,14 +91,33 @@ class HianimeScraper(
         )
     }
 
-    override suspend fun searchAnime(query: String, page: Int): Pagination<SearchResultDto> {
-        val document = httpClient.getDocument("$baseUrl/search") {
-            parameter("keyword", query)
-            parameter("page", page)
+    private fun extractPageInfo(document: Document): PageInfo {
+        val pagination = document.select(".pagination")
+
+        val lastLink = pagination.select("li").last()
+
+        val lastPage = if (lastLink?.hasClass("active") == true) {
+            lastLink.text().toIntOrNull() ?: 1
+        } else {
+            lastLink?.select("a")
+                ?.attr("href")
+                ?.split("page=")
+                ?.last()
+                ?.toIntOrNull() ?: 1
         }
 
-        val selector = "#main-content div.film_list-wrap > div.flw-item"
-        val animes = document.select(selector).map { element ->
+        val currentPage = pagination.select("li.active a").text().toIntOrNull() ?: 1
+
+        return PageInfo(
+            totalPage = lastPage,
+            currentPage = currentPage,
+            hasNextPage = currentPage < lastPage,
+            hasPreviousPage = currentPage > 1
+        )
+    }
+
+    private suspend fun extractAnimes(document: Document): List<ScrapedAnimeDto> {
+        return document.select("div.flw-item").map { element ->
             val hianimeId = element.select(".film-poster a")
                 .attr("href")
                 .replace("/watch/", "")
@@ -127,7 +137,7 @@ class HianimeScraper(
                 .attr("data-src")
                 .trim()
 
-            SearchResultDto(
+            ScrapedAnimeDto(
                 id = id ?: hianimeId,
                 hianimeId = hianimeId,
                 name = name,
@@ -136,25 +146,28 @@ class HianimeScraper(
                 poster = poster
             )
         }
+    }
 
-        val pagination = document.select(".pagination")
-
-        val lastPage = pagination.select("li")
-            .last()
-            ?.select("a")
-            ?.attr("href")
-            ?.split("page=")
-            ?.last()
-            ?.toInt() ?: 1
+    override suspend fun searchAnime(query: String, page: Int): Pagination<ScrapedAnimeDto> {
+        val document = httpClient.getDocument("$baseUrl/search") {
+            parameter("keyword", query)
+            parameter("page", page)
+        }
 
         return Pagination(
-            pageInfo = PageInfo(
-                totalPage = lastPage,
-                currentPage = page,
-                hasNextPage = page < lastPage,
-                hasPreviousPage = page > 1
-            ),
-            items = animes
+            pageInfo = extractPageInfo(document),
+            items = extractAnimes(document)
+        )
+    }
+
+    override suspend fun getAZList(page: Int): Pagination<ScrapedAnimeDto> {
+        val document = httpClient.getDocument("$baseUrl/az-list") {
+            parameter("page", page)
+        }
+
+        return Pagination(
+            pageInfo = extractPageInfo(document),
+            items = extractAnimes(document)
         )
     }
 }

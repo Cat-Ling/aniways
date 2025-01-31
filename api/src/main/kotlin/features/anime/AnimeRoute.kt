@@ -21,6 +21,9 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/search")
     class Search(val parent: AnimeRoute, val query: String, val page: Int = 1)
 
+    @Resource("/az")
+    class AZ(val parent: AnimeRoute, val page: Int = 1)
+
     @Resource("/mal/{malId}")
     class ByMalId(val parent: String, val malId: Int)
 
@@ -52,5 +55,9 @@ fun Route.animeRoutes() {
 
     get<AnimeRoute.Search> { route ->
         call.respond(service.searchAnime(route.query, route.page))
+    }
+
+    get<AnimeRoute.AZ> { route ->
+        call.respond(service.getAZList(route.page))
     }
 }
