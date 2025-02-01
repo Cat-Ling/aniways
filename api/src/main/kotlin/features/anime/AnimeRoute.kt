@@ -18,6 +18,9 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/trending")
     class Trending(val parent: AnimeRoute)
 
+    @Resource("/popular")
+    class Popular(val parent: AnimeRoute)
+
     @Resource("/top")
     class Top(val parent: AnimeRoute)
 
@@ -28,12 +31,20 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
 
+    get<AnimeRoute.Seasonal> {
+        call.respond(service.getSeasonalAnimes())
+    }
+
     get<AnimeRoute.Trending> {
         call.respond(service.getTrendingAnimes())
     }
 
     get<AnimeRoute.Top> {
         call.respond(service.getTopAnimes())
+    }
+
+    get<AnimeRoute.Popular> {
+        call.respond(service.getPopularAnimes())
     }
 
     get<AnimeRoute.Search> { route ->
