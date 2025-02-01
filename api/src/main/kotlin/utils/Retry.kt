@@ -8,13 +8,11 @@ suspend fun <T> retryWithDelay(
     block: suspend () -> T
 ): T? {
     repeat(maxRetry) {
-        runCatching { block() }
-            .onFailure { e ->
-                if (it == maxRetry - 1) {
-                    throw e
-                }
-                delay(delayMillis)
-            }
+        try {
+            return block()
+        } catch (e: Exception) {
+            delay(delayMillis)
+        }
     }
 
     return null

@@ -18,6 +18,7 @@ interface Anime : Entity<Anime> {
     var anilistId: Int?
     var lastEpisode: Int?
     var createdAt: Instant
+    var updatedAt: Instant
     var animeMetadata: AnimeMetadata?
 
     companion object : Entity.Factory<Anime>()
@@ -34,6 +35,7 @@ object AnimeTable : Table<Anime>("animes") {
     val anilistId = int("anilist_id").bindTo { it.anilistId }
     val lastEpisode = int("last_episode").bindTo { it.lastEpisode }
     val createdAt = timestamp("created_at").bindTo { it.createdAt }
+    val updatedAt = timestamp("updated_at").bindTo { it.updatedAt }
 }
 
 val Database.animes get() = this.sequenceOf(AnimeTable)
