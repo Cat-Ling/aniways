@@ -14,7 +14,7 @@ val animeModule = module {
     }
 
     factory {
-        HianimeScraper(get(), get()) as AnimeScraper
+        HianimeScraper(get()) as AnimeScraper
     }
 
     factory {

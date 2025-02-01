@@ -10,7 +10,7 @@ import xyz.aniways.features.anime.db.AnimeTable
 import xyz.aniways.features.anime.db.animes
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
-import java.util.UUID
+import java.util.*
 import kotlin.math.ceil
 
 class DbAnimeDao(

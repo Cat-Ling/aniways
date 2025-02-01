@@ -3,7 +3,6 @@ package xyz.aniways.features.anime.scrapers
 import io.ktor.client.*
 import io.ktor.client.request.*
 import org.jsoup.nodes.Document
-import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
@@ -13,7 +12,6 @@ import xyz.aniways.utils.toStringOrNull
 
 class HianimeScraper(
     private val httpClient: HttpClient,
-    private val dao: AnimeDao,
 ) : AnimeScraper {
     private val baseUrl = "https://hianime.to"
 
@@ -38,20 +36,17 @@ class HianimeScraper(
                 .attr("data-src")
                 .trim()
 
-            val id = dao.getAnimeByHiAnimeId(hianimeId)?.id.toStringOrNull()
-
             ScrapedAnimeDto(
-                id = id ?: hianimeId,
                 hianimeId = hianimeId,
                 name = name,
                 jname = jname,
                 poster = poster,
-                episodes = "0",
+                episodes = null,
             )
         }
     }
 
-    private suspend fun getTopAnimeNodes(
+    private fun getTopAnimeNodes(
         document: Document,
         type: String
     ): List<ScrapedAnimeDto> {
@@ -62,8 +57,6 @@ class HianimeScraper(
             val name = link.text().trim()
             val jname = link.attr("data-jname").trim()
 
-            val id = dao.getAnimeByHiAnimeId(hianimeId)?.id.toStringOrNull()
-
             val poster = element.select(".film-poster .film-poster-img")
                 .attr("data-src")
                 .trim()
@@ -71,7 +64,6 @@ class HianimeScraper(
             val episodes = element.select(".film-detail .fd-infor .tick-item.tick-sub").text()
 
             ScrapedAnimeDto(
-                id = id,
                 hianimeId = hianimeId,
                 name = name,
                 jname = jname,
@@ -116,25 +108,12 @@ class HianimeScraper(
         )
     }
 
-    private suspend fun extractAnimes(document: Document): List<ScrapedAnimeDto> {
-        val ids = document.select("div.flw-item").map { element ->
-            element.select(".film-poster a")
-                .attr("href")
-                .replace("/watch/", "")
-                .trim()
-        }
-
-        val existingAnimes = dao.getAnimesInHiAnimeIds(ids)
-
+    private fun extractAnimes(document: Document): List<ScrapedAnimeDto> {
         return document.select("div.flw-item").map { element ->
             val hianimeId = element.select(".film-poster a")
                 .attr("href")
                 .replace("/watch/", "")
                 .trim()
-
-            val existingAnime = existingAnimes.find { it.hiAnimeId == hianimeId }
-
-            val id = existingAnime?.id.toStringOrNull()
 
             val link = element.select(".film-detail .film-name a")
             val name = link.text().trim()
@@ -149,7 +128,6 @@ class HianimeScraper(
                 .trim()
 
             ScrapedAnimeDto(
-                id = id ?: hianimeId,
                 hianimeId = hianimeId,
                 name = name,
                 jname = jname,
@@ -190,12 +168,6 @@ class HianimeScraper(
         json ?: return SyncData(id)
 
         return SyncData.fromJson(json)
-    }
-
-    override suspend fun getSyncData(id: String): SyncData {
-        val document = httpClient.getDocument("$baseUrl/$id")
-
-        return extractSyncData(document, id)
     }
 
     override suspend fun getAnimeInfo(id: String): ScrapedAnimeInfoDto {

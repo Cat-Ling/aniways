@@ -10,7 +10,10 @@ import xyz.aniways.features.anime.services.AnimeService
 @Resource("/anime")
 class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/{id}")
-    class ById(val parent: AnimeRoute, val id: String)
+    class Metadata(val parent: AnimeRoute, val id: String)
+
+    @Resource("/seasonal")
+    class Seasonal(val parent: AnimeRoute)
 
     @Resource("/trending")
     class Trending(val parent: AnimeRoute)
@@ -20,33 +23,10 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/search")
     class Search(val parent: AnimeRoute, val query: String, val page: Int = 1)
-
-    @Resource("/az")
-    class AZ(val parent: AnimeRoute, val page: Int = 1)
-
-    @Resource("/sync/{id}")
-    class Sync(val parent: AnimeRoute, val id: String)
-
-    @Resource("/mal/{malId}")
-    class ByMalId(val parent: AnimeRoute, val malId: Int)
-
-    @Resource("/list")
-    class InIds(
-        val parent: AnimeRoute,
-        val ids: List<String>?,
-        val malIds: List<Int>?,
-        val hiAnimeIds: List<String>?
-    )
 }
 
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
-
-    get<AnimeRoute> { route ->
-        call.respondText {
-            "Get animes with page ${route.page} and items per page ${route.itemsPerPage}"
-        }
-    }
 
     get<AnimeRoute.Trending> {
         call.respond(service.getTrendingAnimes())
@@ -60,11 +40,4 @@ fun Route.animeRoutes() {
         call.respond(service.searchAnime(route.query, route.page))
     }
 
-    get<AnimeRoute.AZ> { route ->
-        call.respond(service.getAZList(route.page))
-    }
-
-    get<AnimeRoute.Sync> { route ->
-        call.respond(service.getSyncData(route.id))
-    }
 }

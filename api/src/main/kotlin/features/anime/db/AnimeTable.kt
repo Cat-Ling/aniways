@@ -19,7 +19,7 @@ interface Anime : Entity<Anime> {
     var lastEpisode: Int?
     var createdAt: Instant
     var updatedAt: Instant
-    var animeMetadata: AnimeMetadata?
+    var metadata: AnimeMetadata?
 
     companion object : Entity.Factory<Anime>()
 }
@@ -31,7 +31,7 @@ object AnimeTable : Table<Anime>("animes") {
     val poster = varchar("poster").bindTo { it.poster }
     val genre = varchar("genre").bindTo { it.genre }
     val hiAnimeId = varchar("hi_anime_id").bindTo { it.hiAnimeId }
-    val malId = int("mal_id").bindTo { it.malId }.references(AnimeMetadataTable) { it.animeMetadata }
+    val malId = int("mal_id").bindTo { it.malId }.references(AnimeMetadataTable) { it.metadata }
     val anilistId = int("anilist_id").bindTo { it.anilistId }
     val lastEpisode = int("last_episode").bindTo { it.lastEpisode }
     val createdAt = timestamp("created_at").bindTo { it.createdAt }
