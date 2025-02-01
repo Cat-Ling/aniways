@@ -7,25 +7,22 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import xyz.aniways.features.anime.db.Anime
-import xyz.aniways.features.anime.dtos.ScrapedAnimeInfoDto
 import xyz.aniways.features.anime.services.AnimeService
+import xyz.aniways.utils.retryWithDelay
 
 class StartupSeedDBTask(
     private val service: AnimeService
-) : Task() {
-    override val name: String = "StartupSeedDBTask"
-    override val schedule: Schedule = Schedule(Schedule.Frequency.NEVER)
+) : Task {
+    override val name = "StartupSeedDBTask"
+    override val frequency = Task.Scheduler.Frequency.ON_START_UP
 
-    override suspend fun run() = coroutineScope {
+    override suspend fun job() = coroutineScope {
         var page = 1
-
         val count = service.getAnimeCount()
-
         if (count > 0) {
             logger.info("Anime DB already seeded")
             return@coroutineScope
         }
-
         do {
             logger.info("Fetching AZ list page $page")
             val animes = service.getAZList(page)
@@ -35,36 +32,21 @@ class StartupSeedDBTask(
                 async {
                     semaphore.withPermit {
                         logger.info("Fetching anime info for ${anime.hianimeId}")
-                        val result = kotlin.runCatching {
+                        val animeInfo = retryWithDelay {
                             service.getAnimeInfo(anime.hianimeId)
-                        }.recover { e ->
-                            var result: Result<ScrapedAnimeInfoDto>
-                            var maxRetry = 10
-
-                            do {
-                                logger.error("Error fetching anime info for ${anime.hianimeId}: ${e.message} (${maxRetry} retries left)")
-                                delay(2000L)
-                                logger.info("Retrying anime info for ${anime.hianimeId}")
-                                result = kotlin.runCatching {
-                                    service.getAnimeInfo(anime.hianimeId)
-                                }
-                                maxRetry--
-                            } while (result.isFailure && maxRetry > 0)
-
-                            result.getOrNull()
                         }
 
-                        val animeInfo = result.getOrNull() ?: return@async null
+                        animeInfo ?: return@async null
 
                         Anime {
-                            this.name = animeInfo.name
-                            this.jname = animeInfo.jname
-                            this.poster = animeInfo.poster
-                            this.genre = animeInfo.genre
-                            this.hiAnimeId = anime.hianimeId
-                            this.malId = animeInfo.malId
-                            this.anilistId = animeInfo.anilistId
-                            this.lastEpisode = animeInfo.lastEpisode
+                            name = animeInfo.name
+                            jname = animeInfo.jname
+                            poster = animeInfo.poster
+                            genre = animeInfo.genre
+                            hiAnimeId = anime.hianimeId
+                            malId = animeInfo.malId
+                            anilistId = animeInfo.anilistId
+                            lastEpisode = animeInfo.lastEpisode
                         }
                     }
                 }
