@@ -1,6 +1,7 @@
 package xyz.aniways.features.anime
 
 import org.koin.dsl.module
+import xyz.aniways.features.anime.api.MalApi
 import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.dao.DbAnimeDao
 import xyz.aniways.features.anime.scrapers.AnimeScraper
@@ -18,5 +19,9 @@ val animeModule = module {
 
     factory {
         AnimeService(get(), get())
+    }
+
+    factory {
+        MalApi(get())
     }
 }
