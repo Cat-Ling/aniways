@@ -13,6 +13,7 @@ fun Application.module() {
     configureSerialization()
     configureMonitoring()
     configureRateLimiting()
+    configureTaskScheduler()
     configureSession()
     configureAuth()
     configureRouting()

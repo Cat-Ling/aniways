@@ -3,6 +3,7 @@ package xyz.aniways.utils
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -11,6 +12,9 @@ suspend fun HttpClient.getDocument(
     block: HttpRequestBuilder.() -> Unit = {}
 ): Document {
     val response = this.get(url, block)
+    if (response.status != HttpStatusCode.OK) {
+        throw Exception("Failed to get document from $url")
+    }
     val body = response.bodyAsText()
     return Jsoup.parse(body)
 }

@@ -17,9 +17,9 @@ private data class SyncDataRaw(
     @SerialName("series_url")
     val seriesUrl: String,
     @SerialName("mal_id")
-    val malId: Int?,
+    val malId: String,
     @SerialName("anilist_id")
-    val anilistId: Int?
+    val anilistId: String
 )
 
 val jsonConverter = Json {
@@ -31,7 +31,7 @@ fun SyncData.Companion.fromJson(json: String): SyncData {
 
     return SyncData(
         hianimeId = raw.seriesUrl.split("/").last(),
-        malId = raw.malId?.nullIfZero(),
-        anilistId = raw.anilistId?.nullIfZero()
+        malId = raw.malId.toIntOrNull()?.nullIfZero(),
+        anilistId = raw.anilistId.toIntOrNull()?.nullIfZero()
     )
 }

@@ -117,13 +117,24 @@ class HianimeScraper(
     }
 
     private suspend fun extractAnimes(document: Document): List<ScrapedAnimeDto> {
+        val ids = document.select("div.flw-item").map { element ->
+            element.select(".film-poster a")
+                .attr("href")
+                .replace("/watch/", "")
+                .trim()
+        }
+
+        val existingAnimes = dao.getAnimesInHiAnimeIds(ids)
+
         return document.select("div.flw-item").map { element ->
             val hianimeId = element.select(".film-poster a")
                 .attr("href")
                 .replace("/watch/", "")
                 .trim()
 
-            val id = dao.getAnimeByHiAnimeId(hianimeId)?.id.toStringOrNull()
+            val existingAnime = existingAnimes.find { it.hiAnimeId == hianimeId }
+
+            val id = existingAnime?.id.toStringOrNull()
 
             val link = element.select(".film-detail .film-name a")
             val name = link.text().trim()
@@ -171,9 +182,7 @@ class HianimeScraper(
         )
     }
 
-    override suspend fun getSyncData(id: String): SyncData {
-        val document = httpClient.getDocument("$baseUrl/$id")
-
+    private fun extractSyncData(document: Document, id: String): SyncData {
         val json = document.getElementById("syncData")
             ?.data()
             .toStringOrNull()
@@ -181,5 +190,45 @@ class HianimeScraper(
         json ?: return SyncData(id)
 
         return SyncData.fromJson(json)
+    }
+
+    override suspend fun getSyncData(id: String): SyncData {
+        val document = httpClient.getDocument("$baseUrl/$id")
+
+        return extractSyncData(document, id)
+    }
+
+    override suspend fun getAnimeInfo(id: String): ScrapedAnimeInfoDto {
+        val document = httpClient.getDocument("$baseUrl/$id")
+
+        val syncData = extractSyncData(document, id)
+
+        val titleElement = document.select("h2.film-name.dynamic-name")
+        val name = titleElement.text().trim()
+        val jname = titleElement.attr("data-jname").trim()
+        val poster = document.select(".film-poster img")
+            .attr("src")
+            .trim()
+
+        val genre = document.select(".anisc-info .item-list a")
+            .filter { a -> a.attr("href").contains("genre") }
+            .joinToString { it.text() }
+            .toStringOrNull()
+            ?: "unknown"
+
+        val lastEpisodeReleased = document.select(".tick-item.tick-sub")
+            .text()
+            .toIntOrNull()
+
+        return ScrapedAnimeInfoDto(
+            id = id,
+            name = name,
+            jname = jname,
+            poster = poster,
+            genre = genre,
+            malId = syncData.malId,
+            anilistId = syncData.anilistId,
+            lastEpisode = lastEpisodeReleased
+        )
     }
 }

@@ -11,6 +11,7 @@ import java.time.Instant
 
 interface AnimeMetadata : Entity<AnimeMetadata> {
     var malId: Int
+    var description: String
     var mainPicture: String
     var mediaType: String
     var rating: String?
@@ -34,6 +35,7 @@ interface AnimeMetadata : Entity<AnimeMetadata> {
 
 object AnimeMetadataTable : Table<AnimeMetadata>("anime_metadata") {
     val malId = int("mal_id").primaryKey().bindTo { it.malId }
+    val description = varchar("description").bindTo { it.description }
     val mainPicture = varchar("main_picture").bindTo { it.mainPicture }
     val mediaType = varchar("media_type").bindTo { it.mediaType }
     val rating = varchar("rating").bindTo { it.rating }
