@@ -12,9 +12,6 @@ suspend fun HttpClient.getDocument(
     block: HttpRequestBuilder.() -> Unit = {}
 ): Document {
     val response = this.get(url, block)
-    if (response.status != HttpStatusCode.OK) {
-        throw Exception("Failed to get document from $url")
-    }
     val body = response.bodyAsText()
     return Jsoup.parse(body)
 }

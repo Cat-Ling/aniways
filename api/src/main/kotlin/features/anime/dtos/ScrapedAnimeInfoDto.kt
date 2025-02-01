@@ -1,5 +1,8 @@
 package xyz.aniways.features.anime.dtos
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ScrapedAnimeInfoDto(
     val id: String,
     val name: String,

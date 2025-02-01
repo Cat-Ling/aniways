@@ -217,8 +217,9 @@ class HianimeScraper(
             ?: "unknown"
 
         val lastEpisodeReleased = document.select(".tick-item.tick-sub")
-            .text()
-            .toIntOrNull()
+            .first()
+            ?.text()
+            ?.toIntOrNull()
 
         return ScrapedAnimeInfoDto(
             id = id,

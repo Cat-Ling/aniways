@@ -36,6 +36,8 @@ fun Application.configureKoin() {
     val httpModule = module {
         single {
             HttpClient(CIO) {
+                expectSuccess = true
+
                 install(Logging) {
                     logger = Logger.DEFAULT
                     level = LogLevel.INFO
