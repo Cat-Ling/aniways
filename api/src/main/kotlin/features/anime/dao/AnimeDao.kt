@@ -6,6 +6,7 @@ import xyz.aniways.models.Pagination
 interface AnimeDao {
     suspend fun getAnimeCount(): Int
     suspend fun getAnimes(page: Int, itemsPerPage: Int): Pagination<Anime>
+    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<Anime>
 
     suspend fun getAnimeById(id: String): Anime?
     suspend fun getAnimeByMalId(malId: Int): Anime?

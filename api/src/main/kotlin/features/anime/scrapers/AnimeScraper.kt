@@ -11,4 +11,5 @@ interface AnimeScraper {
     suspend fun searchAnime(query: String, page: Int): Pagination<ScrapedAnimeDto>
     suspend fun getAZList(page: Int): Pagination<ScrapedAnimeDto>
     suspend fun getAnimeInfo(id: String): ScrapedAnimeInfoDto
+    suspend fun getRecentlyUpdatedAnime(page: Int): Pagination<ScrapedAnimeDto>
 }

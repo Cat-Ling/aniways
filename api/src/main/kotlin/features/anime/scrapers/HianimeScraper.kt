@@ -112,7 +112,8 @@ class HianimeScraper(
         return document.select("div.flw-item").map { element ->
             val hianimeId = element.select(".film-poster a")
                 .attr("href")
-                .replace("/watch/", "")
+                .split("/")
+                .last()
                 .trim()
 
             val link = element.select(".film-detail .film-name a")
@@ -202,6 +203,17 @@ class HianimeScraper(
             malId = syncData.malId,
             anilistId = syncData.anilistId,
             lastEpisode = lastEpisodeReleased
+        )
+    }
+
+    override suspend fun getRecentlyUpdatedAnime(page: Int): Pagination<ScrapedAnimeDto> {
+        val document = httpClient.getDocument("$baseUrl/recently-updated") {
+            parameter("page", page)
+        }
+
+        return Pagination(
+            pageInfo = extractPageInfo(document),
+            items = extractAnimes(document)
         )
     }
 }

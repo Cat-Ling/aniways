@@ -42,6 +42,7 @@ jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 # Database dependencies
 ktorm-core = { module = "org.ktorm:ktorm-core", version.ref = "ktorm" }
+ktorm-postgres-support = { module = "org.ktorm:ktorm-support-postgresql", version.ref = "ktorm" }
 driver-postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 hikari-core = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }

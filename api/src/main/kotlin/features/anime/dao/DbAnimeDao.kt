@@ -39,6 +39,31 @@ class DbAnimeDao(
                     totalPage = totalPage,
                     currentPage = page,
                     hasNextPage = hasNextPage,
+                    hasPreviousPage = hasPreviousPage,
+                ),
+                items = items
+            )
+        }
+    }
+
+    override suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<Anime> {
+        return aniwaysDb.query {
+            val totalItems = animes.count()
+            val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
+            val hasNextPage = page < totalPage
+            val hasPreviousPage = page > 1
+
+            val items = animes
+                .sortedByDescending { it.updatedAt }
+                .drop((page - 1) * itemsPerPage)
+                .take(itemsPerPage)
+                .toList()
+
+            Pagination(
+                pageInfo = PageInfo(
+                    totalPage = totalPage,
+                    currentPage = page,
+                    hasNextPage = hasNextPage,
                     hasPreviousPage = hasPreviousPage
                 ),
                 items = items
@@ -60,7 +85,7 @@ class DbAnimeDao(
 
     override suspend fun getAnimeByHiAnimeId(hiAnimeId: String): Anime? {
         return aniwaysDb.query {
-            animes.find { it.hiAnimeId eq hiAnimeId }
+            animes.find { it.hianimeId eq hiAnimeId }
         }
     }
 
@@ -78,14 +103,14 @@ class DbAnimeDao(
 
     override suspend fun getAnimesInHiAnimeIds(hiAnimeIds: List<String>): List<Anime> {
         return aniwaysDb.query {
-            animes.filter { it.hiAnimeId inList hiAnimeIds }.toList()
+            animes.filter { it.hianimeId inList hiAnimeIds }.toList()
         }
     }
 
     override suspend fun insertAnime(anime: Anime): Anime {
         return aniwaysDb.query {
             animes.add(anime)
-            animes.find { it.hiAnimeId eq anime.hiAnimeId }!!
+            animes.find { it.hianimeId eq anime.hianimeId }!!
         }
     }
 
@@ -98,7 +123,7 @@ class DbAnimeDao(
                         set(it.jname, anime.jname)
                         set(it.poster, anime.poster)
                         set(it.genre, anime.genre)
-                        set(it.hiAnimeId, anime.hiAnimeId)
+                        set(it.hianimeId, anime.hianimeId)
                         set(it.malId, anime.malId)
                         set(it.anilistId, anime.anilistId)
                         set(it.lastEpisode, anime.lastEpisode)

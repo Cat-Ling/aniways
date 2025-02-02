@@ -61,6 +61,7 @@ dependencies {
 
     // Database Dependencies
     implementation(libs.ktorm.core)
+    implementation(libs.ktorm.postgres.support)
     implementation(libs.hikari.core)
     implementation(libs.driver.postgres)
     implementation(libs.flyway.core)

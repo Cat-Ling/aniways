@@ -1,4 +1,4 @@
-package xyz.aniways.features.tasks
+package xyz.aniways.features.tasks.plugins
 
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*

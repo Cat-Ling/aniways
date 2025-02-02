@@ -29,10 +29,19 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/search")
     class Search(val parent: AnimeRoute, val query: String, val page: Int = 1)
+
+    @Resource("/recently-updated")
+    class RecentlyUpdated(val parent: AnimeRoute)
 }
 
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
+
+    cacheOutput(invalidateAt = 1.hours) {
+        get<AnimeRoute.RecentlyUpdated> { route ->
+            call.respond(service.getRecentlyUpdatedAnimes(route.parent.page, route.parent.itemsPerPage))
+        }
+    }
 
     cacheOutput(invalidateAt = 7.days) {
         get<AnimeRoute.Seasonal> {
@@ -48,7 +57,7 @@ fun Route.animeRoutes() {
 
     cacheOutput(invalidateAt = 1.days) {
         get<AnimeRoute.Top> {
-            call.respond(service.getTopAnimes())
+            call.respond(service.scrapeTopAnimes())
         }
     }
 

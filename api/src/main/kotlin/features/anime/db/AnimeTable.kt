@@ -13,7 +13,7 @@ interface Anime : Entity<Anime> {
     var jname: String
     var poster: String
     var genre: String
-    var hiAnimeId: String
+    var hianimeId: String
     var malId: Int?
     var anilistId: Int?
     var lastEpisode: Int?
@@ -30,7 +30,7 @@ object AnimeTable : Table<Anime>("animes") {
     val jname = varchar("jname").bindTo { it.jname }
     val poster = varchar("poster").bindTo { it.poster }
     val genre = varchar("genre").bindTo { it.genre }
-    val hiAnimeId = varchar("hi_anime_id").bindTo { it.hiAnimeId }
+    val hianimeId = varchar("hi_anime_id").bindTo { it.hianimeId }
     val malId = int("mal_id").bindTo { it.malId }.references(AnimeMetadataTable) { it.metadata }
     val anilistId = int("anilist_id").bindTo { it.anilistId }
     val lastEpisode = int("last_episode").bindTo { it.lastEpisode }
