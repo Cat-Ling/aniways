@@ -152,4 +152,30 @@ fun Route.animeRoutes() {
             call.respond(animeList)
         }
     }
+
+    cacheOutput(invalidateAt = 30.days) {
+        get<AnimeRoute.Genres> {
+            call.respond(service.getAllGenres())
+        }
+    }
+
+    cacheOutput(invalidateAt = 7.days) {
+        get<AnimeRoute.Genre> { route ->
+            call.respond(
+                service.getAnimesByGenre(
+                    page = route.parent.page,
+                    itemsPerPage = route.parent.itemsPerPage,
+                    genre = route.genre
+                )
+            )
+        }
+    }
+
+    get<AnimeRoute.Random> {
+        call.respond(service.getRandomAnime())
+    }
+
+    get<AnimeRoute.RandomGenre> { route ->
+        call.respond(service.getRandomAnimeByGenre(route.genre))
+    }
 }

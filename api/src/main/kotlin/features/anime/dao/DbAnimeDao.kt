@@ -3,6 +3,7 @@ package xyz.aniways.features.anime.dao
 import org.ktorm.dsl.batchInsert
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.inList
+import org.ktorm.dsl.like
 import org.ktorm.entity.*
 import xyz.aniways.database.AniwaysDB
 import xyz.aniways.features.anime.db.*
@@ -17,6 +18,12 @@ class DbAnimeDao(
     override suspend fun getAnimeCount(): Int {
         return aniwaysDb.query {
             animes.count()
+        }
+    }
+
+    override suspend fun getAllGenres(): List<String> {
+        return aniwaysDb.query {
+            animes.map { it.genre.split(", ") }.flatten().distinct()
         }
     }
 
@@ -42,6 +49,43 @@ class DbAnimeDao(
                 ),
                 items = items
             )
+        }
+    }
+
+    override suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<Anime> {
+        return aniwaysDb.query {
+            val totalItems = animes.filter { it.genre like "%$genre%" }.count()
+            val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
+            val hasNextPage = page < totalPage
+            val hasPreviousPage = page > 1
+
+            val items = animes
+                .filter { it.genre like "%$genre%" }
+                .drop((page - 1) * itemsPerPage)
+                .take(itemsPerPage)
+                .toList()
+
+            Pagination(
+                pageInfo = PageInfo(
+                    totalPage = totalPage,
+                    currentPage = page,
+                    hasNextPage = hasNextPage,
+                    hasPreviousPage = hasPreviousPage
+                ),
+                items = items
+            )
+        }
+    }
+
+    override suspend fun getRandomAnime(): Anime {
+        return aniwaysDb.query {
+            animes.toList().random()
+        }
+    }
+
+    override suspend fun getRandomAnimeByGenre(genre: String): Anime {
+        return aniwaysDb.query {
+            animes.filter { it.genre like "%$genre%" }.toList().random()
         }
     }
 

@@ -26,6 +26,18 @@ class AnimeService(
 ) {
     private val logger = KtorSimpleLogger("AnimeService")
 
+    private fun formatGenre(genre: String) = genre
+        .split("-")
+        .joinToString(" ") {
+            when (it) {
+                "sci" -> "Sci-Fi"
+                "fi" -> ""
+                "of" -> it
+                else -> it.replaceFirstChar { it.titlecase() }
+            }
+        }
+        .trim()
+
     private suspend fun saveMetadataInDB(
         anime: Anime,
         malMetadata: MalAnimeMetadata? = null
@@ -131,6 +143,23 @@ class AnimeService(
 
     suspend fun scrapeTopAnimes(): TopAnimeDto {
         return animeScraper.getTopAnimes()
+    }
+
+    suspend fun getAllGenres(): List<String> {
+        return animeDao.getAllGenres()
+    }
+
+    suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
+        val result = animeDao.getAnimesByGenre(formatGenre(genre), page, itemsPerPage)
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
+    }
+
+    suspend fun getRandomAnime(): AnimeDto {
+        return animeDao.getRandomAnime().toAnimeDto()
+    }
+
+    suspend fun getRandomAnimeByGenre(genre: String): AnimeDto {
+        return animeDao.getRandomAnimeByGenre(formatGenre(genre)).toAnimeDto()
     }
 
     suspend fun scrapeAndPopulateAnime(page: Int = 1): Unit = coroutineScope {
