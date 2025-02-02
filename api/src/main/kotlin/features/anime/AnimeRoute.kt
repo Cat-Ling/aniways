@@ -1,6 +1,7 @@
 package xyz.aniways.features.anime
 
 import com.ucasoft.ktor.simpleCache.cacheOutput
+import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
@@ -41,6 +42,14 @@ fun Route.animeRoutes() {
     cacheOutput(invalidateAt = 30.minutes) {
         get<AnimeRoute.RecentlyUpdated> { route ->
             call.respond(service.getRecentlyUpdatedAnimes(route.parent.page, route.parent.itemsPerPage))
+        }
+    }
+
+    cacheOutput(invalidateAt = 7.days) {
+        get<AnimeRoute.Metadata> { route ->
+            val anime = service.getAnimeById(route.id)
+            anime ?: return@get call.respond(HttpStatusCode.NotFound)
+            call.respond(anime)
         }
     }
 

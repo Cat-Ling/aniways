@@ -1,0 +1,2 @@
+ALTER TABLE anime_metadata
+    ALTER COLUMN mean TYPE DOUBLE PRECISION

@@ -3,10 +3,7 @@ package xyz.aniways.features.anime.db
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
-import org.ktorm.schema.Table
-import org.ktorm.schema.int
-import org.ktorm.schema.timestamp
-import org.ktorm.schema.varchar
+import org.ktorm.schema.*
 import java.time.Instant
 
 interface AnimeMetadata : Entity<AnimeMetadata> {
@@ -20,7 +17,7 @@ interface AnimeMetadata : Entity<AnimeMetadata> {
     var totalEpisodes: Int?
     var studio: String?
     var rank: Int?
-    var mean: Int?
+    var mean: Double?
     var scoringUsers: Int
     var popularity: Int?
     var airingStart: String?
@@ -28,7 +25,7 @@ interface AnimeMetadata : Entity<AnimeMetadata> {
     var source: String?
     var trailer: String?
     var createdAt: Instant
-    var lastUpdatedAt: Instant
+    var lastUpdatedAt: Instant?
 
     companion object : Entity.Factory<AnimeMetadata>()
 }
@@ -44,7 +41,7 @@ object AnimeMetadataTable : Table<AnimeMetadata>("anime_metadata") {
     val totalEpisodes = int("total_episodes").bindTo { it.totalEpisodes }
     val studio = varchar("studio").bindTo { it.studio }
     val rank = int("rank").bindTo { it.rank }
-    val mean = int("mean").bindTo { it.mean }
+    val mean = double("mean").bindTo { it.mean }
     val scoringUsers = int("scoring_users").bindTo { it.scoringUsers }
     val popularity = int("popularity").bindTo { it.popularity }
     val airingStart = varchar("airing_start").bindTo { it.airingStart }

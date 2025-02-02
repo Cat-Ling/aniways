@@ -19,7 +19,7 @@ val animeModule = module {
     }
 
     factory {
-        MalApi(get())
+        MalApi(get(), get())
     }
 
     factory {
@@ -27,6 +27,6 @@ val animeModule = module {
     }
 
     factory {
-        AnimeService(get(), get(), get())
+        AnimeService(get(), get(), get(), get())
     }
 }

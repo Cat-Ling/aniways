@@ -14,12 +14,7 @@ data class AnimeDto(
     val malId: Int?,
     val anilistId: Int?,
     val lastEpisode: Int?,
-)
-
-@Serializable
-data class AnimeWithMetadataDto(
-    val anime: AnimeDto,
-    val metadata: AnimeMetadataDto?,
+    val metadata: AnimeMetadataDto? = null,
 )
 
 @Serializable
@@ -34,7 +29,7 @@ data class AnimeMetadataDto(
     val totalEpisodes: Int?,
     val studio: String?,
     val rank: Int?,
-    val mean: Int?,
+    val mean: Double?,
     val scoringUsers: Int,
     val popularity: Int?,
     val airingStart: String?,
@@ -52,6 +47,7 @@ fun Anime.toAnimeDto() = AnimeDto(
     malId = malId,
     anilistId = anilistId,
     lastEpisode = lastEpisode,
+    metadata = metadata?.toAnimeMetadataDto(),
 )
 
 fun ScrapedAnimeDto.toAnimeDto() = AnimeDto(
@@ -83,9 +79,4 @@ fun AnimeMetadata.toAnimeMetadataDto() = AnimeMetadataDto(
     airingEnd = airingEnd,
     source = source,
     trailer = trailer,
-)
-
-fun Anime.toAnimeWithMetadataDto() = AnimeWithMetadataDto(
-    anime = toAnimeDto(),
-    metadata = metadata?.toAnimeMetadataDto(),
 )

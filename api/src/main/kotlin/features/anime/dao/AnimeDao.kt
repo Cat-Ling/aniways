@@ -1,6 +1,7 @@
 package xyz.aniways.features.anime.dao
 
 import xyz.aniways.features.anime.db.Anime
+import xyz.aniways.features.anime.db.AnimeMetadata
 import xyz.aniways.models.Pagination
 
 interface AnimeDao {
@@ -14,4 +15,5 @@ interface AnimeDao {
     suspend fun insertAnime(anime: Anime): Anime
     suspend fun insertAnimes(animes: List<Anime>)
     suspend fun updateAnime(anime: Anime): Anime
+    suspend fun updateAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata
 }

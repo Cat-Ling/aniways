@@ -33,7 +33,9 @@ fun Application.configureKoin() {
         }
     }
 
-    val httpModule = module {
+    val mainModule = module {
+        factory { env }
+
         single {
             HttpClient(CIO) {
                 expectSuccess = true
@@ -47,6 +49,7 @@ fun Application.configureKoin() {
                     json(Json {
                         ignoreUnknownKeys = true
                         prettyPrint = true
+                        explicitNulls = false
                     })
                 }
             }
@@ -58,7 +61,7 @@ fun Application.configureKoin() {
 
         modules(
             dbModule,
-            httpModule,
+            mainModule,
             authModule,
             animeModule,
             settingsModule

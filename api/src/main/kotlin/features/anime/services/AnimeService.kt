@@ -7,6 +7,8 @@ import kotlinx.coroutines.sync.withPermit
 import xyz.aniways.features.anime.api.anilist.AnilistApi
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnime
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnimeDto
+import xyz.aniways.features.anime.api.mal.MalApi
+import xyz.aniways.features.anime.api.mal.models.toAnimeMetadata
 import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.db.Anime
 import xyz.aniways.features.anime.dtos.*
@@ -18,9 +20,25 @@ import java.time.Instant
 class AnimeService(
     private val animeScraper: AnimeScraper,
     private val animeDao: AnimeDao,
-    private val anilistApi: AnilistApi
+    private val anilistApi: AnilistApi,
+    private val malApi: MalApi,
 ) {
     private val logger = KtorSimpleLogger("AnimeService")
+
+    suspend fun getAnimeById(id: String): AnimeDto? {
+        val anime = animeDao.getAnimeById(id) ?: return null
+
+        return anime.metadata?.lastUpdatedAt?.let {
+            val weekAgo = Instant.now().toEpochMilli() - 60 * 60 * 24 * 7
+            if (it.toEpochMilli() < weekAgo) return@let null
+
+            anime.toAnimeDto()
+        } ?: run {
+            val metadata = malApi.getAnimeMetadata(anime.malId!!)
+            val result = animeDao.updateAnimeMetadata(metadata.toAnimeMetadata())
+            return anime.copy().apply { this.metadata = result }.toAnimeDto()
+        }
+    }
 
     suspend fun getTrendingAnimes(): List<AnimeDto> {
         val trendingAnimes = anilistApi.getTrendingAnime()

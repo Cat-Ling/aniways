@@ -5,9 +5,7 @@ import org.ktorm.dsl.eq
 import org.ktorm.dsl.inList
 import org.ktorm.entity.*
 import xyz.aniways.database.AniwaysDB
-import xyz.aniways.features.anime.db.Anime
-import xyz.aniways.features.anime.db.AnimeTable
-import xyz.aniways.features.anime.db.animes
+import xyz.aniways.features.anime.db.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import java.util.*
@@ -95,6 +93,13 @@ class DbAnimeDao(
         return aniwaysDb.query {
             animes.update(anime)
             anime
+        }
+    }
+
+    override suspend fun updateAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata {
+        return aniwaysDb.query {
+            this.animeMetadata.update(animeMetadata)
+            animeMetadata
         }
     }
 }
