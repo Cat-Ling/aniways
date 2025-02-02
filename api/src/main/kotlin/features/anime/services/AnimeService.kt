@@ -8,7 +8,6 @@ import xyz.aniways.features.anime.api.anilist.AnilistApi
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnime
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnimeDto
 import xyz.aniways.features.anime.api.mal.MalApi
-import xyz.aniways.features.anime.api.mal.models.MalAnimeList
 import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
 import xyz.aniways.features.anime.api.mal.models.toAnimeMetadata
 import xyz.aniways.features.anime.dao.AnimeDao
@@ -44,6 +43,26 @@ class AnimeService(
             } ?: animeDao.insertAnimeMetadata(metadata)
 
             return anime.copy().apply { this.metadata = result }.toAnimeWithMetadataDto()
+        }
+    }
+
+    private suspend fun transformToAnilistAnimeDto(animes: List<AnilistAnime>): List<AnilistAnimeDto> {
+        val dbAnimes = animeDao.getAnimesInMalIds(animes.mapNotNull { it.malId })
+
+        return animes.mapNotNull { anilistAnime ->
+            dbAnimes.find { it.malId == anilistAnime.malId }?.let { dbAnime ->
+                AnilistAnimeDto(
+                    id = dbAnime.id.toString(),
+                    title = anilistAnime.title,
+                    bannerImage = anilistAnime.bannerImage,
+                    coverImage = anilistAnime.coverImage,
+                    description = anilistAnime.description,
+                    startDate = anilistAnime.startDate,
+                    type = anilistAnime.type,
+                    episodes = anilistAnime.episodes,
+                    anime = dbAnime.toAnimeDto()
+                )
+            }
         }
     }
 
@@ -191,9 +210,6 @@ class AnimeService(
         logger.info("Inserted ${newAnimes.size} new animes")
     }
 
-    /*
-    * Scrapes from behind so page 210, 209, 208, ... 1 etc
-    * */
     suspend fun scrapeAndPopulateRecentlyUpdatedAnime(fromPage: Int? = null): Unit = coroutineScope {
         if (fromPage == 0) {
             logger.info("Scraping and populating recently updated anime completed")
@@ -252,26 +268,6 @@ class AnimeService(
         scrapeAndPopulateRecentlyUpdatedAnime(page - 1)
     }
 
-    private suspend fun transformToAnilistAnimeDto(animes: List<AnilistAnime>): List<AnilistAnimeDto> {
-        val dbAnimes = animeDao.getAnimesInMalIds(animes.mapNotNull { it.malId })
-
-        return animes.mapNotNull { anilistAnime ->
-            dbAnimes.find { it.malId == anilistAnime.malId }?.let { dbAnime ->
-                AnilistAnimeDto(
-                    id = dbAnime.id.toString(),
-                    title = anilistAnime.title,
-                    bannerImage = anilistAnime.bannerImage,
-                    coverImage = anilistAnime.coverImage,
-                    description = anilistAnime.description,
-                    startDate = anilistAnime.startDate,
-                    type = anilistAnime.type,
-                    episodes = anilistAnime.episodes,
-                    anime = dbAnime.toAnimeDto()
-                )
-            }
-        }
-    }
-
     suspend fun getUserAnimeList(
         username: String,
         page: Int,
@@ -300,39 +296,38 @@ class AnimeService(
 
         val dbAnimes = animeDao.getAnimesInMalIds(animelist.data.mapNotNull { it.node?.id })
 
-        animelist.data
+        val animes = animelist.data
             .mapNotNull { it.node }
             .mapNotNull { metadata ->
                 val dbAnime = dbAnimes.find { it.malId == metadata.id } ?: return@mapNotNull null
                 async { saveMetadataInDB(dbAnime, metadata) }
             }
             .awaitAll()
-            .let { anime ->
-                AnimeListDto(
-                    pageInfo = PageInfo(
-                        hasNextPage = animelist.paging?.next != null,
-                        hasPreviousPage = animelist.paging?.previous != null,
-                        currentPage = page,
-                    ),
-                    items = anime.mapNotNull { a ->
-                        val listStatus = animelist.data.find { it.node?.id == a.malId }?.listStatus
 
-                        listStatus ?: return@mapNotNull null
+        AnimeListDto(
+            pageInfo = PageInfo(
+                hasNextPage = animelist.paging?.next != null,
+                hasPreviousPage = animelist.paging?.previous != null,
+                currentPage = page,
+            ),
+            items = animes.mapNotNull { a ->
+                val listStatus = animelist.data.find { it.node?.id == a.malId }?.listStatus
 
-                        AnimeListNode(
-                            id = a.id,
-                            name = a.name,
-                            jname = a.jname,
-                            poster = a.poster,
-                            totalEpisodes = a.metadata?.totalEpisodes ?: 0,
-                            mediaType = a.metadata?.mediaType ?: "Unknown",
-                            mean = a.metadata?.mean ?: 0.0,
-                            numScoringUsers = a.metadata?.scoringUsers ?: 0,
-                            listStatus = listStatus
-                        )
-                    }
+                listStatus ?: return@mapNotNull null
+
+                AnimeListNode(
+                    id = a.id,
+                    name = a.name,
+                    jname = a.jname,
+                    poster = a.poster,
+                    totalEpisodes = a.metadata?.totalEpisodes ?: 0,
+                    mediaType = a.metadata?.mediaType ?: "Unknown",
+                    mean = a.metadata?.mean ?: 0.0,
+                    numScoringUsers = a.metadata?.scoringUsers ?: 0,
+                    listStatus = listStatus
                 )
             }
+        )
     }
 
 }
