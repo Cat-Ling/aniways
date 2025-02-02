@@ -8,7 +8,7 @@ class RecentlyUpdatedScraperTask(
     private val service: AnimeService,
 ) : Task {
     override val name = "RecentlyUpdatedScraperTask"
-    override val frequency = TaskScheduler.Frequency.Cron("0 * * * *") // Every hour
+    override val frequency = TaskScheduler.Frequency.EveryHour
 
     override suspend fun job() {
         service.scrapeAndPopulateRecentlyUpdatedAnime(fromPage = 2)
