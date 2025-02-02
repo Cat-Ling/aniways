@@ -27,6 +27,11 @@ val animeModule = module {
     }
 
     factory {
-        AnimeService(get(), get(), get(), get())
+        AnimeService(
+            animeScraper = get(),
+            animeDao = get(),
+            anilistApi = get(),
+            malApi = get(),
+        )
     }
 }
