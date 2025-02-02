@@ -34,23 +34,22 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/recently-updated")
     class RecentlyUpdated(val parent: AnimeRoute)
+
+    @Resource("/trailer/{id}")
+    class Trailer(val parent: AnimeRoute, val id: String)
 }
 
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
 
-    cacheOutput(invalidateAt = 30.minutes) {
-        get<AnimeRoute.RecentlyUpdated> { route ->
-            call.respond(service.getRecentlyUpdatedAnimes(route.parent.page, route.parent.itemsPerPage))
-        }
+    get<AnimeRoute.RecentlyUpdated> { route ->
+        call.respond(service.getRecentlyUpdatedAnimes(route.parent.page, route.parent.itemsPerPage))
     }
 
-    cacheOutput(invalidateAt = 7.days) {
-        get<AnimeRoute.Metadata> { route ->
-            val anime = service.getAnimeById(route.id)
-            anime ?: return@get call.respond(HttpStatusCode.NotFound)
-            call.respond(anime)
-        }
+    get<AnimeRoute.Metadata> { route ->
+        val anime = service.getAnimeById(route.id)
+        anime ?: return@get call.respond(HttpStatusCode.NotFound)
+        call.respond(anime)
     }
 
     cacheOutput(invalidateAt = 7.days) {
@@ -84,5 +83,11 @@ fun Route.animeRoutes() {
         get<AnimeRoute.Search> { route ->
             call.respond(service.searchAnime(route.query, route.page))
         }
+    }
+
+    get<AnimeRoute.Trailer> { route ->
+        val trailer = service.getAnimeTrailer(route.id)
+        trailer ?: return@get call.respond(HttpStatusCode.NotFound)
+        call.respond(trailer)
     }
 }

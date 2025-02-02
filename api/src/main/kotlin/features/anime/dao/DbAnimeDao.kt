@@ -70,6 +70,13 @@ class DbAnimeDao(
         }
     }
 
+    override suspend fun insertAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata {
+        return aniwaysDb.query {
+            this.animeMetadata.add(animeMetadata)
+            animeMetadata
+        }
+    }
+
     override suspend fun insertAnimes(animes: List<Anime>) {
         return aniwaysDb.query {
             batchInsert(AnimeTable) {

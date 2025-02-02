@@ -25,18 +25,34 @@ class AnimeService(
 ) {
     private val logger = KtorSimpleLogger("AnimeService")
 
-    suspend fun getAnimeById(id: String): AnimeDto? {
+    suspend fun getAnimeById(id: String): AnimeWithMetadataDto? {
         val anime = animeDao.getAnimeById(id) ?: return null
 
         return anime.metadata?.lastUpdatedAt?.let {
-            val weekAgo = Instant.now().toEpochMilli() - 60 * 60 * 24 * 7
-            if (it.toEpochMilli() < weekAgo) return@let null
+            val monthAgo = Instant.now().toEpochMilli() - 60 * 60 * 24 * 30
+            if (it.toEpochMilli() < monthAgo) return@let null
 
-            anime.toAnimeDto()
+            anime.toAnimeWithMetadataDto()
         } ?: run {
-            val metadata = malApi.getAnimeMetadata(anime.malId!!)
-            val result = animeDao.updateAnimeMetadata(metadata.toAnimeMetadata())
-            return anime.copy().apply { this.metadata = result }.toAnimeDto()
+            val metadata = malApi.getAnimeMetadata(anime.malId!!).toAnimeMetadata()
+            val result = anime.metadata?.lastUpdatedAt?.let {
+                animeDao.updateAnimeMetadata(metadata)
+            } ?: animeDao.insertAnimeMetadata(metadata)
+            return anime.copy().apply { this.metadata = result }.toAnimeWithMetadataDto()
+        }
+    }
+
+    suspend fun getAnimeTrailer(id: String): String? {
+        return animeDao.getAnimeById(id)?.let { anime ->
+            anime.malId ?: return@let null
+            malApi.getTrailer(anime.malId!!).also { trailer ->
+                anime.metadata?.run {
+                    if (this.trailer == trailer || trailer == null) return@run
+                    animeDao.updateAnimeMetadata(this.copy().apply {
+                        this.trailer = trailer
+                    })
+                }
+            }
         }
     }
 

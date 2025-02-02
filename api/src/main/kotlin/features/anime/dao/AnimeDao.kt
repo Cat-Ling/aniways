@@ -13,6 +13,7 @@ interface AnimeDao {
     suspend fun getAnimesInHiAnimeIds(hiAnimeIds: List<String>): List<Anime>
 
     suspend fun insertAnime(anime: Anime): Anime
+    suspend fun insertAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata
     suspend fun insertAnimes(animes: List<Anime>)
     suspend fun updateAnime(anime: Anime): Anime
     suspend fun updateAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata

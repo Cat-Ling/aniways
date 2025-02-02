@@ -23,7 +23,8 @@ data class MalAnimeMetadata(
     @SerialName("popularity") val popularity: Int?,
     @SerialName("start_date") val startDate: String?,
     @SerialName("end_date") val endDate: String?,
-    @SerialName("source") val source: String?
+    @SerialName("source") val source: String?,
+    var trailer: String? = null
 )
 
 @Serializable
@@ -62,4 +63,5 @@ fun MalAnimeMetadata.toAnimeMetadata() = AnimeMetadata {
     this.airingStart = this@toAnimeMetadata.startDate
     this.airingEnd = this@toAnimeMetadata.endDate
     this.source = this@toAnimeMetadata.source
+    this.trailer = this@toAnimeMetadata.trailer
 }

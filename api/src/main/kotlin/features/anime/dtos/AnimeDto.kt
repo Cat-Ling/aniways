@@ -14,7 +14,6 @@ data class AnimeDto(
     val malId: Int?,
     val anilistId: Int?,
     val lastEpisode: Int?,
-    val metadata: AnimeMetadataDto? = null,
 )
 
 @Serializable
@@ -38,7 +37,32 @@ data class AnimeMetadataDto(
     val trailer: String?,
 )
 
+@Serializable
+data class AnimeWithMetadataDto(
+    val id: String,
+    val name: String,
+    val jname: String,
+    val poster: String,
+    val genre: List<String>,
+    val malId: Int?,
+    val anilistId: Int?,
+    val lastEpisode: Int?,
+    val metadata: AnimeMetadataDto? = null,
+)
+
+
 fun Anime.toAnimeDto() = AnimeDto(
+    id = id.toString(),
+    name = name,
+    jname = jname,
+    poster = poster,
+    genre = genre.split(", "),
+    malId = malId,
+    anilistId = anilistId,
+    lastEpisode = lastEpisode,
+)
+
+fun Anime.toAnimeWithMetadataDto() = AnimeWithMetadataDto(
     id = id.toString(),
     name = name,
     jname = jname,
@@ -65,10 +89,30 @@ fun AnimeMetadata.toAnimeMetadataDto() = AnimeMetadataDto(
     malId = malId,
     description = description,
     mainPicture = mainPicture,
-    mediaType = mediaType,
-    rating = rating,
+    mediaType = when(mediaType) {
+        "tv" -> "TV"
+        "ova" -> "OVA"
+        "movie" -> "Movie"
+        "special" -> "Special"
+        "ona" -> "ONA"
+        "music" -> "Music"
+        else -> "Unknown"
+    },
+    rating = when(rating) {
+        "g" -> "G - All Ages"
+        "pg" -> "PG - Children"
+        "pg_13" -> "PG-13 - Teens 13 and Older"
+        "r" -> "R - 17+ (violence & profanity)"
+        "r_plus" -> "R+ - Mild Nudity"
+        "rx" -> "Rx - Hentai"
+        else -> null
+    },
     avgEpDuration = avgEpDuration,
-    airingStatus = airingStatus,
+    airingStatus = when(airingStatus) {
+        "finished" -> "Finished Airing"
+        "releasing" -> "Currently Airing"
+        else -> "Not Yet Aired"
+    },
     totalEpisodes = totalEpisodes,
     studio = studio,
     rank = rank,
