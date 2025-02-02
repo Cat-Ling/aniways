@@ -1,9 +1,6 @@
 package xyz.aniways.features.anime.scrapers
 
-import xyz.aniways.features.anime.dtos.EpisodeDto
-import xyz.aniways.features.anime.dtos.ScrapedAnimeDto
-import xyz.aniways.features.anime.dtos.ScrapedAnimeInfoDto
-import xyz.aniways.features.anime.dtos.TopAnimeDto
+import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.models.Pagination
 
 interface AnimeScraper {
@@ -14,4 +11,5 @@ interface AnimeScraper {
     suspend fun getAnimeInfo(id: String): ScrapedAnimeInfoDto
     suspend fun getRecentlyUpdatedAnime(page: Int): Pagination<ScrapedAnimeDto>
     suspend fun getEpisodesOfAnime(hianimeId: String): List<EpisodeDto>
+    suspend fun getServersOfEpisode(episodeId: String): List<EpisodeServerDto>
 }

@@ -14,5 +14,11 @@ data class EpisodeDto(
 data class RawEpisodeData(
     val status: Boolean,
     val html: String?,
-    val totalItems: Int?,
+)
+
+@Serializable
+data class EpisodeServerDto(
+    val serverId: String,
+    val type: String,
+    val serverName: String,
 )

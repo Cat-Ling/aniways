@@ -10,9 +10,6 @@ import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import xyz.aniways.utils.getDocument
 import xyz.aniways.utils.toStringOrNull
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-
 
 class HianimeScraper(
     private val httpClient: HttpClient,
@@ -236,6 +233,28 @@ class HianimeScraper(
                 number = element.attr("data-number").toIntOrNull() ?: 1,
                 isFiller = element.hasClass("ssl-item-filler"),
                 id = element.attr("href").split("?ep=").last().trim()
+            )
+        }
+    }
+
+    override suspend fun getServersOfEpisode(episodeId: String): List<EpisodeServerDto> {
+        val response = httpClient.get("$baseUrl/ajax/v2/episode/servers?episodeId=$episodeId") {
+            header("X-Requested-With", "XMLHttpRequest")
+            header("Referer", "$baseUrl/watch/$episodeId")
+        }
+
+        val data = response.body<RawEpisodeData>()
+        val document = data.html?.let { Jsoup.parse(it) } ?: return emptyList()
+
+        return document.select(".server-item").mapNotNull { element ->
+            val serverId = element.attr("data-server-id")
+
+            if (serverId != "1" && serverId != "4") return@mapNotNull null
+
+            EpisodeServerDto(
+                serverId = element.attr("data-id"),
+                type = element.attr("data-type"),
+                serverName = element.text().trim()
             )
         }
     }

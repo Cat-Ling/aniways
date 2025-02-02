@@ -41,6 +41,9 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/episodes/{id}")
     class Episodes(val parent: AnimeRoute, val id: String)
+
+    @Resource("/episodes/servers/{episodeId}")
+    class EpisodeServers(val parent: AnimeRoute, val episodeId: String)
 }
 
 fun Route.animeRoutes() {
@@ -99,6 +102,14 @@ fun Route.animeRoutes() {
         cacheOutput(invalidateAt = 3.minutes) {
             get<AnimeRoute.Episodes> { route ->
                 call.respond(service.getEpisodesOfAnime(route.id))
+            }
+        }
+    }
+
+    rateLimit {
+        cacheOutput(invalidateAt = 3.minutes) {
+            get<AnimeRoute.EpisodeServers> { route ->
+                call.respond(service.getServersOfEpisode(route.episodeId))
             }
         }
     }
