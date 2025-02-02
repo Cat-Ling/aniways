@@ -66,6 +66,10 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
 
+    // Caching Dependencies
+    implementation(libs.ktor.simple.cache)
+    implementation(libs.ktor.simple.redis.cache)
+
     // Testing Dependencies
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlin.test.junit)

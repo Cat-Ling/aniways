@@ -7,6 +7,7 @@ data class Env(
     val serverConfig: ServerConfig,
     val dbConfig: DBConfig,
     val malCredentials: MalCredentials,
+    val redisConfig: RedisConfig,
 )
 
 data class ServerConfig(
@@ -22,6 +23,11 @@ data class DBConfig(
 data class MalCredentials(
     val clientId: String,
     val clientSecret: String,
+)
+
+data class RedisConfig(
+    val host: String,
+    val port: Int,
 )
 
 val Application.env: Env
@@ -75,9 +81,24 @@ val Application.env: Env
             clientSecret = malClientSecret
         )
 
+        val redisHost = environment.property("redis.host").getString()
+        val redisPort = environment.property("redis.port").getString().toIntOrNull()
+
+        if (redisHost.isBlank() || redisPort == null) {
+            throw IllegalArgumentException(
+                "Redis configuration is missing. Please ensure 'redis.host' and 'redis.port' are set in the configuration."
+            )
+        }
+
+        val redisConfig = RedisConfig(
+            host = redisHost,
+            port = redisPort
+        )
+
         return Env(
             serverConfig = serverConfig,
             dbConfig = dbConfig,
             malCredentials = malCredentials,
+            redisConfig = redisConfig
         )
     }

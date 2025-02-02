@@ -8,6 +8,7 @@ jsoup = "1.18.3"
 ktorm = "4.1.1"
 postgres = "42.7.2"
 hikari = "5.1.0"
+cache = "0.51.2"
 
 [libraries]
 # Ktor Server dependencies
@@ -45,6 +46,10 @@ driver-postgres = { module = "org.postgresql:postgresql", version.ref = "postgre
 hikari-core = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+
+# Caching dependencies
+ktor-simple-cache = { module = "com.ucasoft.ktor:ktor-simple-cache", version.ref = "cache" }
+ktor-simple-redis-cache = { module = "com.ucasoft.ktor:ktor-simple-redis-cache", version.ref = "cache" }
 
 # Testing dependencies
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

@@ -1,11 +1,14 @@
 package xyz.aniways.features.anime
 
+import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.resources.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import xyz.aniways.features.anime.services.AnimeService
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 @Resource("/anime")
 class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
@@ -31,24 +34,36 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
 
-    get<AnimeRoute.Seasonal> {
-        call.respond(service.getSeasonalAnimes())
+    cacheOutput(invalidateAt = 7.days) {
+        get<AnimeRoute.Seasonal> {
+            call.respond(service.getSeasonalAnimes())
+        }
     }
 
-    get<AnimeRoute.Trending> {
-        call.respond(service.getTrendingAnimes())
+    cacheOutput(invalidateAt = 7.days) {
+        get<AnimeRoute.Trending> {
+            call.respond(service.getTrendingAnimes())
+        }
     }
 
-    get<AnimeRoute.Top> {
-        call.respond(service.getTopAnimes())
+    cacheOutput(invalidateAt = 1.days) {
+        get<AnimeRoute.Top> {
+            call.respond(service.getTopAnimes())
+        }
     }
 
-    get<AnimeRoute.Popular> {
-        call.respond(service.getPopularAnimes())
+    cacheOutput(invalidateAt = 30.days) {
+        get<AnimeRoute.Popular> {
+            call.respond(service.getPopularAnimes())
+        }
     }
 
-    get<AnimeRoute.Search> { route ->
-        call.respond(service.searchAnime(route.query, route.page))
+    cacheOutput(
+        invalidateAt = 1.hours,
+        queryKeys = listOf("query", "page")
+    ) {
+        get<AnimeRoute.Search> { route ->
+            call.respond(service.searchAnime(route.query, route.page))
+        }
     }
-
 }

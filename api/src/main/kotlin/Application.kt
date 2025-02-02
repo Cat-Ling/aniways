@@ -16,5 +16,6 @@ fun Application.module() {
     configureTaskScheduler()
     configureSession()
     configureAuth()
+    configureSimpleCache()
     configureRouting()
 }

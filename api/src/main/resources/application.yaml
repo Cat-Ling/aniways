@@ -15,3 +15,7 @@ db:
 mal:
   clientId: "$MAL_CLIENT_ID"
   clientSecret: "$MAL_CLIENT_SECRET"
+
+redis:
+  host: "$REDIS_HOST:localhost"
+  port: "$REDIS_PORT:6379"
