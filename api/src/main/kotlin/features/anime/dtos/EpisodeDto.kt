@@ -18,7 +18,12 @@ data class RawEpisodeData(
 
 @Serializable
 data class EpisodeServerDto(
-    val serverId: String,
     val type: String,
     val serverName: String,
+    val url: String,
+)
+
+@Serializable
+data class RawEpisodeSourceData(
+    val link: String?,
 )

@@ -3,12 +3,16 @@ package xyz.aniways.features.anime.scrapers
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import xyz.aniways.utils.getDocument
+import xyz.aniways.utils.retryWithDelay
 import xyz.aniways.utils.toStringOrNull
 
 class HianimeScraper(
@@ -237,25 +241,39 @@ class HianimeScraper(
         }
     }
 
-    override suspend fun getServersOfEpisode(episodeId: String): List<EpisodeServerDto> {
+    private suspend fun getIframeUrl(episodeId: String, serverId: String): String? {
+        val response = httpClient.get("$baseUrl/ajax/v2/episode/sources?id=$serverId") {
+            header("X-Requested-With", "XMLHttpRequest")
+            header("Referer", "$baseUrl/watch/$episodeId")
+        }
+
+        return response.body<RawEpisodeSourceData>().link
+    }
+
+    override suspend fun getServersOfEpisode(episodeId: String): List<EpisodeServerDto> = coroutineScope {
         val response = httpClient.get("$baseUrl/ajax/v2/episode/servers?episodeId=$episodeId") {
             header("X-Requested-With", "XMLHttpRequest")
             header("Referer", "$baseUrl/watch/$episodeId")
         }
 
         val data = response.body<RawEpisodeData>()
-        val document = data.html?.let { Jsoup.parse(it) } ?: return emptyList()
+        val document = data.html?.let { Jsoup.parse(it) } ?: return@coroutineScope emptyList()
 
-        return document.select(".server-item").mapNotNull { element ->
-            val serverId = element.attr("data-server-id")
+        document.select(".server-item").map { element ->
+            async {
+                val serverIndex = element.attr("data-server-id")
 
-            if (serverId != "1" && serverId != "4") return@mapNotNull null
+                if (serverIndex != "1" && serverIndex != "4") return@async null
 
-            EpisodeServerDto(
-                serverId = element.attr("data-id"),
-                type = element.attr("data-type"),
-                serverName = element.text().trim()
-            )
-        }
+                val serverId = element.attr("data-id")
+                val url = retryWithDelay { getIframeUrl(episodeId, serverId) } ?: return@async null
+
+                EpisodeServerDto(
+                    type = element.attr("data-type"),
+                    serverName = element.text().trim(),
+                    url = url
+                )
+            }
+        }.awaitAll().filterNotNull()
     }
 }
