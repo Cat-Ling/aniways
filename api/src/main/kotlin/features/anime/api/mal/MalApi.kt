@@ -3,11 +3,9 @@ package xyz.aniways.features.anime.api.mal
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.util.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.JsonObject
 import xyz.aniways.Env
+import xyz.aniways.features.anime.api.mal.models.MalAnimeList
 import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
 import xyz.aniways.utils.getDocument
 
@@ -55,5 +53,39 @@ class MalApi(
         val document = httpClient.getDocument("https://myanimelist.net/anime/$id")
         val trailer = document.selectFirst("a.iframe")?.attr("href")
         return trailer
+    }
+
+    suspend fun getListOfUserAnimeList(
+        username: String,
+        page: Int,
+        itemsPerPage: Int,
+        token: String?,
+        status: String?,
+        sort: String?
+    ): MalAnimeList {
+        val fields = listOf(
+            "list_status",
+            *this.fields.map { "node.$it" }.toTypedArray()
+        )
+
+        val response = httpClient.get("$baseUrl/users/$username/animelist") {
+            url {
+                parameters.append("fields", fields.joinToString(","))
+                status?.let { parameters.append("status", it) }
+                sort?.let { parameters.append("sort", it) }
+                parameters.append("limit", itemsPerPage.toString())
+                parameters.append("offset", ((page - 1) * itemsPerPage).toString())
+            }
+            token?.let { header("Authorization", "Bearer $it") } ?: authorizeRequest()
+        }
+
+        val animelist = response.body<MalAnimeList>()
+
+        return animelist.copy(
+            paging = animelist.paging?.copy(
+                next = animelist.paging?.next?.let { "/anime/list/$username?page=${page + 1}" },
+                previous = animelist.paging?.previous?.let { "/anime/list/$username?page=${page - 1}" }
+            )
+        )
     }
 }

@@ -8,6 +8,8 @@ import xyz.aniways.features.anime.api.anilist.AnilistApi
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnime
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnimeDto
 import xyz.aniways.features.anime.api.mal.MalApi
+import xyz.aniways.features.anime.api.mal.models.MalAnimeList
+import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
 import xyz.aniways.features.anime.api.mal.models.toAnimeMetadata
 import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.db.Anime
@@ -25,21 +27,30 @@ class AnimeService(
 ) {
     private val logger = KtorSimpleLogger("AnimeService")
 
-    suspend fun getAnimeById(id: String): AnimeWithMetadataDto? {
-        val anime = animeDao.getAnimeById(id) ?: return null
-
+    private suspend fun saveMetadataInDB(
+        anime: Anime,
+        malMetadata: MalAnimeMetadata? = null
+    ): AnimeWithMetadataDto {
         return anime.metadata?.lastUpdatedAt?.let {
             val monthAgo = Instant.now().toEpochMilli() - 60 * 60 * 24 * 30
             if (it.toEpochMilli() < monthAgo) return@let null
 
             anime.toAnimeWithMetadataDto()
         } ?: run {
-            val metadata = malApi.getAnimeMetadata(anime.malId!!).toAnimeMetadata()
+            val metadata = (malMetadata ?: malApi.getAnimeMetadata(anime.malId!!)).toAnimeMetadata()
+
             val result = anime.metadata?.lastUpdatedAt?.let {
                 animeDao.updateAnimeMetadata(metadata)
             } ?: animeDao.insertAnimeMetadata(metadata)
+
             return anime.copy().apply { this.metadata = result }.toAnimeWithMetadataDto()
         }
+    }
+
+    suspend fun getAnimeById(id: String): AnimeWithMetadataDto? {
+        val anime = animeDao.getAnimeById(id) ?: return null
+
+        return saveMetadataInDB(anime)
     }
 
     suspend fun getAnimeTrailer(id: String): String? {
@@ -260,4 +271,68 @@ class AnimeService(
             }
         }
     }
+
+    suspend fun getUserAnimeList(
+        username: String,
+        page: Int,
+        itemsPerPage: Int,
+        token: String?,
+        status: String?,
+        sort: String?
+    ): AnimeListDto = coroutineScope {
+        val animelist = malApi.getListOfUserAnimeList(
+            username = username,
+            page = page,
+            itemsPerPage = itemsPerPage,
+            token = token,
+            status = status,
+            sort = sort
+        )
+
+        if (animelist.data.isEmpty()) return@coroutineScope AnimeListDto(
+            pageInfo = PageInfo(
+                hasNextPage = false,
+                hasPreviousPage = false,
+                currentPage = page,
+            ),
+            items = emptyList()
+        )
+
+        val dbAnimes = animeDao.getAnimesInMalIds(animelist.data.mapNotNull { it.node?.id })
+
+        animelist.data
+            .mapNotNull { it.node }
+            .mapNotNull { metadata ->
+                val dbAnime = dbAnimes.find { it.malId == metadata.id } ?: return@mapNotNull null
+                async { saveMetadataInDB(dbAnime, metadata) }
+            }
+            .awaitAll()
+            .let { anime ->
+                AnimeListDto(
+                    pageInfo = PageInfo(
+                        hasNextPage = animelist.paging?.next != null,
+                        hasPreviousPage = animelist.paging?.previous != null,
+                        currentPage = page,
+                    ),
+                    items = anime.mapNotNull { a ->
+                        val listStatus = animelist.data.find { it.node?.id == a.malId }?.listStatus
+
+                        listStatus ?: return@mapNotNull null
+
+                        AnimeListNode(
+                            id = a.id,
+                            name = a.name,
+                            jname = a.jname,
+                            poster = a.poster,
+                            totalEpisodes = a.metadata?.totalEpisodes ?: 0,
+                            mediaType = a.metadata?.mediaType ?: "Unknown",
+                            mean = a.metadata?.mean ?: 0.0,
+                            numScoringUsers = a.metadata?.scoringUsers ?: 0,
+                            listStatus = listStatus
+                        )
+                    }
+                )
+            }
+    }
+
 }

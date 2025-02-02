@@ -3,12 +3,14 @@ package xyz.aniways.features.anime
 import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.http.*
 import io.ktor.resources.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import xyz.aniways.features.anime.services.AnimeService
+import xyz.aniways.plugins.Auth
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -44,6 +46,26 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/episodes/servers/{episodeId}")
     class EpisodeServers(val parent: AnimeRoute, val episodeId: String)
+
+    @Resource("/genres")
+    class Genres(val parent: AnimeRoute)
+
+    @Resource("/genres/{genre}")
+    class Genre(val parent: AnimeRoute, val genre: String)
+
+    @Resource("/random")
+    class Random(val parent: AnimeRoute)
+
+    @Resource("/random/{genre}")
+    class RandomGenre(val parent: AnimeRoute, val genre: String)
+
+    @Resource("/list/{username}")
+    class List(
+        val parent: AnimeRoute,
+        val username: String,
+        val status: String? = null,
+        val sort: String? = null
+    )
 }
 
 fun Route.animeRoutes() {
@@ -111,6 +133,23 @@ fun Route.animeRoutes() {
             get<AnimeRoute.EpisodeServers> { route ->
                 call.respond(service.getServersOfEpisode(route.episodeId))
             }
+        }
+    }
+
+    authenticate(Auth.SESSION, strategy = AuthenticationStrategy.Optional) {
+        get<AnimeRoute.List> { route ->
+            val token = call.principal<Auth.UserPrincipal>()?.token
+
+            val animeList = service.getUserAnimeList(
+                username = route.username,
+                token = token,
+                status = route.status,
+                sort = route.sort,
+                page = route.parent.page,
+                itemsPerPage = route.parent.itemsPerPage
+            )
+
+            call.respond(animeList)
         }
     }
 }

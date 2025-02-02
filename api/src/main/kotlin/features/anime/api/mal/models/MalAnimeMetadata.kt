@@ -35,9 +35,9 @@ data class MainPicture(
 
 @Serializable
 data class AlternativeTitles(
-    @SerialName("synonyms") val synonyms: ArrayList<String>,
-    @SerialName("en") val en: String?,
-    @SerialName("ja") val ja: String?
+    @SerialName("synonyms") val synonyms: ArrayList<String> = arrayListOf(),
+    @SerialName("en") val en: String? = null,
+    @SerialName("ja") val ja: String? = null
 )
 
 @Serializable
