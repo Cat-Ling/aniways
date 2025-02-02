@@ -62,7 +62,7 @@ class AnimeService(
     suspend fun scrapeAndPopulateAnime(page: Int = 1): Unit = coroutineScope {
         logger.info("Scraping and populating anime for page $page")
         val animes = animeScraper.getAZList(page)
-        val semaphore = Semaphore(10)
+        val semaphore = Semaphore(20)
 
         val deferredAnimeInfo = animes.items.map { anime ->
             async {
