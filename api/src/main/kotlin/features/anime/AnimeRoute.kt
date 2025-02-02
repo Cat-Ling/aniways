@@ -9,6 +9,7 @@ import org.koin.ktor.ext.inject
 import xyz.aniways.features.anime.services.AnimeService
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 @Resource("/anime")
 class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
@@ -37,7 +38,7 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
 
-    cacheOutput(invalidateAt = 1.hours) {
+    cacheOutput(invalidateAt = 30.minutes) {
         get<AnimeRoute.RecentlyUpdated> { route ->
             call.respond(service.getRecentlyUpdatedAnimes(route.parent.page, route.parent.itemsPerPage))
         }

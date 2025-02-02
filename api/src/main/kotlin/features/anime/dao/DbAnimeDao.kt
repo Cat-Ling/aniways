@@ -22,30 +22,6 @@ class DbAnimeDao(
         }
     }
 
-    override suspend fun getAnimes(page: Int, itemsPerPage: Int): Pagination<Anime> {
-        return aniwaysDb.query {
-            val totalItems = animes.count()
-            val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
-            val hasNextPage = page < totalPage
-            val hasPreviousPage = page > 1
-
-            val items = animes
-                .drop((page - 1) * itemsPerPage)
-                .take(itemsPerPage)
-                .toList()
-
-            Pagination(
-                pageInfo = PageInfo(
-                    totalPage = totalPage,
-                    currentPage = page,
-                    hasNextPage = hasNextPage,
-                    hasPreviousPage = hasPreviousPage,
-                ),
-                items = items
-            )
-        }
-    }
-
     override suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<Anime> {
         return aniwaysDb.query {
             val totalItems = animes.count()
@@ -74,24 +50,6 @@ class DbAnimeDao(
     override suspend fun getAnimeById(id: String): Anime? {
         return aniwaysDb.query {
             animes.find { it.id eq UUID.fromString(id) }
-        }
-    }
-
-    override suspend fun getAnimeByMalId(malId: Int): Anime? {
-        return aniwaysDb.query {
-            animes.find { it.malId eq malId }
-        }
-    }
-
-    override suspend fun getAnimeByHiAnimeId(hiAnimeId: String): Anime? {
-        return aniwaysDb.query {
-            animes.find { it.hianimeId eq hiAnimeId }
-        }
-    }
-
-    override suspend fun getAnimeInIds(ids: List<String>): List<Anime> {
-        return aniwaysDb.query {
-            animes.filter { it.id inList ids.map(UUID::fromString) }.toList()
         }
     }
 
@@ -137,12 +95,6 @@ class DbAnimeDao(
         return aniwaysDb.query {
             animes.update(anime)
             anime
-        }
-    }
-
-    override suspend fun deleteAnimeById(id: String) {
-        return aniwaysDb.query {
-            animes.removeIf { it.id eq UUID.fromString(id) }
         }
     }
 }
