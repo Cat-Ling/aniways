@@ -44,15 +44,19 @@ class AnimeService(
     ): AnimeWithMetadataDto {
         return anime.metadata?.lastUpdatedAt?.let {
             val monthAgo = Instant.now().toEpochMilli() - 60 * 60 * 24 * 30
-            if (it.toEpochMilli() < monthAgo) return@let null
+            if (it.toEpochMilli() < monthAgo) {
+                // Update metadata in background next request gets the updated metadata
+                CoroutineScope(Dispatchers.IO).launch {
+                    val metadata = malApi.getAnimeMetadata(anime.malId!!).toAnimeMetadata()
+                    animeDao.updateAnimeMetadata(metadata)
+                }
+            }
 
             anime.toAnimeWithMetadataDto()
         } ?: run {
             val metadata = (malMetadata ?: malApi.getAnimeMetadata(anime.malId!!)).toAnimeMetadata()
 
-            val result = anime.metadata?.lastUpdatedAt?.let {
-                animeDao.updateAnimeMetadata(metadata)
-            } ?: animeDao.insertAnimeMetadata(metadata)
+            val result = animeDao.insertAnimeMetadata(metadata)
 
             return anime.copy().apply { this.metadata = result }.toAnimeWithMetadataDto()
         }
@@ -325,11 +329,12 @@ class AnimeService(
 
         val dbAnimes = animeDao.getAnimesInMalIds(animelist.data.mapNotNull { it.node?.id })
 
+        val semaphore = Semaphore(20)
         val animes = animelist.data
             .mapNotNull { it.node }
             .mapNotNull { metadata ->
                 val dbAnime = dbAnimes.find { it.malId == metadata.id } ?: return@mapNotNull null
-                async { saveMetadataInDB(dbAnime, metadata) }
+                async { semaphore.withPermit { saveMetadataInDB(dbAnime, metadata) } }
             }
             .awaitAll()
 
