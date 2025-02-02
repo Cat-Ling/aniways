@@ -1,13 +1,17 @@
 package xyz.aniways.features.anime.scrapers
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import xyz.aniways.utils.getDocument
 import xyz.aniways.utils.toStringOrNull
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 
 class HianimeScraper(
@@ -215,5 +219,24 @@ class HianimeScraper(
             pageInfo = extractPageInfo(document),
             items = extractAnimes(document)
         )
+    }
+
+    override suspend fun getEpisodesOfAnime(hianimeId: String): List<EpisodeDto> {
+        val response = httpClient.get("$baseUrl/ajax/v2/episode/list/${hianimeId.split("-").last()}") {
+            header("X-Requested-With", "XMLHttpRequest")
+            header("Referer", "$baseUrl/watch/$hianimeId")
+        }
+
+        val data = response.body<RawEpisodeData>()
+        val document = data.html?.let { Jsoup.parse(it) } ?: return emptyList()
+
+        return document.select(".detail-infor-content .ss-list a").map { element ->
+            EpisodeDto(
+                title = element.attr("title").trim(),
+                number = element.attr("data-number").toIntOrNull() ?: 1,
+                isFiller = element.hasClass("ssl-item-filler"),
+                id = element.attr("href").split("?ep=").last().trim()
+            )
+        }
     }
 }

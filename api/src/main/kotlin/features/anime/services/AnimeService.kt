@@ -78,6 +78,12 @@ class AnimeService(
         return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
+    suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {
+        val anime = animeDao.getAnimeById(id) ?: return emptyList()
+
+        return animeScraper.getEpisodesOfAnime(anime.hianimeId)
+    }
+
     suspend fun searchAnime(query: String, page: Int): Pagination<AnimeDto> {
         val result = animeScraper.searchAnime(query, page)
         val dbAnimes = animeDao.getAnimesInHiAnimeIds(result.items.map { it.hianimeId })

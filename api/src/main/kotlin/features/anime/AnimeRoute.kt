@@ -3,6 +3,7 @@ package xyz.aniways.features.anime
 import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.http.*
 import io.ktor.resources.*
+import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -37,6 +38,9 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/trailer/{id}")
     class Trailer(val parent: AnimeRoute, val id: String)
+
+    @Resource("/episodes/{id}")
+    class Episodes(val parent: AnimeRoute, val id: String)
 }
 
 fun Route.animeRoutes() {
@@ -89,5 +93,13 @@ fun Route.animeRoutes() {
         val trailer = service.getAnimeTrailer(route.id)
         trailer ?: return@get call.respond(HttpStatusCode.NotFound)
         call.respond(trailer)
+    }
+
+    rateLimit {
+        cacheOutput(invalidateAt = 3.minutes) {
+            get<AnimeRoute.Episodes> { route ->
+                call.respond(service.getEpisodesOfAnime(route.id))
+            }
+        }
     }
 }
