@@ -52,6 +52,9 @@ flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql
 ktor-simple-cache = { module = "com.ucasoft.ktor:ktor-simple-cache", version.ref = "cache" }
 ktor-simple-redis-cache = { module = "com.ucasoft.ktor:ktor-simple-redis-cache", version.ref = "cache" }
 
+# Cron dependencies
+cron-utils = { module = "com.cronutils:cron-utils", version = "9.2.1" }
+
 # Testing dependencies
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

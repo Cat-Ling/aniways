@@ -153,44 +153,47 @@ class AnimeService(
 
         val inDB = animeDao.getAnimesInHiAnimeIds(animes.items.map { it.hianimeId })
 
+        val currentTime = System.currentTimeMillis()
 
-        // do synchronously to avoid rate limiting + better updatetime spread
-        animes.items.reversed().forEach { scrapedAnime ->
-            val dbAnime = inDB.find { it.hianimeId == scrapedAnime.hianimeId }
+        val semaphore = Semaphore(20)
+        animes.items.reversed().mapIndexed { index, scrapedAnime ->
+            val updateTime = currentTime + (index * 20)
 
-            logger.info("Fetching anime info for ${scrapedAnime.hianimeId}")
-            val info = retryWithDelay {
-                animeScraper.getAnimeInfo(scrapedAnime.hianimeId)
+            async {
+                semaphore.withPermit {
+                    val dbAnime = inDB.find { it.hianimeId == scrapedAnime.hianimeId }
+
+                    logger.info("Fetching anime info for ${scrapedAnime.hianimeId}")
+                    val info = retryWithDelay {
+                        animeScraper.getAnimeInfo(scrapedAnime.hianimeId)
+                    }
+
+                    dbAnime?.let {
+                        animeDao.updateAnime(dbAnime.copy().apply {
+                            poster = scrapedAnime.poster
+                            lastEpisode = scrapedAnime.episodes?.toIntOrNull() ?: dbAnime.lastEpisode
+                            malId = info?.malId ?: dbAnime.malId
+                            anilistId = info?.anilistId ?: dbAnime.anilistId
+                            updatedAt = Instant.ofEpochMilli(updateTime)
+                        })
+                    } ?: run {
+                        animeDao.insertAnime(Anime {
+                            name = scrapedAnime.name
+                            jname = scrapedAnime.jname
+                            poster = scrapedAnime.poster
+                            genre = info?.genre ?: ""
+                            hianimeId = scrapedAnime.hianimeId
+                            malId = info?.malId
+                            anilistId = info?.anilistId
+                            lastEpisode = scrapedAnime.episodes?.toIntOrNull()
+                            updatedAt = Instant.ofEpochMilli(updateTime)
+                        })
+                    }
+                }
             }
+        }.awaitAll()
 
-            if (dbAnime != null) {
-                animeDao.updateAnime(dbAnime.copy().apply {
-                    poster = scrapedAnime.poster
-                    lastEpisode = scrapedAnime.episodes?.toIntOrNull() ?: dbAnime.lastEpisode
-                    malId = info?.malId ?: dbAnime.malId
-                    anilistId = info?.anilistId ?: dbAnime.anilistId
-                    updatedAt = Instant.now()
-                })
-
-                delay(200L)
-                return@forEach
-            }
-
-            animeDao.insertAnime(Anime {
-                name = scrapedAnime.name
-                jname = scrapedAnime.jname
-                poster = scrapedAnime.poster
-                genre = info?.genre ?: ""
-                hianimeId = scrapedAnime.hianimeId
-                malId = info?.malId
-                anilistId = info?.anilistId
-                lastEpisode = scrapedAnime.episodes?.toIntOrNull()
-            })
-
-            delay(200L)
-        }
-
-        delay(1000L)
+        delay(2000L)
         scrapeAndPopulateRecentlyUpdatedAnime(page - 1)
     }
 

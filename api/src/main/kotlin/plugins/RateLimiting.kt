@@ -8,8 +8,8 @@ fun Application.configureRateLimiting() {
     install(RateLimit) {
         register {
             rateLimiter(
-                refillPeriod = 60.seconds,
-                limit = 30,
+                refillPeriod = 10.seconds,
+                limit = 10,
             )
         }
     }

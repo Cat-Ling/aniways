@@ -71,6 +71,9 @@ dependencies {
     implementation(libs.ktor.simple.cache)
     implementation(libs.ktor.simple.redis.cache)
 
+    // Cron Utility Dependencies
+    implementation(libs.cron.utils)
+
     // Testing Dependencies
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlin.test.junit)

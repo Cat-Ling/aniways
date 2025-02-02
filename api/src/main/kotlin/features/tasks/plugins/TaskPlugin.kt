@@ -4,9 +4,9 @@ import io.ktor.server.application.*
 import io.ktor.server.application.hooks.*
 import kotlinx.coroutines.*
 
-val TaskScheduler = createApplicationPlugin(
-    name = "TaskScheduler",
-    createConfiguration = ::TaskSchedulerConfiguration,
+val TaskSchedulerPlugin = createApplicationPlugin(
+    name = "TaskSchedulerPlugin",
+    createConfiguration = ::TaskSchedulerPluginConfiguration,
 ) {
     val tasks = pluginConfig.tasks
 
@@ -17,7 +17,7 @@ val TaskScheduler = createApplicationPlugin(
 
         tasksByFrequency.forEach { (frequency, tasks) ->
             scope.launch {
-                Task.Scheduler(frequency).schedule(tasks)
+                TaskScheduler(frequency).schedule(tasks)
             }
         }
     }
@@ -27,6 +27,6 @@ val TaskScheduler = createApplicationPlugin(
     }
 }
 
-class TaskSchedulerConfiguration {
+class TaskSchedulerPluginConfiguration {
     var tasks: List<Task> = emptyList()
 }
