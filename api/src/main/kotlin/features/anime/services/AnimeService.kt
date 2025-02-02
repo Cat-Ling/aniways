@@ -81,7 +81,7 @@ class AnimeService(
     suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {
         val anime = animeDao.getAnimeById(id) ?: return emptyList()
 
-        return animeScraper.getEpisodesOfAnime(anime.hianimeId)
+        return retryWithDelay { animeScraper.getEpisodesOfAnime(anime.hianimeId) } ?: emptyList()
     }
 
     suspend fun searchAnime(query: String, page: Int): Pagination<AnimeDto> {
