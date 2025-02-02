@@ -78,10 +78,10 @@ class HianimeScraper(
         }
     }
 
-    override suspend fun getTopAnimes(): TopAnimeDto {
+    override suspend fun getTopAnimes(): ScrapedTopAnimeDto {
         val document = httpClient.getDocument("$baseUrl/home")
 
-        return TopAnimeDto(
+        return ScrapedTopAnimeDto(
             today = getTopAnimeNodes(document, "day"),
             week = getTopAnimeNodes(document, "week"),
             month = getTopAnimeNodes(document, "month")

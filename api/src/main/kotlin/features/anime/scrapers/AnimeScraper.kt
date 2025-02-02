@@ -5,7 +5,7 @@ import xyz.aniways.models.Pagination
 
 interface AnimeScraper {
     suspend fun getTrendingAnimes(): List<ScrapedAnimeDto>
-    suspend fun getTopAnimes(): TopAnimeDto
+    suspend fun getTopAnimes(): ScrapedTopAnimeDto
     suspend fun searchAnime(query: String, page: Int): Pagination<ScrapedAnimeDto>
     suspend fun getAZList(page: Int): Pagination<ScrapedAnimeDto>
     suspend fun getAnimeInfo(id: String): ScrapedAnimeInfoDto

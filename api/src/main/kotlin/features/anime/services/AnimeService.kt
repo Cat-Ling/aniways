@@ -89,17 +89,19 @@ class AnimeService(
     }
 
     suspend fun getAnimeTrailer(id: String): String? {
-        return animeDao.getAnimeById(id)?.let { anime ->
-            anime.malId ?: return@let null
-            malApi.getTrailer(anime.malId!!).also { trailer ->
-                anime.metadata?.run {
-                    if (this.trailer == trailer || trailer == null) return@run
-                    animeDao.updateAnimeMetadata(this.copy().apply {
-                        this.trailer = trailer
-                    })
-                }
-            }
+        val anime = animeDao.getAnimeById(id)
+
+        val malId = anime?.malId ?: return null
+        val trailer = malApi.getTrailer(malId) ?: return null
+        val metadata = anime.metadata ?: return trailer
+        if (metadata.trailer == trailer) return trailer
+
+        CoroutineScope(Dispatchers.IO).launch {
+            metadata.trailer = trailer
+            metadata.flushChanges()
         }
+
+        return trailer
     }
 
     suspend fun getTrendingAnimes(): List<AnimeDto> {
@@ -121,6 +123,7 @@ class AnimeService(
 
     suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
         val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
+
         return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
@@ -146,7 +149,25 @@ class AnimeService(
     }
 
     suspend fun scrapeTopAnimes(): TopAnimeDto {
-        return animeScraper.getTopAnimes()
+        val topAnimes = animeScraper.getTopAnimes()
+
+        val dbAnimes = animeDao.getAnimesInHiAnimeIds(
+            (topAnimes.today.map { it.hianimeId }
+                    + topAnimes.week.map { it.hianimeId }
+                    + topAnimes.month.map { it.hianimeId }).distinct()
+        )
+
+        return TopAnimeDto(
+            today = topAnimes.today.mapNotNull {
+                dbAnimes.find { a -> a.hianimeId == it.hianimeId }?.toAnimeDto()
+            },
+            week = topAnimes.week.mapNotNull {
+                dbAnimes.find { a -> a.hianimeId == it.hianimeId }?.toAnimeDto()
+            },
+            month = topAnimes.month.mapNotNull {
+                dbAnimes.find { a -> a.hianimeId == it.hianimeId }?.toAnimeDto()
+            }
+        )
     }
 
     suspend fun getAllGenres(): List<String> {
@@ -154,7 +175,12 @@ class AnimeService(
     }
 
     suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
-        val result = animeDao.getAnimesByGenre(formatGenre(genre), page, itemsPerPage)
+        val result = animeDao.getAnimesByGenre(
+            genre = formatGenre(genre),
+            page = page,
+            itemsPerPage = itemsPerPage
+        )
+
         return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
@@ -163,7 +189,9 @@ class AnimeService(
     }
 
     suspend fun getRandomAnimeByGenre(genre: String): AnimeDto {
-        return animeDao.getRandomAnimeByGenre(formatGenre(genre)).toAnimeDto()
+        return animeDao.getRandomAnimeByGenre(
+            genre = formatGenre(genre)
+        ).toAnimeDto()
     }
 
     suspend fun scrapeAndPopulateAnime(page: Int = 1): Unit = coroutineScope {
