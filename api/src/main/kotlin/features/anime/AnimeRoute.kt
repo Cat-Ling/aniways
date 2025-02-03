@@ -3,7 +3,6 @@ package xyz.aniways.features.anime
 import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.http.*
 import io.ktor.resources.*
-import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.request.*
@@ -80,7 +79,12 @@ fun Route.animeRoutes() {
     val service by inject<AnimeService>()
 
     get<AnimeRoute.RecentlyUpdated> { route ->
-        call.respond(service.getRecentlyUpdatedAnimes(route.parent.page, route.parent.itemsPerPage))
+        val recentlyUpdatedAnimes = service.getRecentlyUpdatedAnimes(
+            page = route.parent.page,
+            itemsPerPage = route.parent.itemsPerPage
+        )
+
+        call.respond(recentlyUpdatedAnimes)
     }
 
     get<AnimeRoute.Metadata> { route ->
@@ -125,7 +129,12 @@ fun Route.animeRoutes() {
         queryKeys = listOf("query", "page")
     ) {
         get<AnimeRoute.Search> { route ->
-            call.respond(service.searchAnime(route.query, route.page))
+            val result = service.searchAnime(
+                query = route.query,
+                page = route.page
+            )
+
+            call.respond(result)
         }
     }
 
@@ -160,7 +169,9 @@ fun Route.animeRoutes() {
     rateLimit {
         cacheOutput(invalidateAt = 3.minutes) {
             get<AnimeRoute.EpisodeServers> { route ->
-                call.respond(service.getServersOfEpisode(route.episodeId))
+                val servers = service.getServersOfEpisode(route.episodeId)
+
+                call.respond(servers)
             }
         }
     }
@@ -238,13 +249,13 @@ fun Route.animeRoutes() {
 
     cacheOutput(invalidateAt = 7.days) {
         get<AnimeRoute.Genre> { route ->
-            call.respond(
-                service.getAnimesByGenre(
-                    page = route.parent.page,
-                    itemsPerPage = route.parent.itemsPerPage,
-                    genre = route.genre
-                )
+            val animes = service.getAnimesByGenre(
+                page = route.parent.page,
+                itemsPerPage = route.parent.itemsPerPage,
+                genre = route.genre
             )
+
+            call.respond(animes)
         }
     }
 
@@ -253,6 +264,8 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.RandomGenre> { route ->
-        call.respond(service.getRandomAnimeByGenre(route.genre))
+        val animes = service.getRandomAnimeByGenre(route.genre)
+
+        call.respond(animes)
     }
 }

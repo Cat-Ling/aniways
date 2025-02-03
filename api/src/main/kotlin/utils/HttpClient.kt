@@ -3,7 +3,6 @@ package xyz.aniways.utils
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 

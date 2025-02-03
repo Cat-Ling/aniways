@@ -1,7 +1,7 @@
 package xyz.aniways.features.anime.api.mal.models
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 
 @Serializable

@@ -4,14 +4,11 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.content.*
-import kotlinx.serialization.json.JsonObject
 import xyz.aniways.Env
-import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.api.mal.models.MalAnimeList
 import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
+import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.utils.getDocument
 
