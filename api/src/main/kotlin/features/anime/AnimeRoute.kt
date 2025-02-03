@@ -3,12 +3,17 @@ package xyz.aniways.features.anime
 import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.http.*
 import io.ktor.resources.*
+import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.ratelimit.*
+import io.ktor.server.request.*
 import io.ktor.server.resources.*
+import io.ktor.server.resources.patch
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import xyz.aniways.features.anime.api.mal.models.MalStatus
+import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.features.anime.services.AnimeService
 import xyz.aniways.plugins.Auth
 import kotlin.time.Duration.Companion.days
@@ -60,12 +65,15 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     class RandomGenre(val parent: AnimeRoute, val genre: String)
 
     @Resource("/list/{username}")
-    class List(
+    class ListOfUser(
         val parent: AnimeRoute,
         val username: String,
         val status: String? = null,
         val sort: String? = null
     )
+
+    @Resource("/list/{id}")
+    class List(val parent: AnimeRoute, val id: String)
 }
 
 fun Route.animeRoutes() {
@@ -76,9 +84,16 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.Metadata> { route ->
-        val anime = service.getAnimeById(route.id)
-        anime ?: return@get call.respond(HttpStatusCode.NotFound)
-        call.respond(anime)
+        try {
+            val anime = service.getAnimeById(route.id)
+            anime ?: return@get call.respond(HttpStatusCode.NotFound)
+            call.respond(anime)
+        } catch (e: IllegalArgumentException) {
+            if (e.message?.contains("Invalid UUID string") == true) {
+                return@get call.respond(HttpStatusCode.BadRequest)
+            }
+            call.respond(HttpStatusCode.InternalServerError)
+        }
     }
 
     cacheOutput(invalidateAt = 7.days) {
@@ -115,15 +130,29 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.Trailer> { route ->
-        val trailer = service.getAnimeTrailer(route.id)
-        trailer ?: return@get call.respond(HttpStatusCode.NotFound)
-        call.respond(trailer)
+        try {
+            val trailer = service.getAnimeTrailer(route.id)
+            trailer ?: return@get call.respond(HttpStatusCode.NotFound)
+            call.respond(trailer)
+        } catch (e: IllegalArgumentException) {
+            if (e.message?.contains("Invalid UUID string") == true) {
+                return@get call.respond(HttpStatusCode.BadRequest)
+            }
+            call.respond(HttpStatusCode.InternalServerError)
+        }
     }
 
     rateLimit {
         cacheOutput(invalidateAt = 3.minutes) {
             get<AnimeRoute.Episodes> { route ->
-                call.respond(service.getEpisodesOfAnime(route.id))
+                try {
+                    call.respond(service.getEpisodesOfAnime(route.id))
+                } catch (e: IllegalArgumentException) {
+                    if (e.message?.contains("Invalid UUID string") == true) {
+                        return@get call.respond(HttpStatusCode.BadRequest)
+                    }
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
     }
@@ -137,7 +166,7 @@ fun Route.animeRoutes() {
     }
 
     authenticate(Auth.SESSION, strategy = AuthenticationStrategy.Optional) {
-        get<AnimeRoute.List> { route ->
+        get<AnimeRoute.ListOfUser> { route ->
             val token = call.principal<Auth.UserPrincipal>()?.token
 
             val animeList = service.getUserAnimeList(
@@ -150,6 +179,54 @@ fun Route.animeRoutes() {
             )
 
             call.respond(animeList)
+        }
+    }
+
+    authenticate(Auth.SESSION) {
+        patch<AnimeRoute.List> { route ->
+            try {
+                val principal = call.principal<Auth.UserPrincipal>()
+                principal ?: return@patch call.respond(HttpStatusCode.Unauthorized)
+                val body = call.receive<UpdateAnimeListRequest>()
+
+                val status = MalStatus.fromValue(body.status)
+
+                status ?: return@patch call.respond(HttpStatusCode.BadRequest)
+
+                val res = service.updateAnimeListEntry(
+                    token = principal.token,
+                    id = route.id,
+                    status = status,
+                    score = body.score,
+                    numWatchedEpisodes = body.numWatchedEpisodes
+                )
+
+                res?.let { call.respond(it) } ?: call.respond(HttpStatusCode.BadRequest)
+            } catch (e: IllegalArgumentException) {
+                if (e.message?.contains("Invalid UUID string") == true) {
+                    return@patch call.respond(HttpStatusCode.BadRequest)
+                }
+                call.respond(HttpStatusCode.InternalServerError)
+            }
+        }
+
+        delete<AnimeRoute.List> {
+            try {
+                val principal = call.principal<Auth.UserPrincipal>()
+                principal ?: return@delete call.respond(HttpStatusCode.Unauthorized)
+
+                val value = service.deleteAnimeListEntry(principal.token, it.id)
+
+                call.respond(
+                    if (value) HttpStatusCode.OK
+                    else HttpStatusCode.BadRequest
+                )
+            } catch (e: IllegalArgumentException) {
+                if (e.message?.contains("Invalid UUID string") == true) {
+                    return@delete call.respond(HttpStatusCode.BadRequest)
+                }
+                call.respond(HttpStatusCode.InternalServerError)
+            }
         }
     }
 

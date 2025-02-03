@@ -1,5 +1,6 @@
 package xyz.aniways.features.anime.services
 
+import io.ktor.server.plugins.*
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
@@ -9,6 +10,8 @@ import xyz.aniways.features.anime.api.anilist.models.AnilistAnime
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnimeDto
 import xyz.aniways.features.anime.api.mal.MalApi
 import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
+import xyz.aniways.features.anime.api.mal.models.MalStatus
+import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.features.anime.api.mal.models.toAnimeMetadata
 import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.db.Anime
@@ -392,4 +395,48 @@ class AnimeService(
         )
     }
 
+    suspend fun updateAnimeListEntry(
+        token: String,
+        id: String,
+        status: MalStatus,
+        score: Int,
+        numWatchedEpisodes: Int,
+    ): UpdateAnimeListRequest? {
+        try {
+            val anime = animeDao.getAnimeById(id) ?: return null
+            val malId = anime.malId ?: return null
+
+            return malApi.updateAnimeListEntry(
+                token = token,
+                id = malId,
+                status = status,
+                score = score,
+                numWatchedEpisodes = numWatchedEpisodes,
+            )
+        } catch (e: Exception) {
+            logger.error("Failed to update anime list entry", e)
+            return null
+        }
+    }
+
+    suspend fun deleteAnimeListEntry(
+        token: String,
+        id: String,
+    ): Boolean {
+        try {
+            val anime = animeDao.getAnimeById(id) ?: return false
+
+            val malId = anime.malId ?: return false
+
+            malApi.deleteAnimeListEntry(
+                token = token,
+                id = malId,
+            )
+
+            return true
+        } catch (e: NotFoundException) {
+            logger.error("Failed to delete anime list entry", e)
+            return false
+        }
+    }
 }
