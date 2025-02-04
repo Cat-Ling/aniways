@@ -30,8 +30,8 @@ jobs:
           context: ./api
           push: true
           tags: |
-            ghcr.io/coeeter/aniways:latest
-            ghcr.io/coeeter/aniways:${{ github.sha }}
+            ghcr.io/coeeter/aniways-api:latest
+            ghcr.io/coeeter/aniways-api:${{ github.sha }}
 
   build-and-push-aniways-streaming-image:
     runs-on: ubuntu-latest
