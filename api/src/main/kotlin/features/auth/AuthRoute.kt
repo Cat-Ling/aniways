@@ -28,6 +28,8 @@ class AuthRoute() {
 }
 
 fun Route.authRoutes() {
+    val malUserService by inject<MalUserService>()
+
     authenticate(Auth.MAL_OAUTH) {
         get<AuthRoute.Login> {}
 
@@ -47,8 +49,6 @@ fun Route.authRoutes() {
 
     authenticate(Auth.SESSION) {
         get<AuthRoute.Me> {
-            val malUserService by inject<MalUserService>()
-
             val currentUser = call.principal<Auth.UserPrincipal>()
             currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
