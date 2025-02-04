@@ -26,10 +26,10 @@ services:
 
   api:
     image: ghcr.io/coeeter/aniways-api:${GITHUB_SHA:-latest}
+    secrets:
+      - env-v1
     env_file:
-      - .env
-    environment:
-      - DATABASE_URL=jdbc:postgresql://postgres:5432/${DATABASE_NAME}
+      - /run/secrets/env-v1
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.services.web.loadbalancer.server.port=8080'
@@ -63,10 +63,10 @@ services:
     user: ${DATABASE_USER}
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+    secrets:
+      - env-v1
+    env_file:
+      - /run/secrets/env-v1
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -74,3 +74,7 @@ volumes:
   letsencrypt:
   redis-data:
   postgres-data:
+
+secrets:
+  env-v1:
+    external: true

@@ -9,9 +9,9 @@ ktor:
     port: 8080
 
 db:
-  url: "$DATABASE_URL:jdbc:postgresql://localhost:5432/aniways"
-  username: "$DATABASE_USER:postgres"
-  password: "$DATABASE_PASSWORD:password"
+  url: "$JDBC_POSTGRES_URL:jdbc:postgresql://localhost:5432/aniways"
+  username: "$POSTGRES_USER:postgres"
+  password: "$POSTGRES_PASSWORD:password"
 
 mal:
   clientId: "$MAL_CLIENT_ID"

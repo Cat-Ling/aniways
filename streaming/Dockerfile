@@ -23,4 +23,4 @@ EXPOSE 1234
 
 LABEL org.opencontainers.image.source https://github.com/Coeeter/aniways
 
-CMD ["bun", "run", "start"]
+CMD ["bun", "dist/index.js"]
