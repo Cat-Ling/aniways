@@ -63,12 +63,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create env file
-        run: |
-          echo "GITHUB_SHA=${{ github.sha }}" >> .env
-          echo "LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}" >> .env
-          printf "%s\n" "${{ secrets.ENV }}" >> .env
-
       - name: Login to Container registry
         uses: docker/login-action@v3
         with:
@@ -85,7 +79,13 @@ jobs:
         run: |
           docker context create remote --docker "host=ssh://deploy@${{ secrets.SSH_HOST }}"
 
+      - name: Add environment variables to GitHub Actions environment
+        run: |
+          echo "GITHUB_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          echo "LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}" >> $GITHUB_ENV
+          printf "%s\n" "${{ secrets.ENV }}" >> $GITHUB_ENV
+
       - name: Deploy Docker Stack
         run: |
           docker context use remote
-          docker stack deploy -c docker-compose.yaml aniways --with-registry-auth --env-file .env
+          docker stack deploy -c docker-compose.yaml aniways --with-registry-auth
