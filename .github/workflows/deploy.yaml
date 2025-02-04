@@ -63,13 +63,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: https://ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create env file
         run: |
           echo "GITHUB_SHA=${{ github.sha }}" >> .env
@@ -77,10 +70,15 @@ jobs:
           echo "${{ secrets.ENV }}" >> .env
 
       - name: Docker Stack Deploy
-        uses: cssnr/stack-deploy-action@v1
+        uses: kitconcept/docker-stack-deploy@v1.0.1
+        env:
+          ENV_FILE: .env
         with:
-          name: aniways
-          host: ${{ secrets.SSH_HOST }}
-          user: deploy
-          ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          env_file: .env
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: deploy
+          remote_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          stack_file: docker-compose.yaml
+          stack_name: aniways
