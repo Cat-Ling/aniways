@@ -1,5 +1,6 @@
 ktor:
-  url: "$KTOR_URL:http://localhost:8080"
+  url: "$API_URL:http://localhost:8080"
+  frontend: "$FRONTEND_URL:http://localhost:3000"
   development: true
   application:
     modules:

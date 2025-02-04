@@ -62,5 +62,3 @@ Bun.serve({
 });
 
 console.log('Server started on port 1234');
-
-('https://megacloud.tv/embed-2/e-1/EU5GHIzI8dFd?k=1');

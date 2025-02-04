@@ -39,4 +39,5 @@ node_modules
 
 /.cache
 /build
-.env
+.env.*
+!.env.example
