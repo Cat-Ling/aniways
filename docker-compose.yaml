@@ -1,4 +1,56 @@
 services:
+  traefik:
+    image: traefik:v3.1
+    command:
+      - '--providers.docker'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entryPoints.websecure.address=:443'
+      - '--certificatesresolvers.myresolver.acme.tlschallenge=true'
+      - '--certificatesresolvers.myresolver.acme.email=site@aniways.xyz'
+      - '--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 80
+        target: 80
+      - mode: host
+        protocol: tcp
+        published: 443
+        target: 443
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  api:
+    image: ghcr.io/coeeter/aniways-api:${GITHUB_SHA:-latest}
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/${DATABASE_NAME}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.services.web.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.api.rule=Host(`${API_URL}`)'
+      - 'traefik.http.routers.api.entrypoints=websecure'
+      - 'traefik.http.routers.api.tls.certresolver=myresolver'
+    deploy:
+      update_config:
+        order: start-first
+        delay: 45s # Delay the update to allow the database to start
+        failure_action: rollback
+
+  streaming:
+    image: ghcr.io/coeeter/aniways-streaming:${GITHUB_SHA:-latest}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.services.web.loadbalancer.server.port=1234'
+      - 'traefik.http.routers.streaming.rule=Host(`${STREAMING_URL}`)'
+      - 'traefik.http.routers.streaming.entrypoints=websecure'
+      - 'traefik.http.routers.streaming.tls.certresolver=myresolver'
+
   redis:
     image: redis:latest
     ports:
@@ -11,12 +63,13 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
 volumes:
+  letsencrypt:
   redis-data:
   postgres-data:

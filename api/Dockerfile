@@ -23,4 +23,5 @@ FROM amazoncorretto:21 AS runtime
 EXPOSE 8080
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/ktor-aniways-api.jar
+LABEL org.opencontainers.image.source https://github.com/Coeeter/aniways
 ENTRYPOINT ["java","-jar","/app/ktor-aniways-api.jar"]
