@@ -67,7 +67,7 @@ jobs:
         run: |
           echo "GITHUB_SHA=${{ github.sha }}" >> .env
           echo "LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}" >> .env
-          echo "${{ secrets.ENV }}" >> .env
+          printf "%s\n" "${{ secrets.ENV }}" >> .env
 
       - name: Docker Stack Deploy
         uses: kitconcept/docker-stack-deploy@v1.2.0
