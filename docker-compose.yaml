@@ -32,7 +32,7 @@ services:
       - ENV_FILE=/run/secrets/env-v1
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.services.web.loadbalancer.server.port=8080'
+      - 'traefik.http.services.api.loadbalancer.server.port=8080'
       - 'traefik.http.routers.api.rule=Host(`${API_URL}`)'
       - 'traefik.http.routers.api.entrypoints=websecure'
       - 'traefik.http.routers.api.tls.certresolver=myresolver'
@@ -46,7 +46,7 @@ services:
     image: ghcr.io/coeeter/aniways-streaming:${GITHUB_SHA:-latest}
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.services.web.loadbalancer.server.port=1234'
+      - 'traefik.http.services.streaming.loadbalancer.server.port=1234'
       - 'traefik.http.routers.streaming.rule=Host(`${STREAMING_URL}`)'
       - 'traefik.http.routers.streaming.entrypoints=websecure'
       - 'traefik.http.routers.streaming.tls.certresolver=myresolver'
