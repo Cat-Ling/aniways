@@ -23,8 +23,7 @@ Bun.serve({
           sources:
             sources?.sources.map(src => ({
               ...src,
-              file:
-                url.origin + '/proxy/' + xrax + '/' + src.file.split('/').pop(),
+              file: '/proxy/' + xrax + '/' + src.file.split('/').pop(),
             })) ?? [],
         }),
         {

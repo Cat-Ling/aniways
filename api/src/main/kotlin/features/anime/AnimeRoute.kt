@@ -24,6 +24,12 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/{id}")
     class Metadata(val parent: AnimeRoute, val id: String)
 
+    @Resource("/{id}/trailer")
+    class Trailer(val parent: AnimeRoute, val id: String)
+
+    @Resource("/{id}/episodes")
+    class Episodes(val parent: AnimeRoute, val id: String)
+
     @Resource("/seasonal")
     class Seasonal(val parent: AnimeRoute)
 
@@ -41,12 +47,6 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/recently-updated")
     class RecentlyUpdated(val parent: AnimeRoute)
-
-    @Resource("/trailer/{id}")
-    class Trailer(val parent: AnimeRoute, val id: String)
-
-    @Resource("/episodes/{id}")
-    class Episodes(val parent: AnimeRoute, val id: String)
 
     @Resource("/episodes/servers/{episodeId}")
     class EpisodeServers(val parent: AnimeRoute, val episodeId: String)
