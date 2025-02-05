@@ -30,11 +30,6 @@ services:
       - 'traefik.http.routers.api.rule=Host(`${API_DOMAIN}`)'
       - 'traefik.http.routers.api.entrypoints=websecure'
       - 'traefik.http.routers.api.tls.certresolver=myresolver'
-    deploy:
-      update_config:
-        order: start-first
-        delay: 45s # Delay the update to allow the database to start
-        failure_action: rollback
 
   streaming:
     image: ghcr.io/coeeter/aniways-streaming:${GITHUB_SHA:-latest}
