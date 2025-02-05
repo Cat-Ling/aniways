@@ -38,7 +38,6 @@ val Application.env: Env
 
         return envFile?.let {
             this.log.info("Loading environment from file: $it")
-            this.log.debug("Environment file: $it")
             extractFromEnvFile(it)
         } ?: run {
             this.log.info("Loading environment from configuration")
@@ -52,7 +51,7 @@ private fun Application.extractFromEnvFile(envFile: String): Env {
         .map { it.split("=") }
         .associate { it[0] to it[1].replace("\"", "") }
 
-    this.log.debug("Environment variables: {}", env)
+    this.log.info("Loaded environment variables: $env")
 
     val serverUrl = env["API_URL"] ?: throw IllegalArgumentException("API_URL is missing in the environment file.")
     val serverConfig = ServerConfig(
