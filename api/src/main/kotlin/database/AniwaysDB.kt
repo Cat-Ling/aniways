@@ -33,6 +33,8 @@ class AniwaysDBImpl(
 
         return try {
             val flyway = Flyway.configure()
+                .connectRetries(10)
+                .connectRetriesInterval(10_000)
                 .dataSource(dataSource)
                 .load()
 
