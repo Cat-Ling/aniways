@@ -55,6 +55,7 @@ class AniwaysDBImpl(
             password = config.password
             maximumPoolSize = 3
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            addDataSourceProperty("ssl.mode", "disable")
             validate()
         }
 
