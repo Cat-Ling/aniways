@@ -12,28 +12,22 @@ services:
       - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
       - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
     ports:
-      - mode: host
-        protocol: tcp
-        published: 80
-        target: 80
-      - mode: host
-        protocol: tcp
-        published: 443
-        target: 443
+      - 80:80
+      - 443:443
     volumes:
       - letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   api:
     image: ghcr.io/coeeter/aniways-api:${GITHUB_SHA:-latest}
     secrets:
-      - env-v1
+      - env-v2
     environment:
-      - ENV_FILE=/run/secrets/env-v1
+      - ENV_FILE=/run/secrets/env-v2
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.services.web.loadbalancer.server.port=8080'
-      - 'traefik.http.routers.api.rule=Host(`${API_URL}`)'
+      - 'traefik.http.routers.api.rule=Host(`${API_DOMAIN}`)'
       - 'traefik.http.routers.api.entrypoints=websecure'
       - 'traefik.http.routers.api.tls.certresolver=myresolver'
     deploy:
@@ -47,7 +41,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.services.web.loadbalancer.server.port=1234'
-      - 'traefik.http.routers.streaming.rule=Host(`${STREAMING_URL}`)'
+      - 'traefik.http.routers.streaming.rule=Host(`${STREAMING_DOMAIN}`)'
       - 'traefik.http.routers.streaming.entrypoints=websecure'
       - 'traefik.http.routers.streaming.tls.certresolver=myresolver'
 
@@ -60,13 +54,13 @@ services:
 
   postgres:
     image: postgres:latest
-    user: ${POSTGRES_USER}
+    user: postgres
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_DB=aniways
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -76,5 +70,5 @@ volumes:
   postgres-data:
 
 secrets:
-  env-v1:
+  env-v2:
     external: true

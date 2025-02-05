@@ -90,7 +90,9 @@ jobs:
         run: |
           echo "GITHUB_SHA=${{ github.sha }}" >> $GITHUB_ENV
           echo "LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}" >> $GITHUB_ENV
-          echo "${{ secrets.ENV }}" >> $GITHUB_ENV
+          echo "API_DOMAIN=${{ secrets.API_DOMAIN }}" >> $GITHUB_ENV
+          echo "STREAMING_DOMAIN=${{ secrets.STREAMING_DOMAIN }}" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Deploy Docker Stack
         run: |
