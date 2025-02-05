@@ -109,8 +109,8 @@ fun AnimeMetadata.toAnimeMetadataDto() = AnimeMetadataDto(
     },
     avgEpDuration = avgEpDuration,
     airingStatus = when(airingStatus) {
-        "finished" -> "Finished Airing"
-        "releasing" -> "Currently Airing"
+        "finished_airing" -> "Finished Airing"
+        "currently_airing" -> "Currently Airing"
         else -> "Not Yet Aired"
     },
     totalEpisodes = totalEpisodes,
