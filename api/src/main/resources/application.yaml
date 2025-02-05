@@ -14,8 +14,8 @@ db:
   password: "$POSTGRES_PASSWORD:password"
 
 mal:
-  clientId: "$MAL_CLIENT_ID"
-  clientSecret: "$MAL_CLIENT_SECRET"
+  clientId: "$MAL_CLIENT_ID:default"
+  clientSecret: "$MAL_CLIENT_SECRET:default"
 
 redis:
   host: "$REDIS_HOST:localhost"
