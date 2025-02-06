@@ -18,4 +18,5 @@ fun Application.module() {
     configureAuth()
     configureSimpleCache()
     configureRouting()
+    configureCors()
 }

@@ -24,7 +24,8 @@ sealed class Auth {
 
 fun Application.configureAuth() {
     val httpClient by inject<HttpClient>()
-    val callbackUrl = "${env.serverConfig.url}/auth/callback"
+    val callbackUrl = "${env.serverConfig.apiUrl}/auth/callback"
+    val credentials = env.malCredentials
     val codeChallenges = mutableMapOf<String, String>()
 
     install(Authentication) {
@@ -34,7 +35,7 @@ fun Application.configureAuth() {
             providerLookup = {
                 val provider = MalOauthProvider(
                     ctx = this,
-                    credentials = this@configureAuth.env.malCredentials,
+                    credentials = credentials,
                     callbackUrl = callbackUrl,
                     codeChallenges = codeChallenges
                 )

@@ -13,6 +13,7 @@ import org.koin.core.module.dsl.withOptions
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import xyz.aniways.Env
 import xyz.aniways.database.AniwaysDB
 import xyz.aniways.database.AniwaysDBImpl
 import xyz.aniways.env
@@ -21,21 +22,43 @@ import xyz.aniways.features.auth.authModule
 import xyz.aniways.features.settings.settingsModule
 
 fun Application.configureKoin() {
+    val envModule = module {
+        single { env }
+
+        single {
+            val env: Env = get()
+            env.serverConfig
+        }
+
+        single {
+            val env: Env = get()
+            env.dbConfig
+        }
+
+        single {
+            val env: Env = get()
+            env.malCredentials
+        }
+
+        single {
+            val env: Env = get()
+            env.redisConfig
+        }
+    }
+
     /*
     * Ensure that the database module is created at the start of the application
     * to avoid any issues with the database connection + migrations
     * */
     val dbModule = module {
         single {
-            AniwaysDBImpl(env.dbConfig) as AniwaysDB
+            AniwaysDBImpl(get()) as AniwaysDB
         } withOptions {
             createdAtStart()
         }
     }
 
     val mainModule = module {
-        factory { env }
-
         single {
             HttpClient(CIO) {
                 expectSuccess = true
@@ -60,6 +83,7 @@ fun Application.configureKoin() {
         slf4jLogger(Level.DEBUG)
 
         modules(
+            envModule,
             dbModule,
             mainModule,
             authModule,

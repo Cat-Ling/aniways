@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
+    implementation(libs.ktor.server.cors)
 
     // Ktor Client dependencies
     implementation(libs.ktor.client.core)

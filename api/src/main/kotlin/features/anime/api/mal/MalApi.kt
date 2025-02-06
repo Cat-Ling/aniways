@@ -14,12 +14,12 @@ import xyz.aniways.utils.getDocument
 
 class MalApi(
     private val httpClient: HttpClient,
-    private val env: Env
+    private val malCredentials: Env.MalCredentials,
 ) {
     private val baseUrl = "https://api.myanimelist.net/v2"
 
     private fun HttpRequestBuilder.authorizeRequest() {
-        header("X-MAL-CLIENT-ID", env.malCredentials.clientId)
+        header("X-MAL-CLIENT-ID", malCredentials.clientId)
     }
 
     private val fields = listOf(

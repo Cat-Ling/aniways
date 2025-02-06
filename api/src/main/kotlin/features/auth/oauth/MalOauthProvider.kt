@@ -6,12 +6,12 @@ import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.sessions.*
-import xyz.aniways.MalCredentials
+import xyz.aniways.Env
 import xyz.aniways.plugins.Session
 
 class MalOauthProvider(
     private val ctx: ApplicationCall,
-    private val credentials: MalCredentials,
+    private val credentials: Env.MalCredentials,
     private val callbackUrl: String,
     private val codeChallenges: MutableMap<String, String>
 ) : OauthProvider() {
