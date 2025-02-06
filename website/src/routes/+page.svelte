@@ -1,9 +1,18 @@
 <script lang="ts">
-	import { type PageProps } from './$types';
+	import { getRecentlyUpdatedAnime } from '$lib/api/anime';
 
-	const { data }: PageProps = $props();
+	const recentlyUpdatedAnime = getRecentlyUpdatedAnime(1, 10);
 </script>
 
-{#each data.items as item}
-	<div>{item.name}</div>
-{/each}
+{#await recentlyUpdatedAnime}
+	<p>Loading...</p>
+{:then anime}
+	{#each anime.items as a}
+		<div>
+			<img src={a.poster} alt={a.jname} />
+			<h2>{a.jname}</h2>
+		</div>
+	{/each}
+{:catch error}
+	<p>{error.message}</p>
+{/await}
