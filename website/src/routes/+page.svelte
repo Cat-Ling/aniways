@@ -1,17 +1,11 @@
 <script lang="ts">
+	import Seasonal from '$lib/components/anime/seasonal.svelte';
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
 </script>
 
-<div class="flex gap-2">
-	{#each data.seasonal as anime}
-		<div>
-			<img src={anime.bannerImage} alt={anime.title} />
-			<p>{anime.title}</p>
-		</div>
-	{/each}
-</div>
+<Seasonal seasonalAnimes={data.seasonal} />
 
 <h2>Trending Animes</h2>
 <div class="flex gap-2">
