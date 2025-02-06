@@ -45,6 +45,9 @@ dependencies {
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.cors)
 
+    // Ktor Documentation dependencies
+    implementation(libs.ktor.server.swagger)
+
     // Ktor Client dependencies
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)

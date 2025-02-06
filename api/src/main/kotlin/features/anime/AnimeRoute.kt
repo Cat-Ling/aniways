@@ -142,7 +142,7 @@ fun Route.animeRoutes() {
         try {
             val trailer = service.getAnimeTrailer(route.id)
             trailer ?: return@get call.respond(HttpStatusCode.NotFound)
-            call.respond(trailer)
+            call.respond(mapOf("trailer" to trailer))
         } catch (e: IllegalArgumentException) {
             if (e.message?.contains("Invalid UUID string") == true) {
                 return@get call.respond(HttpStatusCode.BadRequest)
