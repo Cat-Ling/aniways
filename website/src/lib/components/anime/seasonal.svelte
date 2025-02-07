@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { anilistAnime } from '$lib/api/anime/types';
+	import { Button } from '$lib/components/ui/button';
 	import * as Carousel from '$lib/components/ui/carousel';
+	import type { CarouselAPI } from '$lib/components/ui/carousel/context';
 	import { cn } from '$lib/utils';
 	import { format } from 'date-fns';
 	import Autoplay from 'embla-carousel-autoplay';
-	import { Play } from 'lucide-svelte';
-	import Button from '../ui/button/button.svelte';
-	import type { CarouselAPI } from '../ui/carousel/context';
+	import { Calendar, ChevronRight, Clapperboard, Play, Video } from 'lucide-svelte';
 
 	type Props = {
 		seasonalAnimes: (typeof anilistAnime.infer)[];
@@ -34,77 +34,87 @@
 
 <Carousel.Root
 	bind:api
-	class="relative md:mb-12"
+	class="relative mb-24"
 	opts={{ loop: true }}
 	plugins={[
 		Autoplay({
-			stopOnMouseEnter: true,
-			stopOnInteraction: false,
 			active: true
 		})
 	]}
 >
 	<Carousel.Content>
 		{#each seasonalAnimes as anime}
-			<Carousel.Item>
+			<Carousel.Item class="relative h-[80dvh] w-full">
 				<div
-					class="relative flex w-full flex-col-reverse gap-3 md:static md:grid md:grid-cols-5 md:gap-6"
+					class="absolute left-8 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:w-2/5"
 				>
-					<div
-						class="absolute bottom-0 left-0 z-20 col-span-2 flex w-full select-none flex-col justify-center p-3 md:static md:z-0"
-					>
-						<h1 class="mb-2 line-clamp-1 text-xl font-bold md:mb-5 md:line-clamp-3 md:text-5xl">
-							{anime.title}
-						</h1>
-						<div class="mb-3 hidden gap-2 md:flex">
-							<span class="rounded-md bg-muted p-2 text-sm text-primary">
-								{format(new Date(anime.startDate), 'MMMM yyyy') ?? '???'}
-							</span>
-							<span class="rounded-md bg-muted p-2 text-sm text-primary">
-								{anime.type}
-							</span>
-							<span class="rounded-md bg-muted p-2 text-sm text-primary">
-								{anime.episodes ?? '???'} episodes
-							</span>
-						</div>
-						<p
-							class={cn(
-								'mb-2 line-clamp-5 hidden text-sm text-muted-foreground md:mb-5 md:[display:-webkit-box]',
-								{
-									italic: !anime.description
-								}
-							)}
+					<h1 class="mb-5 line-clamp-1 text-5xl font-bold md:text-6xl">
+						{anime.title}
+					</h1>
+					<div class="mb-3 flex gap-2">
+						<span
+							class="flex items-center gap-2 rounded-full bg-secondary p-2 text-xs text-primary md:text-base"
 						>
-							{@html anime.description ?? 'No description available'}
-						</p>
-						<Button class="flex w-fit items-center gap-2" href="/anime/{anime.id}">
+							<Calendar />
+							{format(new Date(anime.startDate), 'MMMM yyyy') ?? '???'}
+						</span>
+						<span
+							class="flex items-center gap-2 rounded-full bg-secondary p-2 text-xs text-primary md:text-base"
+						>
+							<Clapperboard />
+							{anime.type}
+						</span>
+						<span
+							class="flex items-center gap-2 rounded-full bg-secondary p-2 text-xs text-primary md:text-base"
+						>
+							<Video />
+							{anime.episodes ?? '???'} episodes
+						</span>
+					</div>
+					<p
+						class={cn('mb-5 line-clamp-2 [display:-webkit-box] md:text-lg', {
+							italic: !anime.description
+						})}
+					>
+						{@html anime.description.split('<br>').join('') ?? 'No description available'}
+					</p>
+					<div class="flex gap-2">
+						<Button class="flex w-fit items-center gap-2" href="/anime/watch/{anime.id}">
 							<Play class="h-5 w-5" />
 							Watch Now
 						</Button>
-					</div>
-					<div class="relative col-span-3 aspect-video w-full overflow-hidden rounded-md">
-						<div
-							class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-primary/50 to-transparent md:bg-none"
-						></div>
-						<img
-							src={anime.bannerImage ?? anime.coverImage}
-							alt={anime.title}
-							class="h-full w-full rounded-lg object-cover object-center shadow-lg"
-							onerror={(e) => {
-								const image = e.target as HTMLImageElement;
-								image.src = anime.coverImage;
-							}}
-						/>
+						<Button
+							class="flex w-fit items-center gap-2"
+							href="/anime/{anime.id}"
+							variant="secondary"
+						>
+							View Details
+							<ChevronRight class="h-5 w-5" />
+						</Button>
 					</div>
 				</div>
+				<div
+					class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-background to-transparent"
+				></div>
+				<img
+					src={anime.bannerImage ?? anime.coverImage}
+					alt={anime.title}
+					class="h-full w-full object-cover object-center shadow-lg"
+					onerror={(e) => {
+						const image = e.target as HTMLImageElement;
+						image.src = anime.coverImage;
+					}}
+				/>
 			</Carousel.Item>
 		{/each}
 	</Carousel.Content>
-	<div class="bottom-0 left-0 m-3 flex w-full justify-center md:absolute md:m-2 md:w-fit">
+	<div
+		class="absolute bottom-0 left-1/2 flex w-fit -translate-x-1/2 justify-center md:left-0 md:m-8 md:translate-x-0"
+	>
 		{#each seasonalAnimes as _, i}
 			<Button
 				on:click={() => api?.scrollTo(i)}
-				class="mx-1 h-2 w-2 rounded-full p-0"
+				class="mx-1 size-3 rounded-full p-0"
 				variant={i === currentSlide ? 'default' : 'secondary'}
 			/>
 		{/each}
