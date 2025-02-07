@@ -9,4 +9,6 @@
 
 <Seasonal {seasonalAnimes} />
 
-{@render children()}
+<main class="min-h-screen">
+	{@render children()}
+</main>

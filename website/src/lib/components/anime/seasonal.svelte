@@ -53,19 +53,19 @@
 					</h1>
 					<div class="mb-3 flex gap-2">
 						<span
-							class="flex items-center gap-2 rounded-full bg-secondary p-2 text-xs text-primary md:text-base"
+							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
 						>
 							<Calendar />
 							{format(new Date(anime.startDate), 'MMMM yyyy') ?? '???'}
 						</span>
 						<span
-							class="flex items-center gap-2 rounded-full bg-secondary p-2 text-xs text-primary md:text-base"
+							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
 						>
 							<Clapperboard />
 							{anime.type}
 						</span>
 						<span
-							class="flex items-center gap-2 rounded-full bg-secondary p-2 text-xs text-primary md:text-base"
+							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
 						>
 							<Video />
 							{anime.episodes ?? '???'} episodes
@@ -94,7 +94,7 @@
 					</div>
 				</div>
 				<div
-					class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-background to-transparent"
+					class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-background to-background/15"
 				></div>
 				<img
 					src={anime.bannerImage ?? anime.coverImage}

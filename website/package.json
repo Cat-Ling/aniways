@@ -42,6 +42,8 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
+    "@fontsource/open-sans": "^5.1.1",
+    "@fontsource/sora": "^5.1.1",
     "arktype": "^2.0.4",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
