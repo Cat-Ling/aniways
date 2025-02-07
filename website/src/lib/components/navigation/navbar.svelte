@@ -18,25 +18,27 @@
 
 <nav
 	class={cn(
-		'fixed top-0 z-30 flex w-full items-center justify-between border-b border-transparent p-3 px-8 transition duration-500',
+		'fixed top-0 z-30 flex w-full max-w-[100vw] items-center justify-between border-b border-transparent p-3 transition duration-500 md:px-8',
 		changeBackground ? 'border-border bg-card' : 'bg-transparent'
 	)}
 >
 	<a href="/" class="group flex items-center gap-2">
 		<img src={Logo} alt="logo" class="size-12 transition group-hover:scale-125" />
-		<span class="font-sora text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)]">
+		<span
+			class="font-sora hidden text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:inline"
+		>
 			aniways
 		</span>
 	</a>
 
 	<div class="flex items-center gap-2">
-		<Button variant="ghost" class="rounded-full hover:bg-primary">
+		<Button variant="ghost" class="rounded-full hover:bg-primary" size="icon">
 			<Search class="size-6" />
 		</Button>
-		<Button variant="ghost" class="rounded-full hover:bg-primary" href="/random">
+		<Button variant="ghost" class="rounded-full hover:bg-primary" href="/random" size="icon">
 			<Shuffle class="size-6" />
 		</Button>
-		<div class="bg-background">
+		<div class="rounded-md bg-background">
 			<Button href="/auth/login">
 				<LogIn class="mr-2 size-6" />
 				Sign in
