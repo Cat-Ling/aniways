@@ -2,8 +2,9 @@
 	import Logo from '$lib/assets/logo.png';
 	import { cn } from '$lib/utils';
 	import { onMount } from 'svelte';
-	import { LogIn, Search, Shuffle } from 'lucide-svelte';
+	import { LogIn, Shuffle } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
+	import SearchButton from './search.svelte';
 
 	let changeBackground = $state(false);
 
@@ -25,16 +26,14 @@
 	<a href="/" class="group flex items-center gap-2">
 		<img src={Logo} alt="logo" class="size-12 transition group-hover:scale-125" />
 		<span
-			class="font-sora hidden text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:inline"
+			class="hidden font-sora text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:inline"
 		>
 			aniways
 		</span>
 	</a>
 
 	<div class="flex items-center gap-2">
-		<Button variant="ghost" class="rounded-full hover:bg-primary" size="icon">
-			<Search class="size-6" />
-		</Button>
+		<SearchButton />
 		<Button variant="ghost" class="rounded-full hover:bg-primary" href="/random" size="icon">
 			<Shuffle class="size-6" />
 		</Button>
