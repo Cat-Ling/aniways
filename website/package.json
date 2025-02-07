@@ -43,6 +43,8 @@
   },
   "dependencies": {
     "arktype": "^2.0.4",
-    "axios": "^1.7.9"
+    "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
+    "embla-carousel-autoplay": "^8.5.2"
   }
 }
