@@ -33,7 +33,7 @@
 		<Button variant="ghost" class="rounded-full hover:bg-primary">
 			<Search class="size-6" />
 		</Button>
-		<Button variant="ghost" class="rounded-full hover:bg-primary">
+		<Button variant="ghost" class="rounded-full hover:bg-primary" href="/random">
 			<Shuffle class="size-6" />
 		</Button>
 		<div class="bg-background">

@@ -47,6 +47,7 @@
     "arktype": "^2.0.4",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
-    "embla-carousel-autoplay": "^8.5.2"
+    "embla-carousel-autoplay": "^8.5.2",
+    "sveltekit-top-loader": "^0.1.0"
   }
 }
