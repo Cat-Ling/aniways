@@ -46,9 +46,9 @@
 		{#each seasonalAnimes as anime}
 			<Carousel.Item class="relative h-[80dvh] w-full">
 				<div
-					class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-8 md:w-2/5"
+					class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-8 md:w-1/2"
 				>
-					<h1 class="mb-5 line-clamp-1 text-5xl font-bold md:text-6xl">
+					<h1 class="mb-5 line-clamp-1 font-sora text-5xl font-bold md:text-6xl">
 						{anime.title}
 					</h1>
 					<div class="mb-3 flex gap-2">

@@ -36,9 +36,15 @@ export const getRecentlyUpdatedAnime = async (page: number, itemsPerPage: number
 	return paginatedAnime.assert(response.data);
 };
 
-export const searchAnime = async (query: string, page: number) => {
+export const searchAnime = async (
+	query: string,
+	page: number,
+	itemsPerPage: number,
+	abortSignal?: AbortSignal
+) => {
 	const response = await api.get('/anime/search', {
-		params: { query, page }
+		params: { query, page, itemsPerPage },
+		signal: abortSignal
 	});
 	return paginatedAnime.assert(response.data);
 };
