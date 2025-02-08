@@ -2,6 +2,7 @@
 	import sorry from '$lib/assets/sorry.png?enhanced';
 	import { Button } from '$lib/components/ui/button';
 	import { page } from '$app/state';
+	import { ChevronLeft, Home } from 'lucide-svelte';
 
 	let is404 = $derived(page.status === 404);
 </script>
@@ -19,5 +20,14 @@
 			An error occurred while trying to load this page. Please try again later.
 		</p>
 	{/if}
-	<Button href="/" class="mx-auto">Go back to the home page</Button>
+	<div class="mx-auto flex w-fit justify-center gap-2">
+		<Button variant="secondary" onclick={() => history.back()} class="gap-1">
+			<ChevronLeft class="size-5" />
+			Go back
+		</Button>
+		<Button href="/" class="gap-1">
+			<Home class="size-5" />
+			Go back to the home page
+		</Button>
+	</div>
 </div>
