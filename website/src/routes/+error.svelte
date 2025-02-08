@@ -1,5 +1,5 @@
 <script lang="ts">
-	import sorry from '$lib/assets/sorry.png?inline';
+	import sorry from '$lib/assets/sorry.png?enhanced';
 	import { Button } from '$lib/components/ui/button';
 	import { page } from '$app/state';
 
@@ -7,7 +7,7 @@
 </script>
 
 <div class="mx-auto mt-32 flex w-1/2 flex-col gap-4">
-	<img src={sorry} alt="Sorry, this page does not exist" class="mx-auto w-1/2" />
+	<enhanced:img src={sorry} alt="Sorry, this page does not exist" class="mx-auto w-3/4" />
 	{#if is404}
 		<h1 class="text-center font-sora text-2xl">Sorry, this page does not exist</h1>
 		<p class="text-center">

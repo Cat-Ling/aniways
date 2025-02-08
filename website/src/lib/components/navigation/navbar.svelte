@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Logo from '$lib/assets/logo.png';
+	import Logo from '$lib/assets/logo.png?enhanced';
 	import { cn } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { LogIn, Shuffle } from 'lucide-svelte';
@@ -24,7 +24,7 @@
 	)}
 >
 	<a href="/" class="group flex items-center gap-2">
-		<img src={Logo} alt="logo" class="size-12 transition group-hover:scale-125" />
+		<enhanced:img src={Logo} alt="logo" class="size-12 transition group-hover:scale-125" />
 		<span
 			class="hidden font-sora text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:inline"
 		>
