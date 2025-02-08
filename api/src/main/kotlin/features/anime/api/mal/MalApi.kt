@@ -38,7 +38,8 @@ class MalApi(
         "popularity",
         "start_date",
         "end_date",
-        "source"
+        "source",
+        "start_season"
     )
 
     suspend fun getAnimeMetadata(id: Int): MalAnimeMetadata {

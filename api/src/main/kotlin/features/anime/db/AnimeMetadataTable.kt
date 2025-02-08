@@ -26,6 +26,8 @@ interface AnimeMetadata : Entity<AnimeMetadata> {
     var trailer: String?
     var createdAt: Instant
     var lastUpdatedAt: Instant?
+    var seasonYear: Int?
+    var season: String?
 
     companion object : Entity.Factory<AnimeMetadata>()
 }
@@ -50,6 +52,8 @@ object AnimeMetadataTable : Table<AnimeMetadata>("anime_metadata") {
     val trailer = varchar("trailer").bindTo { it.trailer }
     val createdAt = timestamp("created_at").bindTo { it.createdAt }
     val lastUpdatedAt = timestamp("last_updated_at").bindTo { it.lastUpdatedAt }
+    val seasonYear = int("season_year").bindTo { it.seasonYear }
+    val season = varchar("season").bindTo { it.season }
 }
 
 val Database.animeMetadata get() = this.sequenceOf(AnimeMetadataTable)

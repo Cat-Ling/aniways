@@ -35,6 +35,8 @@ data class AnimeMetadataDto(
     val airingEnd: String?,
     val source: String?,
     val trailer: String?,
+    val seasonYear: Int?,
+    val season: String?,
 )
 
 @Serializable
@@ -123,4 +125,6 @@ fun AnimeMetadata.toAnimeMetadataDto() = AnimeMetadataDto(
     airingEnd = airingEnd,
     source = source,
     trailer = trailer,
+    seasonYear = seasonYear,
+    season = season,
 )
