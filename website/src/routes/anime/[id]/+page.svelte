@@ -135,7 +135,7 @@
 			<p>
 				Episode {episode.number}
 			</p>
-			<p class="w-full truncate text-muted-foreground">
+			<p class="w-full truncate font-sora text-muted-foreground">
 				{episode.title === `Episode ${episode.number}` ? 'No title available' : episode.title}
 			</p>
 		</Button>
