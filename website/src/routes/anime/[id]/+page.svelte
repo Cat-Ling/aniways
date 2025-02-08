@@ -94,6 +94,7 @@
 									title="{anime.jname} Trailer"
 									class="aspect-video w-full"
 									src={trailer}
+									allow="autoplay"
 									frameborder="0"
 									allowfullscreen
 								></iframe>
