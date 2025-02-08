@@ -17,6 +17,7 @@ export const animeMetadata = type({
 	airingStart: 'string|null',
 	airingEnd: 'string|null',
 	source: 'string|null',
+	'season?': 'string|null',
 	trailer: 'string.url|null'
 });
 
@@ -29,7 +30,7 @@ export const anime = type({
 	malId: 'number.integer|null',
 	anilistId: 'number.integer|null',
 	lastEpisode: 'number.integer|null',
-	animeMetadata: animeMetadata.or('null').optional()
+	metadata: animeMetadata.or('null').optional()
 });
 
 export const anilistAnime = type({
