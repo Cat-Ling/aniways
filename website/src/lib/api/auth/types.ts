@@ -2,6 +2,6 @@ import { type } from 'arktype';
 
 export const user = type({
 	id: 'number.integer',
-	username: 'string',
+	name: 'string',
 	picture: 'string.url|null'
 });

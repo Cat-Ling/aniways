@@ -1,4 +1,5 @@
-import { api } from '$lib/api';
+import { PUBLIC_API_URL } from '$env/static/public';
+import { StatusError } from '$lib/api';
 import {
 	anilistAnime,
 	anime,
@@ -9,84 +10,163 @@ import {
 	trailer
 } from './types';
 
-export const getSeasonalAnime = async () => {
-	const response = await api.get('/anime/seasonal');
-	return anilistAnime.array().assert(response.data);
+export const getSeasonalAnime = async (fetch: typeof global.fetch) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/seasonal`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return anilistAnime.array().assert(response);
 };
 
-export const getTrendingAnime = async () => {
-	const response = await api.get('/anime/trending');
-	return anime.array().assert(response.data);
+export const getTrendingAnime = async (fetch: typeof global.fetch) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/trending`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return anime.array().assert(response);
 };
 
-export const getTopAnime = async () => {
-	const response = await api.get('/anime/top');
-	return topAnime.assert(response.data);
+export const getTopAnime = async (fetch: typeof global.fetch) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/top`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return topAnime.assert(response);
 };
 
-export const getPopularAnime = async () => {
-	const response = await api.get('/anime/popular');
-	return anilistAnime.array().assert(response.data);
+export const getPopularAnime = async (fetch: typeof global.fetch) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/popular`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return anilistAnime.array().assert(response);
 };
 
-export const getRecentlyUpdatedAnime = async (page: number, itemsPerPage: number) => {
-	const response = await api.get('/anime/recently-updated', {
-		params: { page, itemsPerPage }
-	});
-	return paginatedAnime.assert(response.data);
+export const getRecentlyUpdatedAnime = async (
+	fetch: typeof global.fetch,
+	page: number,
+	itemsPerPage: number
+) => {
+	const response = await fetch(
+		`${PUBLIC_API_URL}/anime/recently-updated?page=${page}&itemsPerPage=${itemsPerPage}`
+	)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return paginatedAnime.assert(response);
 };
 
 export const searchAnime = async (
+	fetch: typeof global.fetch,
 	query: string,
 	page: number,
 	itemsPerPage: number,
 	abortSignal?: AbortSignal
 ) => {
-	const response = await api.get('/anime/search', {
-		params: { query, page, itemsPerPage },
-		signal: abortSignal
-	});
-	return paginatedAnime.assert(response.data);
+	const response = await fetch(
+		`${PUBLIC_API_URL}/anime/search?query=${query}&page=${page}&itemsPerPage=${itemsPerPage}`,
+		{
+			signal: abortSignal
+		}
+	)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return paginatedAnime.assert(response);
 };
 
-export const getAnimeMetadata = async (id: string) => {
-	const response = await api.get(`/anime/${id}`);
-	return anime.assert(response.data);
+export const getAnimeMetadata = async (fetch: typeof global.fetch, id: string) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/${id}`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return anime.assert(response);
 };
 
-export const getTrailer = async (id: string) => {
-	const response = await api.get(`/anime/${id}/trailer`);
-	return trailer.assert(response.data);
+export const getTrailer = async (fetch: typeof global.fetch, id: string) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/${id}/trailer`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return trailer.assert(response);
 };
 
-export const getEpisodes = async (id: string) => {
-	const response = await api.get(`/anime/${id}/episodes`);
-	return episode.array().assert(response.data);
+export const getEpisodes = async (fetch: typeof global.fetch, id: string) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/${id}/episodes`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return episode.array().assert(response);
 };
 
-export const getServersOfEpisode = async (episodeId: string) => {
-	const response = await api.get(`/anime/episodes/servers/${episodeId}`);
-	return episodeServer.array().assert(response.data);
+export const getServersOfEpisode = async (fetch: typeof global.fetch, episodeId: string) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/episodes/servers/${episodeId}`).then(
+		(res) => res.json()
+	);
+	return episodeServer.array().assert(response);
 };
 
-export const getGenres = async () => {
-	const response = await api.get('/anime/genres');
-	return response.data as string[];
+export const getGenres = async (fetch: typeof global.fetch) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/genres`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return response as string[];
 };
 
-export const getAnimeByGenre = async (genre: string, page: number, itemsPerPage: number) => {
-	const response = await api.get(`/anime/genres/${genre}`, {
-		params: { page, itemsPerPage }
-	});
-	return paginatedAnime.assert(response.data);
+export const getAnimeByGenre = async (
+	fetch: typeof global.fetch,
+	genre: string,
+	page: number,
+	itemsPerPage: number
+) => {
+	const response = await fetch(
+		`${PUBLIC_API_URL}/anime/genres/${genre}?page=${page}&itemsPerPage=${itemsPerPage}`
+	)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return paginatedAnime.assert(response);
 };
 
-export const getRandomAnime = async () => {
-	const response = await api.get('/anime/random');
-	return anime.assert(response.data);
+export const getRandomAnime = async (fetch: typeof global.fetch) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/random`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return anime.assert(response);
 };
 
-export const getRandomAnimeByGenre = async (genre: string) => {
-	const response = await api.get(`/anime/random/${genre}`);
-	return anime.assert(response.data);
+export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: string) => {
+	const response = await fetch(`${PUBLIC_API_URL}/anime/random/${genre}`)
+		.then((res) => {
+			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
+			return res;
+		})
+		.then((res) => res.json());
+	return anime.assert(response);
 };

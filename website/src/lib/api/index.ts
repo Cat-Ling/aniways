@@ -1,10 +1,8 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import axios from 'axios';
-
-export const api = axios.create({
-	baseURL: PUBLIC_API_URL,
-	withCredentials: true,
-	headers: {
-		'Content-Type': 'application/json'
+export class StatusError extends Error {
+	constructor(
+		public status: number,
+		message: string
+	) {
+		super(message);
 	}
-});
+}

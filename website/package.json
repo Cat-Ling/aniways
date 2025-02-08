@@ -48,7 +48,6 @@
     "@fontsource/open-sans": "^5.1.1",
     "@fontsource/sora": "^5.1.1",
     "arktype": "^2.0.4",
-    "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "embla-carousel-autoplay": "^8.5.2",
     "lodash": "^4.17.21",

@@ -1,17 +1,20 @@
 <script lang="ts">
-	import '../app.css';
 	import '@fontsource/open-sans';
 	import '@fontsource/sora';
-
-	import Navbar from '$lib/components/navigation/navbar.svelte';
-	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
+	import '../app.css';
 
 	import { page } from '$app/state';
+	import Navbar from '$lib/components/navigation/navbar.svelte';
+	import { setContext } from 'svelte';
+	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
+	import type { LayoutProps } from './$types';
 
-	let { children } = $props();
+	let { children, data }: LayoutProps = $props();
 
 	const baseTitle = $derived(page.data?.title);
 	const title = $derived(baseTitle ? `${baseTitle} | Aniways` : 'Aniways');
+
+	setContext('currentUser', () => data);
 </script>
 
 <svelte:head>
