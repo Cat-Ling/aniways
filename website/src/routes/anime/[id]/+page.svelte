@@ -8,11 +8,13 @@
 
 <div class="mt-20 p-3 md:px-8">
 	<div class="flex gap-8 rounded-md bg-card p-4">
-		<img
-			src={anime.metadata?.mainPicture ?? anime.poster}
-			alt={anime.jname}
-			class="aspect-[3/4] w-1/4 rounded-md object-cover object-center"
-		/>
+		<div class="aspect-[3/4] w-1/4">
+			<img
+				src={anime.metadata?.mainPicture ?? anime.poster}
+				alt={anime.jname}
+				class="h-full w-full rounded-md bg-muted object-cover object-center"
+			/>
+		</div>
 		<div class="w-full">
 			<h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
 			<h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
@@ -42,7 +44,7 @@
 						'Airing',
 						`${anime.metadata?.airingStart} - ${anime.metadata?.airingEnd ?? '???'}`
 					)}
-					{@render keyValue('Season', anime.metadata?.season)}
+					{@render keyValue('Season', `${anime.metadata?.season} ${anime.metadata?.seasonYear}`)}
 					{@render keyValue('Source', anime.metadata?.source?.replace('_', ' '))}
 				</div>
 			</div>

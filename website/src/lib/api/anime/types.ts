@@ -17,7 +17,8 @@ export const animeMetadata = type({
 	airingStart: 'string|null',
 	airingEnd: 'string|null',
 	source: 'string|null',
-	'season?': 'string|null',
+	seasonYear: 'number.integer|null',
+	season: 'string|null',
 	trailer: 'string.url|null'
 });
 
