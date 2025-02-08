@@ -48,10 +48,10 @@
 				<div
 					class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-8 md:w-1/2"
 				>
-					<h1 class="mb-5 line-clamp-1 font-sora text-5xl font-bold md:text-6xl">
+					<h1 class="mb-2 line-clamp-1 font-sora text-3xl font-bold md:mb-5 md:text-6xl">
 						{anime.title}
 					</h1>
-					<div class="mb-3 flex gap-2">
+					<div class="mb-2 flex gap-2 md:mb-3">
 						<span
 							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
 						>
