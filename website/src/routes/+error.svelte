@@ -8,7 +8,11 @@
 </script>
 
 <div class="mx-auto mt-32 flex w-1/2 flex-col gap-4">
-	<enhanced:img src={sorry} alt="Sorry, this page does not exist" class="mx-auto w-3/4" />
+	<enhanced:img
+		src={sorry}
+		alt="Sorry, this page does not exist"
+		class="mx-auto w-full max-w-screen-md"
+	/>
 	{#if is404}
 		<h1 class="text-center font-sora text-2xl">Sorry, this page does not exist</h1>
 		<p class="text-center">
