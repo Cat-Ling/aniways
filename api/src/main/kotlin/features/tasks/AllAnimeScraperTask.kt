@@ -1,0 +1,27 @@
+package xyz.aniways.features.tasks
+
+import kotlinx.coroutines.coroutineScope
+import xyz.aniways.features.anime.services.AnimeService
+import xyz.aniways.features.tasks.plugins.Task
+import xyz.aniways.features.tasks.plugins.TaskScheduler
+
+class AllAnimeScraperTask(
+    private val service: AnimeService
+) : Task {
+    override val name = "AllAnimeScraperTask"
+    override val frequency = TaskScheduler.Frequency.OnStartUp
+
+    override suspend fun job() = coroutineScope {
+        val count = service.getAnimeCount()
+
+        if (count > 0) {
+            logger.info("Skipping scraping all anime as the DB is not empty")
+            return@coroutineScope
+        }
+
+        // Will only run if the DB
+        // is empty essentially new installation of server
+        service.scrapeAndPopulateAnime()
+        service.scrapeAndPopulateRecentlyUpdatedAnime()
+    }
+}
