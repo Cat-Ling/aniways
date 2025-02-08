@@ -53,32 +53,34 @@
 
 <Command.Dialog bind:open shouldFilter={false}>
 	<Command.Input placeholder="Search for animes..." bind:value />
-	<Command.List>
+	<Command.List class="max-h-min">
 		{#if loading}
 			<Command.Loading class="p-2">Loading...</Command.Loading>
 		{:else if !value}
 			<Command.Empty>Type to search for animes</Command.Empty>
 		{:else}
-			{#each animes as anime (anime.id)}
-				<Command.Item onSelect={() => (goto(`/anime/${anime.id}`), (open = false))} class="gap-2">
-					<img src={anime.poster} alt={anime.name} class="aspect-[300/400] w-1/5 rounded" />
-					<div class="h-full">
-						<p class="line-clamp-1 font-bold">{anime.name}</p>
-						<p class="line-clamp-1 text-muted-foreground">{anime.jname}</p>
-						<p class="mt-3 text-sm">
-							{anime.lastEpisode} episode{(anime.lastEpisode ?? 1) > 1 ? 's' : ''}
-						</p>
-					</div>
-				</Command.Item>
-			{/each}
+			<Command.Group heading="Search Results">
+				{#each animes as anime (anime.id)}
+					<Command.Item onSelect={() => (goto(`/anime/${anime.id}`), (open = false))} class="gap-2">
+						<img src={anime.poster} alt={anime.name} class="aspect-[300/400] w-1/5 rounded" />
+						<div class="h-full">
+							<p class="line-clamp-1 font-bold">{anime.name}</p>
+							<p class="line-clamp-1 text-muted-foreground">{anime.jname}</p>
+							<p class="mt-3 text-sm">
+								{anime.lastEpisode} episode{(anime.lastEpisode ?? 1) > 1 ? 's' : ''}
+							</p>
+						</div>
+					</Command.Item>
+				{/each}
+				{#if animes.length && hasMore}
+					<Command.Item onSelect={() => (goto(`/search?q=${value}`), (open = false))} class="gap-2">
+						{@html `See all results for <q>${value}</q>`}
+					</Command.Item>
+				{/if}
+			</Command.Group>
 			{#if !animes.length}
 				<Command.Empty>No results found for <q>{value}</q></Command.Empty>
 			{/if}
-		{/if}
-		{#if animes.length && hasMore}
-			<Command.Item onSelect={() => (goto(`/search?q=${value}`), (open = false))} class="gap-2">
-				{@html `See all results for <q>${value}</q>`}
-			</Command.Item>
 		{/if}
 	</Command.List>
 </Command.Dialog>
