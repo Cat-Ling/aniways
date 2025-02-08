@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { formatDuration, secondsToMilliseconds, secondsToMinutes } from 'date-fns';
-	import type { PageProps } from './$types';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '$lib/components/ui/dialog';
 	import { getTrailer } from '$lib/api/anime';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { formatDuration, secondsToMinutes } from 'date-fns';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let anime = $derived(data.anime);
+
+	const formatter = Intl.NumberFormat('en-US');
 
 	let trailerOpen = $state(false);
 
@@ -18,11 +20,11 @@
 
 <div class="mt-20 p-3 md:px-8">
 	<div class="flex gap-8 rounded-md bg-card p-4">
-		<div class="aspect-[3/4] w-1/4">
+		<div class="w-1/4">
 			<img
 				src={anime.metadata?.mainPicture ?? anime.poster}
 				alt={anime.jname}
-				class="h-full w-full rounded-md bg-muted object-cover object-center"
+				class="aspect-[3/4] w-full rounded-md bg-muted object-cover object-center"
 			/>
 		</div>
 		<div class="flex w-full flex-col justify-between">
@@ -45,7 +47,7 @@
 					{@render keyValue('Rank', anime.metadata?.rank)}
 					{@render keyValue(
 						'Score',
-						`${anime.metadata?.mean} (${anime.metadata?.scoringUsers} users)`
+						`${anime.metadata?.mean} (${formatter.format(anime.metadata?.scoringUsers ?? 0)} users)`
 					)}
 				</div>
 				<div>
@@ -83,6 +85,8 @@
 							frameborder="0"
 							allowfullscreen
 						></iframe>
+					{:catch}
+						<p>Oops! There is no trailer available for this anime. Please check back later.</p>
 					{/await}
 				</DialogContent>
 			</Dialog>
