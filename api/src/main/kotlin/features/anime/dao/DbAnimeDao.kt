@@ -1,14 +1,13 @@
 package xyz.aniways.features.anime.dao
 
-import org.ktorm.dsl.batchInsert
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.inList
-import org.ktorm.dsl.like
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
+import org.ktorm.support.postgresql.ilike
 import xyz.aniways.database.AniwaysDB
 import xyz.aniways.features.anime.db.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
+import java.sql.ResultSet
 import java.util.*
 import kotlin.math.ceil
 
@@ -104,6 +103,98 @@ class DbAnimeDao(
     override suspend fun getAnimesInHiAnimeIds(hiAnimeIds: List<String>): List<Anime> {
         return aniwaysDb.query {
             animes.filter { it.hianimeId inList hiAnimeIds }.toList()
+        }
+    }
+
+    override suspend fun searchAnimes(
+        query: String,
+        page: Int,
+        itemsPerPage: Int
+    ): Pagination<Anime> {
+        return aniwaysDb.query {
+            useConnection { conn ->
+                val searchQuery = """
+                    SELECT 
+                        *,
+                        ts_rank(search_vector, plainto_tsquery('english', ?)) AS rank
+                    FROM 
+                        animes
+                    WHERE 
+                        name % ? 
+                        OR jname % ?
+                        OR search_vector @@ plainto_tsquery('english', ?)
+                    ORDER BY 
+                        rank DESC
+                    LIMIT ? 
+                    OFFSET ?
+                """.trimIndent()
+
+                val countQuery = """
+                    SELECT 
+                        COUNT(*) 
+                    FROM 
+                        animes 
+                    WHERE 
+                        name % ? 
+                        OR jname % ? 
+                        OR search_vector @@ plainto_tsquery('english', ?)
+                """.trimIndent()
+
+                val totalItems = conn
+                    .prepareStatement(countQuery)
+                    .apply {
+                        setString(1, query)
+                        setString(2, query)
+                        setString(3, query)
+                    }
+                    .executeQuery()
+                    .let { rs ->
+                        rs.next()
+                        rs.getInt(1)
+                    }
+
+                val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
+                val hasNextPage = page < totalPage
+                val hasPreviousPage = page > 1
+
+                val items = conn
+                    .prepareStatement(searchQuery)
+                    .apply {
+                        setString(1, query)
+                        setString(2, query)
+                        setString(3, query)
+                        setString(4, query)
+                        setInt(5, itemsPerPage)
+                        setInt(6, (page - 1) * itemsPerPage)
+                    }
+                    .executeQuery()
+                    .let { rs ->
+                        generateSequence {
+                            if (!rs.next()) return@generateSequence null
+                            Anime {
+                                id = UUID.fromString(rs.getString("id"))
+                                name = rs.getString("name")
+                                jname = rs.getString("jname")
+                                poster = rs.getString("poster")
+                                genre = rs.getString("genre")
+                                hianimeId = rs.getString("hi_anime_id")
+                                malId = rs.getInt("mal_id")
+                                anilistId = rs.getInt("anilist_id")
+                                lastEpisode = rs.getInt("last_episode")
+                            }
+                        }.toList()
+                    }
+
+                Pagination(
+                    pageInfo = PageInfo(
+                        totalPage = totalPage,
+                        currentPage = page,
+                        hasNextPage = hasNextPage,
+                        hasPreviousPage = hasPreviousPage
+                    ),
+                    items = items
+                )
+            }
         }
     }
 

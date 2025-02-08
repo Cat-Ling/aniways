@@ -43,7 +43,7 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     class Top(val parent: AnimeRoute)
 
     @Resource("/search")
-    class Search(val parent: AnimeRoute, val query: String, val page: Int = 1)
+    class Search(val parent: AnimeRoute, val query: String)
 
     @Resource("/recently-updated")
     class RecentlyUpdated(val parent: AnimeRoute)
@@ -124,14 +124,12 @@ fun Route.animeRoutes() {
         }
     }
 
-    cacheOutput(
-        invalidateAt = 1.hours,
-        queryKeys = listOf("query", "page")
-    ) {
+    cacheOutput(invalidateAt = 1.hours) {
         get<AnimeRoute.Search> { route ->
             val result = service.searchAnime(
                 query = route.query,
-                page = route.page
+                page = route.parent.page,
+                itemsPerPage = route.parent.itemsPerPage
             )
 
             call.respond(result)

@@ -18,6 +18,8 @@ interface AnimeDao {
     suspend fun getAnimesInMalIds(malIds: List<Int>): List<Anime>
     suspend fun getAnimesInHiAnimeIds(hiAnimeIds: List<String>): List<Anime>
 
+    suspend fun searchAnimes(query: String, page: Int, itemsPerPage: Int): Pagination<Anime>
+
     suspend fun insertAnime(anime: Anime): Anime
     suspend fun insertAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata
     suspend fun insertAnimes(animes: List<Anime>)
