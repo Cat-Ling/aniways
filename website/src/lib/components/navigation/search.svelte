@@ -16,7 +16,7 @@
 
 	const debouncedSearch = lodash.debounce((value: string, signal: AbortSignal) => {
 		if (!value) return (loading = false), (animes = []);
-		searchAnime(value, 1, 3, signal).then((res) => {
+		searchAnime(fetch, value, 1, 3, signal).then((res) => {
 			animes = res.items;
 			hasMore = res.pageInfo.hasNextPage;
 			loading = false;

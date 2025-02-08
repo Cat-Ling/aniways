@@ -18,7 +18,7 @@
 	let trailer = $derived({
 		trailer:
 			anime.metadata?.trailer ??
-			getTrailer(anime.id)
+			getTrailer(fetch, anime.id)
 				.then((obj) => obj.trailer)
 				.catch(() => null)
 	});
@@ -134,7 +134,7 @@
 			<p>
 				Episode {episode.number}
 			</p>
-			<p class="text-muted-foreground">
+			<p class="w-full truncate text-muted-foreground">
 				{episode.title === `Episode ${episode.number}` ? 'No title available' : episode.title}
 			</p>
 		</Button>

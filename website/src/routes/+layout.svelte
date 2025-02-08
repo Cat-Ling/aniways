@@ -5,7 +5,7 @@
 
 	import { page } from '$app/state';
 	import Navbar from '$lib/components/navigation/navbar.svelte';
-	import { setContext } from 'svelte';
+	import { setUser } from '$lib/context/user';
 	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
 	import type { LayoutProps } from './$types';
 
@@ -14,7 +14,7 @@
 	const baseTitle = $derived(page.data?.title);
 	const title = $derived(baseTitle ? `${baseTitle} | Aniways` : 'Aniways');
 
-	setContext('currentUser', () => data);
+	if (data.user) setUser(data.user);
 </script>
 
 <svelte:head>
