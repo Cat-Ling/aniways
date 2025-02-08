@@ -1,15 +1,9 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { StatusError } from '$lib/api';
+import { fetchJson } from '$lib/api';
 import { user } from './types';
 
 export const getCurrentUser = async (fetch: typeof global.fetch) => {
-	const response = await fetch(`${PUBLIC_API_URL}/auth/me`)
-		.then((res) => {
-			if (!res.ok) throw new StatusError(res.status, 'Fetch failed');
-			return res;
-		})
-		.then((res) => res.json());
-	return user.assert(response);
+	return fetchJson(fetch, '/auth/me', user);
 };
 
 export const getLoginUrl = async (currentPageUrl: string | undefined) => {
