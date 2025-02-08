@@ -4,17 +4,23 @@
 	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { formatDuration, secondsToMinutes } from 'date-fns';
+	import { PlayIcon, Tv } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let anime = $derived(data.anime);
+	let episodes = $derived(data.episodes);
 
 	const formatter = Intl.NumberFormat('en-US');
 
 	let trailerOpen = $state(false);
 
 	let trailer = $derived({
-		trailer: anime.metadata?.trailer ?? getTrailer(anime.id).then((obj) => obj.trailer)
+		trailer:
+			anime.metadata?.trailer ??
+			getTrailer(anime.id)
+				.then((obj) => obj.trailer)
+				.catch(() => null)
 	});
 </script>
 
@@ -61,35 +67,45 @@
 				</div>
 			</div>
 			<p class="mt-3 text-muted-foreground">{@html anime.metadata?.description}</p>
-			<Dialog bind:open={trailerOpen}>
-				<DialogTrigger asChild>
-					<Button
-						size="sm"
-						class="mt-4 w-fit"
-						onclick={() => {
-							trailerOpen = true;
-						}}
-					>
-						View Trailer
-					</Button>
-				</DialogTrigger>
-				<DialogContent>
-					<DialogTitle>{anime.jname} Trailer</DialogTitle>
-					{#await trailer.trailer}
-						<Skeleton class="aspect-video w-full" />
-					{:then trailer}
-						<iframe
-							title="{anime.jname} Trailer"
-							class="aspect-video w-full"
-							src={trailer}
-							frameborder="0"
-							allowfullscreen
-						></iframe>
-					{:catch}
-						<p>Oops! There is no trailer available for this anime. Please check back later.</p>
-					{/await}
-				</DialogContent>
-			</Dialog>
+			<div class="mt-4 flex items-center gap-2">
+				<Button href="/watch/{anime.id}?episode=1&key={episodes[0].id}">
+					<PlayIcon class="mr-2" />
+					Watch Now
+				</Button>
+				<Dialog bind:open={trailerOpen}>
+					<DialogTrigger asChild>
+						<Button
+							variant="outline"
+							onclick={() => {
+								trailerOpen = true;
+							}}
+						>
+							<Tv class="mr-2" />
+							View Trailer
+						</Button>
+					</DialogTrigger>
+					<DialogContent>
+						<DialogTitle>{anime.jname} Trailer</DialogTitle>
+						{#await trailer.trailer}
+							<Skeleton class="aspect-video w-full" />
+						{:then trailer}
+							{#if trailer}
+								<iframe
+									title="{anime.jname} Trailer"
+									class="aspect-video w-full"
+									src={trailer}
+									frameborder="0"
+									allowfullscreen
+								></iframe>
+							{:else}
+								<p>Oops! There is no trailer available for this anime. Please check back later.</p>
+							{/if}
+						{:catch}
+							<p>Oops! There is no trailer available for this anime. Please check back later.</p>
+						{/await}
+					</DialogContent>
+				</Dialog>
+			</div>
 			<div class="mt-4 flex flex-1 items-end gap-2">
 				{#each anime.genre as genre}
 					<Button
@@ -105,6 +121,31 @@
 		</div>
 	</div>
 </div>
+
+<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Episodes</h2>
+
+<div class="mx-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:grid-cols-2 lg:grid-cols-3">
+	{#each episodes as episode}
+		<Button
+			variant="outline"
+			class="h-fit flex-col items-start rounded-md bg-card p-3"
+			href="/watch/{anime.id}?episode={episode.number}&key={episode.id}"
+		>
+			<p>
+				Episode {episode.number}
+			</p>
+			<p class="text-muted-foreground">
+				{episode.title === `Episode ${episode.number}` ? 'No title available' : episode.title}
+			</p>
+		</Button>
+	{/each}
+</div>
+
+<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
+<p class="mx-3 text-muted-foreground md:mx-8">TODO: Related Anime</p>
+
+<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Recommended Anime</h2>
+<p class="mx-3 text-muted-foreground md:mx-8">TODO: Recommended Anime</p>
 
 {#snippet pill(text: string | undefined | null)}
 	{#if text}

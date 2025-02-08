@@ -7,10 +7,10 @@ export const getCurrentUser = async () => {
 	return user.assert(response.data);
 };
 
-export const login = async (currentPageUrl: string | undefined) => {
-	window.location.href = `${PUBLIC_API_URL}/auth/login${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+export const getLoginUrl = async (currentPageUrl: string | undefined) => {
+	return `${PUBLIC_API_URL}/auth/login${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };
 
-export const logout = async (currentPageUrl: string | undefined) => {
-	window.location.href = `${PUBLIC_API_URL}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+export const getLogoutUrl = async (currentPageUrl: string | undefined) => {
+	return `${PUBLIC_API_URL}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };

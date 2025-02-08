@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Logo from '$lib/assets/logo.png?enhanced';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import { cn } from '$lib/utils';
-	import { onMount } from 'svelte';
 	import { LogIn, Shuffle } from 'lucide-svelte';
-	import Button from '../ui/button/button.svelte';
+	import { onMount } from 'svelte';
 	import SearchButton from './search.svelte';
+	import { page } from '$app/state';
 
 	let changeBackground = $state(false);
+	let url = $derived(page.url);
 
 	const onScroll = () => {
 		changeBackground = window.scrollY > 0;
@@ -38,7 +40,7 @@
 			<Shuffle class="size-6" />
 		</Button>
 		<div class="rounded-md bg-background">
-			<Button href="/auth/login">
+			<Button href="/auth/login?redirect={url}">
 				<LogIn class="mr-2 size-6" />
 				Sign in
 			</Button>
