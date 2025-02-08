@@ -1,9 +1,19 @@
 <script lang="ts">
 	import { formatDuration, secondsToMilliseconds, secondsToMinutes } from 'date-fns';
 	import type { PageProps } from './$types';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '$lib/components/ui/dialog';
+	import { getTrailer } from '$lib/api/anime';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 
 	let { data }: PageProps = $props();
 	let anime = $derived(data.anime);
+
+	let trailerOpen = $state(false);
+
+	let trailer = $derived({
+		trailer: anime.metadata?.trailer ?? getTrailer(anime.id).then((obj) => obj.trailer)
+	});
 </script>
 
 <div class="mt-20 p-3 md:px-8">
@@ -15,7 +25,7 @@
 				class="h-full w-full rounded-md bg-muted object-cover object-center"
 			/>
 		</div>
-		<div class="w-full">
+		<div class="flex w-full flex-col justify-between">
 			<h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
 			<h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
 			<div class="mt-2 flex gap-2">
@@ -49,6 +59,45 @@
 				</div>
 			</div>
 			<p class="mt-3 text-muted-foreground">{@html anime.metadata?.description}</p>
+			<Dialog bind:open={trailerOpen}>
+				<DialogTrigger asChild>
+					<Button
+						size="sm"
+						class="mt-4 w-fit"
+						onclick={() => {
+							trailerOpen = true;
+						}}
+					>
+						View Trailer
+					</Button>
+				</DialogTrigger>
+				<DialogContent>
+					<DialogTitle>{anime.jname} Trailer</DialogTitle>
+					{#await trailer.trailer}
+						<Skeleton class="aspect-video w-full" />
+					{:then trailer}
+						<iframe
+							title="{anime.jname} Trailer"
+							class="aspect-video w-full"
+							src={trailer}
+							frameborder="0"
+							allowfullscreen
+						></iframe>
+					{/await}
+				</DialogContent>
+			</Dialog>
+			<div class="mt-4 flex flex-1 items-end gap-2">
+				{#each anime.genre as genre}
+					<Button
+						variant="outline"
+						size="sm"
+						class="capitalize"
+						href="/genre/{genre.toLowerCase().replace(' ', '-')}"
+					>
+						{genre}
+					</Button>
+				{/each}
+			</div>
 		</div>
 	</div>
 </div>
