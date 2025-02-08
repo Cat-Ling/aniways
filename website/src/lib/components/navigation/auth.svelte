@@ -14,7 +14,11 @@
 {#if user}
 	<DropdownMenu.Root bind:open>
 		<DropdownMenu.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
-			<img src={user.picture} alt="avatar" class="size-10 rounded-full" />
+			<img
+				src={user.picture}
+				alt="avatar"
+				class="size-10 rounded-full object-cover object-center"
+			/>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content align="end" class="w-56">
 			<DropdownMenu.Label>{user.name}</DropdownMenu.Label>
