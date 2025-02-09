@@ -14,8 +14,10 @@ Bun.serve({
 
     if (pathname.startsWith('/info/')) {
       const xrax = pathname.split('/info/')[1];
-      const sources = cache.get(xrax) || (await getSources(xrax));
-      sources && cache.set(xrax, sources);
+      const cached = cache.get(xrax);
+      const sources = cached ?? (await getSources(xrax));
+
+      if (sources) cache.set(xrax, sources);
 
       return new Response(
         JSON.stringify({
@@ -23,25 +25,23 @@ Bun.serve({
           sources:
             sources?.sources.map(src => ({
               ...src,
-              file: '/proxy/' + xrax + '/' + src.file.split('/').pop(),
+              file: `/proxy/${xrax}/${encodeURIComponent(
+                src.file.split('/').pop()!
+              )}`,
             })) ?? [],
         }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+        { headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // /proxy/{xrax}/{file}
-    const regex = /^\/proxy\/([^/]+)\/([^/]+)$/g;
+    const regex = /^\/proxy\/([^/]+)\/([^/]+)$/;
     const match = regex.exec(pathname);
 
     if (match) {
       const xrax = match[1];
       const file = decodeURIComponent(match[2]);
-      const source = cache.get(xrax) || (await getSources(xrax));
+      const cached = cache.get(xrax);
+      const source = cached ?? (await getSources(xrax));
 
       if (!source) {
         return new Response('Not Found', { status: 404 });
@@ -49,11 +49,12 @@ Bun.serve({
 
       cache.set(xrax, source);
 
-      const url = file.startsWith('http')
+      const baseUrl = new URL(source.sources[0].file);
+      const finalUrl = file.startsWith('http')
         ? file
-        : source.sources[0].file.split('/').slice(0, -1).join('/') + '/' + file;
+        : new URL(file, baseUrl).toString();
 
-      return await fetch(url);
+      return await fetch(finalUrl);
     }
 
     return new Response(undefined, { status: 404 });
