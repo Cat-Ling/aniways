@@ -78,3 +78,23 @@ export const episodeServer = type({
 	serverName: 'string',
 	url: 'string.url'
 });
+
+export const streamInfo = type({
+	sources: type({
+		file: 'string'
+	}).array(),
+	tracks: type({
+		file: 'string.url',
+		'label?': 'string',
+		kind: '"captions"|"thumbnails"',
+		'default?': 'boolean'
+	}).array(),
+	'intro?': type({
+		start: 'number',
+		end: 'number'
+	}).or('undefined|null'),
+	'outro?': type({
+		start: 'number',
+		end: 'number'
+	}).or('undefined|null')
+});

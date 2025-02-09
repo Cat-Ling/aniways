@@ -49,8 +49,10 @@
     "@fontsource/sora": "^5.1.1",
     "arktype": "^2.0.4",
     "artplayer": "^5.2.2",
+    "artplayer-plugin-hls-control": "^1.0.1",
     "date-fns": "^4.1.0",
     "embla-carousel-autoplay": "^8.5.2",
+    "hls.js": "^1.5.20",
     "lodash": "^4.17.21",
     "sveltekit-top-loader": "^0.1.0"
   }

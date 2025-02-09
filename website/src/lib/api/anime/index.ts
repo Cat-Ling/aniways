@@ -6,10 +6,12 @@ import {
 	episode,
 	episodeServer,
 	paginatedAnime,
+	streamInfo,
 	topAnime,
 	trailer as trailerSchema
 } from './types';
 import { error } from '@sveltejs/kit';
+import { PUBLIC_STREAMING_URL } from '$env/static/public';
 
 export const getSeasonalAnime = async (fetch: typeof global.fetch) => {
 	return fetchJson(fetch, '/anime/seasonal', anilistAnime.array());
@@ -133,4 +135,18 @@ export const getRandomAnime = async (fetch: typeof global.fetch) => {
 
 export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: string) => {
 	return fetchJson(fetch, `/anime/random/${genre}`, animeSchema);
+};
+
+export const getStreamingData = async (fetch: typeof global.fetch, iframeUrl: string) => {
+	const url = new URL(iframeUrl).pathname.split('/').pop();
+	const response = await fetch(`${PUBLIC_STREAMING_URL}/info/${url}`)
+		.then((res) => res.json())
+		.then(streamInfo.assert);
+	return {
+		...response,
+		sources: response.sources.map((source) => ({
+			...source,
+			file: `${PUBLIC_STREAMING_URL}${source.file}`
+		}))
+	};
 };

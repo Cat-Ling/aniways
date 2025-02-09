@@ -2,7 +2,8 @@ import {
 	getAnimeMetadata,
 	getEpisodes,
 	getSeasonsAndRelatedAnimes,
-	getServersOfEpisode
+	getServersOfEpisode,
+	getStreamingData
 } from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
@@ -48,7 +49,8 @@ export const load: PageLoad = async ({ url, params }) => {
 			episodes,
 			servers,
 			selectedServer,
-			otherAnimeSections: getSeasonsAndRelatedAnimes(fetch, anime.id)
+			otherAnimeSections: getSeasonsAndRelatedAnimes(fetch, anime.id),
+			streamInfo: getStreamingData(fetch, selectedServer.url)
 		}
 	};
 };

@@ -3,13 +3,17 @@
 	import { page } from '$app/state';
 	import Metadata from '$lib/components/anime/metadata.svelte';
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
+	import Player from '$lib/components/anime/player.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 	import { cn } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { type PageProps } from './$types';
-	import * as Dialog from '$lib/components/ui/dialog';
 
 	let { data }: PageProps = $props();
+
+	let streamInfo = $derived(data.data.streamInfo);
 
 	onMount(() => {
 		const searchParams = page.url.searchParams;
@@ -20,7 +24,7 @@
 	});
 </script>
 
-<div class="mb-3 mt-20 px-3 md:mb-8 md:px-8">
+<div class="mb-3 mt-20 px-3 md:mb-5 md:px-8">
 	<div class="flex flex-col-reverse gap-2 md:flex-row">
 		<div class="mt-3 flex w-full max-w-md flex-col gap-2 md:mt-0 md:w-1/5">
 			<div class="rounded-md bg-card p-3 md:hidden">
@@ -67,7 +71,7 @@
 					{/if}
 					{#each data.data.servers.filter((server) => server.type === 'dub') as server}
 						<Button
-							href="/watch/{data.query.id}?episode={data.query.episode}?key={data.query
+							href="/watch/{data.query.id}?episode={data.query.episode}&key={data.query
 								.key}&server={`${server.type}_${server.serverName}`}"
 							variant="outline"
 							size="sm"
@@ -84,7 +88,13 @@
 				</div>
 			</div>
 		</div>
-		<div class="aspect-video w-full flex-1 rounded-md bg-card"></div>
+		<div class="aspect-video w-full flex-1 overflow-hidden rounded-md bg-card">
+			{#await streamInfo}
+				<Skeleton class="h-full w-full" />
+			{:then info}
+				<Player {info} />
+			{/await}
+		</div>
 	</div>
 </div>
 
