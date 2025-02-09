@@ -5,6 +5,10 @@
 	import { ChevronLeft, Home } from 'lucide-svelte';
 
 	let is404 = $derived(page.status === 404);
+
+	$effect(() => {
+		console.error(page.error);
+	});
 </script>
 
 <div class="mt-32 flex w-full max-w-screen-md flex-col gap-4 p-3 md:mx-auto md:p-8">

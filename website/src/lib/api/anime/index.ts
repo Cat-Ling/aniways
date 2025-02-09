@@ -1,4 +1,5 @@
 import { fetchJson } from '$lib/api';
+import { formatDuration, secondsToMinutes } from 'date-fns/fp';
 import {
 	anilistAnime,
 	anime,
@@ -8,6 +9,7 @@ import {
 	topAnime,
 	trailer
 } from './types';
+import { error } from '@sveltejs/kit';
 
 export const getSeasonalAnime = async (fetch: typeof global.fetch) => {
 	return fetchJson(fetch, '/anime/seasonal', anilistAnime.array());
@@ -51,19 +53,49 @@ export const searchAnime = async (
 };
 
 export const getAnimeMetadata = async (fetch: typeof global.fetch, id: string) => {
-	return fetchJson(fetch, `/anime/${id}`, anime);
+	const a = await fetchJson(fetch, `/anime/${id}`, anime);
+
+	const metadata = a.metadata;
+
+	if (!metadata) {
+		error(404, 'Anime not found');
+	}
+
+	return {
+		...a,
+		...a.metadata,
+		metadata: undefined,
+		picture: metadata.mainPicture ?? a.poster,
+		score: `${metadata.mean ?? 0.0} (${Intl.NumberFormat().format(metadata.scoringUsers ?? 0)} users)`,
+		season: metadata.season ? `${metadata.season} ${metadata.seasonYear}` : '???',
+		source: metadata.source?.replace('_', ' ') ?? '???',
+		avgEpDuration: formatDuration({
+			minutes: secondsToMinutes(metadata.avgEpDuration ?? 0)
+		}),
+		airing: metadata.airingStart
+			? `${metadata.airingStart} - ${metadata.airingEnd ?? '???'}`
+			: '???'
+	};
 };
 
-export const getSeasonsOfAnime = async (fetch: typeof global.fetch, id: string) => {
-	return fetchJson(fetch, `/anime/${id}/seasons`, anime.array());
-};
+export const getSeasonsAndRelatedAnimes = async (fetch: typeof global.fetch, id: string) => {
+	const [seasons, related, franchise] = await Promise.all([
+		fetchJson(fetch, `/anime/${id}/seasons`, anime.array()),
+		fetchJson(fetch, `/anime/${id}/related`, anime.array()),
+		fetchJson(fetch, `/anime/${id}/franchise`, anime.array())
+	]);
 
-export const getRelatedAnime = async (fetch: typeof global.fetch, id: string) => {
-	return fetchJson(fetch, `/anime/${id}/related`, anime.array());
-};
+	if (seasons.length > 1 && seasons.some((a) => a.id === id)) {
+		return [
+			{ label: 'Seasons', value: seasons },
+			{ label: 'Related anime', value: related.toReversed() }
+		].filter((d) => d.value.length > 0);
+	}
 
-export const getAnimeFranchise = async (fetch: typeof global.fetch, id: string) => {
-	return fetchJson(fetch, `/anime/${id}/franchise`, anime.array());
+	return [
+		{ label: 'Seasons', value: [] },
+		{ label: 'Related anime', value: franchise.filter((f) => f.id !== id).toReversed() }
+	].filter((d) => d.value.length > 0);
 };
 
 export const getTrailer = async (fetch: typeof global.fetch, id: string, signal?: AbortSignal) => {
