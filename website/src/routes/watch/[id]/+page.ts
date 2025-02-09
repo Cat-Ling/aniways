@@ -8,7 +8,7 @@ import {
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, params }) => {
+export const load: PageLoad = async ({ url, params, fetch }) => {
 	const id = params.id;
 	const [anime, episodes] = await Promise.all([
 		getAnimeMetadata(fetch, id),
@@ -33,7 +33,22 @@ export const load: PageLoad = async ({ url, params }) => {
 			const [type, name] = server?.split('_') ?? [];
 
 			return srv.type === type && srv.serverName === name;
-		}) ?? servers[0];
+		}) ??
+		servers.find((srv) => srv.type === 'sub' || srv.type === 'raw') ??
+		servers[0];
+
+	const serversByType = servers.reduce(
+		(acc, srv) => {
+			if (!acc[srv.type]) {
+				acc[srv.type] = [];
+			}
+
+			acc[srv.type].push(srv);
+
+			return acc;
+		},
+		{} as Record<string, typeof servers>
+	);
 
 	return {
 		title: `${anime.jname} - Episode ${episode}`,
@@ -48,6 +63,7 @@ export const load: PageLoad = async ({ url, params }) => {
 			anime,
 			episodes,
 			servers,
+			serversByType,
 			selectedServer,
 			otherAnimeSections: getSeasonsAndRelatedAnimes(fetch, anime.id),
 			streamInfo: getStreamingData(fetch, selectedServer.url)

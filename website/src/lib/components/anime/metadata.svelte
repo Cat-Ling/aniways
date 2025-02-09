@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { getAnimeMetadata } from '$lib/api/anime';
 	import { cn } from '$lib/utils';
-	import { Info, PlayIcon, Tv } from 'lucide-svelte';
+	import Info from 'lucide-svelte/icons/info';
+	import PlayIcon from 'lucide-svelte/icons/play';
+	import Tv from 'lucide-svelte/icons/tv';
 	import { Button } from '../ui/button';
 	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 	import Trailer from './trailer.svelte';
-	import { page } from '$app/state';
 
 	type Props = {
 		anime: Awaited<ReturnType<typeof getAnimeMetadata>>;

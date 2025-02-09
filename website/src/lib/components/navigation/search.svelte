@@ -4,7 +4,7 @@
 	import type { anime } from '$lib/api/anime/types';
 	import * as Command from '$lib/components/ui/command';
 	import { debounce } from 'lodash-es';
-	import { Search } from 'lucide-svelte';
+	import Search from 'lucide-svelte/icons/search';
 	import { Button } from '../ui/button';
 
 	let open = $state(false);

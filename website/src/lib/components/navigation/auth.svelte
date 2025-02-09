@@ -4,7 +4,9 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { getUser } from '$lib/context/user';
 	import { cn } from '$lib/utils';
-	import { List, LogIn, Settings } from 'lucide-svelte';
+	import List from 'lucide-svelte/icons/list';
+	import Logout from 'lucide-svelte/icons/log-out';
+	import LogIn from 'lucide-svelte/icons/log-in';
 
 	const user = getUser()?.();
 
@@ -31,7 +33,7 @@
 				href="/auth/logout?redirect={page.url}"
 				class="flex cursor-pointer items-center gap-2"
 			>
-				<Settings className="h-5 w-5" />
+				<Logout className="h-5 w-5" />
 				Logout
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { replaceState } from '$app/navigation';
+	import { replaceState, afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import Metadata from '$lib/components/anime/metadata.svelte';
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
@@ -8,19 +8,43 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 	import { cn } from '$lib/utils';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { type PageProps } from './$types';
 
-	let { data }: PageProps = $props();
+	let props: PageProps = $props();
+	let { query, data } = $derived(props.data);
 
-	let streamInfo = $derived(data.data.streamInfo);
+	let streamInfo = $derived(data.streamInfo);
+	let nextServer = $derived.by(() => {
+		const servers = data.serversByType[query.type];
+		const index = servers.findIndex((server) => server.serverName === query.server);
+		return servers[index + 1]?.serverName;
+	});
+	let moveToNextServer = $state(false);
 
-	onMount(() => {
+	$effect(() => {
+		if (!moveToNextServer) return;
+		if (!nextServer) return;
+		if (nextServer === query.server) return;
+		window.history.replaceState(
+			null,
+			'',
+			`/watch/${query.id}?episode=${query.episode}&key=${query.key}&server=${query.type}_${nextServer}`
+		);
+		window.location.reload();
+	});
+
+	afterNavigate(() => {
+		moveToNextServer = false;
+	});
+
+	onMount(async () => {
+		await tick();
 		const searchParams = page.url.searchParams;
-		searchParams.set('episode', data.query.episode.toString());
-		searchParams.set('key', data.query.key);
-		searchParams.set('server', `${data.query.type}_${data.query.server}`);
-		replaceState(`/watch/${data.query.id}?${searchParams.toString()}`, {});
+		searchParams.set('episode', query.episode.toString());
+		searchParams.set('key', query.key);
+		searchParams.set('server', `${query.type}_${query.server}`);
+		replaceState(`/watch/${query.id}?${searchParams.toString()}`, {});
 	});
 </script>
 
@@ -31,10 +55,10 @@
 				<h3 class="mb-3 font-sora text-xl font-bold">Episodes</h3>
 				<Dialog.Root>
 					<Dialog.Trigger class={cn('w-full', buttonVariants({ variant: 'outline' }))}>
-						<span class="mr-1 text-muted-foreground">Episode {data.query.episode}</span>
+						<span class="mr-1 text-muted-foreground">Episode {query.episode}</span>
 						-
 						<span class="ml-1 font-sora">
-							{data.data.episodes.find((ep) => ep.number === data.query.episode)?.title}
+							{data.episodes.find((ep) => ep.number === query.episode)?.title}
 						</span>
 					</Dialog.Trigger>
 					<Dialog.Content>
@@ -46,66 +70,54 @@
 			{@render episode()}
 			<div class="w-full flex-1 rounded-md bg-card">
 				<h3 class="p-3 font-sora text-xl font-bold">Servers</h3>
-				<div class="grid grid-cols-5 gap-2 p-3">
-					{#if data.data.servers.filter((server) => server.type === 'sub').length > 0}
-						<h4 class="font-sora">Sub:</h4>
-					{/if}
-					{#each data.data.servers.filter((server) => server.type === 'sub') as server}
-						<Button
-							href="/watch/{data.query.id}?episode={data.query.episode}&key={data.query
-								.key}&server={`${server.type}_${server.serverName}`}"
-							variant="outline"
-							size="sm"
-							class={cn(
-								'col-span-2',
-								server.serverName === data.query.server &&
-									server.type === data.query.type &&
-									'border-primary'
-							)}
-						>
-							{server.serverName}
-						</Button>
-					{/each}
-					{#if data.data.servers.filter((server) => server.type === 'dub').length > 0}
-						<h4 class="font-sora">Dub:</h4>
-					{/if}
-					{#each data.data.servers.filter((server) => server.type === 'dub') as server}
-						<Button
-							href="/watch/{data.query.id}?episode={data.query.episode}&key={data.query
-								.key}&server={`${server.type}_${server.serverName}`}"
-							variant="outline"
-							size="sm"
-							class={cn(
-								'col-span-2',
-								server.serverName === data.query.server &&
-									server.type === data.query.type &&
-									'border-primary'
-							)}
-						>
-							{server.serverName}
-						</Button>
-					{/each}
-				</div>
+				{#each Object.entries(data.serversByType) as [type, servers]}
+					<div class="grid grid-cols-5 items-center gap-2 p-3">
+						{#if servers.length > 0}
+							<h4 class="font-sora capitalize">{type}</h4>
+						{/if}
+						{#each servers as server}
+							<Button
+								href="/watch/{query.id}?episode={query.episode}&key={query.key}&server={`${type}_${server.serverName}`}"
+								variant="outline"
+								size="sm"
+								class={cn(
+									'col-span-2',
+									server.serverName === query.server && type === query.type && 'border-primary'
+								)}
+								data-sveltekit-replacestate
+								data-sveltekit-preload-code="eager"
+							>
+								{server.serverName}
+							</Button>
+						{/each}
+					</div>
+				{/each}
 			</div>
 		</div>
 		<div class="aspect-video w-full flex-1 overflow-hidden rounded-md bg-card">
 			{#await streamInfo}
 				<Skeleton class="h-full w-full" />
 			{:then info}
-				<Player {info} />
+				<Player
+					{info}
+					onError={(art) => {
+						if (nextServer && !moveToNextServer) {
+							return (moveToNextServer = true);
+						}
+
+						art.notice.show = "The video can't be played. Please try again later.";
+					}}
+				/>
 			{/await}
 		</div>
 	</div>
 </div>
 
-<Metadata anime={data.data.anime} />
+<Metadata anime={data.anime} />
 
 <div class="mb-5"></div>
 
-<OtherAnimeSections
-	animeId={data.query.id}
-	seasonsAndRelatedAnimes={data.data.otherAnimeSections}
-/>
+<OtherAnimeSections animeId={query.id} seasonsAndRelatedAnimes={data.otherAnimeSections} />
 
 {#snippet episode(className?: string | undefined, h3ClassName?: string | undefined)}
 	<div
@@ -117,13 +129,14 @@
 		<h3 class={cn('sticky top-0 w-full border-b bg-card p-3 font-sora font-bold', h3ClassName)}>
 			Episodes
 		</h3>
-		{#each data.data.episodes as ep, i (ep.id + i)}
+		{#each data.episodes as ep, i (ep.id + i)}
 			<a
-				href="/watch/{data.query.id}?episode={ep.number}&key={ep.id}"
+				href="/watch/{query.id}?episode={ep.number}&key={ep.id}"
 				class={cn(
 					'flex items-center border-b border-border p-3 transition last:border-b-0 hover:bg-muted',
-					ep.number === data.query.episode && 'text-primary'
+					ep.number === query.episode && 'text-primary'
 				)}
+				data-sveltekit-preload-code="eager"
 			>
 				<span class="mr-3 text-lg font-bold">
 					{ep.number}
