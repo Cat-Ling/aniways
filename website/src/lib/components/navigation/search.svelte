@@ -3,7 +3,7 @@
 	import { searchAnime } from '$lib/api/anime';
 	import type { anime } from '$lib/api/anime/types';
 	import * as Command from '$lib/components/ui/command';
-	import lodash from 'lodash';
+	import { debounce } from 'lodash-es';
 	import { Search } from 'lucide-svelte';
 	import { Button } from '../ui/button';
 
@@ -14,7 +14,7 @@
 	let animes: (typeof anime.infer)[] = $state([]);
 	let hasMore = $state(false);
 
-	const debouncedSearch = lodash.debounce((value: string, signal: AbortSignal) => {
+	const debouncedSearch = debounce((value: string, signal: AbortSignal) => {
 		if (!value) return (loading = false), (animes = []);
 		searchAnime(fetch, value, 1, 3, signal).then((res) => {
 			animes = res.items;

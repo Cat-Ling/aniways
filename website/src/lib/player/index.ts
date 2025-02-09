@@ -1,21 +1,23 @@
 import type { streamInfo } from '$lib/api/anime/types';
 import { LOADING_SVG, SUBTITLE_ICON } from '$lib/assets/icons';
-import Artplayer from 'artplayer';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import { thumbnailPlugin } from './plugins';
-import Hls from 'hls.js';
+import type Hls from 'hls.js';
 
 type Props = {
 	container: HTMLDivElement;
 	source: typeof streamInfo.infer;
 };
 
-export const createArtPlayer = ({ container, source }: Props) => {
+export const createArtPlayer = async ({ container, source }: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
 	const defaultSubtitle = source.tracks.find((track) => track.default && track.kind === 'captions');
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 		navigator.userAgent
 	);
+
+	const Hls = import('hls.js').then((module) => module.default);
+	const Artplayer = await import('artplayer').then((module) => module.default);
 
 	const art = new Artplayer({
 		container,
@@ -87,18 +89,20 @@ export const createArtPlayer = ({ container, source }: Props) => {
 		],
 		customType: {
 			m3u8: (video, url, art) => {
-				if (Hls.isSupported()) {
-					if (art.hls) (art.hls as Hls).destroy();
-					const hls = new Hls();
-					hls.loadSource(url);
-					hls.attachMedia(video);
-					art.hls = hls;
-					art.on('destroy', () => hls.destroy());
-				} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-					video.src = url;
-				} else {
-					art.notice.show = 'Unsupported playback format: m3u8';
-				}
+				Hls.then((Hls) => {
+					if (Hls.isSupported()) {
+						if (art.hls) (art.hls as Hls).destroy();
+						const hls = new Hls();
+						hls.loadSource(url);
+						hls.attachMedia(video);
+						art.hls = hls;
+						art.on('destroy', () => hls.destroy());
+					} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+						video.src = url;
+					} else {
+						art.notice.show = 'Unsupported playback format: m3u8';
+					}
+				});
 			}
 		}
 	});

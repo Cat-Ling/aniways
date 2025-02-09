@@ -18,7 +18,9 @@
 			source: info
 		});
 
-		return () => player.destroy();
+		return async () => {
+			(await player).destroy();
+		};
 	});
 </script>
 
