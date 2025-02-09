@@ -1,10 +1,5 @@
 import { StatusError } from '$lib/api';
-import {
-	getAnimeMetadata,
-	getEpisodes,
-	getSeasonsAndRelatedAnimes,
-	getTrailer
-} from '$lib/api/anime';
+import { getAnimeMetadata, getEpisodes, getSeasonsAndRelatedAnimes } from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -15,14 +10,11 @@ export const load: PageLoad = async ({ params, fetch }) => {
 			getEpisodes(fetch, params.id)
 		]);
 
-		const trailer = anime.trailer ?? getTrailer(fetch, anime.id).catch(() => null);
-
 		return {
 			title: anime.jname,
 			anime,
 			episodes,
-			seasonsAndRelatedAnimes: getSeasonsAndRelatedAnimes(fetch, params.id),
-			trailer: typeof trailer === 'string' ? trailer : trailer.then((t) => t?.trailer ?? '')
+			seasonsAndRelatedAnimes: getSeasonsAndRelatedAnimes(fetch, params.id)
 		};
 	} catch (e) {
 		if (e instanceof StatusError && (e?.status === 400 || e?.status === 404)) {

@@ -1,4 +1,9 @@
-import { getAnimeMetadata, getEpisodes, getServersOfEpisode } from '$lib/api/anime';
+import {
+	getAnimeMetadata,
+	getEpisodes,
+	getSeasonsAndRelatedAnimes,
+	getServersOfEpisode
+} from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -22,7 +27,12 @@ export const load: PageLoad = async ({ url, params }) => {
 	}
 
 	const servers = await getServersOfEpisode(fetch, key);
-	const selectedServer = servers.find((srv) => srv.serverName === server) ?? servers[0];
+	const selectedServer =
+		servers.find((srv) => {
+			const [type, name] = server?.split('_') ?? [];
+
+			return srv.type === type && srv.serverName === name;
+		}) ?? servers[0];
 
 	return {
 		title: `${anime.jname} - Episode ${episode}`,
@@ -30,13 +40,15 @@ export const load: PageLoad = async ({ url, params }) => {
 			id,
 			episode,
 			key,
-			server: selectedServer.serverName
+			server: selectedServer.serverName,
+			type: selectedServer.type
 		},
 		data: {
 			anime,
 			episodes,
 			servers,
-			selectedServer
+			selectedServer,
+			otherAnimeSections: getSeasonsAndRelatedAnimes(fetch, anime.id)
 		}
 	};
 };

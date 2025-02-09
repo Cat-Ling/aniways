@@ -2,12 +2,12 @@ import { fetchJson } from '$lib/api';
 import { formatDuration, secondsToMinutes } from 'date-fns/fp';
 import {
 	anilistAnime,
-	anime,
+	anime as animeSchema,
 	episode,
 	episodeServer,
 	paginatedAnime,
 	topAnime,
-	trailer
+	trailer as trailerSchema
 } from './types';
 import { error } from '@sveltejs/kit';
 
@@ -16,7 +16,7 @@ export const getSeasonalAnime = async (fetch: typeof global.fetch) => {
 };
 
 export const getTrendingAnime = async (fetch: typeof global.fetch) => {
-	return fetchJson(fetch, '/anime/trending', anime.array());
+	return fetchJson(fetch, '/anime/trending', animeSchema.array());
 };
 
 export const getTopAnime = async (fetch: typeof global.fetch) => {
@@ -53,19 +53,19 @@ export const searchAnime = async (
 };
 
 export const getAnimeMetadata = async (fetch: typeof global.fetch, id: string) => {
-	const a = await fetchJson(fetch, `/anime/${id}`, anime);
+	const anime = await fetchJson(fetch, `/anime/${id}`, animeSchema);
 
-	const metadata = a.metadata;
+	const metadata = anime.metadata;
 
 	if (!metadata) {
 		error(404, 'Anime not found');
 	}
 
 	return {
-		...a,
-		...a.metadata,
+		...anime,
+		...anime.metadata,
 		metadata: undefined,
-		picture: metadata.mainPicture ?? a.poster,
+		picture: metadata.mainPicture ?? anime.poster,
 		score: `${metadata.mean ?? 0.0} (${Intl.NumberFormat().format(metadata.scoringUsers ?? 0)} users)`,
 		season: metadata.season ? `${metadata.season} ${metadata.seasonYear}` : '???',
 		source: metadata.source?.replace('_', ' ') ?? '???',
@@ -80,9 +80,9 @@ export const getAnimeMetadata = async (fetch: typeof global.fetch, id: string) =
 
 export const getSeasonsAndRelatedAnimes = async (fetch: typeof global.fetch, id: string) => {
 	const [seasons, related, franchise] = await Promise.all([
-		fetchJson(fetch, `/anime/${id}/seasons`, anime.array()),
-		fetchJson(fetch, `/anime/${id}/related`, anime.array()),
-		fetchJson(fetch, `/anime/${id}/franchise`, anime.array())
+		fetchJson(fetch, `/anime/${id}/seasons`, animeSchema.array()),
+		fetchJson(fetch, `/anime/${id}/related`, animeSchema.array()),
+		fetchJson(fetch, `/anime/${id}/franchise`, animeSchema.array())
 	]);
 
 	if (seasons.length > 1 && seasons.some((a) => a.id === id)) {
@@ -99,7 +99,7 @@ export const getSeasonsAndRelatedAnimes = async (fetch: typeof global.fetch, id:
 };
 
 export const getTrailer = async (fetch: typeof global.fetch, id: string, signal?: AbortSignal) => {
-	return fetchJson(fetch, `/anime/${id}/trailer`, trailer, { signal });
+	return fetchJson(fetch, `/anime/${id}/trailer`, trailerSchema, { signal });
 };
 
 export const getEpisodes = async (fetch: typeof global.fetch, id: string) => {
@@ -128,9 +128,9 @@ export const getAnimeByGenre = async (
 };
 
 export const getRandomAnime = async (fetch: typeof global.fetch) => {
-	return fetchJson(fetch, '/anime/random', anime);
+	return fetchJson(fetch, '/anime/random', animeSchema);
 };
 
 export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: string) => {
-	return fetchJson(fetch, `/anime/random/${genre}`, anime);
+	return fetchJson(fetch, `/anime/random/${genre}`, animeSchema);
 };

@@ -1,142 +1,18 @@
 <script lang="ts">
-	import { getTrailer } from '$lib/api/anime';
+	import Metadata from '$lib/components/anime/metadata.svelte';
+	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { cn } from '$lib/utils';
-	import { PlayIcon, Tv } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { anime, episodes, seasonsAndRelatedAnimes, trailer } = $derived(data);
-
-	let isTrailerOpen = $state(false);
-	let isDescriptionExpanded = $state(false);
-
-	let animeDescriptionElement: HTMLElement | null = $state(null);
-	let isDescriptionOverflow = $derived.by(() => {
-		if (!animeDescriptionElement) return false;
-		return animeDescriptionElement.scrollHeight > animeDescriptionElement.clientHeight;
-	});
+	let { anime, episodes, seasonsAndRelatedAnimes } = $derived(data);
 </script>
 
-<div class="mt-20 p-3 md:px-8">
-	<div class="flex flex-col gap-8 rounded-md bg-card p-4 md:flex-row">
-		<div class="w-full md:w-1/4">
-			<img
-				src={anime.picture}
-				alt={anime.jname}
-				class="aspect-[3/4] w-full rounded-md bg-muted object-cover object-center"
-			/>
-		</div>
-		<div class="flex w-full flex-col justify-between">
-			<h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
-			<h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
-			<div class="mt-2 hidden gap-2 md:flex">
-				{@render pill(anime.mediaType)}
-				{@render pill(anime.rating)}
-				{@render pill(anime.avgEpDuration)}
-				{@render pill(anime.airingStatus)}
-			</div>
-			<div class="mt-4 flex flex-col md:flex-row md:gap-4">
-				<div>
-					{@render keyValue('Total Episodes', anime.totalEpisodes)}
-					{@render keyValue('Studio', anime.studio)}
-					{@render keyValue('Rank', anime.rank)}
-					{@render keyValue('Score', anime.score)}
-				</div>
-				<div>
-					{@render keyValue('Popularity', anime.popularity)}
-					{@render keyValue('Airing', anime.airing)}
-					{@render keyValue('Season', anime.season)}
-					{@render keyValue('Source', anime.source?.replace('_', ' '))}
-				</div>
-				<div class="md:hidden">
-					{@render keyValue('Media Type', anime.mediaType)}
-					{@render keyValue('Rating', anime.rating)}
-					{@render keyValue('Avg Ep Duration', anime.avgEpDuration)}
-					{@render keyValue('Airing Status', anime.airingStatus)}
-				</div>
-			</div>
-			{#key anime.id}
-				<p
-					class={cn(
-						'mt-3 text-muted-foreground',
-						!isDescriptionExpanded && 'line-clamp-5 md:line-clamp-none'
-					)}
-					bind:this={animeDescriptionElement}
-				>
-					{@html anime.description}
-				</p>
-			{/key}
-			{#if isDescriptionOverflow}
-				<Button
-					variant="secondary"
-					class="mt-2 md:hidden"
-					onclick={() => (isDescriptionExpanded = !isDescriptionExpanded)}
-				>
-					{isDescriptionExpanded ? 'Show Less' : 'Show More'}
-				</Button>
-			{/if}
-			<div class="mt-4 flex items-center gap-2">
-				<Button href="/watch/{anime.id}?episode=1&key={episodes[0].id}">
-					<PlayIcon class="mr-2" />
-					Watch Now
-				</Button>
-				<Dialog bind:open={isTrailerOpen}>
-					<DialogTrigger asChild>
-						<Button
-							variant="outline"
-							onclick={() => {
-								isTrailerOpen = true;
-							}}
-						>
-							<Tv class="mr-2" />
-							View Trailer
-						</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogTitle>{anime.jname} Trailer</DialogTitle>
-						{#await trailer}
-							<Skeleton class="aspect-video w-full" />
-						{:then trailer}
-							{#if trailer}
-								<iframe
-									title="{anime.jname} Trailer"
-									class="aspect-video w-full"
-									src={trailer}
-									allow="autoplay"
-									frameborder="0"
-									allowfullscreen
-								></iframe>
-							{:else}
-								<p>Oops! There is no trailer available for this anime. Please check back later.</p>
-							{/if}
-						{:catch}
-							<p>Oops! There is no trailer available for this anime. Please check back later.</p>
-						{/await}
-					</DialogContent>
-				</Dialog>
-			</div>
-			<div class="mt-4 flex flex-1 flex-wrap items-end gap-2">
-				{#each anime.genre as genre}
-					<Button
-						variant="outline"
-						size="sm"
-						class="capitalize"
-						href="/genre/{genre.toLowerCase().replace(' ', '-')}"
-					>
-						{genre}
-					</Button>
-				{/each}
-			</div>
-		</div>
-	</div>
-</div>
+<Metadata {anime} />
 
 <h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Episodes</h2>
 
-<div class="mx-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:grid-cols-2 lg:grid-cols-3">
+<div class="mx-3 mb-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:mb-8 md:grid-cols-2 lg:grid-cols-3">
 	{#each episodes as episode}
 		<Button
 			variant="outline"
@@ -153,59 +29,4 @@
 	{/each}
 </div>
 
-{#await seasonsAndRelatedAnimes}
-	<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Seasons</h2>
-	<Skeleton class="mx-3 mt-4 h-20 w-full md:mx-8" />
-	<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
-	<Skeleton class="mx-3 mt-4 h-20 w-full md:mx-8" />
-{:then sections}
-	{#each sections as sec}
-		<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">{sec.label}</h2>
-
-		<div
-			class="mx-3 mb-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:mb-8 md:grid-cols-2 lg:grid-cols-3"
-		>
-			{#each sec.value as data}
-				<a
-					href="/anime/{data.id}"
-					class={cn(
-						'group relative overflow-hidden rounded-md border-2',
-						anime.id === data.id && 'border-primary'
-					)}
-				>
-					<img
-						src={data.poster}
-						alt={data.jname}
-						class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
-					/>
-					<div class="relative z-10 h-full bg-background bg-opacity-80 p-3">
-						<p class="line-clamp-1 font-sora text-lg font-bold">{data.name}</p>
-						<p class="line-clamp-1 text-muted-foreground">{data.jname}</p>
-						<p class="mt-2 text-sm text-muted-foreground">{data.lastEpisode} Episodes</p>
-					</div>
-				</a>
-			{/each}
-		</div>
-	{/each}
-{:catch}
-	<div
-		class="mx-3 mt-8 rounded-md bg-card p-3 text-center font-sora text-xl font-bold text-destructive md:mx-8"
-	>
-		Oops! There was an error fetching the data. Please try again later.
-	</div>
-{/await}
-
-{#snippet pill(text: string | undefined | null)}
-	{#if text}
-		<span class="rounded-md bg-background p-2 text-sm text-primary">{text}</span>
-	{/if}
-{/snippet}
-
-{#snippet keyValue(key: string, value: string | number | undefined | null)}
-	{#if value}
-		<div class="flex gap-2">
-			<span class="font-sora font-semibold text-muted-foreground">{key}:</span>
-			<span class="capitalize">{value}</span>
-		</div>
-	{/if}
-{/snippet}
+<OtherAnimeSections animeId={anime.id} {seasonsAndRelatedAnimes} />
