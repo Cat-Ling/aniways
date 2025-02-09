@@ -52,7 +52,7 @@
 					{/if}
 					{#each data.data.servers.filter((server) => server.type === 'sub') as server}
 						<Button
-							href="/watch/{data.query.id}?episode={data.query.episode}?key={data.query
+							href="/watch/{data.query.id}?episode={data.query.episode}&key={data.query
 								.key}&server={`${server.type}_${server.serverName}`}"
 							variant="outline"
 							size="sm"
