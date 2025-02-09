@@ -23,12 +23,13 @@
 <div class="mb-3 mt-20 px-3 md:mb-8 md:px-8">
 	<div class="flex flex-col-reverse gap-2 md:flex-row">
 		<div class="mt-3 flex w-full max-w-md flex-col gap-2 md:mt-0 md:w-1/5">
-			<div class="rounded-md bg-card p-3">
-				<h3 class="font-sora text-xl font-bold">Episodes</h3>
+			<div class="rounded-md bg-card p-3 md:hidden">
+				<h3 class="mb-3 font-sora text-xl font-bold">Episodes</h3>
 				<Dialog.Root>
-					<Dialog.Trigger class={cn('w-full md:hidden', buttonVariants({ variant: 'outline' }))}>
-						<span class="font-bold">Episode {data.query.episode}</span>{' - '}
-						<span class="font-sora">
+					<Dialog.Trigger class={cn('w-full', buttonVariants({ variant: 'outline' }))}>
+						<span class="mr-1 text-muted-foreground">Episode {data.query.episode}</span>
+						-
+						<span class="ml-1 font-sora">
 							{data.data.episodes.find((ep) => ep.number === data.query.episode)?.title}
 						</span>
 					</Dialog.Trigger>
@@ -103,7 +104,9 @@
 			className
 		)}
 	>
-		<h3 class={cn('sticky top-0 w-full bg-card p-3 font-sora font-bold', h3ClassName)}>Episodes</h3>
+		<h3 class={cn('sticky top-0 w-full border-b bg-card p-3 font-sora font-bold', h3ClassName)}>
+			Episodes
+		</h3>
 		{#each data.data.episodes as ep, i (ep.id + i)}
 			<a
 				href="/watch/{data.query.id}?episode={ep.number}&key={ep.id}"
