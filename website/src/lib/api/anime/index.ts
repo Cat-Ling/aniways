@@ -54,8 +54,20 @@ export const getAnimeMetadata = async (fetch: typeof global.fetch, id: string) =
 	return fetchJson(fetch, `/anime/${id}`, anime);
 };
 
-export const getTrailer = async (fetch: typeof global.fetch, id: string) => {
-	return fetchJson(fetch, `/anime/${id}/trailer`, trailer);
+export const getSeasonsOfAnime = async (fetch: typeof global.fetch, id: string) => {
+	return fetchJson(fetch, `/anime/${id}/seasons`, anime.array());
+};
+
+export const getRelatedAnime = async (fetch: typeof global.fetch, id: string) => {
+	return fetchJson(fetch, `/anime/${id}/related`, anime.array());
+};
+
+export const getAnimeFranchise = async (fetch: typeof global.fetch, id: string) => {
+	return fetchJson(fetch, `/anime/${id}/franchise`, anime.array());
+};
+
+export const getTrailer = async (fetch: typeof global.fetch, id: string, signal?: AbortSignal) => {
+	return fetchJson(fetch, `/anime/${id}/trailer`, trailer, { signal });
 };
 
 export const getEpisodes = async (fetch: typeof global.fetch, id: string) => {

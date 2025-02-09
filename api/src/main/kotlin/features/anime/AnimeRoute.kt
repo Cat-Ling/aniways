@@ -3,7 +3,6 @@ package xyz.aniways.features.anime
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.auth.*
-import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.patch
@@ -17,7 +16,6 @@ import xyz.aniways.plugins.Auth
 import xyz.aniways.plugins.cache
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 @Resource("/anime")
 class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
@@ -165,21 +163,17 @@ fun Route.animeRoutes() {
         call.respond(mapOf("trailer" to trailer))
     }
 
-    rateLimit {
-        cache(invalidateAt = 3.minutes) {
-            get<AnimeRoute.Metadata.Episodes> { route ->
-                call.respond(service.getEpisodesOfAnime(route.parent.id))
-            }
+    cache(invalidateAt = 1.hours) {
+        get<AnimeRoute.Metadata.Episodes> { route ->
+            call.respond(service.getEpisodesOfAnime(route.parent.id))
         }
     }
 
-    rateLimit {
-        cache(invalidateAt = 3.minutes) {
-            get<AnimeRoute.EpisodeServers> { route ->
-                val servers = service.getServersOfEpisode(route.episodeId)
+    cache(invalidateAt = 1.hours) {
+        get<AnimeRoute.EpisodeServers> { route ->
+            val servers = service.getServersOfEpisode(route.episodeId)
 
-                call.respond(servers)
-            }
+            call.respond(servers)
         }
     }
 

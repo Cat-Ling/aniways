@@ -6,22 +6,33 @@
 	import { formatDuration, secondsToMinutes } from 'date-fns';
 	import { PlayIcon, Tv } from 'lucide-svelte';
 	import type { PageProps } from './$types';
+	import { cn } from '$lib/utils';
 
 	let { data }: PageProps = $props();
-	let anime = $derived(data.anime);
-	let episodes = $derived(data.episodes);
+	let { anime, episodes, stream } = $derived(data);
 
 	const formatter = Intl.NumberFormat('en-US');
 
 	let trailerOpen = $state(false);
 
-	let trailer = $derived({
-		trailer:
-			anime.metadata?.trailer ??
-			getTrailer(fetch, anime.id)
-				.then((obj) => obj.trailer)
-				.catch(() => null)
+	let trailer = $derived.by(async () => {
+		if (anime.metadata?.trailer) {
+			return anime.metadata.trailer;
+		}
+
+		const trailer = await getTrailer(fetch, anime.id).catch(() => null);
+		return trailer?.trailer ?? null;
 	});
+
+	async function transformRelatedAnime(result: typeof stream) {
+		const [seasonal, related, franchise] = await result;
+
+		if (seasonal.map((a) => a.id).includes(anime.id)) {
+			return [seasonal, related.toReversed()];
+		}
+
+		return [[], franchise.filter((f) => f.id !== anime.id).toReversed()];
+	}
 </script>
 
 <div class="mt-20 p-3 md:px-8">
@@ -86,7 +97,7 @@
 					</DialogTrigger>
 					<DialogContent>
 						<DialogTitle>{anime.jname} Trailer</DialogTitle>
-						{#await trailer.trailer}
+						{#await trailer}
 							<Skeleton class="aspect-video w-full" />
 						{:then trailer}
 							{#if trailer}
@@ -142,8 +153,64 @@
 	{/each}
 </div>
 
-<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
-<p class="mx-3 text-muted-foreground md:mx-8">TODO: Related Anime</p>
+{#await transformRelatedAnime(stream)}
+	<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Seasons</h2>
+	<Skeleton class="mx-3 mt-4 h-20 w-full md:mx-8" />
+	<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
+	<Skeleton class="mx-3 mt-4 h-20 w-full md:mx-8" />
+{:then [seasons, related]}
+	{#if seasons.length}
+		<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Seasons</h2>
+	{/if}
+	<div class="mx-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:grid-cols-2 lg:grid-cols-3">
+		{#each seasons as season}
+			<a
+				href="/anime/{season.id}"
+				class={cn(
+					'group relative overflow-hidden rounded-md border-2',
+					anime.id === season.id && 'border-primary'
+				)}
+			>
+				<img
+					src={season.poster}
+					alt={season.jname}
+					class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
+				/>
+				<div class="relative z-10 h-full bg-background bg-opacity-80 p-3">
+					<p class="line-clamp-1 font-sora text-lg font-bold">{season.name}</p>
+					<p class="line-clamp-1 text-muted-foreground">{season.jname}</p>
+					<p class="mt-2 text-sm text-muted-foreground">{season.lastEpisode} Episodes</p>
+				</div>
+			</a>
+		{/each}
+	</div>
+
+	<h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
+	<div class="mx-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:grid-cols-2 lg:grid-cols-3">
+		{#each related as relatedAnime}
+			<a
+				href="/anime/{relatedAnime.id}"
+				class={cn(
+					'group relative overflow-hidden rounded-md border-2',
+					anime.id === relatedAnime.id && 'border-primary'
+				)}
+			>
+				<img
+					src={relatedAnime.poster}
+					alt={relatedAnime.jname}
+					class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
+				/>
+				<div class="relative z-10 bg-background bg-opacity-80 p-3">
+					<p class="line-clamp-1 font-sora text-lg font-bold">{relatedAnime.name}</p>
+					<p class="line-clamp-1 text-muted-foreground">{relatedAnime.jname}</p>
+					<p class="mt-2 text-sm text-muted-foreground">{relatedAnime.lastEpisode} Episodes</p>
+				</div>
+			</a>
+		{/each}
+	</div>
+{:catch}
+	<div></div>
+{/await}
 
 <h2 class="mx-3 mt-8 font-sora text-xl font-bold md:mx-8">Recommended Anime</h2>
 <p class="mx-3 text-muted-foreground md:mx-8">TODO: Recommended Anime</p>

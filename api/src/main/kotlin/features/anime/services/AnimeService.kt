@@ -152,19 +152,19 @@ class AnimeService(
     suspend fun getAnimeTrailer(id: String): String? {
         val anime = animeDao.getAnimeById(id)
 
-        anime?.metadata?.trailer?.let { return it }
+        return anime?.metadata?.trailer ?: run {
+            val malId = anime?.malId ?: return null
+            val trailer = malApi.getTrailer(malId) ?: return null
+            val metadata = anime.metadata ?: return trailer
+            if (metadata.trailer == trailer) return trailer
 
-        val malId = anime?.malId ?: return null
-        val trailer = malApi.getTrailer(malId) ?: return null
-        val metadata = anime.metadata ?: return trailer
-        if (metadata.trailer == trailer) return trailer
+            CoroutineScope(Dispatchers.IO).launch {
+                metadata.trailer = trailer
+                metadata.flushChanges()
+            }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            metadata.trailer = trailer
-            metadata.flushChanges()
+            trailer
         }
-
-        return trailer
     }
 
     suspend fun getTrendingAnimes(): List<AnimeDto> {

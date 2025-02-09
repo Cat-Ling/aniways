@@ -12,7 +12,6 @@ fun Application.module() {
     configureKoin()
     configureSerialization()
     configureMonitoring()
-    configureRateLimiting()
     configureTaskScheduler()
     configureSession()
     configureAuth()

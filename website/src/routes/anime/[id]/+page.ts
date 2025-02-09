@@ -1,5 +1,11 @@
 import { StatusError } from '$lib/api';
-import { getAnimeMetadata, getEpisodes } from '$lib/api/anime';
+import {
+	getAnimeFranchise,
+	getAnimeMetadata,
+	getEpisodes,
+	getRelatedAnime,
+	getSeasonsOfAnime
+} from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -13,7 +19,13 @@ export const load: PageLoad = async ({ params, fetch }) => {
 		return {
 			title: anime.jname,
 			anime,
-			episodes
+			episodes,
+			// Stream in these data cos they take a while to load
+			stream: Promise.all([
+				getSeasonsOfAnime(fetch, params.id),
+				getRelatedAnime(fetch, params.id),
+				getAnimeFranchise(fetch, params.id)
+			])
 		};
 	} catch (e) {
 		if (e instanceof StatusError && (e?.status === 400 || e?.status === 404)) {
