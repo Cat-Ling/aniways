@@ -4,6 +4,7 @@ import kotlinx.coroutines.coroutineScope
 import xyz.aniways.features.anime.services.AnimeService
 import xyz.aniways.features.tasks.plugins.Task
 import xyz.aniways.features.tasks.plugins.TaskScheduler
+import kotlin.math.log
 
 class AllAnimeScraperTask(
     private val service: AnimeService
@@ -16,11 +17,12 @@ class AllAnimeScraperTask(
 
         if (count > 0) {
             logger.info("Skipping scraping all anime as the DB is not empty")
+            logger.info("Scraping recently updated anime instead")
+            service.scrapeAndPopulateRecentlyUpdatedAnime(fromPage = 2)
             return@coroutineScope
         }
 
-        // Will only run if the DB
-        // is empty essentially new installation of server
+        logger.info("DB is empty, scraping all anime")
         service.scrapeAndPopulateAnime()
         service.scrapeAndPopulateRecentlyUpdatedAnime()
     }
