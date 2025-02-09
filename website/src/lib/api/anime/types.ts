@@ -23,7 +23,7 @@ export const animeMetadata = type({
 });
 
 export const anime = type({
-	id: 'string.uuid',
+	id: 'string',
 	name: 'string',
 	jname: 'string',
 	poster: 'string.url',
@@ -35,7 +35,7 @@ export const anime = type({
 });
 
 export const anilistAnime = type({
-	id: 'string.uuid',
+	id: 'string',
 	title: 'string',
 	bannerImage: 'string.url|null',
 	coverImage: 'string.url',
