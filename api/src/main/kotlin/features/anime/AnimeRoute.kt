@@ -1,6 +1,5 @@
 package xyz.aniways.features.anime
 
-import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.auth.*
@@ -10,11 +9,15 @@ import io.ktor.server.resources.*
 import io.ktor.server.resources.patch
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.features.anime.services.AnimeService
 import xyz.aniways.plugins.Auth
+import xyz.aniways.plugins.cache
+import xyz.aniways.utils.UUIDSerializer
+import java.util.*
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -22,13 +25,26 @@ import kotlin.time.Duration.Companion.minutes
 @Resource("/anime")
 class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/{id}")
-    class Metadata(val parent: AnimeRoute, val id: String)
+    class Metadata(
+        val parent: AnimeRoute,
+        @Serializable(with = UUIDSerializer::class)
+        val id: UUID
+    ) {
+        @Resource("/seasons")
+        class Seasons(val parent: Metadata)
 
-    @Resource("/{id}/trailer")
-    class Trailer(val parent: AnimeRoute, val id: String)
+        @Resource("/related")
+        class Related(val parent: Metadata)
 
-    @Resource("/{id}/episodes")
-    class Episodes(val parent: AnimeRoute, val id: String)
+        @Resource("/franchise")
+        class Franchise(val parent: Metadata)
+
+        @Resource("/trailer")
+        class Trailer(val parent: Metadata)
+
+        @Resource("/episodes")
+        class Episodes(val parent: Metadata)
+    }
 
     @Resource("/seasonal")
     class Seasonal(val parent: AnimeRoute)
@@ -88,43 +104,57 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.Metadata> { route ->
-        try {
-            val anime = service.getAnimeById(route.id)
-            anime ?: return@get call.respond(HttpStatusCode.NotFound)
-            call.respond(anime)
-        } catch (e: IllegalArgumentException) {
-            if (e.message?.contains("Invalid UUID string") == true) {
-                return@get call.respond(HttpStatusCode.BadRequest)
-            }
-            call.respond(HttpStatusCode.InternalServerError)
+        val anime = service.getAnimeById(route.id.toString())
+        anime ?: return@get call.respond(HttpStatusCode.NotFound)
+        call.respond(anime)
+    }
+
+    cache(invalidateAt = 7.days) {
+        get<AnimeRoute.Metadata.Seasons> { route ->
+            val seasons = service.getAnimeWatchOrder(route.parent.id.toString())
+            call.respond(seasons)
         }
     }
 
-    cacheOutput(invalidateAt = 7.days) {
+    cache(invalidateAt = 7.days) {
+        get<AnimeRoute.Metadata.Related> { route ->
+            val related = service.getRelatedAnime(route.parent.id.toString())
+            call.respond(related)
+        }
+    }
+
+    cache(invalidateAt = 7.days) {
+        get<AnimeRoute.Metadata.Franchise> { route ->
+            val franchise = service.getFranchiseOfAnime(route.parent.id.toString())
+            call.respond(franchise)
+        }
+    }
+
+    cache(invalidateAt = 7.days) {
         get<AnimeRoute.Seasonal> {
             call.respond(service.getSeasonalAnimes())
         }
     }
 
-    cacheOutput(invalidateAt = 7.days) {
+    cache(invalidateAt = 7.days) {
         get<AnimeRoute.Trending> {
             call.respond(service.getTrendingAnimes())
         }
     }
 
-    cacheOutput(invalidateAt = 1.days) {
+    cache(invalidateAt = 1.days) {
         get<AnimeRoute.Top> {
             call.respond(service.scrapeTopAnimes())
         }
     }
 
-    cacheOutput(invalidateAt = 30.days) {
+    cache(invalidateAt = 30.days) {
         get<AnimeRoute.Popular> {
             call.respond(service.getPopularAnimes())
         }
     }
 
-    cacheOutput(invalidateAt = 1.hours) {
+    cache(invalidateAt = 1.hours) {
         get<AnimeRoute.Search> { route ->
             val result = service.searchAnime(
                 query = route.query,
@@ -136,36 +166,22 @@ fun Route.animeRoutes() {
         }
     }
 
-    get<AnimeRoute.Trailer> { route ->
-        try {
-            val trailer = service.getAnimeTrailer(route.id)
-            trailer ?: return@get call.respond(HttpStatusCode.NotFound)
-            call.respond(mapOf("trailer" to trailer))
-        } catch (e: IllegalArgumentException) {
-            if (e.message?.contains("Invalid UUID string") == true) {
-                return@get call.respond(HttpStatusCode.BadRequest)
-            }
-            call.respond(HttpStatusCode.InternalServerError)
-        }
+    get<AnimeRoute.Metadata.Trailer> { route ->
+        val trailer = service.getAnimeTrailer(route.parent.id.toString())
+        trailer ?: return@get call.respond(HttpStatusCode.NotFound)
+        call.respond(mapOf("trailer" to trailer))
     }
 
     rateLimit {
-        cacheOutput(invalidateAt = 3.minutes) {
-            get<AnimeRoute.Episodes> { route ->
-                try {
-                    call.respond(service.getEpisodesOfAnime(route.id))
-                } catch (e: IllegalArgumentException) {
-                    if (e.message?.contains("Invalid UUID string") == true) {
-                        return@get call.respond(HttpStatusCode.BadRequest)
-                    }
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
+        cache(invalidateAt = 3.minutes) {
+            get<AnimeRoute.Metadata.Episodes> { route ->
+                call.respond(service.getEpisodesOfAnime(route.parent.id.toString()))
             }
         }
     }
 
     rateLimit {
-        cacheOutput(invalidateAt = 3.minutes) {
+        cache(invalidateAt = 3.minutes) {
             get<AnimeRoute.EpisodeServers> { route ->
                 val servers = service.getServersOfEpisode(route.episodeId)
 
@@ -239,13 +255,13 @@ fun Route.animeRoutes() {
         }
     }
 
-    cacheOutput(invalidateAt = 30.days) {
+    cache(invalidateAt = 30.days) {
         get<AnimeRoute.Genres> {
             call.respond(service.getAllGenres())
         }
     }
 
-    cacheOutput(invalidateAt = 7.days) {
+    cache(invalidateAt = 7.days) {
         get<AnimeRoute.Genre> { route ->
             val animes = service.getAnimesByGenre(
                 page = route.parent.page,

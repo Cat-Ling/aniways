@@ -13,6 +13,7 @@ import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
 import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.features.anime.api.mal.models.toAnimeMetadata
+import xyz.aniways.features.anime.api.shikimori.ShikimoriApi
 import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.anime.db.Anime
 import xyz.aniways.features.anime.dtos.*
@@ -26,6 +27,7 @@ class AnimeService(
     private val animeDao: AnimeDao,
     private val anilistApi: AnilistApi,
     private val malApi: MalApi,
+    private val shikimoriApi: ShikimoriApi,
 ) {
     private val logger = KtorSimpleLogger("AnimeService")
 
@@ -91,8 +93,64 @@ class AnimeService(
         return saveMetadataInDB(anime)
     }
 
+    suspend fun getAnimeWatchOrder(id: String): List<AnimeDto> {
+        val anime = animeDao.getAnimeById(id) ?: return emptyList()
+        val malId = anime.malId ?: return listOf(anime.toAnimeDto())
+        val franchise = shikimoriApi.getAnimeFranchise(malId)
+
+        val sequels = franchise.links.filter { it.relation == "sequel" }
+        val backwardMap = sequels.associateBy { it.targetId }
+        val forwardMap = sequels.associateBy { it.sourceId }
+
+        val firstAnime = generateSequence(malId) {
+            backwardMap[it]?.sourceId
+        }.last()
+
+        val watchOrder = generateSequence(firstAnime) {
+            forwardMap[it]?.targetId
+        }.toList()
+
+        val dbMap = animeDao.getAnimesInMalIds(watchOrder)
+            .associate { it.malId to it.toAnimeDto() }
+
+        return watchOrder.mapNotNull { dbMap[it] }
+    }
+
+    suspend fun getRelatedAnime(id: String): List<AnimeDto> {
+        val anime = animeDao.getAnimeById(id) ?: return emptyList()
+        val malId = anime.malId ?: return emptyList()
+
+        val franchise = shikimoriApi.getAnimeFranchise(malId)
+        val watchOrder = getAnimeWatchOrder(anime.id.toString())
+            .mapNotNull { it.malId }
+            .toSet()
+
+        val relatedAnime = franchise.nodes
+            .filter { it.id != malId && it.id !in watchOrder }
+            .mapNotNull { it.id }
+
+        val dbAnimes = animeDao.getAnimesInMalIds(relatedAnime)
+            .associate { it.malId to it.toAnimeDto() }
+
+        return relatedAnime.mapNotNull { dbAnimes[it] }
+    }
+
+    suspend fun getFranchiseOfAnime(id: String): List<AnimeDto> {
+        val anime = animeDao.getAnimeById(id) ?: return emptyList()
+        val malId = anime.malId ?: return listOf(anime.toAnimeDto())
+
+        val franchise = shikimoriApi.getAnimeFranchise(malId)
+
+        val dbAnimes = animeDao.getAnimesInMalIds(franchise.nodes.mapNotNull { it.id })
+            .associate { it.malId to it.toAnimeDto() }
+
+        return franchise.nodes.mapNotNull { dbAnimes[it.id] }
+    }
+
     suspend fun getAnimeTrailer(id: String): String? {
         val anime = animeDao.getAnimeById(id)
+
+        anime?.metadata?.trailer?.let { return it }
 
         val malId = anime?.malId ?: return null
         val trailer = malApi.getTrailer(malId) ?: return null

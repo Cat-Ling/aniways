@@ -1,6 +1,7 @@
 package xyz.aniways
 
 import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.util.logging.*
 import java.io.File
 
@@ -108,3 +109,8 @@ class Env {
 }
 
 val Application.env by lazy { Env() }
+
+val Application.isDev: Boolean
+    get() =
+        environment.config.propertyOrNull("ktor.development")?.toString() == "true" ||
+        env.serverConfig.apiUrl.contains("localhost")
