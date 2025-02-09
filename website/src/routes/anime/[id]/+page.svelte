@@ -15,6 +15,8 @@
 
 	let trailerOpen = $state(false);
 
+	let showDesc = $state(false);
+
 	let trailer = $derived.by(async () => {
 		if (anime.metadata?.trailer) {
 			return anime.metadata.trailer;
@@ -36,8 +38,8 @@
 </script>
 
 <div class="mt-20 p-3 md:px-8">
-	<div class="flex gap-8 rounded-md bg-card p-4">
-		<div class="w-1/4">
+	<div class="flex flex-col gap-8 rounded-md bg-card p-4 md:flex-row">
+		<div class="w-full md:w-1/4">
 			<img
 				src={anime.metadata?.mainPicture ?? anime.poster}
 				alt={anime.jname}
@@ -47,7 +49,7 @@
 		<div class="flex w-full flex-col justify-between">
 			<h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
 			<h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
-			<div class="mt-2 flex gap-2">
+			<div class="mt-2 hidden gap-2 md:flex">
 				{@render pill(anime.metadata?.mediaType)}
 				{@render pill(anime.metadata?.rating)}
 				{@render pill(
@@ -57,7 +59,7 @@
 				)}
 				{@render pill(anime.metadata?.airingStatus)}
 			</div>
-			<div class="mt-4 flex gap-4">
+			<div class="mt-4 flex flex-col md:flex-row md:gap-4">
 				<div>
 					{@render keyValue('Total Episodes', anime.metadata?.totalEpisodes)}
 					{@render keyValue('Studio', anime.metadata?.studio)}
@@ -76,8 +78,24 @@
 					{@render keyValue('Season', `${anime.metadata?.season} ${anime.metadata?.seasonYear}`)}
 					{@render keyValue('Source', anime.metadata?.source?.replace('_', ' '))}
 				</div>
+				<div class="md:hidden">
+					{@render keyValue('Media Type', anime.metadata?.mediaType)}
+					{@render keyValue('Rating', anime.metadata?.rating)}
+					{@render keyValue(
+						'Avg Ep Duration',
+						formatDuration({
+							minutes: secondsToMinutes(anime.metadata?.avgEpDuration ?? 0)
+						}) + ' per episode'
+					)}
+					{@render keyValue('Airing Status', anime.metadata?.airingStatus)}
+				</div>
 			</div>
-			<p class="mt-3 text-muted-foreground">{@html anime.metadata?.description}</p>
+			<p class={cn('mt-3 text-muted-foreground', !showDesc && 'line-clamp-5 md:line-clamp-none')}>
+				{@html anime.metadata?.description}
+			</p>
+			<Button variant="secondary" class="mt-2 md:hidden" onclick={() => (showDesc = !showDesc)}>
+				{showDesc ? 'Show Less' : 'Show More'}
+			</Button>
 			<div class="mt-4 flex items-center gap-2">
 				<Button href="/watch/{anime.id}?episode=1&key={episodes[0].id}">
 					<PlayIcon class="mr-2" />
@@ -118,7 +136,7 @@
 					</DialogContent>
 				</Dialog>
 			</div>
-			<div class="mt-4 flex flex-1 items-end gap-2">
+			<div class="mt-4 flex flex-1 flex-wrap items-end gap-2">
 				{#each anime.genre as genre}
 					<Button
 						variant="outline"
