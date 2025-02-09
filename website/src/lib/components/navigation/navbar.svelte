@@ -21,7 +21,7 @@
 
 <nav
 	class={cn(
-		'fixed top-0 z-30 flex w-full max-w-[100vw] items-center justify-between border-b border-transparent p-3 transition duration-500 md:px-8',
+		'fixed top-0 z-[999] flex w-full max-w-[100vw] items-center justify-between border-b border-transparent p-3 transition duration-500 md:px-8',
 		changeBackground ? 'border-border bg-card' : 'bg-transparent'
 	)}
 >
