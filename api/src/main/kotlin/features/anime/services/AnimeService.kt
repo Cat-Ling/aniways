@@ -129,6 +129,8 @@ class AnimeService(
             .filter { it.id != malId && it.id !in watchOrder }
             .mapNotNull { it.id }
 
+        if (relatedAnime.isEmpty()) return emptyList()
+
         val dbAnimes = animeDao.getAnimesInMalIds(relatedAnime)
             .associate { it.malId to it.toAnimeDto() }
 

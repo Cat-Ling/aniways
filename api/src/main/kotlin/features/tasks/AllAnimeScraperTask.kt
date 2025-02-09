@@ -4,7 +4,6 @@ import kotlinx.coroutines.coroutineScope
 import xyz.aniways.features.anime.services.AnimeService
 import xyz.aniways.features.tasks.plugins.Task
 import xyz.aniways.features.tasks.plugins.TaskScheduler
-import kotlin.math.log
 
 class AllAnimeScraperTask(
     private val service: AnimeService
