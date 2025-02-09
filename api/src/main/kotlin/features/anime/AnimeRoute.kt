@@ -9,15 +9,12 @@ import io.ktor.server.resources.*
 import io.ktor.server.resources.patch
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.features.anime.services.AnimeService
 import xyz.aniways.plugins.Auth
 import xyz.aniways.plugins.cache
-import xyz.aniways.utils.UUIDSerializer
-import java.util.*
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -25,11 +22,7 @@ import kotlin.time.Duration.Companion.minutes
 @Resource("/anime")
 class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
     @Resource("/{id}")
-    class Metadata(
-        val parent: AnimeRoute,
-        @Serializable(with = UUIDSerializer::class)
-        val id: UUID
-    ) {
+    class Metadata(val parent: AnimeRoute, val id: String) {
         @Resource("/seasons")
         class Seasons(val parent: Metadata)
 
@@ -104,28 +97,28 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.Metadata> { route ->
-        val anime = service.getAnimeById(route.id.toString())
+        val anime = service.getAnimeById(route.id)
         anime ?: return@get call.respond(HttpStatusCode.NotFound)
         call.respond(anime)
     }
 
     cache(invalidateAt = 7.days) {
         get<AnimeRoute.Metadata.Seasons> { route ->
-            val seasons = service.getAnimeWatchOrder(route.parent.id.toString())
+            val seasons = service.getAnimeWatchOrder(route.parent.id)
             call.respond(seasons)
         }
     }
 
     cache(invalidateAt = 7.days) {
         get<AnimeRoute.Metadata.Related> { route ->
-            val related = service.getRelatedAnime(route.parent.id.toString())
+            val related = service.getRelatedAnime(route.parent.id)
             call.respond(related)
         }
     }
 
     cache(invalidateAt = 7.days) {
         get<AnimeRoute.Metadata.Franchise> { route ->
-            val franchise = service.getFranchiseOfAnime(route.parent.id.toString())
+            val franchise = service.getFranchiseOfAnime(route.parent.id)
             call.respond(franchise)
         }
     }
@@ -167,7 +160,7 @@ fun Route.animeRoutes() {
     }
 
     get<AnimeRoute.Metadata.Trailer> { route ->
-        val trailer = service.getAnimeTrailer(route.parent.id.toString())
+        val trailer = service.getAnimeTrailer(route.parent.id)
         trailer ?: return@get call.respond(HttpStatusCode.NotFound)
         call.respond(mapOf("trailer" to trailer))
     }
@@ -175,7 +168,7 @@ fun Route.animeRoutes() {
     rateLimit {
         cache(invalidateAt = 3.minutes) {
             get<AnimeRoute.Metadata.Episodes> { route ->
-                call.respond(service.getEpisodesOfAnime(route.parent.id.toString()))
+                call.respond(service.getEpisodesOfAnime(route.parent.id))
             }
         }
     }

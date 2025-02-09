@@ -54,7 +54,7 @@ data class AnimeWithMetadataDto(
 
 
 fun Anime.toAnimeDto() = AnimeDto(
-    id = id.toString(),
+    id = id,
     name = name,
     jname = jname,
     poster = poster,
@@ -65,7 +65,7 @@ fun Anime.toAnimeDto() = AnimeDto(
 )
 
 fun Anime.toAnimeWithMetadataDto() = AnimeWithMetadataDto(
-    id = id.toString(),
+    id = id,
     name = name,
     jname = jname,
     poster = poster,

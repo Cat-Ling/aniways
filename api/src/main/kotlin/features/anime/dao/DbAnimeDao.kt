@@ -1,14 +1,14 @@
 package xyz.aniways.features.anime.dao
 
-import org.ktorm.dsl.*
+import org.ktorm.dsl.batchInsert
+import org.ktorm.dsl.eq
+import org.ktorm.dsl.inList
+import org.ktorm.dsl.like
 import org.ktorm.entity.*
-import org.ktorm.support.postgresql.ilike
 import xyz.aniways.database.AniwaysDB
 import xyz.aniways.features.anime.db.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
-import java.sql.ResultSet
-import java.util.*
 import kotlin.math.ceil
 
 class DbAnimeDao(
@@ -90,7 +90,7 @@ class DbAnimeDao(
 
     override suspend fun getAnimeById(id: String): Anime? {
         return aniwaysDb.query {
-            animes.find { it.id eq UUID.fromString(id) }
+            animes.find { it.id eq id }
         }
     }
 
@@ -172,7 +172,7 @@ class DbAnimeDao(
                         generateSequence {
                             if (!rs.next()) return@generateSequence null
                             Anime {
-                                id = UUID.fromString(rs.getString("id"))
+                                id = rs.getString("id")
                                 name = rs.getString("name")
                                 jname = rs.getString("jname")
                                 poster = rs.getString("poster")

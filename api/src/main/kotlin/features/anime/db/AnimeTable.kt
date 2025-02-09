@@ -3,12 +3,14 @@ package xyz.aniways.features.anime.db
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
-import org.ktorm.schema.*
+import org.ktorm.schema.Table
+import org.ktorm.schema.int
+import org.ktorm.schema.timestamp
+import org.ktorm.schema.varchar
 import java.time.Instant
-import java.util.*
 
 interface Anime : Entity<Anime> {
-    var id: UUID
+    var id: String
     var name: String
     var jname: String
     var poster: String
@@ -25,7 +27,7 @@ interface Anime : Entity<Anime> {
 }
 
 object AnimeTable : Table<Anime>("animes") {
-    val id = uuid("id").primaryKey().bindTo { it.id }
+    val id = varchar("id").primaryKey().bindTo { it.id }
     val name = varchar("name").bindTo { it.name }
     val jname = varchar("jname").bindTo { it.jname }
     val poster = varchar("poster").bindTo { it.poster }

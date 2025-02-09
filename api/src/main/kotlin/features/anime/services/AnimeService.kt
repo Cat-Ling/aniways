@@ -73,7 +73,7 @@ class AnimeService(
         return animes.mapNotNull { anilistAnime ->
             dbAnimes.find { it.malId == anilistAnime.malId }?.let { dbAnime ->
                 AnilistAnimeDto(
-                    id = dbAnime.id.toString(),
+                    id = dbAnime.id,
                     title = anilistAnime.title,
                     bannerImage = anilistAnime.bannerImage,
                     coverImage = anilistAnime.coverImage,
@@ -121,7 +121,7 @@ class AnimeService(
         val malId = anime.malId ?: return emptyList()
 
         val franchise = shikimoriApi.getAnimeFranchise(malId)
-        val watchOrder = getAnimeWatchOrder(anime.id.toString())
+        val watchOrder = getAnimeWatchOrder(anime.id)
             .mapNotNull { it.malId }
             .toSet()
 
