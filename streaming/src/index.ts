@@ -70,7 +70,26 @@ Bun.serve({
         ? file
         : new URL(file, baseUrl).toString();
 
-      return await fetch(finalUrl);
+      const response = await fetch(finalUrl);
+
+      headers.append(
+        'Content-Type',
+        response.headers.get('content-type') ?? ''
+      );
+      headers.append(
+        'Content-Length',
+        response.headers.get('content-length') ?? ''
+      );
+      headers.append(
+        'Content-Disposition',
+        response.headers.get('content-disposition') ?? ''
+      );
+      headers.append('Cache-Control', 'public, max-age=31536000');
+
+      return new Response(response.body, {
+        status: response.status,
+        headers: headers,
+      });
     }
 
     return new Response(undefined, { status: 404, headers });
