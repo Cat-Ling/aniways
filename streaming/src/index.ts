@@ -8,9 +8,23 @@ Bun.serve({
     const url = new URL(req.url);
     const pathname = url.pathname;
 
+    const headers = new Headers({
+      'Access-Control-Allow-Origin':
+        Bun.env.NODE_ENV === 'development' ? '*' : 'https://aniways.xyz',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    });
+
     console.log(
       `${req.method} ${pathname} ${req.headers.get('user-agent') ?? ''}`
     );
+
+    if (req.method === 'OPTIONS') {
+      return new Response(undefined, {
+        status: 200,
+        headers,
+      });
+    }
 
     if (pathname.startsWith('/info/')) {
       const xrax = pathname.split('/info/')[1];
@@ -18,6 +32,8 @@ Bun.serve({
       const sources = cached ?? (await getSources(xrax));
 
       if (sources) cache.set(xrax, sources);
+
+      headers.append('Content-Type', 'application/json');
 
       return new Response(
         JSON.stringify({
@@ -30,7 +46,7 @@ Bun.serve({
               )}`,
             })) ?? [],
         }),
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: headers }
       );
     }
 
@@ -44,7 +60,7 @@ Bun.serve({
       const source = cached ?? (await getSources(xrax));
 
       if (!source) {
-        return new Response('Not Found', { status: 404 });
+        return new Response('Not Found', { status: 404, headers });
       }
 
       cache.set(xrax, source);
@@ -57,7 +73,7 @@ Bun.serve({
       return await fetch(finalUrl);
     }
 
-    return new Response(undefined, { status: 404 });
+    return new Response(undefined, { status: 404, headers });
   },
 });
 
