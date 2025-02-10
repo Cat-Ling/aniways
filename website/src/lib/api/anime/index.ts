@@ -44,13 +44,14 @@ export const getRecentlyUpdatedAnime = async (
 export const searchAnime = async (
 	fetch: typeof global.fetch,
 	query: string,
+	genre: string | undefined,
 	page: number,
 	itemsPerPage: number,
 	abortSignal?: AbortSignal
 ) => {
 	return fetchJson(fetch, `/anime/search`, paginatedAnime, {
 		signal: abortSignal,
-		params: { query, page, itemsPerPage }
+		params: { query, genre, page, itemsPerPage }
 	});
 };
 

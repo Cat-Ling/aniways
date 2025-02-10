@@ -126,7 +126,7 @@
 							variant="outline"
 							size="sm"
 							class="capitalize"
-							href="/genre/{genre.toLowerCase().replace(' ', '-')}"
+							href="/genre/{genre.toLowerCase().replaceAll(' ', '-')}"
 						>
 							{genre}
 						</Button>

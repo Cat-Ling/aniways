@@ -16,7 +16,7 @@
 
 	const debouncedSearch = debounce((value: string, signal: AbortSignal) => {
 		if (!value) return (loading = false), (animes = []);
-		searchAnime(fetch, value, 1, 3, signal).then((res) => {
+		searchAnime(fetch, value, undefined, 1, 3, signal).then((res) => {
 			animes = res.items;
 			hasMore = res.pageInfo.hasNextPage;
 			loading = false;
@@ -44,10 +44,14 @@
 
 <Button
 	variant="ghost"
-	class="rounded-full hover:bg-primary"
+	class="hidden rounded-full hover:bg-primary md:flex"
 	size="icon"
 	on:click={() => (open = true)}
 >
+	<Search class="size-6" />
+</Button>
+
+<Button variant="ghost" class="rounded-full hover:bg-primary md:hidden" size="icon" href="/search">
 	<Search class="size-6" />
 </Button>
 

@@ -14,7 +14,7 @@ type Schema<T> = {
 };
 
 type Options = RequestInit & {
-	params?: Record<string, string | number>;
+	params?: Record<string, string | number | undefined>;
 };
 
 export function fetchJson<T>(
@@ -25,6 +25,7 @@ export function fetchJson<T>(
 ) {
 	const url = new URL(`${PUBLIC_API_URL}${endpoint}`);
 	for (const [key, value] of Object.entries(options.params ?? {})) {
+		if (value === undefined) continue;
 		url.searchParams.append(key, String(value));
 	}
 
