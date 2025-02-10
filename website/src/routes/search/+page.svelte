@@ -1,13 +1,15 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import SearchImage from '$lib/assets/search.png';
 	import AnimeGrid from '$lib/components/anime/anime-grid.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import * as Select from '$lib/components/ui/select';
+	import type { Selected } from 'bits-ui';
+	import Refresh from 'lucide-svelte/icons/refresh-ccw';
+	import Search from 'lucide-svelte/icons/search';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
-	import type { Selected } from 'bits-ui';
-	import { goto } from '$app/navigation';
 
 	let { data }: PageProps = $props();
 
@@ -78,7 +80,7 @@
 		/>
 		{#key selected?.value}
 			<Select.Root bind:selected>
-				<Select.Trigger class="md:max-w-72">
+				<Select.Trigger class="col-span-2 md:max-w-72">
 					<Select.Value placeholder="Genre" />
 				</Select.Trigger>
 				<Select.Content class="max-h-56 overflow-scroll">
@@ -92,8 +94,14 @@
 				<Select.Input name="genre" value={selected?.value} />
 			</Select.Root>
 		{/key}
-		<Button type="submit">Search</Button>
-		<Button href="/search" variant="secondary">Clear Filters</Button>
+		<Button type="submit">
+			<Search class="mr-2" />
+			Search
+		</Button>
+		<Button href="/search" variant="secondary">
+			<Refresh class="mr-2" />
+			Clear Filters
+		</Button>
 	</form>
 
 	<AnimeGrid animes={data.results.items} pageInfo={data.results.pageInfo}>

@@ -65,12 +65,20 @@
 			<div class="rounded-md bg-card p-3 md:hidden">
 				<h3 class="mb-3 font-sora text-xl font-bold">Episodes</h3>
 				<Dialog.Root>
-					<Dialog.Trigger class={cn('w-full', buttonVariants({ variant: 'outline' }))}>
-						<span class="mr-1 font-sora text-muted-foreground">Episode {query.episode}</span>
-						-
-						<span class="ml-1">
-							{data.episodes.find((ep) => ep.number === query.episode)?.title}
-						</span>
+					<Dialog.Trigger
+						class={buttonVariants({
+							variant: 'outline',
+							className: 'w-full justify-start text-start'
+						})}
+					>
+						<p class="w-full truncate">
+							<span class="mr-1 font-sora text-muted-foreground">{query.episode}</span>
+							-
+							<span class="ml-1">
+								{data.episodes.find((ep) => ep.number === query.episode)?.title}
+								{data.episodes.find((ep) => ep.number === query.episode)?.title}
+							</span>
+						</p>
 					</Dialog.Trigger>
 					<Dialog.Content>
 						<Dialog.Title>Select Episode</Dialog.Title>
@@ -78,17 +86,19 @@
 							{#each data.episodes as ep, i (ep.id + i)}
 								<Dialog.Close
 									class={cn(
-										'flex w-full items-center border-b border-border p-3 transition last:border-b-0 hover:bg-muted',
+										'flex w-full items-center border-b border-border p-3 text-start transition last:border-b-0 hover:bg-muted',
 										ep.number === query.episode && 'text-primary'
 									)}
 									onclick={() => {
 										goto(`/watch/${query.id}?episode=${ep.number}&key=${ep.id}`);
 									}}
 								>
-									<span class="mr-3 text-lg font-bold">
+									<span class="mr-3 min-w-7 text-lg font-bold">
 										{ep.number}
 									</span>
-									{ep.title}
+									<span class="flex-1 text-start">
+										{ep.title}
+									</span>
 								</Dialog.Close>
 							{/each}
 						</div>
@@ -101,10 +111,9 @@
 					<a
 						href="/watch/{query.id}?episode={ep.number}&key={ep.id}"
 						class={cn(
-							'flex items-center border-b border-border p-3 transition last:border-b-0 hover:bg-muted',
+							'flex items-center border-b border-border p-3 text-start transition last:border-b-0 hover:bg-muted',
 							ep.number === query.episode && 'text-primary'
 						)}
-						data-sveltekit-preload-code="eager"
 						use:scrollToCurrentEpisode={ep.number === query.episode}
 					>
 						<span class="mr-3 text-lg font-bold">
@@ -131,7 +140,6 @@
 									server.serverName === query.server && type === query.type && 'border-primary'
 								)}
 								data-sveltekit-replacestate
-								data-sveltekit-preload-code="eager"
 							>
 								{server.serverName}
 							</Button>

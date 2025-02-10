@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ url }) => {
 	const recentlyUpdatedAnime = await getRecentlyUpdatedAnime(
 		fetch,
 		Number(url.searchParams.get('page') || '1'),
-		25
+		30
 	);
 
 	return {

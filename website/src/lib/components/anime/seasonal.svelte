@@ -113,7 +113,7 @@
 		{/each}
 	</Carousel.Content>
 	<div
-		class="absolute bottom-0 left-1/2 flex w-fit -translate-x-1/2 justify-center md:left-0 md:m-8 md:translate-x-0"
+		class="absolute bottom-32 left-1/2 flex w-fit -translate-x-1/2 justify-center md:bottom-24 md:left-0 md:m-8 md:translate-x-0"
 	>
 		{#each seasonalAnimes as _, i}
 			<Button

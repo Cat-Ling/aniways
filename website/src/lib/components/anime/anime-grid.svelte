@@ -4,6 +4,9 @@
 	import * as Pagination from '$lib/components/ui/pagination';
 	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';
+	import { Button } from '../ui/button';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	type Props = {
 		animes: (typeof anime.infer)[];
@@ -99,4 +102,38 @@
 			</Pagination.Item>
 		</Pagination.Content>
 	</Pagination.Root>
+
+	<div
+		class={cn('mb-3 flex items-center gap-2 md:hidden', {
+			hidden: pageInfo.totalPage <= 1
+		})}
+	>
+		<Button
+			variant="secondary"
+			class="flex w-fit flex-1 items-center gap-2"
+			disabled={pageInfo.currentPage === 1}
+			onclick={() => {
+				const url = new URL(window.location.href);
+				url.searchParams.set('page', (pageInfo.currentPage - 1).toString());
+				goto(url.toString());
+			}}
+		>
+			<ChevronLeft />
+		</Button>
+		<div class="h-10 rounded-md bg-card p-2">
+			{pageInfo.currentPage} <span class="text-muted-foreground">/ {pageInfo.totalPage}</span>
+		</div>
+		<Button
+			variant="secondary"
+			class="flex w-fit flex-1 items-center gap-2"
+			disabled={pageInfo.currentPage === pageInfo.totalPage}
+			onclick={() => {
+				const url = new URL(window.location.href);
+				url.searchParams.set('page', (pageInfo.currentPage + 1).toString());
+				goto(url.toString());
+			}}
+		>
+			<ChevronRight />
+		</Button>
+	</div>
 {/snippet}
