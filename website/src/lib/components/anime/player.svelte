@@ -38,4 +38,4 @@
 	<Skeleton class="h-full w-full" />
 {/if}
 
-<div class={cn('h-full w-full bg-card', isLoading && 'hidden')} bind:this={element}></div>
+<div class={cn('g-card h-full w-full', isLoading && 'hidden')} bind:this={element}></div>

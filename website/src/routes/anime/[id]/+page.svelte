@@ -19,10 +19,10 @@
 			class="h-fit flex-col items-start rounded-md bg-card p-3"
 			href="/watch/{anime.id}?episode={episode.number}&key={episode.id}"
 		>
-			<p>
+			<p class="font-sora">
 				Episode {episode.number}
 			</p>
-			<p class="w-full truncate font-sora text-muted-foreground">
+			<p class="w-full truncate text-muted-foreground">
 				{episode.title === `Episode ${episode.number}` ? 'No title available' : episode.title}
 			</p>
 		</Button>

@@ -13,15 +13,17 @@
 
 {#await seasonsAndRelatedAnimes}
 	<h2 class="mx-3 font-sora text-xl font-bold md:mx-8">Seasons</h2>
-	<Skeleton class="mx-3 mb-3 mt-4 h-20 w-full md:mx-8 md:mb-8" />
+	<Skeleton class="mx-3 mb-3 mt-3 h-20 w-full md:mx-8 md:mb-8" />
 	<h2 class="mx-3 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
-	<Skeleton class="mx-3 mb-3 mt-4 h-20 w-full md:mx-8 md:mb-8" />
+	<Skeleton class="mx-3 mb-3 mt-3 h-20 w-full md:mx-8 md:mb-8" />
 {:then sections}
 	{#each sections as sec}
-		<h2 class="mx-3 font-sora text-xl font-bold md:mx-8">{sec.label}</h2>
+		<h2 class={'mx-3 mt-6 font-sora text-xl font-bold first-of-type:mt-3 md:mx-8'}>
+			{sec.label}
+		</h2>
 
 		<div
-			class="mx-3 mb-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:mb-8 md:grid-cols-2 lg:grid-cols-3"
+			class="mx-3 mb-3 mt-3 grid grid-cols-1 gap-4 md:mx-8 md:mb-8 md:grid-cols-2 lg:grid-cols-3"
 		>
 			{#each sec.value as data}
 				<a

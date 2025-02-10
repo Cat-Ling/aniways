@@ -48,26 +48,60 @@
 	});
 </script>
 
-<div class="mb-3 mt-20 px-3 md:mb-5 md:px-8">
+<div class="mt-20 px-3 md:px-8">
 	<div class="flex flex-col-reverse gap-2 md:flex-row">
-		<div class="mt-3 flex w-full max-w-md flex-col gap-2 md:mt-0 md:w-1/5">
+		<div class="mt-3 flex w-full max-w-md flex-col gap-3 md:mt-0 md:w-1/5">
 			<div class="rounded-md bg-card p-3 md:hidden">
 				<h3 class="mb-3 font-sora text-xl font-bold">Episodes</h3>
 				<Dialog.Root>
 					<Dialog.Trigger class={cn('w-full', buttonVariants({ variant: 'outline' }))}>
-						<span class="mr-1 text-muted-foreground">Episode {query.episode}</span>
+						<span class="mr-1 font-sora text-muted-foreground">Episode {query.episode}</span>
 						-
-						<span class="ml-1 font-sora">
+						<span class="ml-1">
 							{data.episodes.find((ep) => ep.number === query.episode)?.title}
 						</span>
 					</Dialog.Trigger>
 					<Dialog.Content>
 						<Dialog.Title>Select Episode</Dialog.Title>
-						{@render episode('block bg-background', 'hidden')}
+						<div class="max-h-[512px] overflow-scroll">
+							{#each data.episodes as ep, i (ep.id + i)}
+								<Dialog.Close
+									class={cn(
+										'flex w-full items-center border-b border-border p-3 transition last:border-b-0 hover:bg-muted',
+										ep.number === query.episode && 'text-primary'
+									)}
+									onclick={() => {
+										goto(`/watch/${query.id}?episode=${ep.number}&key=${ep.id}`);
+									}}
+								>
+									<span class="mr-3 text-lg font-bold">
+										{ep.number}
+									</span>
+									{ep.title}
+								</Dialog.Close>
+							{/each}
+						</div>
 					</Dialog.Content>
 				</Dialog.Root>
 			</div>
-			{@render episode()}
+			<div class={'hidden h-full max-h-[512px] w-full overflow-scroll rounded-md bg-card md:block'}>
+				<h3 class={'sticky top-0 w-full border-b bg-card p-3 font-sora font-bold'}>Episodes</h3>
+				{#each data.episodes as ep, i (ep.id + i)}
+					<a
+						href="/watch/{query.id}?episode={ep.number}&key={ep.id}"
+						class={cn(
+							'flex items-center border-b border-border p-3 transition last:border-b-0 hover:bg-muted',
+							ep.number === query.episode && 'text-primary'
+						)}
+						data-sveltekit-preload-code="eager"
+					>
+						<span class="mr-3 text-lg font-bold">
+							{ep.number}
+						</span>
+						{ep.title}
+					</a>
+				{/each}
+			</div>
 			<div class="w-full flex-1 rounded-md bg-card">
 				<h3 class="p-3 font-sora text-xl font-bold">Servers</h3>
 				{#each Object.entries(data.serversByType) as [type, servers]}
@@ -115,34 +149,4 @@
 
 <Metadata anime={data.anime} />
 
-<div class="mb-5"></div>
-
 <OtherAnimeSections animeId={query.id} seasonsAndRelatedAnimes={data.otherAnimeSections} />
-
-{#snippet episode(className?: string | undefined, h3ClassName?: string | undefined)}
-	<div
-		class={cn(
-			'hidden h-full max-h-[512px] w-full overflow-scroll rounded-md bg-card md:block',
-			className
-		)}
-	>
-		<h3 class={cn('sticky top-0 w-full border-b bg-card p-3 font-sora font-bold', h3ClassName)}>
-			Episodes
-		</h3>
-		{#each data.episodes as ep, i (ep.id + i)}
-			<a
-				href="/watch/{query.id}?episode={ep.number}&key={ep.id}"
-				class={cn(
-					'flex items-center border-b border-border p-3 transition last:border-b-0 hover:bg-muted',
-					ep.number === query.episode && 'text-primary'
-				)}
-				data-sveltekit-preload-code="eager"
-			>
-				<span class="mr-3 text-lg font-bold">
-					{ep.number}
-				</span>
-				{ep.title}
-			</a>
-		{/each}
-	</div>
-{/snippet}

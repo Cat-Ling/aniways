@@ -5,6 +5,7 @@
 	import Info from 'lucide-svelte/icons/info';
 	import PlayIcon from 'lucide-svelte/icons/play';
 	import Tv from 'lucide-svelte/icons/tv';
+	import Plus from 'lucide-svelte/icons/plus';
 	import { Button } from '../ui/button';
 	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 	import Trailer from './trailer.svelte';
@@ -37,92 +38,100 @@
 			/>
 		</div>
 		<div class="flex w-full flex-col justify-between">
-			<h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
-			<h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
-			<div class="mt-2 hidden gap-2 md:flex">
-				{@render pill(anime.mediaType)}
-				{@render pill(anime.rating)}
-				{@render pill(anime.avgEpDuration)}
-				{@render pill(anime.airingStatus)}
+			<div>
+				<h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
+				<h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
+				<div class="mt-2 hidden gap-2 md:flex">
+					{@render pill(anime.mediaType)}
+					{@render pill(anime.rating)}
+					{@render pill(anime.avgEpDuration)}
+					{@render pill(anime.airingStatus)}
+				</div>
+				<div class="mt-4 flex flex-col md:flex-row md:gap-4">
+					<div>
+						{@render keyValue('Total Episodes', anime.totalEpisodes)}
+						{@render keyValue('Studio', anime.studio)}
+						{@render keyValue('Rank', anime.rank)}
+						{@render keyValue('Score', anime.score)}
+					</div>
+					<div>
+						{@render keyValue('Popularity', anime.popularity)}
+						{@render keyValue('Airing', anime.airing)}
+						{@render keyValue('Season', anime.season)}
+						{@render keyValue('Source', anime.source?.replace('_', ' '))}
+					</div>
+					<div class="md:hidden">
+						{@render keyValue('Media Type', anime.mediaType)}
+						{@render keyValue('Rating', anime.rating)}
+						{@render keyValue('Avg Ep Duration', anime.avgEpDuration)}
+						{@render keyValue('Airing Status', anime.airingStatus)}
+					</div>
+				</div>
+				{#key anime.id}
+					<p
+						class={cn(
+							'mt-3 text-muted-foreground',
+							!isDescriptionExpanded && 'line-clamp-5 md:line-clamp-none'
+						)}
+						bind:this={animeDescriptionElement}
+					>
+						{@html anime.description}
+					</p>
+				{/key}
+				{#if isDescriptionOverflow}
+					<Button
+						variant="secondary"
+						class="mt-2 md:hidden"
+						onclick={() => (isDescriptionExpanded = !isDescriptionExpanded)}
+					>
+						{isDescriptionExpanded ? 'Show Less' : 'Show More'}
+					</Button>
+				{/if}
 			</div>
-			<div class="mt-4 flex flex-col md:flex-row md:gap-4">
-				<div>
-					{@render keyValue('Total Episodes', anime.totalEpisodes)}
-					{@render keyValue('Studio', anime.studio)}
-					{@render keyValue('Rank', anime.rank)}
-					{@render keyValue('Score', anime.score)}
+			<div class="flex flex-col justify-end">
+				<div class="mt-4 grid grid-cols-2 items-center gap-2 md:flex">
+					<Button href="/anime/{anime.id}" class={[isWatchPage || 'hidden']}>
+						<Info class="mr-2" />
+						Anime Details
+					</Button>
+					<Button href="/watch/{anime.id}" class={[isWatchPage && 'hidden']}>
+						<PlayIcon class="mr-2" />
+						Watch Now
+					</Button>
+					<Button>
+						<Plus class="mr-2" />
+						Add to list
+					</Button>
+					<Dialog bind:open={isTrailerOpen}>
+						<DialogTrigger asChild>
+							<Button
+								variant="outline"
+								onclick={() => {
+									isTrailerOpen = true;
+								}}
+							>
+								<Tv class="mr-2" />
+								View Trailer
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogTitle>{anime.jname} Trailer</DialogTitle>
+							<Trailer animeId={anime.id} title={anime.jname} />
+						</DialogContent>
+					</Dialog>
 				</div>
-				<div>
-					{@render keyValue('Popularity', anime.popularity)}
-					{@render keyValue('Airing', anime.airing)}
-					{@render keyValue('Season', anime.season)}
-					{@render keyValue('Source', anime.source?.replace('_', ' '))}
-				</div>
-				<div class="md:hidden">
-					{@render keyValue('Media Type', anime.mediaType)}
-					{@render keyValue('Rating', anime.rating)}
-					{@render keyValue('Avg Ep Duration', anime.avgEpDuration)}
-					{@render keyValue('Airing Status', anime.airingStatus)}
-				</div>
-			</div>
-			{#key anime.id}
-				<p
-					class={cn(
-						'mt-3 text-muted-foreground',
-						!isDescriptionExpanded && 'line-clamp-5 md:line-clamp-none'
-					)}
-					bind:this={animeDescriptionElement}
-				>
-					{@html anime.description}
-				</p>
-			{/key}
-			{#if isDescriptionOverflow}
-				<Button
-					variant="secondary"
-					class="mt-2 md:hidden"
-					onclick={() => (isDescriptionExpanded = !isDescriptionExpanded)}
-				>
-					{isDescriptionExpanded ? 'Show Less' : 'Show More'}
-				</Button>
-			{/if}
-			<div class="mt-4 grid grid-cols-2 items-center gap-2 md:flex">
-				<Button href="/anime/{anime.id}" class={[isWatchPage || 'hidden']}>
-					<Info class="mr-2" />
-					Anime Details
-				</Button>
-				<Button href="/watch/{anime.id}" class={[isWatchPage && 'hidden']}>
-					<PlayIcon class="mr-2" />
-					Watch Now
-				</Button>
-				<Dialog bind:open={isTrailerOpen}>
-					<DialogTrigger asChild>
+				<div class="mt-4 flex flex-1 flex-wrap items-end gap-2">
+					{#each anime.genre as genre}
 						<Button
 							variant="outline"
-							onclick={() => {
-								isTrailerOpen = true;
-							}}
+							size="sm"
+							class="capitalize"
+							href="/genre/{genre.toLowerCase().replace(' ', '-')}"
 						>
-							<Tv class="mr-2" />
-							View Trailer
+							{genre}
 						</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogTitle>{anime.jname} Trailer</DialogTitle>
-						<Trailer animeId={anime.id} title={anime.jname} />
-					</DialogContent>
-				</Dialog>
-			</div>
-			<div class="mt-4 flex flex-1 flex-wrap items-end gap-2">
-				{#each anime.genre as genre}
-					<Button
-						variant="outline"
-						size="sm"
-						class="capitalize"
-						href="/genre/{genre.toLowerCase().replace(' ', '-')}"
-					>
-						{genre}
-					</Button>
-				{/each}
+					{/each}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -137,7 +146,7 @@
 {#snippet keyValue(key: string, value: string | number | undefined | null)}
 	{#if value}
 		<div class="flex gap-2">
-			<span class="font-sora font-semibold text-muted-foreground">{key}:</span>
+			<span class="font-semibold text-muted-foreground">{key}:</span>
 			<span class="capitalize">{value}</span>
 		</div>
 	{/if}
