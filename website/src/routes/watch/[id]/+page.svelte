@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { replaceState, afterNavigate, goto } from '$app/navigation';
+	import { afterNavigate, goto, replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import Metadata from '$lib/components/anime/metadata.svelte';
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
@@ -9,6 +9,7 @@
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 	import { cn } from '$lib/utils';
 	import { onMount, tick } from 'svelte';
+	import type { Action } from 'svelte/action';
 	import { type PageProps } from './$types';
 
 	let props: PageProps = $props();
@@ -46,6 +47,16 @@
 		searchParams.set('server', `${query.type}_${query.server}`);
 		replaceState(`/watch/${query.id}?${searchParams.toString()}`, {});
 	});
+
+	const scrollToCurrentEpisode: Action<HTMLAnchorElement, boolean> = (
+		node,
+		isCurrentEp: boolean
+	) => {
+		$effect(() => {
+			if (!isCurrentEp) return;
+			node.scrollIntoView({ behavior: 'instant', block: 'center' });
+		});
+	};
 </script>
 
 <div class="mt-20 px-3 md:px-8">
@@ -94,6 +105,7 @@
 							ep.number === query.episode && 'text-primary'
 						)}
 						data-sveltekit-preload-code="eager"
+						use:scrollToCurrentEpisode={ep.number === query.episode}
 					>
 						<span class="mr-3 text-lg font-bold">
 							{ep.number}
