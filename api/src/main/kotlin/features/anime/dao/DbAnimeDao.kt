@@ -108,6 +108,7 @@ class DbAnimeDao(
 
     override suspend fun searchAnimes(
         query: String,
+        genre: String?,
         page: Int,
         itemsPerPage: Int
     ): Pagination<Anime> {
@@ -123,6 +124,7 @@ class DbAnimeDao(
                         name % ? 
                         OR jname % ?
                         OR search_vector @@ plainto_tsquery('english', ?)
+                        ${if (genre != null) "AND genre LIKE '%' || ? || '%'" else ""}
                     ORDER BY 
                         rank DESC
                     LIMIT ? 
@@ -138,6 +140,7 @@ class DbAnimeDao(
                         name % ? 
                         OR jname % ? 
                         OR search_vector @@ plainto_tsquery('english', ?)
+                        ${if (genre != null) "AND genre LIKE '%' || ? || '%'" else ""}
                 """.trimIndent()
 
                 val totalItems = conn
@@ -146,6 +149,7 @@ class DbAnimeDao(
                         setString(1, query)
                         setString(2, query)
                         setString(3, query)
+                        if (genre != null) setString(4, genre)
                     }
                     .executeQuery()
                     .let { rs ->
@@ -164,8 +168,14 @@ class DbAnimeDao(
                         setString(2, query)
                         setString(3, query)
                         setString(4, query)
-                        setInt(5, itemsPerPage)
-                        setInt(6, (page - 1) * itemsPerPage)
+                        if (genre != null) {
+                            setString(5, genre)
+                            setInt(6, itemsPerPage)
+                            setInt(7, (page - 1) * itemsPerPage)
+                        } else {
+                            setInt(5, itemsPerPage)
+                            setInt(6, (page - 1) * itemsPerPage)
+                        }
                     }
                     .executeQuery()
                     .let { rs ->
@@ -176,7 +186,7 @@ class DbAnimeDao(
                                 name = rs.getString("name")
                                 jname = rs.getString("jname")
                                 poster = rs.getString("poster")
-                                genre = rs.getString("genre")
+                                this.genre = rs.getString("genre")
                                 hianimeId = rs.getString("hi_anime_id")
                                 malId = rs.getInt("mal_id")
                                 anilistId = rs.getInt("anilist_id")

@@ -200,8 +200,8 @@ class AnimeService(
         return retryWithDelay { animeScraper.getServersOfEpisode(episodeId) } ?: emptyList()
     }
 
-    suspend fun searchAnime(query: String, page: Int, itemsPerPage: Int = 20): Pagination<AnimeDto> {
-        val result = animeDao.searchAnimes(query, page, itemsPerPage)
+    suspend fun searchAnime(query: String, genre: String?, page: Int, itemsPerPage: Int = 20): Pagination<AnimeDto> {
+        val result = animeDao.searchAnimes(query, genre, page, itemsPerPage)
         return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
