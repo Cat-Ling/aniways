@@ -119,7 +119,7 @@
 			<Button
 				on:click={() => api?.scrollTo(i)}
 				class="mx-1 size-3 rounded-full p-0"
-				variant={i === currentSlide ? 'default' : 'secondary'}
+				variant={i === currentSlide ? 'default' : 'outline'}
 			/>
 		{/each}
 	</div>
