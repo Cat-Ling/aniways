@@ -19,6 +19,7 @@ import xyz.aniways.features.anime.db.Anime
 import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.features.anime.scrapers.AnimeScraper
 import xyz.aniways.models.Pagination
+import xyz.aniways.utils.formatGenre
 import xyz.aniways.utils.retryWithDelay
 import java.time.Instant
 
@@ -30,18 +31,6 @@ class AnimeService(
     private val shikimoriApi: ShikimoriApi,
 ) {
     private val logger = KtorSimpleLogger("AnimeService")
-
-    private fun formatGenre(genre: String) = genre
-        .split("-")
-        .joinToString(" ") {
-            when (it) {
-                "sci" -> "Sci-Fi"
-                "fi" -> ""
-                "of" -> it
-                else -> it.replaceFirstChar { it.titlecase() }
-            }
-        }
-        .trim()
 
     private suspend fun saveMetadataInDB(
         anime: Anime,
@@ -201,7 +190,7 @@ class AnimeService(
     }
 
     suspend fun searchAnime(query: String, genre: String?, page: Int, itemsPerPage: Int = 20): Pagination<AnimeDto> {
-        val result = animeDao.searchAnimes(query, genre, page, itemsPerPage)
+        val result = animeDao.searchAnimes(query, genre?.formatGenre(), page, itemsPerPage)
         return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
@@ -237,7 +226,7 @@ class AnimeService(
 
     suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
         val result = animeDao.getAnimesByGenre(
-            genre = formatGenre(genre),
+            genre = genre.formatGenre(),
             page = page,
             itemsPerPage = itemsPerPage
         )
@@ -251,7 +240,7 @@ class AnimeService(
 
     suspend fun getRandomAnimeByGenre(genre: String): AnimeDto {
         return animeDao.getRandomAnimeByGenre(
-            genre = formatGenre(genre)
+            genre = genre.formatGenre()
         ).toAnimeDto()
     }
 

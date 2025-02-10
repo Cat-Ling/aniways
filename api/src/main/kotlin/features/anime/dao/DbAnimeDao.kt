@@ -95,12 +95,14 @@ class DbAnimeDao(
     }
 
     override suspend fun getAnimesInMalIds(malIds: List<Int>): List<Anime> {
+        if (malIds.isEmpty()) return emptyList()
         return aniwaysDb.query {
             animes.filter { it.malId inList malIds }.toList()
         }
     }
 
     override suspend fun getAnimesInHiAnimeIds(hiAnimeIds: List<String>): List<Anime> {
+        if (hiAnimeIds.isEmpty()) return emptyList()
         return aniwaysDb.query {
             animes.filter { it.hianimeId inList hiAnimeIds }.toList()
         }
@@ -114,17 +116,40 @@ class DbAnimeDao(
     ): Pagination<Anime> {
         return aniwaysDb.query {
             useConnection { conn ->
+                val conditions = mutableListOf<String>()
+                val params = mutableListOf<Any>()
+
+                if (query.isNotBlank()) {
+                    conditions.add(
+                        """
+                        (name % ?
+                        OR jname % ?
+                        OR search_vector @@ plainto_tsquery('english', ?))
+                    """.trimIndent()
+                    )
+                    params.add(query)
+                    params.add(query)
+                    params.add(query)
+                }
+
+                if (!genre.isNullOrBlank()) {
+                    conditions.add("genre LIKE ?")
+                    params.add("%$genre%")
+                }
+
+                val whereClause = if (conditions.isNotEmpty()) {
+                    "WHERE ${conditions.joinToString(" AND ")}"
+                } else {
+                    ""
+                }
+
                 val searchQuery = """
                     SELECT 
                         *,
                         ts_rank(search_vector, plainto_tsquery('english', ?)) AS rank
                     FROM 
                         animes
-                    WHERE 
-                        name % ? 
-                        OR jname % ?
-                        OR search_vector @@ plainto_tsquery('english', ?)
-                        ${if (genre != null) "AND genre LIKE '%' || ? || '%'" else ""}
+                    $whereClause
                     ORDER BY 
                         rank DESC
                     LIMIT ? 
@@ -136,20 +161,19 @@ class DbAnimeDao(
                         COUNT(*) 
                     FROM 
                         animes 
-                    WHERE 
-                        name % ? 
-                        OR jname % ? 
-                        OR search_vector @@ plainto_tsquery('english', ?)
-                        ${if (genre != null) "AND genre LIKE '%' || ? || '%'" else ""}
+                    $whereClause
                 """.trimIndent()
 
                 val totalItems = conn
                     .prepareStatement(countQuery)
                     .apply {
-                        setString(1, query)
-                        setString(2, query)
-                        setString(3, query)
-                        if (genre != null) setString(4, genre)
+                        params.forEachIndexed { i, value ->
+                            if (value::class == String::class) {
+                                setString(i + 1, value as String)
+                            } else if (value::class == Int::class) {
+                                setInt(i + 1, value as Int)
+                            }
+                        }
                     }
                     .executeQuery()
                     .let { rs ->
@@ -165,16 +189,14 @@ class DbAnimeDao(
                     .prepareStatement(searchQuery)
                     .apply {
                         setString(1, query)
-                        setString(2, query)
-                        setString(3, query)
-                        setString(4, query)
-                        if (genre != null) {
-                            setString(5, genre)
-                            setInt(6, itemsPerPage)
-                            setInt(7, (page - 1) * itemsPerPage)
-                        } else {
-                            setInt(5, itemsPerPage)
-                            setInt(6, (page - 1) * itemsPerPage)
+                        params.forEachIndexed { i, value ->
+                            if (value::class == String::class) {
+                                setString(i + 2, value as String)
+                            } else if (value::class == Int::class) {
+                                setInt(i + 2, value as Int)
+                            }
+                            setInt(params.size + 2, itemsPerPage)
+                            setInt(params.size + 3, (page - 1) * itemsPerPage)
                         }
                     }
                     .executeQuery()
@@ -194,6 +216,8 @@ class DbAnimeDao(
                             }
                         }.toList()
                     }
+
+                println("QUERY: $searchQuery")
 
                 Pagination(
                     pageInfo = PageInfo(

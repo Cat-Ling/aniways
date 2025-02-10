@@ -7,13 +7,16 @@
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import type { Selected } from 'bits-ui';
+	import { goto } from '$app/navigation';
 
 	let { data }: PageProps = $props();
 
 	let input: HTMLInputElement | undefined = $state(undefined);
+	let selected: Selected<string> | undefined = $state(undefined);
 
-	let selected: Selected<string> | undefined = $state(
-		data.genre
+	$effect(() => {
+		if (input) input.value = data.query ?? '';
+		selected = data.genre
 			? {
 					value: data.genre,
 					label: data.genre
@@ -21,8 +24,8 @@
 						.map((word) => word[0].toUpperCase() + word.slice(1))
 						.join(' ')
 				}
-			: undefined
-	);
+			: undefined;
+	});
 
 	onMount(() => {
 		if (!input) return;
@@ -48,7 +51,23 @@
 <h1 class="mx-3 mt-20 font-sora text-2xl font-bold md:mx-8">Search</h1>
 
 <div class="mt-3 px-3 md:px-8">
-	<form class="grid grid-cols-2 gap-3 md:flex">
+	<form
+		class="grid grid-cols-2 gap-3 md:flex"
+		onsubmit={(e) => {
+			e.preventDefault();
+
+			const query = input?.value;
+			const genre = selected?.value;
+
+			if (!query && !genre) return;
+
+			const searchParams = new URLSearchParams();
+			if (query) searchParams.set('q', query);
+			if (genre) searchParams.set('genre', genre);
+
+			goto(`/search?${searchParams.toString()}`);
+		}}
+	>
 		<Input
 			name="q"
 			type="text"
@@ -57,21 +76,24 @@
 			defaultValue={data.query ?? ''}
 			bind:instance={input}
 		/>
-		<Select.Root bind:selected>
-			<Select.Trigger class="md:max-w-72">
-				<Select.Value placeholder="Genre" />
-			</Select.Trigger>
-			<Select.Content class="max-h-56 overflow-scroll">
-				<Select.Item value="all" label="All">All</Select.Item>
-				{#each data.genres as genre}
-					<Select.Item value={genre.toLowerCase().replaceAll(' ', '-')} label={genre}>
-						{genre}
-					</Select.Item>
-				{/each}
-			</Select.Content>
-			<Select.Input name="genre" />
-		</Select.Root>
+		{#key selected?.value}
+			<Select.Root bind:selected>
+				<Select.Trigger class="md:max-w-72">
+					<Select.Value placeholder="Genre" />
+				</Select.Trigger>
+				<Select.Content class="max-h-56 overflow-scroll">
+					<Select.Item value="all" label="All">All</Select.Item>
+					{#each data.genres as genre}
+						<Select.Item value={genre.toLowerCase().replaceAll(' ', '-')} label={genre}>
+							{genre}
+						</Select.Item>
+					{/each}
+				</Select.Content>
+				<Select.Input name="genre" value={selected?.value} />
+			</Select.Root>
+		{/key}
 		<Button type="submit">Search</Button>
+		<Button href="/search" variant="secondary">Clear Filters</Button>
 	</form>
 
 	<AnimeGrid animes={data.results.items} pageInfo={data.results.pageInfo}>

@@ -6,14 +6,25 @@ export const load: PageLoad = async ({ url, fetch }) => {
 	const page = Number(url.searchParams.get('page') || 1);
 	let genre = url.searchParams.get('genre');
 
-	if (genre === 'all' || !genre) {
+	if (genre === 'all' || !genre || genre === 'undefined') {
 		genre = null;
 	}
 
-	const results = query
-		? await searchAnime(fetch, query, genre ?? undefined, page, 24)
-		: await getRecentlyUpdatedAnime(fetch, page, 24);
-	const genres = await getGenres(fetch);
+	let results;
+
+	if (query) {
+		results = await searchAnime(fetch, query, genre ?? undefined, page, 24);
+	} else {
+		if (genre) {
+			results = await searchAnime(fetch, query, genre, page, 24);
+		} else {
+			results = await getRecentlyUpdatedAnime(fetch, page, 24);
+		}
+	}
+
+	const genres = await getGenres(fetch).then((genres) =>
+		genres.sort((a, b) => a.localeCompare(b)).filter((g) => g !== 'unknown')
+	);
 
 	return {
 		title: query ? `Search results for ${query}` : 'Search',
