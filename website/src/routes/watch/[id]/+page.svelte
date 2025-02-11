@@ -152,16 +152,7 @@
 			{#await streamInfo}
 				<Skeleton class="h-full w-full" />
 			{:then info}
-				<Player
-					{info}
-					onError={(art) => {
-						if (nextServer && !moveToNextServer) {
-							return (moveToNextServer = true);
-						}
-
-						art.notice.show = "The video can't be played. Please try again later.";
-					}}
-				/>
+				<Player {info} />
 			{/await}
 		</div>
 	</div>

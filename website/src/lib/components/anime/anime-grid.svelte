@@ -14,17 +14,18 @@
 			totalPage: number;
 			currentPage: number;
 		};
+		class?: string;
 		buildUrl?: (anime: Props['animes'][number]) => string;
 		emptyLayout?: Snippet;
 		titleLayout?: Snippet<[{ pagination: Snippet<[{ className?: string }]> }]>;
 	};
 
-	let { animes, emptyLayout, pageInfo, titleLayout, buildUrl }: Props = $props();
+	let { animes, emptyLayout, pageInfo, titleLayout, buildUrl, ...props }: Props = $props();
 </script>
 
 {@render titleLayout?.({ pagination })}
 
-<div class="mb-3 mt-5 grid grid-cols-2 gap-3 md:mb-8 md:grid-cols-4 xl:grid-cols-6">
+<div class={cn('mb-3 mt-5 grid grid-cols-2 gap-4 md:mb-8 md:grid-cols-5', props.class)}>
 	{#if animes.length === 0}
 		<div class="col-span-full">
 			{#if emptyLayout}

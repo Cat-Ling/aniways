@@ -3,15 +3,13 @@ import { LOADING_SVG, SUBTITLE_ICON } from '$lib/assets/icons';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import { thumbnailPlugin } from './plugins';
 import type Hls from 'hls.js';
-import type Artplayer from 'artplayer';
 
 type Props = {
 	container: HTMLDivElement;
 	source: typeof streamInfo.infer;
-	onError: (art: Artplayer) => void;
 };
 
-export const createArtPlayer = async ({ container, source, onError }: Props) => {
+export const createArtPlayer = async ({ container, source }: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
 	const defaultSubtitle = source.tracks.find((track) => track.default && track.kind === 'captions');
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -99,14 +97,6 @@ export const createArtPlayer = async ({ container, source, onError }: Props) => 
 						hls.loadSource(url);
 						hls.attachMedia(video);
 						art.hls = hls;
-						hls.on(module.Events.ERROR, (err, data) => {
-							if (data.type === module.ErrorTypes.NETWORK_ERROR) {
-								onError(art);
-								return;
-							}
-
-							art.notice.show = `Error: ${data.type} - ${data.details}`;
-						});
 						art.on('destroy', () => hls.destroy());
 					} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
 						video.src = url;

@@ -13,12 +13,12 @@ export const load: PageLoad = async ({ url, fetch }) => {
 	let results;
 
 	if (query) {
-		results = await searchAnime(fetch, query, genre ?? undefined, page, 24);
+		results = await searchAnime(fetch, query, genre ?? undefined, page, 20);
 	} else {
 		if (genre) {
-			results = await searchAnime(fetch, query, genre, page, 24);
+			results = await searchAnime(fetch, query, genre, page, 20);
 		} else {
-			results = await getRecentlyUpdatedAnime(fetch, page, 24);
+			results = await getRecentlyUpdatedAnime(fetch, page, 20);
 		}
 	}
 

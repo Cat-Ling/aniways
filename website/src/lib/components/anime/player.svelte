@@ -2,15 +2,13 @@
 	import type { streamInfo } from '$lib/api/anime/types';
 	import { createArtPlayer } from '$lib/player';
 	import { cn } from '$lib/utils';
-	import type Artplayer from 'artplayer';
 	import { Skeleton } from '../ui/skeleton';
 
 	type Props = {
 		info: typeof streamInfo.infer;
-		onError: (art: Artplayer) => void;
 	};
 
-	let { info, onError }: Props = $props();
+	let { info }: Props = $props();
 
 	let element: HTMLDivElement | null = $state(null);
 	let isLoading = $state(true);
@@ -21,8 +19,7 @@
 		isLoading = true;
 		const player = createArtPlayer({
 			container: element,
-			source: info,
-			onError
+			source: info
 		}).then((player) => {
 			isLoading = false;
 			return player;
