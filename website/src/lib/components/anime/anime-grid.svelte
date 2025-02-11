@@ -18,6 +18,7 @@
 		buildUrl?: (anime: Props['animes'][number]) => string;
 		emptyLayout?: Snippet;
 		titleLayout?: Snippet<[{ pagination: Snippet<[{ className?: string }]> }]>;
+		onPaginationClick?: () => void;
 	};
 
 	let { animes, emptyLayout, pageInfo, titleLayout, buildUrl, ...props }: Props = $props();
@@ -25,7 +26,12 @@
 
 {@render titleLayout?.({ pagination })}
 
-<div class={cn('mb-3 mt-5 grid grid-cols-2 gap-4 md:mb-8 md:grid-cols-5', props.class)}>
+<div
+	class={cn(
+		'mb-3 mt-5 grid w-full min-w-full grid-cols-2 gap-4 md:mb-8 md:grid-cols-5',
+		props.class
+	)}
+>
 	{#if animes.length === 0}
 		<div class="col-span-full">
 			{#if emptyLayout}
@@ -40,11 +46,13 @@
 			class="group relative overflow-hidden rounded-md border transition hover:scale-105"
 			href={buildUrl?.(result) ?? `/anime/${result.id}`}
 		>
-			<img
-				src={result.poster}
-				alt={result.jname}
-				class="aspect-[3/4] w-full scale-105 rounded-md object-cover transition group-hover:scale-100"
-			/>
+			<div class="aspect-[3/4] w-full min-w-full overflow-hidden rounded-md bg-card">
+				<img
+					src={result.poster}
+					alt={result.jname}
+					class="aspect-[3/4] w-full scale-105 rounded-md object-cover transition group-hover:scale-100"
+				/>
+			</div>
 			<div
 				class="absolute bottom-0 left-0 top-0 flex w-full flex-col justify-end bg-gradient-to-t from-background to-transparent p-3"
 			>
@@ -79,7 +87,10 @@
 		onPageChange={(page) => {
 			const url = new URL(window.location.href);
 			url.searchParams.set('page', page.toString());
-			goto(url.toString());
+			goto(url.toString(), {
+				noScroll: true
+			});
+			props.onPaginationClick?.();
 		}}
 	>
 		<Pagination.Content>
