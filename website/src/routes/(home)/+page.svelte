@@ -10,5 +10,6 @@
 	<AnimeGrid
 		animes={data.recentlyUpdatedAnime.items}
 		pageInfo={data.recentlyUpdatedAnime.pageInfo}
+		buildUrl={(anime) => `/watch/${anime.id}?episode=${anime.lastEpisode}`}
 	/>
 </div>

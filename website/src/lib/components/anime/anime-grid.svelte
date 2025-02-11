@@ -14,11 +14,12 @@
 			totalPage: number;
 			currentPage: number;
 		};
+		buildUrl?: (anime: Props['animes'][number]) => string;
 		emptyLayout?: Snippet;
 		titleLayout?: Snippet<[{ pagination: Snippet<[{ className?: string }]> }]>;
 	};
 
-	let { animes, emptyLayout, pageInfo, titleLayout }: Props = $props();
+	let { animes, emptyLayout, pageInfo, titleLayout, buildUrl }: Props = $props();
 </script>
 
 {@render titleLayout?.({ pagination })}
@@ -36,7 +37,7 @@
 	{#each animes as result (result.id)}
 		<a
 			class="group relative overflow-hidden rounded-md border transition hover:scale-105"
-			href={`/anime/${result.id}`}
+			href={buildUrl?.(result) ?? `/anime/${result.id}`}
 		>
 			<img
 				src={result.poster}
