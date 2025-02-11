@@ -39,8 +39,8 @@
 						class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
 					/>
 					<div class="relative z-10 h-full bg-background bg-opacity-80 p-3">
-						<p class="line-clamp-1 font-sora text-lg font-bold">{data.name}</p>
-						<p class="line-clamp-1 text-muted-foreground">{data.jname}</p>
+						<p class="line-clamp-1 font-sora text-lg font-bold">{data.jname}</p>
+						<p class="line-clamp-1 text-muted-foreground">{data.name}</p>
 						<p class="mt-2 text-sm text-muted-foreground">{data.lastEpisode} Episodes</p>
 					</div>
 				</a>

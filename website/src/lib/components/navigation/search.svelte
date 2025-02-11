@@ -69,10 +69,10 @@
 						<img src={anime.poster} alt={anime.name} class="aspect-[300/400] w-1/5 rounded" />
 						<div class="h-full">
 							<p class="line-clamp-1 font-bold">
-								{@html anime.name.replaceAll('"', "'")}
+								{@html anime.jname.replaceAll('"', "'")}
 							</p>
 							<p class="line-clamp-1 text-muted-foreground">
-								{@html anime.jname.replaceAll('"', "'")}
+								{@html anime.name.replaceAll('"', "'")}
 							</p>
 							<p class="mt-3 text-sm">
 								{anime.lastEpisode} episode{(anime.lastEpisode ?? 1) > 1 ? 's' : ''}
