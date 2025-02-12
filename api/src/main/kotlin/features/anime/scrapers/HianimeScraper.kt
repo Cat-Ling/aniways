@@ -17,11 +17,14 @@ import xyz.aniways.utils.toStringOrNull
 
 class HianimeScraper(
     private val httpClient: HttpClient,
-) : AnimeScraper {
+) : AnimeScraper() {
     private val baseUrl = "https://hianime.to"
 
     override suspend fun getTrendingAnimes(): List<ScrapedAnimeDto> {
-        val document = httpClient.getDocument("$baseUrl/home")
+        val document = httpClient.getDocument("$baseUrl/home") {
+            header("Referer", baseUrl)
+            header("User-Agent", getRandomUserAgent())
+        }
 
         val selector = "#trending-home .swiper-wrapper .swiper-slide"
         return document.select(selector).map { element ->
@@ -79,7 +82,10 @@ class HianimeScraper(
     }
 
     override suspend fun getTopAnimes(): ScrapedTopAnimeDto {
-        val document = httpClient.getDocument("$baseUrl/home")
+        val document = httpClient.getDocument("$baseUrl/home") {
+            header("Referer", baseUrl)
+            header("User-Agent", getRandomUserAgent())
+        }
 
         return ScrapedTopAnimeDto(
             today = getTopAnimeNodes(document, "day"),
@@ -147,6 +153,9 @@ class HianimeScraper(
         val document = httpClient.getDocument("$baseUrl/search") {
             parameter("keyword", query)
             parameter("page", page)
+
+            header("Referer", "$baseUrl/search")
+            header("User-Agent", getRandomUserAgent())
         }
 
         return Pagination(
@@ -158,6 +167,9 @@ class HianimeScraper(
     override suspend fun getAZList(page: Int): Pagination<ScrapedAnimeDto> {
         val document = httpClient.getDocument("$baseUrl/az-list") {
             parameter("page", page)
+
+            header("Referer", "$baseUrl/az-list")
+            header("User-Agent", getRandomUserAgent())
         }
 
         return Pagination(
@@ -177,7 +189,10 @@ class HianimeScraper(
     }
 
     override suspend fun getAnimeInfo(id: String): ScrapedAnimeInfoDto {
-        val document = httpClient.getDocument("$baseUrl/$id")
+        val document = httpClient.getDocument("$baseUrl/$id") {
+            header("Referer", baseUrl)
+            header("User-Agent", getRandomUserAgent())
+        }
 
         val syncData = extractSyncData(document, id)
 
@@ -214,6 +229,9 @@ class HianimeScraper(
     override suspend fun getRecentlyUpdatedAnime(page: Int): Pagination<ScrapedAnimeDto> {
         val document = httpClient.getDocument("$baseUrl/recently-updated") {
             parameter("page", page)
+
+            header("Referer", "$baseUrl/home")
+            header("User-Agent", getRandomUserAgent())
         }
 
         return Pagination(
@@ -226,6 +244,7 @@ class HianimeScraper(
         val response = httpClient.get("$baseUrl/ajax/v2/episode/list/${hianimeId.split("-").last()}") {
             header("X-Requested-With", "XMLHttpRequest")
             header("Referer", "$baseUrl/watch/$hianimeId")
+            header("User-Agent", getRandomUserAgent())
         }
 
         val data = response.body<RawEpisodeData>()
@@ -245,6 +264,7 @@ class HianimeScraper(
         val response = httpClient.get("$baseUrl/ajax/v2/episode/sources?id=$serverId") {
             header("X-Requested-With", "XMLHttpRequest")
             header("Referer", "$baseUrl/watch/$episodeId")
+            header("User-Agent", getRandomUserAgent())
         }
 
         return response.body<RawEpisodeSourceData>().link
@@ -254,6 +274,7 @@ class HianimeScraper(
         val response = httpClient.get("$baseUrl/ajax/v2/episode/servers?episodeId=$episodeId") {
             header("X-Requested-With", "XMLHttpRequest")
             header("Referer", "$baseUrl/watch/$episodeId")
+            header("User-Agent", getRandomUserAgent())
         }
 
         val data = response.body<RawEpisodeData>()
