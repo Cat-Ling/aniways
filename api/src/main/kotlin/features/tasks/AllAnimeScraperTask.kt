@@ -16,8 +16,6 @@ class AllAnimeScraperTask(
 
         if (count > 0) {
             logger.info("Skipping scraping all anime as the DB is not empty")
-            logger.info("Scraping recently updated anime instead")
-            service.scrapeAndPopulateRecentlyUpdatedAnime(fromPage = 2)
             return@coroutineScope
         }
 

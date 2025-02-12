@@ -173,10 +173,12 @@ class AnimeService(
         return transformToAnilistAnimeDto(anilistApi.getAllTimePopularAnime())
     }
 
-    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
+    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> = coroutineScope {
         val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
-
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
+        if (page == 1 && result.items[0].updatedAt.toEpochMilli() < System.currentTimeMillis() - 60 * 60) { // Update every hour
+            launch { scrapeAndPopulateRecentlyUpdatedAnime(fromPage = 1) } // Update recently updated anime in background
+        }
+        Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
     suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {
@@ -283,44 +285,6 @@ class AnimeService(
         scrapeAndPopulateAnime(page + 1)
     }
 
-    suspend fun scrapeAndPopulateNewAnime(): Unit = coroutineScope {
-        var page = 1
-        val newAnimes = mutableListOf<Anime>()
-
-        while (isActive) {
-            val animes = animeScraper.getAZList(page)
-
-            val inDB = animeDao.getAnimesInHiAnimeIds(animes.items.map { it.hianimeId })
-
-            animes.items
-                .filter { anime -> inDB.none { it.hianimeId == anime.hianimeId } }
-                .forEach { scrapedAnime ->
-                    val info = retryWithDelay {
-                        animeScraper.getAnimeInfo(scrapedAnime.hianimeId)
-                    }
-
-                    newAnimes.add(Anime {
-                        name = scrapedAnime.name
-                        jname = scrapedAnime.jname
-                        poster = scrapedAnime.poster
-                        genre = info?.genre ?: ""
-                        hianimeId = scrapedAnime.hianimeId
-                        malId = info?.malId
-                        anilistId = info?.anilistId
-                        lastEpisode = info?.lastEpisode
-                    })
-                }
-
-            if (!animes.pageInfo.hasNextPage) break
-
-            page++
-            delay(1000L)
-        }
-
-        animeDao.insertAnimes(newAnimes)
-        logger.info("Inserted ${newAnimes.size} new animes")
-    }
-
     suspend fun scrapeAndPopulateRecentlyUpdatedAnime(fromPage: Int? = null): Unit = coroutineScope {
         if (fromPage == 0) {
             logger.info("Scraping and populating recently updated anime completed")
@@ -338,7 +302,9 @@ class AnimeService(
         val currentTime = System.currentTimeMillis()
 
         val semaphore = Semaphore(20)
-        animes.items.reversed().mapIndexed { index, scrapedAnime ->
+        animes.items.reversed().filter {
+            inDB.none { dbAnime -> dbAnime.hianimeId == it.hianimeId && dbAnime.lastEpisode == it.episodes?.toIntOrNull() }
+        }.mapIndexed { index, scrapedAnime ->
             val updateTime = currentTime + (index * 20)
 
             async {

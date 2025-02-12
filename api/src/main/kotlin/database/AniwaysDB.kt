@@ -41,7 +41,7 @@ class AniwaysDBImpl(
 
             flyway.migrate()
 
-            connectDb(hikariDatasource())
+            connectDb(dataSource)
         } catch (e: FlywayException) {
             dataSource.close()
             throw e
@@ -57,6 +57,10 @@ class AniwaysDBImpl(
             maximumPoolSize = 3
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
             addDataSourceProperty("ssl.mode", "disable")
+            connectionTestQuery = "SELECT 1"
+            connectionTimeout = 1000 // 1 second
+            idleTimeout = 60000 // 1 minute
+            maxLifetime = 1800000 // 30 minutes
             validate()
         }
 
