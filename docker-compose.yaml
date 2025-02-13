@@ -33,6 +33,11 @@ services:
     deploy:
       update_config:
         order: start-first
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
     depends_on:
       - db
       - redis
@@ -45,6 +50,14 @@ services:
       - 'traefik.http.routers.streaming.rule=Host(`${STREAMING_DOMAIN}`)'
       - 'traefik.http.routers.streaming.entrypoints=websecure'
       - 'traefik.http.routers.streaming.tls.certresolver=myresolver'
+    deploy:
+      update_config:
+        order: start-first
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
 
   redis:
     image: redis:latest
