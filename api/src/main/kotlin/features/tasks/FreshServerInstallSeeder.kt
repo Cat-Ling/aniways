@@ -5,12 +5,11 @@ import xyz.aniways.features.anime.services.AnimeService
 import xyz.aniways.features.tasks.plugins.Task
 import xyz.aniways.features.tasks.plugins.TaskScheduler
 
-class AllAnimeScraperTask(
+class FreshServerInstallSeeder(
     private val service: AnimeService
-) : Task {
-    override val name = "AllAnimeScraperTask"
-    override val frequency = TaskScheduler.Frequency.OnStartUp
-
+) : Task(
+    frequency = TaskScheduler.Frequency.OnStartUp
+) {
     override suspend fun job() = coroutineScope {
         val count = service.getAnimeCount()
 

@@ -173,12 +173,10 @@ class AnimeService(
         return transformToAnilistAnimeDto(anilistApi.getAllTimePopularAnime())
     }
 
-    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> = coroutineScope {
+    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
         val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
-        if (page == 1 && result.items[0].updatedAt.toEpochMilli() < System.currentTimeMillis() - 60 * 60) { // Update every hour
-            launch { scrapeAndPopulateRecentlyUpdatedAnime(fromPage = 1) } // Update recently updated anime in background
-        }
-        Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
+
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
     }
 
     suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {

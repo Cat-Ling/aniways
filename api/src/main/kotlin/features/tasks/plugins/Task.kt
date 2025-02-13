@@ -1,17 +1,22 @@
 package xyz.aniways.features.tasks.plugins
 
 import io.ktor.util.logging.*
+import kotlinx.serialization.Serializable
 import xyz.aniways.utils.toStringOrNull
+import kotlin.reflect.KClass
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-interface Task {
-    val name: String
+abstract class Task(
     val frequency: TaskScheduler.Frequency
+) {
+    val name: String get() = this::class.simpleName ?: "Unknown"
+
+    open val shouldNotRunWith: List<KClass<out Task>> get() = emptyList()
 
     val logger get() = KtorSimpleLogger("Task - $name")
 
-    suspend fun job()
+    abstract suspend fun job()
 
     suspend fun execute() {
         val startTime = System.currentTimeMillis()
@@ -36,4 +41,17 @@ interface Task {
 
         logger.info("Task took $formatted")
     }
+
+    fun toDto() = TaskDto(
+        name = name,
+        cron = if (frequency is TaskScheduler.Frequency.Cron) frequency.cron else "",
+        description = if (frequency is TaskScheduler.Frequency.Cron) frequency.description else frequency.getCleanName()
+    )
 }
+
+@Serializable
+data class TaskDto(
+    val name: String,
+    val cron: String,
+    val description: String,
+)
