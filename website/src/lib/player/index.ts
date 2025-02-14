@@ -113,6 +113,14 @@ export const createArtPlayer = async ({ id, container, source, onEnded, onReady 
 	});
 
 	art.on('ready', () => {
+		art.hotkey.add('KeyF', () => {
+			art.fullscreen = !art.fullscreen;
+		});
+
+		art.hotkey.add('KeyM', () => {
+			art.muted = !art.muted;
+		});
+
 		onReady?.(art);
 	});
 
