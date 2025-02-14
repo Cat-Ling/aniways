@@ -1,9 +1,9 @@
 import { StatusError } from '$lib/api';
 import { getAnimeMetadata, getEpisodes, getSeasonsAndRelatedAnimes } from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 
-export const load: PageLoad = async ({ params, fetch }) => {
+export const load: LayoutLoad = async ({ params }) => {
 	try {
 		const [anime, episodes] = await Promise.all([
 			getAnimeMetadata(fetch, params.id),

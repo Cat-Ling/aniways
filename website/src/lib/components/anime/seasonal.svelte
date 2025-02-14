@@ -83,7 +83,7 @@
 						{@html anime.description.split('<br>').join('') ?? 'No description available'}
 					</p>
 					<div class="flex gap-2">
-						<Button class="flex w-fit items-center gap-2" href="/watch/{anime.id}">
+						<Button class="flex w-fit items-center gap-2" href="/anime/{anime.id}/watch">
 							<Play class="h-5 w-5" />
 							Watch Now
 						</Button>

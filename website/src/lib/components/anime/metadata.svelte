@@ -25,7 +25,7 @@
 		return animeDescriptionElement.scrollHeight > animeDescriptionElement.clientHeight;
 	});
 
-	let isWatchPage = $derived.by(() => page.url.pathname.startsWith('/watch'));
+	let isWatchPage = $derived.by(() => page.url.pathname.includes('/watch'));
 </script>
 
 <div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'mt-20')}>
@@ -94,7 +94,7 @@
 						<Info class="mr-2" />
 						Anime Details
 					</Button>
-					<Button href="/watch/{anime.id}" class={[isWatchPage && 'hidden']}>
+					<Button href="/anime/{anime.id}/watch" class={[isWatchPage && 'hidden']}>
 						<PlayIcon class="mr-2" />
 						Watch Now
 					</Button>

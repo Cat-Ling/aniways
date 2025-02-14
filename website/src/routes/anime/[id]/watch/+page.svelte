@@ -30,7 +30,7 @@
 		window.history.replaceState(
 			null,
 			'',
-			`/watch/${query.id}?episode=${query.episode}&key=${query.key}&server=${query.type}_${nextServer}`
+			`/anime/${query.id}/watch?episode=${query.episode}&key=${query.key}&server=${nextServer}&type=${query.type}`
 		);
 		window.location.reload();
 	});
@@ -44,8 +44,9 @@
 		const searchParams = page.url.searchParams;
 		searchParams.set('episode', query.episode.toString());
 		searchParams.set('key', query.key);
-		searchParams.set('server', `${query.type}_${query.server}`);
-		replaceState(`/watch/${query.id}?${searchParams.toString()}`, {});
+		searchParams.set('server', query.server);
+		searchParams.set('type', query.type);
+		replaceState(`/anime/${query.id}/watch?${searchParams.toString()}`, {});
 	});
 
 	const scrollToCurrentEpisode: Action<HTMLAnchorElement, boolean> = (
@@ -90,7 +91,9 @@
 										ep.number === query.episode && 'text-primary'
 									)}
 									onclick={() => {
-										goto(`/watch/${query.id}?episode=${ep.number}&key=${ep.id}`);
+										goto(`/anime/${query.id}/watch?episode=${ep.number}&key=${ep.id}`, {
+											noScroll: true
+										});
 									}}
 								>
 									<span class="mr-3 min-w-7 text-lg font-bold">
@@ -109,7 +112,8 @@
 				<h3 class={'sticky top-0 w-full border-b bg-card p-3 font-sora font-bold'}>Episodes</h3>
 				{#each data.episodes as ep, i (ep.id + i)}
 					<a
-						href="/watch/{query.id}?episode={ep.number}&key={ep.id}"
+						data-sveltekit-noscroll
+						href="/anime/{query.id}/watch?episode={ep.number}&key={ep.id}"
 						class={cn(
 							'flex items-center border-b border-border p-3 text-start transition last:border-b-0 hover:bg-muted',
 							ep.number === query.episode && 'text-primary'
@@ -132,7 +136,7 @@
 						{/if}
 						{#each servers as server}
 							<Button
-								href="/watch/{query.id}?episode={query.episode}&key={query.key}&server={`${type}_${server.serverName}`}"
+								href="/anime/{query.id}/watch?episode={query.episode}&key={query.key}&server={server.serverName}&type={type}"
 								variant="outline"
 								size="sm"
 								class={cn(
@@ -160,4 +164,4 @@
 
 <Metadata anime={data.anime} />
 
-<OtherAnimeSections animeId={query.id} seasonsAndRelatedAnimes={data.otherAnimeSections} />
+<OtherAnimeSections animeId={query.id} seasonsAndRelatedAnimes={data.seasonsAndRelatedAnimes} />

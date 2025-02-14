@@ -21,7 +21,7 @@
 	<AnimeGrid
 		animes={data.recentlyUpdated.items}
 		pageInfo={data.recentlyUpdated.pageInfo}
-		buildUrl={(anime) => `/watch/${anime.id}?episode=${anime.lastEpisode}`}
+		buildUrl={(anime) => `/anime/${anime.id}/watch?episode=${anime.lastEpisode}`}
 		onPaginationClick={() => (isPageNavigation = true)}
 	/>
 </section>

@@ -17,7 +17,7 @@
 		<Button
 			variant="outline"
 			class="h-fit flex-col items-start rounded-md bg-card p-3"
-			href="/watch/{anime.id}?episode={episode.number}&key={episode.id}"
+			href="/anime/{anime.id}/watch?episode={episode.number}&key={episode.id}"
 		>
 			<p class="font-sora">
 				Episode {episode.number}
