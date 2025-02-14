@@ -4,13 +4,13 @@
 	import { cn } from '$lib/utils.js';
 
 	type $$Props = HTMLInputAttributes & {
-		instance: HTMLInputElement | undefined;
+		instance?: HTMLInputElement | undefined;
 	};
 	type $$Events = InputEvents;
 
 	let className: $$Props['class'] = undefined;
 	export let value: $$Props['value'] = undefined;
-	export let instance: HTMLInputElement | undefined = undefined;
+	export let instance: $$Props['instance'] = undefined;
 	export { className as class };
 
 	// Workaround for https://github.com/sveltejs/svelte/issues/9305
