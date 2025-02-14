@@ -6,6 +6,7 @@
 	import { page } from '$app/state';
 	import Navbar from '$lib/components/navigation/navbar.svelte';
 	import { setUser } from '$lib/context/user';
+	import { setSettings } from '$lib/context/settings';
 	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
 	import type { LayoutProps } from './$types';
 
@@ -15,6 +16,14 @@
 	const title = $derived(baseTitle ? `${baseTitle} | Aniways` : 'Aniways');
 
 	if (data.user) setUser(data.user);
+	setSettings(
+		data.settings ?? {
+			autoPlayEpisode: true,
+			autoNextEpisode: true,
+			autoUpdateMal: false,
+			userId: -1
+		}
+	);
 </script>
 
 <svelte:head>

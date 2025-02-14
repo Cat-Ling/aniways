@@ -3,13 +3,17 @@ import { LOADING_SVG, SUBTITLE_ICON } from '$lib/assets/icons';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import { thumbnailPlugin } from './plugins';
 import type Hls from 'hls.js';
+import type Artplayer from 'artplayer';
 
 type Props = {
+	id: string;
 	container: HTMLDivElement;
 	source: typeof streamInfo.infer;
+	onEnded?: (player: Artplayer) => void;
+	onReady?: (player: Artplayer) => void;
 };
 
-export const createArtPlayer = async ({ container, source }: Props) => {
+export const createArtPlayer = async ({ id, container, source, onEnded, onReady }: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
 	const defaultSubtitle = source.tracks.find((track) => track.default && track.kind === 'captions');
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -20,6 +24,7 @@ export const createArtPlayer = async ({ container, source }: Props) => {
 	const Artplayer = await import('artplayer').then((module) => module.default);
 
 	const art = new Artplayer({
+		id,
 		container,
 		url: source.sources[0].file,
 		setting: true,
@@ -28,7 +33,6 @@ export const createArtPlayer = async ({ container, source }: Props) => {
 		volume: 100,
 		fullscreen: true,
 		mutex: true,
-		autoSize: true,
 		playbackRate: true,
 		autoPlayback: true,
 		autoOrientation: true,
@@ -106,6 +110,22 @@ export const createArtPlayer = async ({ container, source }: Props) => {
 				});
 			}
 		}
+	});
+
+	art.on('ready', () => {
+		onReady?.(art);
+	});
+
+	art.on('fullscreen', (isFullScreen) => {
+		const base = isMobile ? 1 : 1.8;
+		const screenWidth = window.screen.width;
+		const videoWidth = container.clientWidth ?? 0;
+		const fontSize = isFullScreen ? `${(screenWidth / videoWidth) * base}rem` : `${base}rem`;
+		art.subtitle.style('fontSize', fontSize);
+	});
+
+	art.on('video:ended', () => {
+		onEnded?.(art);
 	});
 
 	return art;

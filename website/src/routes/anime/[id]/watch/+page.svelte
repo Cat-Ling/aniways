@@ -11,9 +11,19 @@
 	import { onMount, tick } from 'svelte';
 	import type { Action } from 'svelte/action';
 	import { type PageProps } from './$types';
+	import { getSettings } from '$lib/context/settings';
 
 	let props: PageProps = $props();
 	let { query, data } = $derived(props.data);
+
+	const settings = getSettings();
+
+	let nextEpisodeUrl = $derived.by(() => {
+		const currentIndex = data.episodes.findIndex((ep) => ep.id === query.key);
+		const nextEpisode = data.episodes[currentIndex + 1];
+		if (!nextEpisode) return;
+		return `/anime/${query.id}/watch?episode=${nextEpisode.number}&key=${nextEpisode.id}`;
+	});
 
 	let episodeSearch = $state('');
 
@@ -110,7 +120,12 @@
 			{#await data.streamInfo}
 				<Skeleton class="h-full w-full" />
 			{:then info}
-				<Player {info} />
+				<Player
+					playerId="{query.id}-{query.episode}-{query.type}"
+					settings={settings()}
+					{nextEpisodeUrl}
+					{info}
+				/>
 			{/await}
 		</div>
 	</div>
