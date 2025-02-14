@@ -31,11 +31,13 @@
 <div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'mt-20')}>
 	<div class="flex flex-col gap-8 rounded-md bg-card p-4 md:flex-row">
 		<div class="w-full md:w-1/4">
-			<img
-				src={anime.picture}
-				alt={anime.jname}
-				class="aspect-[3/4] w-full rounded-md bg-muted object-cover object-center"
-			/>
+			{#key anime.picture}
+				<img
+					src={anime.picture}
+					alt={anime.jname}
+					class="aspect-[3/4] w-full rounded-md bg-muted object-cover object-center"
+				/>
+			{/key}
 		</div>
 		<div class="flex w-full flex-col justify-between">
 			<div>
