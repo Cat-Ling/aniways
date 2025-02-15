@@ -33,13 +33,13 @@
 
 <div class="relative w-full">
 	{#await banner}
-		<Skeleton class="mt-20 h-96 w-full" />
+		<Skeleton class="h-96 w-full" />
 	{:then banner}
 		{#key anime.id}
 			<img
 				src={banner?.banner ?? anime.mainPicture}
 				alt={`Banner for ${anime.jname}`}
-				class="mt-20 h-96 w-full object-cover object-center"
+				class="h-96 w-full object-cover object-center"
 			/>
 			<div
 				class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
