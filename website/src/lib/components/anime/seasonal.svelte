@@ -48,32 +48,35 @@
 				<div
 					class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-8 md:w-1/2"
 				>
-					<h1 class="mb-2 line-clamp-1 font-sora text-3xl font-bold md:mb-5 md:text-6xl">
+					<h1 class="mb-2 line-clamp-1 font-sora text-2xl font-bold md:mb-5 md:text-6xl">
 						{anime.title}
 					</h1>
-					<div class="mb-2 flex gap-2 md:mb-3">
+					<div class="mb-2 flex flex-wrap gap-2 md:mb-3">
 						<span
 							class={buttonVariants({
 								variant: 'outline',
-								class: 'rounded-full bg-card text-primary hover:bg-card hover:text-primary'
+								class:
+									'rounded-full bg-card text-xs text-primary hover:bg-card hover:text-primary md:text-sm'
 							})}
 						>
-							<Calendar class="mr-2 size-5" />
+							<Calendar class="mr-1 size-4 md:mr-2 md:size-5" />
 							{format(new Date(anime.startDate), 'dd MMMM yyyy') ?? '???'}
 						</span>
 						<span
 							class={buttonVariants({
 								variant: 'outline',
-								class: 'rounded-full bg-card text-primary hover:bg-card hover:text-primary'
+								class:
+									'rounded-full bg-card text-xs text-primary hover:bg-card hover:text-primary md:text-sm'
 							})}
 						>
-							<Clapperboard class="mr-2 size-5" />
+							<Clapperboard class="mr-1 size-4 md:mr-2 md:size-5" />
 							{anime.type}
 						</span>
 						<span
 							class={buttonVariants({
 								variant: 'outline',
-								class: 'rounded-full bg-card text-primary hover:bg-card hover:text-primary'
+								class:
+									'rounded-full bg-card text-xs text-primary hover:bg-card hover:text-primary md:text-sm'
 							})}
 						>
 							<Video class="mr-2 size-5" />
@@ -81,7 +84,7 @@
 						</span>
 					</div>
 					<p
-						class={cn('mb-5 line-clamp-2 [display:-webkit-box] md:text-lg', {
+						class={cn('mb-5 line-clamp-4 [display:-webkit-box] md:text-lg', {
 							italic: !anime.description
 						})}
 					>
