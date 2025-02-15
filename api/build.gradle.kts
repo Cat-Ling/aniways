@@ -74,6 +74,7 @@ dependencies {
     // Caching Dependencies
     implementation(libs.ktor.simple.cache)
     implementation(libs.ktor.simple.redis.cache)
+    implementation(libs.kreds)
 
     // Cron Utility Dependencies
     implementation(libs.cron.utils)

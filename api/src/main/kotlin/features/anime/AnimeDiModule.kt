@@ -28,7 +28,7 @@ val animeModule = module {
     }
 
     factory {
-        ShikimoriApi(get())
+        ShikimoriApi(get(), get())
     }
 
     factory {

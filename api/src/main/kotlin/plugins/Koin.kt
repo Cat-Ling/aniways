@@ -14,8 +14,8 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import xyz.aniways.Env
-import xyz.aniways.database.AniwaysDB
-import xyz.aniways.database.AniwaysDBImpl
+import xyz.aniways.database.AniwaysDatabase
+import xyz.aniways.database.AniwaysDatabaseImpl
 import xyz.aniways.env
 import xyz.aniways.features.anime.animeModule
 import xyz.aniways.features.auth.authModule
@@ -52,7 +52,7 @@ fun Application.configureKoin() {
     * */
     val dbModule = module {
         single {
-            AniwaysDBImpl(get()) as AniwaysDB
+            AniwaysDatabaseImpl(get()) as AniwaysDatabase
         } withOptions {
             createdAtStart()
         }

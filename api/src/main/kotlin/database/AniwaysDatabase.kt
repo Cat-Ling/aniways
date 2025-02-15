@@ -13,14 +13,14 @@ import xyz.aniways.Env
 import javax.sql.DataSource
 import kotlin.coroutines.CoroutineContext
 
-interface AniwaysDB {
+interface AniwaysDatabase {
     suspend fun <T> query(block: suspend Database.(Transaction) -> T): T
 }
 
-class AniwaysDBImpl(
+class AniwaysDatabaseImpl(
     private val config: Env.DBConfig,
     private val dispatcher: CoroutineContext = Dispatchers.IO,
-) : AniwaysDB {
+) : AniwaysDatabase {
     private val db = migrateAndConnect { dataSource ->
         Database.connect(
             dataSource = dataSource,

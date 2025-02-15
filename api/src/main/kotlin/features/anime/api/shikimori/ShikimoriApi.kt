@@ -1,76 +1,66 @@
 package xyz.aniways.features.anime.api.shikimori
 
+import io.github.crackthecodeabhi.kreds.args.SetOption
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.serialization.json.Json
+import xyz.aniways.Env
+import xyz.aniways.cache.runCacheQuery
 import xyz.aniways.features.anime.api.shikimori.models.FranchiseResponse
 import kotlin.time.Duration.Companion.hours
 
-private const val MUTEX_OWNER = "shikimori"
-
 class ShikimoriApi(
     private val httpClient: HttpClient,
+    private val redisConfig: Env.RedisConfig,
 ) {
+    private val json = Json { ignoreUnknownKeys = true }
     private val baseUrl = "https://shikimori.one/api"
 
-    private class CacheEntry<T>(
-        val value: T,
-        val expirationTime: Long,
-    ) {
-        val isExpired: Boolean
-            get() = expirationTime < System.currentTimeMillis()
-    }
-
-    private val baseCache = mutableMapOf<Int, CacheEntry<FranchiseResponse?>>()
-    private val derivedCache = mutableMapOf<Int, CacheEntry<Int>>()
     private val cacheExpirationDuration = 3.hours
 
-    private fun cleanExpiredCache() {
-        baseCache.entries.removeIf { it.value.isExpired }
-        derivedCache.entries.removeIf { it.value.isExpired }
-    }
+    private val semaphore = Semaphore(1)
 
-    suspend fun getAnimeFranchise(malId: Int): FranchiseResponse = synchronized(MUTEX_OWNER) {
-        return@synchronized runBlocking {
-            cleanExpiredCache()
+    suspend fun getAnimeFranchise(malId: Int): FranchiseResponse = runCacheQuery(redisConfig) { redis ->
+        semaphore.acquire()
 
-            baseCache[malId]?.let { cacheEntry ->
-                if (!cacheEntry.isExpired) {
-                    return@runBlocking cacheEntry.value ?: throw IllegalStateException("Cache entry is null")
-                }
-                baseCache.remove(malId) // Remove expired cache
+        try {
+            val parentMalId = redis.get("shikimori:anime:$malId:derived_from")?.toIntOrNull()
+
+            val franchiseId = parentMalId ?: malId
+            val cached = redis.get("shikimori:anime:$franchiseId:franchise")?.let {
+                json.decodeFromString<FranchiseResponse>(it)
             }
 
-            derivedCache[malId]?.let { derivedEntry ->
-                baseCache[derivedEntry.value]?.let { baseEntry ->
-                    if (!baseEntry.isExpired) {
-                        return@runBlocking baseEntry.value ?: throw IllegalStateException("Base cache entry is null")
-                    }
-                    baseCache.remove(derivedEntry.value) // Remove expired base cache
-                }
-                derivedCache.remove(malId) // Remove expired derived cache
-            }
+            if (cached != null) return@runCacheQuery cached
 
             val response = httpClient.get("$baseUrl/animes/$malId/franchise")
             val body = response.body<FranchiseResponse>()
 
-            val malIds = body.nodes.mapNotNull { it.id }.filter { it != malId }
-
-            baseCache[malId] = CacheEntry(
-                value = body,
-                expirationTime = System.currentTimeMillis() + cacheExpirationDuration.inWholeMilliseconds
+            redis.set(
+                key = "shikimori:anime:$malId:franchise",
+                value = json.encodeToString(FranchiseResponse.serializer(), body),
+                setOption = SetOption.Builder()
+                    .exSeconds(cacheExpirationDuration.inWholeSeconds.toULong())
+                    .build()
             )
 
-            derivedCache.putAll(malIds.map {
-                it to CacheEntry(
-                    value = malId,
-                    expirationTime = System.currentTimeMillis() + cacheExpirationDuration.inWholeMilliseconds
+            val pipeline = redis.pipelined()
+            body.nodes.mapNotNull { it.id }.filter { it != malId }.forEach {
+                pipeline.set(
+                    key = "shikimori:anime:$it:derived_from",
+                    value = malId.toString(),
+                    setOption = SetOption.Builder()
+                        .exSeconds(cacheExpirationDuration.inWholeSeconds.toULong())
+                        .build()
                 )
-            })
+            }
+            pipeline.execute()
 
             body
+        } finally {
+            semaphore.release()
         }
     }
 }

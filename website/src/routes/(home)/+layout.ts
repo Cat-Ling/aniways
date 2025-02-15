@@ -1,22 +1,16 @@
-import { getPopularAnime, getSeasonalAnime, getTopAnime, getTrendingAnime } from '$lib/api/anime';
+import { getPopularAnime, getSeasonalAnime, getTrendingAnime } from '$lib/api/anime';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async (params) => {
-	const [seasonalAnime, trendingAnime, popularAnime, topAnime] = await fetchData(params);
+	const [seasonalAnime, trendingAnime, popularAnime] = await fetchData(params);
 
 	return {
 		seasonalAnime,
 		trendingAnime,
-		popularAnime,
-		topAnime
+		popularAnime
 	};
 };
 
 async function fetchData({ fetch }: Parameters<LayoutLoad>[0]) {
-	return Promise.all([
-		getSeasonalAnime(fetch),
-		getTrendingAnime(fetch),
-		getPopularAnime(fetch),
-		getTopAnime(fetch)
-	]);
+	return Promise.all([getSeasonalAnime(fetch), getTrendingAnime(fetch), getPopularAnime(fetch)]);
 }

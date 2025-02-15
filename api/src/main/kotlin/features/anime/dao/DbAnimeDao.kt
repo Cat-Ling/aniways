@@ -5,29 +5,29 @@ import org.ktorm.dsl.eq
 import org.ktorm.dsl.inList
 import org.ktorm.dsl.like
 import org.ktorm.entity.*
-import xyz.aniways.database.AniwaysDB
+import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.anime.db.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import kotlin.math.ceil
 
 class DbAnimeDao(
-    private val aniwaysDb: AniwaysDB
+    private val aniwaysDatabase: AniwaysDatabase
 ) : AnimeDao {
     override suspend fun getAnimeCount(): Int {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.count()
         }
     }
 
     override suspend fun getAllGenres(): List<String> {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.map { it.genre.split(", ") }.flatten().distinct()
         }
     }
 
     override suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<Anime> {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             val totalItems = animes.count()
             val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
             val hasNextPage = page < totalPage
@@ -52,7 +52,7 @@ class DbAnimeDao(
     }
 
     override suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<Anime> {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             val totalItems = animes.filter { it.genre like "%$genre%" }.count()
             val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
             val hasNextPage = page < totalPage
@@ -77,33 +77,33 @@ class DbAnimeDao(
     }
 
     override suspend fun getRandomAnime(): Anime {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.toList().random()
         }
     }
 
     override suspend fun getRandomAnimeByGenre(genre: String): Anime {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.filter { it.genre like "%$genre%" }.toList().random()
         }
     }
 
     override suspend fun getAnimeById(id: String): Anime? {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.find { it.id eq id }
         }
     }
 
     override suspend fun getAnimesInMalIds(malIds: List<Int>): List<Anime> {
         if (malIds.isEmpty()) return emptyList()
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.filter { it.malId inList malIds }.toList()
         }
     }
 
     override suspend fun getAnimesInHiAnimeIds(hiAnimeIds: List<String>): List<Anime> {
         if (hiAnimeIds.isEmpty()) return emptyList()
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.filter { it.hianimeId inList hiAnimeIds }.toList()
         }
     }
@@ -114,7 +114,7 @@ class DbAnimeDao(
         page: Int,
         itemsPerPage: Int
     ): Pagination<Anime> {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             useConnection { conn ->
                 val conditions = mutableListOf<String>()
                 val params = mutableListOf<Any>()
@@ -233,21 +233,21 @@ class DbAnimeDao(
     }
 
     override suspend fun insertAnime(anime: Anime): Anime {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.add(anime)
             animes.find { it.hianimeId eq anime.hianimeId }!!
         }
     }
 
     override suspend fun insertAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             this.animeMetadata.add(animeMetadata)
             animeMetadata
         }
     }
 
     override suspend fun insertAnimes(animes: List<Anime>) {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             batchInsert(AnimeTable) {
                 for (anime in animes) {
                     item {
@@ -266,14 +266,14 @@ class DbAnimeDao(
     }
 
     override suspend fun updateAnime(anime: Anime): Anime {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             animes.update(anime)
             anime
         }
     }
 
     override suspend fun updateAnimeMetadata(animeMetadata: AnimeMetadata): AnimeMetadata {
-        return aniwaysDb.query {
+        return aniwaysDatabase.query {
             this.animeMetadata.update(animeMetadata)
             animeMetadata
         }

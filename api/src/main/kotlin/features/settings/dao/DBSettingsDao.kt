@@ -4,12 +4,12 @@ import org.ktorm.dsl.eq
 import org.ktorm.entity.add
 import org.ktorm.entity.find
 import org.ktorm.entity.update
-import xyz.aniways.database.AniwaysDB
+import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.settings.db.Settings
 import xyz.aniways.features.settings.db.settings
 
 class DBSettingsDao(
-    private val db: AniwaysDB
+    private val db: AniwaysDatabase
 ) : SettingsDao {
     override suspend fun getSettings(userId: Int): Settings {
         return db.query {
