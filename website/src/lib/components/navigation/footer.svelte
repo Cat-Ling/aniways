@@ -18,7 +18,7 @@
 </script>
 
 <footer class="flex w-full flex-col gap-6 border-t bg-card p-6 md:p-8">
-	<a href="/" class="group flex items-center gap-2">
+	<a href="/" class="group flex w-fit items-center gap-2">
 		<enhanced:img src={Logo} alt="logo" class="size-12 transition group-hover:scale-125" />
 		<span class="font-sora text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)]">
 			aniways

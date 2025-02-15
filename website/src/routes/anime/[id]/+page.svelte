@@ -39,7 +39,7 @@
 			<img
 				src={banner?.banner ?? anime.mainPicture}
 				alt={`Banner for ${anime.jname}`}
-				class="h-48 w-full object-cover object-center md:h-96"
+				class="h- w-full object-cover object-center md:h-96"
 			/>
 			<div
 				class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
@@ -60,7 +60,7 @@
 	</div>
 </div>
 
-<div class="mx-3 mb-3 mt-4 grid grid-cols-1 gap-4 md:mx-8 md:mb-8 md:grid-cols-2 lg:grid-cols-3">
+<div class="mx-3 mt-4 grid grid-cols-1 gap-4 pb-3 md:mx-8 md:grid-cols-2 md:pb-8 lg:grid-cols-3">
 	{#each displayEpisodes as episode}
 		<Button
 			variant="outline"
