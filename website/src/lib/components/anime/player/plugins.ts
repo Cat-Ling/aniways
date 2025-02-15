@@ -146,11 +146,8 @@ export const skipPlugin = (source: typeof streamInfo.infer) => {
 	}
 
 	return async (art: Artplayer) => {
-		console.log(art.template.$progress);
-
 		art.on('ready', () => {
 			const highlightElement = art.template.$progress.querySelector('.art-progress-highlight');
-
 			if (source.intro) {
 				const startPercentage = (source.intro.start / art.duration) * 100;
 				const endPercentage = (source.intro.end / art.duration) * 100;

@@ -1,11 +1,12 @@
 import { goto } from '$app/navigation';
 import type { streamInfo } from '$lib/api/anime/types';
-import { LOADING_SVG, SUBTITLE_ICON } from '$lib/assets/icons';
 import { appState } from '$lib/context/state.svelte';
+import { convertComponentToHTML } from '$lib/utils';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import type Hls from 'hls.js';
+import Captions from 'lucide-svelte/icons/captions';
+import Spinner from 'lucide-svelte/icons/loader-circle';
 import NextIcon from 'lucide-svelte/icons/skip-forward';
-import { mount } from 'svelte';
 import { skipPlugin, thumbnailPlugin } from './plugins';
 
 type Props = {
@@ -49,7 +50,11 @@ export const createArtPlayer = async ({
 		pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
 		airplay: true,
 		icons: {
-			loading: LOADING_SVG
+			loading: convertComponentToHTML(Spinner, {
+				size: 100,
+				class: 'animate-spin text-primary',
+				style: 'fill: none !important;'
+			})
 		},
 		subtitle: {
 			url: defaultSubtitle?.file ?? '',
@@ -74,7 +79,7 @@ export const createArtPlayer = async ({
 		],
 		settings: [
 			{
-				icon: SUBTITLE_ICON,
+				icon: convertComponentToHTML(Captions, { size: 22, style: 'fill: none !important;' }),
 				html: 'Captions',
 				tooltip: defaultSubtitle?.label,
 				selector: [
@@ -122,9 +127,6 @@ export const createArtPlayer = async ({
 		}
 	});
 
-	const elem = document.createElement('div');
-	mount(NextIcon, { target: elem, props: { size: 22 } });
-
 	art.setting.add({
 		icon: art.icons.setting,
 		html: 'Player Settings',
@@ -139,7 +141,7 @@ export const createArtPlayer = async ({
 				}
 			},
 			{
-				icon: elem.innerHTML,
+				icon: convertComponentToHTML(NextIcon, { size: 22 }),
 				html: 'Auto Play Next Episode',
 				switch: appState.settings.autoNextEpisode,
 				onSwitch: () => {
