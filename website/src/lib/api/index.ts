@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { PUBLIC_API_URL } from '$env/static/public';
 
 export class StatusError extends Error {
@@ -29,10 +30,11 @@ export function fetchJson<T>(
 		url.searchParams.append(key, String(value));
 	}
 
-	return fetch(url, {
-		...options,
-		credentials: 'include'
-	})
+	if (browser) {
+		options.credentials = 'include';
+	}
+
+	return fetch(url, options)
 		.then(async (res) => {
 			if (res.ok) return res;
 			const errorBody = await res.text();
@@ -48,10 +50,11 @@ export function mutate(fetch: typeof global.fetch, endpoint: string, options: Op
 		url.searchParams.append(key, String(value));
 	}
 
-	return fetch(url, {
-		...options,
-		credentials: 'include'
-	}).then(async (res) => {
+	if (browser) {
+		options.credentials = 'include';
+	}
+
+	return fetch(url, options).then(async (res) => {
 		if (res.ok) return res;
 		const errorBody = await res.text();
 		throw new StatusError(res.status, `Fetch failed: ${url}, Error: ${errorBody}`);
