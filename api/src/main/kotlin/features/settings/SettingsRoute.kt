@@ -23,7 +23,7 @@ fun Route.settingsRoutes() {
     authenticate(Auth.SESSION) {
         get<SettingsRoute> {
             val currentUser = call.principal<Auth.UserPrincipal>()
-            currentUser ?: throw IllegalStateException("No session found")
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
             val settings = settingsService
                 .getSettingsByUserId(currentUser.id)

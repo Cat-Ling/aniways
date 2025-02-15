@@ -10,8 +10,6 @@ import xyz.aniways.features.anime.api.anilist.models.AnilistAnime
 import xyz.aniways.features.anime.api.anilist.models.AnilistAnimeDto
 import xyz.aniways.features.anime.api.mal.MalApi
 import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
-import xyz.aniways.features.anime.api.mal.models.MalStatus
-import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
 import xyz.aniways.features.anime.api.mal.models.toAnimeMetadata
 import xyz.aniways.features.anime.api.shikimori.ShikimoriApi
 import xyz.aniways.features.anime.dao.AnimeDao
@@ -76,8 +74,8 @@ class AnimeService(
         }
     }
 
-    suspend fun getAnimeById(id: String): AnimeWithMetadataDto? {
-        val anime = animeDao.getAnimeById(id) ?: return null
+    suspend fun getAnimeById(id: String): AnimeWithMetadataDto {
+        val anime = animeDao.getAnimeById(id) ?: throw NotFoundException("Anime not found")
 
         return saveMetadataInDB(anime)
     }
@@ -138,22 +136,22 @@ class AnimeService(
         return franchise.nodes.mapNotNull { dbAnimes[it.id] }
     }
 
-    suspend fun getAnimeTrailer(id: String): String? {
+    suspend fun getAnimeTrailer(id: String): String {
         val anime = animeDao.getAnimeById(id)
 
-        return anime?.metadata?.trailer ?: run {
-            val malId = anime?.malId ?: return null
-            val trailer = malApi.getTrailer(malId) ?: return null
-            val metadata = anime.metadata ?: return trailer
-            if (metadata.trailer == trailer) return trailer
+        val trailer = anime?.metadata?.trailer ?: run {
+            if (anime?.malId == null || anime.metadata == null) return@run null
+            val trailer = malApi.getTrailer(anime.malId!!) ?: return@run null
 
             CoroutineScope(Dispatchers.IO).launch {
-                metadata.trailer = trailer
-                metadata.flushChanges()
+                anime.metadata!!.trailer = trailer
+                anime.metadata!!.flushChanges()
             }
 
             trailer
         }
+
+        return trailer ?: throw NotFoundException("Trailer not found")
     }
 
     suspend fun getTrendingAnimes(): List<AnimeDto> {
@@ -196,28 +194,6 @@ class AnimeService(
 
     suspend fun getAnimeCount(): Int {
         return animeDao.getAnimeCount()
-    }
-
-    suspend fun scrapeTopAnimes(): TopAnimeDto {
-        val topAnimes = animeScraper.getTopAnimes()
-
-        val dbAnimes = animeDao.getAnimesInHiAnimeIds(
-            (topAnimes.today.map { it.hianimeId }
-                    + topAnimes.week.map { it.hianimeId }
-                    + topAnimes.month.map { it.hianimeId }).distinct()
-        )
-
-        return TopAnimeDto(
-            today = topAnimes.today.mapNotNull {
-                dbAnimes.find { a -> a.hianimeId == it.hianimeId }?.toAnimeDto()
-            },
-            week = topAnimes.week.mapNotNull {
-                dbAnimes.find { a -> a.hianimeId == it.hianimeId }?.toAnimeDto()
-            },
-            month = topAnimes.month.mapNotNull {
-                dbAnimes.find { a -> a.hianimeId == it.hianimeId }?.toAnimeDto()
-            }
-        )
     }
 
     suspend fun getAllGenres(): List<String> {
@@ -341,113 +317,5 @@ class AnimeService(
 
         delay(2000L)
         scrapeAndPopulateRecentlyUpdatedAnime(page - 1)
-    }
-
-    suspend fun getUserAnimeList(
-        username: String,
-        page: Int,
-        itemsPerPage: Int,
-        token: String?,
-        status: String?,
-        sort: String?
-    ): AnimeListDto = coroutineScope {
-        val animelist = malApi.getListOfUserAnimeList(
-            username = username,
-            page = page,
-            itemsPerPage = itemsPerPage,
-            token = token,
-            status = status,
-            sort = sort
-        )
-
-        if (animelist.data.isEmpty()) return@coroutineScope AnimeListDto(
-            pageInfo = PageInfo(
-                hasNextPage = false,
-                hasPreviousPage = false,
-                currentPage = page,
-            ),
-            items = emptyList()
-        )
-
-        val dbAnimes = animeDao.getAnimesInMalIds(animelist.data.mapNotNull { it.node?.id })
-
-        val semaphore = Semaphore(20)
-        val animes = animelist.data
-            .mapNotNull { it.node }
-            .mapNotNull { metadata ->
-                val dbAnime = dbAnimes.find { it.malId == metadata.id } ?: return@mapNotNull null
-                async { semaphore.withPermit { saveMetadataInDB(dbAnime, metadata) } }
-            }
-            .awaitAll()
-
-        AnimeListDto(
-            pageInfo = PageInfo(
-                hasNextPage = animelist.paging?.next != null,
-                hasPreviousPage = animelist.paging?.previous != null,
-                currentPage = page,
-            ),
-            items = animes.mapNotNull { a ->
-                val listStatus = animelist.data.find { it.node?.id == a.malId }?.listStatus
-
-                listStatus ?: return@mapNotNull null
-
-                AnimeListNode(
-                    id = a.id,
-                    name = a.name,
-                    jname = a.jname,
-                    poster = a.poster,
-                    totalEpisodes = a.metadata?.totalEpisodes ?: 0,
-                    mediaType = a.metadata?.mediaType ?: "Unknown",
-                    mean = a.metadata?.mean ?: 0.0,
-                    numScoringUsers = a.metadata?.scoringUsers ?: 0,
-                    listStatus = listStatus
-                )
-            }
-        )
-    }
-
-    suspend fun updateAnimeListEntry(
-        token: String,
-        id: String,
-        status: MalStatus,
-        score: Int,
-        numWatchedEpisodes: Int,
-    ): UpdateAnimeListRequest? {
-        try {
-            val anime = animeDao.getAnimeById(id) ?: return null
-            val malId = anime.malId ?: return null
-
-            return malApi.updateAnimeListEntry(
-                token = token,
-                id = malId,
-                status = status,
-                score = score,
-                numWatchedEpisodes = numWatchedEpisodes,
-            )
-        } catch (e: Exception) {
-            logger.error("Failed to update anime list entry", e)
-            return null
-        }
-    }
-
-    suspend fun deleteAnimeListEntry(
-        token: String,
-        id: String,
-    ): Boolean {
-        try {
-            val anime = animeDao.getAnimeById(id) ?: return false
-
-            val malId = anime.malId ?: return false
-
-            malApi.deleteAnimeListEntry(
-                token = token,
-                id = malId,
-            )
-
-            return true
-        } catch (e: NotFoundException) {
-            logger.error("Failed to delete anime list entry", e)
-            return false
-        }
     }
 }
