@@ -5,13 +5,18 @@
 	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
 	import { List, LogIn, LogOut } from 'lucide-svelte';
+	import { Skeleton } from '../ui/skeleton';
 
 	let user = $derived(appState.user);
 
 	let open = $state(false);
 </script>
 
-{#if user}
+{#if appState.isLoading}
+	<div class="ml-2 size-10 overflow-hidden rounded-full bg-background">
+		<Skeleton class="h-full w-full" />
+	</div>
+{:else if user}
 	<DropdownMenu.Root bind:open>
 		<DropdownMenu.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
 			<img

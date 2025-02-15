@@ -4,7 +4,7 @@ import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch }) => {
 	return {
-		user: await getCurrentUser(fetch).catch(() => null),
-		settings: await getSettings(fetch).catch(() => null)
+		user: getCurrentUser(fetch).catch(() => null),
+		settings: getSettings(fetch).catch(() => null)
 	};
 };

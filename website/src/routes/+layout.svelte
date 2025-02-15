@@ -6,7 +6,7 @@
 	import { page } from '$app/state';
 	import Navbar from '$lib/components/navigation/navbar.svelte';
 	import SettingsSync from '$lib/components/settings/sync.svelte';
-	import { setSettings, setUser } from '$lib/context/state.svelte';
+	import { appState, setSettings, setUser } from '$lib/context/state.svelte';
 	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
 	import type { LayoutProps } from './$types';
 
@@ -15,8 +15,12 @@
 	const baseTitle = $derived(page.data?.title);
 	const title = $derived(baseTitle ? `${baseTitle} | Aniways` : 'Aniways');
 
-	if (data.user) setUser(data.user);
-	if (data.settings) setSettings(data.settings);
+	appState.isLoading = true;
+	Promise.all([data.settings, data.user]).then(([settings, user]) => {
+		if (settings) setSettings(settings);
+		if (user) setUser(user);
+		appState.isLoading = false;
+	});
 </script>
 
 <svelte:head>
