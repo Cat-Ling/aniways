@@ -236,3 +236,28 @@ export const windowKeyBindPlugin = () => {
 		});
 	};
 };
+
+export const amplifyVolumePlugin = () => {
+	return async (art: Artplayer) => {
+		art.on('ready', () => {
+			const context = new AudioContext();
+			const source = context.createMediaElementSource(art.video);
+			const gainNode = context.createGain();
+			source.connect(gainNode);
+			gainNode.connect(context.destination);
+			gainNode.gain.value = 2;
+
+			art.on('video:play', () => {
+				context.resume();
+			});
+
+			art.on('video:pause', () => {
+				context.suspend();
+			});
+
+			art.on('destroy', () => {
+				context.close();
+			});
+		});
+	};
+};

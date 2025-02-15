@@ -5,7 +5,7 @@ import { convertComponentToHTML } from '$lib/utils';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import type Hls from 'hls.js';
 import { Captions, LoaderCircle, SkipForward } from 'lucide-svelte';
-import { skipPlugin, thumbnailPlugin, windowKeyBindPlugin } from './plugins';
+import { amplifyVolumePlugin, skipPlugin, thumbnailPlugin, windowKeyBindPlugin } from './plugins';
 
 type Props = {
 	id: string;
@@ -74,7 +74,8 @@ export const createArtPlayer = async ({
 			}),
 			thumbnailPlugin(thumbnails!),
 			skipPlugin(source),
-			windowKeyBindPlugin()
+			windowKeyBindPlugin(),
+			amplifyVolumePlugin()
 		],
 		settings: [
 			{
