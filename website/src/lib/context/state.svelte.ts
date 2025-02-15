@@ -5,6 +5,7 @@ import { ArkErrors } from 'arktype';
 type State = {
 	settings: Omit<typeof settings.infer, 'userId'>;
 	user: typeof user.infer | null;
+	searchOpen: boolean;
 };
 
 function getDefaultSettings(): State['settings'] {
@@ -25,7 +26,8 @@ function getDefaultSettings(): State['settings'] {
 
 export const appState = $state<State>({
 	settings: getDefaultSettings(),
-	user: null
+	user: null,
+	searchOpen: false
 });
 
 export function setUser(u: State['user']) {

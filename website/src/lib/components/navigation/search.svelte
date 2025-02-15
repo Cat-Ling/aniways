@@ -3,11 +3,11 @@
 	import { searchAnime } from '$lib/api/anime';
 	import type { anime } from '$lib/api/anime/types';
 	import * as Command from '$lib/components/ui/command';
+	import { appState } from '$lib/context/state.svelte';
 	import { debounce } from 'lodash-es';
 	import Search from 'lucide-svelte/icons/search';
 	import { Button } from '../ui/button';
 
-	let open = $state(false);
 	let value = $state('');
 
 	let loading = $state(false);
@@ -37,8 +37,8 @@
 
 <svelte:window
 	on:keydown={(e) => {
-		if (e.key === '/') open = true;
-		if (e.ctrlKey && e.key === 'k') open = true;
+		if (e.key === '/') appState.searchOpen = true;
+		if (e.ctrlKey && e.key === 'k') appState.searchOpen = true;
 	}}
 />
 
@@ -46,7 +46,7 @@
 	variant="ghost"
 	class="hidden rounded-full hover:bg-primary md:flex"
 	size="icon"
-	on:click={() => (open = true)}
+	on:click={() => (appState.searchOpen = true)}
 >
 	<Search class="size-6" />
 </Button>
@@ -55,7 +55,7 @@
 	<Search class="size-6" />
 </Button>
 
-<Command.Dialog bind:open shouldFilter={false}>
+<Command.Dialog bind:open={appState.searchOpen} shouldFilter={false}>
 	<Command.Input placeholder="Search for animes..." bind:value />
 	<Command.List class="max-h-min">
 		{#if loading}
@@ -65,7 +65,10 @@
 		{:else}
 			<Command.Group heading="Search Results">
 				{#each animes as anime (anime.id)}
-					<Command.Item onSelect={() => (goto(`/anime/${anime.id}`), (open = false))} class="gap-2">
+					<Command.Item
+						onSelect={() => (goto(`/anime/${anime.id}`), (appState.searchOpen = false))}
+						class="gap-2"
+					>
 						<img src={anime.poster} alt={anime.name} class="aspect-[300/400] w-1/5 rounded" />
 						<div class="h-full">
 							<p class="line-clamp-1 font-bold">
@@ -81,7 +84,10 @@
 					</Command.Item>
 				{/each}
 				{#if animes.length && hasMore}
-					<Command.Item onSelect={() => (goto(`/search?q=${value}`), (open = false))} class="gap-2">
+					<Command.Item
+						onSelect={() => (goto(`/search?q=${value}`), (appState.searchOpen = false))}
+						class="gap-2"
+					>
 						{@html `See all results for <q>${value}</q>`}
 					</Command.Item>
 				{/if}

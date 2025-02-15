@@ -1,5 +1,6 @@
 import type { streamInfo } from '$lib/api/anime/types';
 import { buttonVariants } from '$lib/components/ui/button';
+import { appState } from '$lib/context/state.svelte';
 import type Artplayer from 'artplayer';
 
 export const thumbnailPlugin = (thumbnails: { file: string }) => {
@@ -196,6 +197,28 @@ export const skipPlugin = (source: typeof streamInfo.infer) => {
 
 export const windowKeyBindPlugin = () => {
 	return async (art: Artplayer) => {
+		const listener = (e: KeyboardEvent) => {
+			if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+			if (appState.searchOpen) {
+				if (art.fullscreen) {
+					art.fullscreen = false;
+					appState.searchOpen = false;
+
+					setTimeout(() => {
+						appState.searchOpen = true;
+					}, 500);
+				}
+
+				return;
+			}
+
+			if (Object.keys(art.hotkey.keys).includes(e.code)) {
+				e.preventDefault();
+				art.hotkey.keys[e.code].forEach((fn) => fn?.(e));
+			}
+		};
+
 		art.on('ready', () => {
 			art.hotkey.add('KeyF', () => {
 				art.fullscreen = !art.fullscreen;
@@ -205,22 +228,11 @@ export const windowKeyBindPlugin = () => {
 				art.muted = !art.muted;
 			});
 
-			const keys = Object.keys(art.hotkey.keys);
-
-			const listener = (e: KeyboardEvent) => {
-				if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-				if (keys.includes(e.code)) {
-					e.preventDefault();
-					art.hotkey.keys[e.code].forEach((fn) => fn?.(e));
-				}
-			};
-
 			window.addEventListener('keydown', listener);
+		});
 
-			return () => {
-				window.removeEventListener('keydown', listener);
-			};
+		art.on('destroy', () => {
+			window.removeEventListener('keydown', listener);
 		});
 	};
 };
