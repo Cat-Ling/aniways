@@ -3,26 +3,44 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { cn } from '$lib/utils';
 	import { Shuffle } from 'lucide-svelte';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	import Auth from './auth.svelte';
 	import SearchButton from './search.svelte';
 
-	let changeBackground = $state(false);
+	let isHidden = false;
+	let changeBackground = false;
 
-	const onScroll = () => {
-		changeBackground = window.scrollY > 0;
+	let lastScrollY = 0;
+	const THRESHOLD = 200;
+
+	const checkScroll = () => {
+		if (typeof window === 'undefined') return;
+
+		const currScroll = window.scrollY;
+		changeBackground = currScroll > 0;
+
+		if (currScroll > lastScrollY && currScroll > THRESHOLD) {
+			isHidden = true;
+		} else {
+			isHidden = false;
+		}
+
+		lastScrollY = currScroll;
 	};
 
-	onMount(() => onScroll());
+	onMount(() => {
+		checkScroll();
+	});
 </script>
 
-<svelte:window on:scroll={onScroll} />
+<svelte:window on:scroll={checkScroll} />
 
 <nav
 	class={cn(
-		'fixed top-0 z-40 flex w-full max-w-[100vw] items-center justify-between border-b border-transparent p-3 transition duration-500 md:px-8',
-		changeBackground ? 'border-border bg-card' : 'bg-transparent'
+		'fixed left-0 top-0 z-40 flex w-full max-w-[100vw] items-center justify-between border-b border-transparent p-3 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transition:border_250ms,background_250ms,transform_500ms] md:px-8',
+		changeBackground ? 'border-border bg-card shadow-sm' : 'bg-transparent',
+		isHidden ? '-translate-y-full' : 'translate-y-0'
 	)}
 >
 	<a href="/" class="group flex items-center gap-2">
