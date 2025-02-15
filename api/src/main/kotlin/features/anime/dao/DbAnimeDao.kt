@@ -1,9 +1,6 @@
 package xyz.aniways.features.anime.dao
 
-import org.ktorm.dsl.batchInsert
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.inList
-import org.ktorm.dsl.like
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.anime.db.*
@@ -78,13 +75,13 @@ class DbAnimeDao(
 
     override suspend fun getRandomAnime(): Anime {
         return aniwaysDatabase.query {
-            animes.toList().random()
+            animes.filter { it.malId.isNotNull() }.toList().random()
         }
     }
 
     override suspend fun getRandomAnimeByGenre(genre: String): Anime {
         return aniwaysDatabase.query {
-            animes.filter { it.genre like "%$genre%" }.toList().random()
+            animes.filter { it.malId.isNotNull().and(it.genre like "%$genre%")  }.toList().random()
         }
     }
 
