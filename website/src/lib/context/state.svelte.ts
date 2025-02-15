@@ -8,7 +8,7 @@ type State = {
 };
 
 function getDefaultSettings(): State['settings'] {
-	if (localStorage.getItem('settings')) {
+	if (typeof localStorage !== 'undefined' && localStorage.getItem('settings')) {
 		const s = JSON.parse(localStorage.getItem('settings')!);
 		const parsed = settings(s);
 		if (parsed instanceof ArkErrors === false) {

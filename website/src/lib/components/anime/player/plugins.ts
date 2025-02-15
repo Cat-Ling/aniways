@@ -1,3 +1,5 @@
+import type { streamInfo } from '$lib/api/anime/types';
+import { buttonVariants } from '$lib/components/ui/button';
 import type Artplayer from 'artplayer';
 
 export const thumbnailPlugin = (thumbnails: { file: string }) => {
@@ -110,6 +112,113 @@ export const thumbnailPlugin = (thumbnails: { file: string }) => {
 						}
 					}
 				});
+			}
+		});
+	};
+};
+
+export const skipPlugin = (source: typeof streamInfo.infer) => {
+	const highlight: {
+		time: number;
+		text: string;
+	}[] = [];
+
+	if (source.intro) {
+		highlight.push({
+			time: source.intro.start,
+			text: 'OP Start'
+		});
+		highlight.push({
+			time: source.intro.end,
+			text: 'OP End'
+		});
+	}
+
+	if (source.outro) {
+		highlight.push({
+			time: source.outro.start,
+			text: 'ED Start'
+		});
+		highlight.push({
+			time: source.outro.end,
+			text: 'ED End'
+		});
+	}
+
+	return async (art: Artplayer) => {
+		console.log(art.template.$progress);
+
+		art.on('ready', () => {
+			const highlightElement = art.template.$progress.querySelector('.art-progress-highlight');
+
+			if (source.intro) {
+				const startPercentage = (source.intro.start / art.duration) * 100;
+				const endPercentage = (source.intro.end / art.duration) * 100;
+				highlightElement?.insertAdjacentHTML(
+					'beforeend',
+					`<span data-text="Opening" data-time="${source.intro.start}" style="left: ${startPercentage}%; width: ${endPercentage}% !important"></span>`
+				);
+			}
+
+			if (source.outro) {
+				const startPercentage = (source.outro.start / art.duration) * 100;
+				const endPercentage = (source.outro.end / art.duration) * 100;
+				highlightElement?.insertAdjacentHTML(
+					'beforeend',
+					`<span data-text="Ending" data-time="${source.outro.start}" style="left: ${startPercentage}%; width: ${endPercentage}% !important"></span>`
+				);
+			}
+		});
+
+		art.on('video:timeupdate', () => {
+			if (
+				source.intro &&
+				art.currentTime >= source.intro.start &&
+				art.currentTime <= source.intro.end &&
+				!art.controls['opening']
+			) {
+				art.controls.add({
+					name: 'opening',
+					position: 'top',
+					html: `<button class="${buttonVariants({ class: 'absolute bottom-6 right-0' })}">Skip Opening</button>`,
+					click: () => {
+						art.seek = source.intro!.end;
+						art.notice.show = 'Skipped Opening';
+					}
+				});
+			}
+
+			if (
+				source.outro &&
+				art.currentTime >= source.outro.start &&
+				art.currentTime <= source.outro.end &&
+				!art.controls['ending']
+			) {
+				art.controls.add({
+					name: 'ending',
+					position: 'top',
+					html: `<button class="${buttonVariants({ class: 'absolute bottom-6 right-0' })}">Skip Ending</button>`,
+					click: () => {
+						art.seek = source.outro!.end;
+						art.notice.show = 'Skipped Ending';
+					}
+				});
+			}
+
+			if (
+				source.intro &&
+				(art.currentTime < source.intro.start || art.currentTime > source.intro.end) &&
+				art.controls['opening']
+			) {
+				art.controls.remove('opening');
+			}
+
+			if (
+				source.outro &&
+				(art.currentTime < source.outro.start || art.currentTime > source.outro.end) &&
+				art.controls['ending']
+			) {
+				art.controls.remove('ending');
 			}
 		});
 	};

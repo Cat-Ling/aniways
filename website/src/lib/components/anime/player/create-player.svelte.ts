@@ -3,10 +3,10 @@ import type { streamInfo } from '$lib/api/anime/types';
 import { LOADING_SVG, SUBTITLE_ICON } from '$lib/assets/icons';
 import { appState } from '$lib/context/state.svelte';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
-import NextIcon from 'lucide-svelte/icons/skip-forward';
 import type Hls from 'hls.js';
-import { thumbnailPlugin } from './plugins';
+import NextIcon from 'lucide-svelte/icons/skip-forward';
 import { mount } from 'svelte';
+import { skipPlugin, thumbnailPlugin } from './plugins';
 
 type Props = {
 	id: string;
@@ -69,7 +69,8 @@ export const createArtPlayer = async ({
 					auto: 'Auto'
 				}
 			}),
-			thumbnailPlugin(thumbnails!)
+			thumbnailPlugin(thumbnails!),
+			skipPlugin(source)
 		],
 		settings: [
 			{
