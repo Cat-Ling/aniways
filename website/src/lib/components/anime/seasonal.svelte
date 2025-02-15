@@ -46,7 +46,7 @@
 		{#each seasonalAnimes as anime}
 			<Carousel.Item class="relative h-[80dvh] w-full">
 				<div
-					class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-8 md:w-1/2"
+					class="absolute left-6 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-16 md:w-1/2"
 				>
 					<h1 class="mb-2 line-clamp-1 font-sora text-2xl font-bold md:mb-5 md:text-6xl">
 						{anime.title}
@@ -84,9 +84,12 @@
 						</span>
 					</div>
 					<p
-						class={cn('mb-5 line-clamp-4 [display:-webkit-box] md:text-lg', {
-							italic: !anime.description
-						})}
+						class={cn(
+							'mb-5 line-clamp-2 text-xs [display:-webkit-box] md:line-clamp-3 md:text-base',
+							{
+								italic: !anime.description
+							}
+						)}
 					>
 						{@html anime.description.split('<br>').join('') ?? 'No description available'}
 					</p>
@@ -106,7 +109,7 @@
 					</div>
 				</div>
 				<div
-					class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-background to-background/15"
+					class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-b from-background via-background/55 to-background"
 				></div>
 				<img
 					src={anime.bannerImage ?? anime.coverImage}
@@ -121,7 +124,7 @@
 		{/each}
 	</Carousel.Content>
 	<div
-		class="absolute bottom-32 left-1/2 flex w-fit -translate-x-1/2 justify-center md:bottom-24 md:left-0 md:m-8 md:translate-x-0"
+		class="absolute bottom-32 left-1/2 flex w-fit -translate-x-1/2 justify-center md:bottom-24 md:left-0 md:m-16 md:mb-8 md:translate-x-0"
 	>
 		{#each seasonalAnimes as _, i}
 			<Button

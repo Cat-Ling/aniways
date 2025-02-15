@@ -74,7 +74,7 @@
 				<div
 					class="absolute bottom-0 left-3 hidden h-full flex-col items-center justify-end gap-4 md:flex"
 				>
-					<h2 class="rotate-180 truncate font-sora text-xl font-bold [writing-mode:vertical-rl]">
+					<h2 class="rotate-180 truncate font-sora font-bold [writing-mode:vertical-rl]">
 						{anime.jname}
 					</h2>
 					<p class="text-lg font-bold text-primary">

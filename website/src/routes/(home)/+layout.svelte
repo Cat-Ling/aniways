@@ -1,16 +1,11 @@
 <script lang="ts">
 	import RankedAnimeGrid from '$lib/components/anime/ranked-anime-grid.svelte';
 	import Seasonal from '$lib/components/anime/seasonal.svelte';
-	import { Button } from '$lib/components/ui/button';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
 
 	const seasonalAnimes = data?.seasonalAnime;
-
-	type Type = 'today' | 'week' | 'month';
-
-	let selectedType: Type = $state('today');
 </script>
 
 <Seasonal {seasonalAnimes} />
