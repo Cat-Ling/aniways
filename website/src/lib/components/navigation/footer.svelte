@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import Logo from '$lib/assets/logo.png?enhanced';
-	import { Home, Search, Shuffle } from 'lucide-svelte';
+	import { ArrowUp, Home, Search, Shuffle } from 'lucide-svelte';
 	import { Button } from '../ui/button';
 	import Input from '../ui/input/input.svelte';
-	import { afterNavigate } from '$app/navigation';
 
 	type Props = {
 		genres: { value: string; label: string }[];
@@ -53,4 +53,40 @@
 			<Button variant="secondary" href="/genre/{genre.value}">{genre.label}</Button>
 		{/each}
 	</div>
+
+	<Button
+		variant="ghost"
+		class="w-fit"
+		onclick={() => {
+			const start = window.scrollY;
+			const end = 0;
+			const duration = 500;
+			let startTime: number | null = null;
+
+			const easing = (t: number) => {
+				return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+			};
+
+			const animateScroll = (timestamp: number) => {
+				if (!startTime) startTime = timestamp;
+				const timeElapsed = timestamp - startTime;
+				const progress = timeElapsed / duration;
+
+				const easedProgress = easing(progress > 1 ? 1 : progress);
+
+				window.scrollTo(0, start + (end - start) * easedProgress);
+
+				if (timeElapsed < duration) {
+					requestAnimationFrame(animateScroll);
+				} else {
+					window.scrollTo(0, end);
+				}
+			};
+
+			requestAnimationFrame(animateScroll);
+		}}
+	>
+		<ArrowUp class="mr-2" />
+		Scroll to top
+	</Button>
 </footer>
