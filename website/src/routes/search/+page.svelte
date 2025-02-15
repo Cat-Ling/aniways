@@ -105,7 +105,7 @@
 
 	<AnimeGrid animes={data.results.items} pageInfo={data.results.pageInfo}>
 		{#snippet emptyLayout()}
-			<img src={SearchImage} alt="Search" class="mx-auto w-72" />
+			<enhanced:img src={SearchImage} alt="Search" class="mx-auto w-72" />
 			<p class="mt-3 text-center font-sora text-lg font-bold">No results found</p>
 			<p class="mt-1 text-center text-muted-foreground">Try searching for something else</p>
 		{/snippet}
