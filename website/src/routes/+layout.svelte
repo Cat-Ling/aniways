@@ -4,6 +4,7 @@
 	import '../app.css';
 
 	import { page } from '$app/state';
+	import Footer from '$lib/components/navigation/footer.svelte';
 	import Navbar from '$lib/components/navigation/navbar.svelte';
 	import SettingsSync from '$lib/components/settings/sync.svelte';
 	import { appState, setSettings, setUser } from '$lib/context/state.svelte';
@@ -33,3 +34,13 @@
 {@render children()}
 
 <SettingsSync />
+
+<Footer
+	genres={data.genres.map((genre) => ({
+		value: genre,
+		label: genre
+			.split('-')
+			.map((word) => word[0].toUpperCase() + word.slice(1))
+			.join(' ')
+	}))}
+/>

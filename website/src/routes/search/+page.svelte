@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import SearchImage from '$lib/assets/search.png';
+	import SearchImage from '$lib/assets/search.png?enhanced';
 	import AnimeGrid from '$lib/components/anime/anime-grid.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';

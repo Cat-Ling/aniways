@@ -44,7 +44,8 @@ object Queries {
                 media(
                     sort: TRENDING_DESC,
                     type: ANIME, 
-                    isAdult: false
+                    isAdult: false,
+                    startDate_greater: 19800101
                 ) {
                     $MEDIA_FIELDS
                 }
