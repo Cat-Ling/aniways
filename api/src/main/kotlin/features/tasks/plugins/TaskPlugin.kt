@@ -23,6 +23,10 @@ val TaskSchedulerPlugin = createApplicationPlugin(
         val getAllTasksRegex = "/tasks".toRegex()
         val runTaskRegex = "/tasks/([a-zA-Z0-9]+)".toRegex()
 
+        if (!this@createApplicationPlugin.application.isDev) {
+            return@onCall call.respond(HttpStatusCode.NotFound)
+        }
+
         when {
             getAllTasksRegex.matches(call.request.uri) -> {
                 val response = tasks
@@ -61,14 +65,11 @@ val TaskSchedulerPlugin = createApplicationPlugin(
             }
         }
 
-        // TODO: Remove this if statement once cron service is implemented
-        if (application.isDev || true) {
-            tasksByFrequency.filter{
-                it.key !is TaskScheduler.Frequency.OnStartUp
-            }.forEach {
-                scope.launch {
-                    scheduler.schedule(it.value, it.key)
-                }
+        tasksByFrequency.filter {
+            it.key !is TaskScheduler.Frequency.OnStartUp
+        }.forEach {
+            scope.launch {
+                scheduler.schedule(it.value, it.key)
             }
         }
     }
