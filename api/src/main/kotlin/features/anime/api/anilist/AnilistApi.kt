@@ -4,10 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import xyz.aniways.features.anime.api.anilist.models.AnilistAnime
-import xyz.aniways.features.anime.api.anilist.models.Graphql
-import xyz.aniways.features.anime.api.anilist.models.RawResponse
-import xyz.aniways.features.anime.api.anilist.models.SeasonalAnimeRequest
+import xyz.aniways.features.anime.api.anilist.models.*
 import java.util.*
 
 class AnilistApi(
@@ -40,6 +37,36 @@ class AnilistApi(
                 episodes = it.episodes,
             )
         }
+    }
+
+    suspend fun getBanner(malId: Int): AnilistAnime {
+        val response = httpClient.post(baseUrl) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+
+            setBody(
+                Graphql(
+                    query = Queries.ANIME_DETAILS,
+                    variables = mapOf("idMal" to malId)
+                )
+            )
+        }
+
+        val rawResponse = response.body<RawBannerResponse>()
+
+        return AnilistAnime(
+            anilistId = rawResponse.data.media.id,
+            malId = rawResponse.data.media.idMal,
+            title = rawResponse.data.media.title.romaji,
+            bannerImage = rawResponse.data.media.bannerImage,
+            coverImage = rawResponse.data.media.coverImage.large,
+            description = rawResponse.data.media.description,
+            startDate = Calendar.getInstance().apply {
+                set(rawResponse.data.media.startDate.year, rawResponse.data.media.startDate.month, rawResponse.data.media.startDate.day)
+            }.timeInMillis,
+            type = rawResponse.data.media.format,
+            episodes = rawResponse.data.media.episodes,
+        )
     }
 
     suspend fun getSeasonalAnime(): List<AnilistAnime> {

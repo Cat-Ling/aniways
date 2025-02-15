@@ -154,6 +154,19 @@ class AnimeService(
         return trailer ?: throw NotFoundException("Trailer not found")
     }
 
+    suspend fun getBannerImage(id: String): String {
+        val anime = animeDao.getAnimeById(id)
+
+        val malId = anime?.malId ?: throw NotFoundException("Anime not found")
+
+        try {
+            val bannerImage = anilistApi.getBanner(malId).bannerImage
+            return bannerImage ?: throw NotFoundException("Banner image not found")
+        } catch (e: Exception) {
+            throw NotFoundException("Banner image not found")
+        }
+    }
+
     suspend fun getTrendingAnimes(): List<AnimeDto> {
         val trendingAnimes = anilistApi.getTrendingAnime()
         val dbAnimes = animeDao.getAnimesInMalIds(trendingAnimes.mapNotNull { it.malId })

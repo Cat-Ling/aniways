@@ -1,7 +1,10 @@
+import { PUBLIC_STREAMING_URL } from '$env/static/public';
 import { fetchJson } from '$lib/api';
+import { error } from '@sveltejs/kit';
 import { formatDuration, secondsToMinutes } from 'date-fns/fp';
 import {
 	anilistAnime,
+	animeBanner,
 	anime as animeSchema,
 	episode,
 	episodeServer,
@@ -10,11 +13,13 @@ import {
 	topAnime,
 	trailer as trailerSchema
 } from './types';
-import { error } from '@sveltejs/kit';
-import { PUBLIC_STREAMING_URL } from '$env/static/public';
 
 export const getSeasonalAnime = async (fetch: typeof global.fetch) => {
 	return fetchJson(fetch, '/anime/seasonal', anilistAnime.array());
+};
+
+export const getBannerOfAnime = async (fetch: typeof global.fetch, id: string) => {
+	return fetchJson(fetch, `/anime/${id}/banner`, animeBanner);
 };
 
 export const getTrendingAnime = async (fetch: typeof global.fetch) => {

@@ -66,4 +66,12 @@ object Queries {
             }
         }
     """
+
+    const val ANIME_DETAILS = """
+        query (${'$'}idMal: Int) {
+            media: Media(idMal: ${'$'}idMal) {
+                $MEDIA_FIELDS
+            }
+        }
+    """
 }

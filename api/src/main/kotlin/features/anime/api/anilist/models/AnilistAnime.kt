@@ -80,3 +80,13 @@ data class RawData(
 data class RawResponse(
     val data: RawData,
 )
+
+@Serializable
+data class RawBannerResponse(
+    val data: RawBannerData,
+)
+
+@Serializable
+data class RawBannerData(
+    val media: RawMedia,
+)

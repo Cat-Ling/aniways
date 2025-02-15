@@ -34,6 +34,10 @@ export const anime = type({
 	metadata: animeMetadata.or('null').optional()
 });
 
+export const animeBanner = type({
+	banner: 'string.url'
+});
+
 export const anilistAnime = type({
 	id: 'string',
 	title: 'string',

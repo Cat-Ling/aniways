@@ -1,5 +1,10 @@
 import { StatusError } from '$lib/api';
-import { getAnimeMetadata, getEpisodes, getSeasonsAndRelatedAnimes } from '$lib/api/anime';
+import {
+	getAnimeMetadata,
+	getBannerOfAnime,
+	getEpisodes,
+	getSeasonsAndRelatedAnimes
+} from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 
@@ -14,6 +19,7 @@ export const load: LayoutLoad = async ({ params }) => {
 			title: anime.jname,
 			anime,
 			episodes,
+			banner: getBannerOfAnime(fetch, params.id).catch(() => null),
 			seasonsAndRelatedAnimes: getSeasonsAndRelatedAnimes(fetch, params.id)
 		};
 	} catch (e) {

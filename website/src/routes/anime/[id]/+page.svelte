@@ -3,10 +3,11 @@
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { anime, episodes, seasonsAndRelatedAnimes } = $derived(data);
+	let { anime, episodes, seasonsAndRelatedAnimes, banner } = $derived(data);
 
 	let showAll = $state(false);
 	let searchValue = $state('');
@@ -29,6 +30,23 @@
 		return filteredEpisodes.slice(0, 12);
 	});
 </script>
+
+<div class="relative w-full">
+	{#await banner}
+		<Skeleton class="mt-20 h-96 w-full" />
+	{:then banner}
+		{#key anime.id}
+			<img
+				src={banner?.banner ?? anime.mainPicture}
+				alt={`Banner for ${anime.jname}`}
+				class="mt-20 h-96 w-full object-cover object-center"
+			/>
+			<div
+				class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
+			></div>
+		{/key}
+	{/await}
+</div>
 
 <Metadata {anime} />
 

@@ -28,6 +28,9 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
         @Resource("/episodes")
         class Episodes(val parent: Metadata)
+
+        @Resource("/banner")
+        class Banner(val parent: Metadata)
     }
 
     @Resource("/seasonal")
@@ -96,6 +99,13 @@ fun Route.animeRoutes() {
         get<AnimeRoute.Metadata.Franchise> { route ->
             val franchise = service.getFranchiseOfAnime(route.parent.id)
             call.respond(franchise)
+        }
+    }
+
+    cache(invalidateAt = 31.days) {
+        get<AnimeRoute.Metadata.Banner> { route ->
+            val banner = service.getBannerImage(route.parent.id)
+            call.respond(mapOf("banner" to banner))
         }
     }
 
