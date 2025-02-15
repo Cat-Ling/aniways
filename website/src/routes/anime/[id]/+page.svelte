@@ -39,7 +39,7 @@
 			<img
 				src={banner?.banner ?? anime.mainPicture}
 				alt={`Banner for ${anime.jname}`}
-				class="h-96 w-full object-cover object-center"
+				class="h-48 w-full object-cover object-center md:h-96"
 			/>
 			<div
 				class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"

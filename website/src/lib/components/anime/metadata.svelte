@@ -25,7 +25,7 @@
 	let isWatchPage = $derived.by(() => page.url.pathname.includes('/watch'));
 </script>
 
-<div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'relative z-20 -mt-24')}>
+<div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'relative z-20 -mt-12 md:-mt-24')}>
 	<div class="flex flex-col gap-8 rounded-md bg-card p-4 md:flex-row">
 		<div class="w-full md:w-1/4">
 			{#key anime.picture}
