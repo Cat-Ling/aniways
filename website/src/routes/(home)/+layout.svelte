@@ -24,19 +24,7 @@
 		{@render children()}
 		<section class="w-full max-w-md">
 			<h1 class="relative z-30 mb-5 font-sora text-2xl font-bold">Popular Anime</h1>
-			<RankedAnimeGrid
-				animes={data.popularAnime.map((item) => ({
-					id: item.id,
-					poster: item.coverImage,
-					jname: item.title,
-					name: item.title,
-					genre: [],
-					anilistId: null,
-					lastEpisode: item.episodes,
-					malId: null
-				}))}
-				mode="vertical"
-			/>
+			<RankedAnimeGrid animes={data.popularAnime} mode="vertical" />
 		</section>
 	</div>
 </div>

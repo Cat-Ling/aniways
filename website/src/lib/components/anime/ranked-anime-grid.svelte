@@ -40,7 +40,7 @@
 						alt={anime.jname ?? ''}
 						class={cn(
 							'h-full w-full scale-110 rounded-md object-cover transition group-hover:scale-100',
-							mode === 'vertical' && 'scale-100'
+							mode === 'vertical' && 'scale-100 group-hover:scale-110'
 						)}
 					/>
 				</div>

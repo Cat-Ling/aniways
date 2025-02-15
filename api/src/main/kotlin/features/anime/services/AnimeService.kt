@@ -167,8 +167,13 @@ class AnimeService(
         return transformToAnilistAnimeDto(anilistApi.getSeasonalAnime())
     }
 
-    suspend fun getPopularAnimes(): List<AnilistAnimeDto> {
-        return transformToAnilistAnimeDto(anilistApi.getAllTimePopularAnime())
+    suspend fun getPopularAnimes(): List<AnimeDto> {
+        val popular = anilistApi.getAllTimePopularAnime()
+        val dbAnimes = animeDao.getAnimesInMalIds(popular.mapNotNull { it.malId })
+
+        return popular.mapNotNull { anilistAnime ->
+            dbAnimes.find { it.malId == anilistAnime.malId }?.toAnimeDto()
+        }
     }
 
     suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> {

@@ -26,7 +26,7 @@ export const getTopAnime = async (fetch: typeof global.fetch) => {
 };
 
 export const getPopularAnime = async (fetch: typeof global.fetch) => {
-	return fetchJson(fetch, '/anime/popular', anilistAnime.array());
+	return fetchJson(fetch, '/anime/popular', animeSchema.array());
 };
 
 export const getRecentlyUpdatedAnime = async (
