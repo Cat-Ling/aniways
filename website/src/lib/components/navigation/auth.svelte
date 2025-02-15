@@ -2,13 +2,13 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { getUser } from '$lib/context/user';
+	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
 	import List from 'lucide-svelte/icons/list';
-	import Logout from 'lucide-svelte/icons/log-out';
 	import LogIn from 'lucide-svelte/icons/log-in';
+	import Logout from 'lucide-svelte/icons/log-out';
 
-	const user = getUser()?.();
+	let user = $derived(appState.user);
 
 	let open = $state(false);
 </script>

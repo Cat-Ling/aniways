@@ -1,19 +1,28 @@
+import { goto } from '$app/navigation';
 import type { streamInfo } from '$lib/api/anime/types';
 import { LOADING_SVG, SUBTITLE_ICON } from '$lib/assets/icons';
+import { appState } from '$lib/context/state.svelte';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
-import { thumbnailPlugin } from './plugins';
+import NextIcon from 'lucide-svelte/icons/skip-forward';
 import type Hls from 'hls.js';
-import type Artplayer from 'artplayer';
+import { thumbnailPlugin } from './plugins';
+import { mount } from 'svelte';
 
 type Props = {
 	id: string;
 	container: HTMLDivElement;
 	source: typeof streamInfo.infer;
-	onEnded?: (player: Artplayer) => void;
-	onReady?: (player: Artplayer) => void;
+	nextEpisodeUrl: string | undefined;
+	setIsLoading: (loading: boolean) => void;
 };
 
-export const createArtPlayer = async ({ id, container, source, onEnded, onReady }: Props) => {
+export const createArtPlayer = async ({
+	id,
+	container,
+	source,
+	nextEpisodeUrl,
+	setIsLoading
+}: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
 	const defaultSubtitle = source.tracks.find((track) => track.default && track.kind === 'captions');
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -112,6 +121,34 @@ export const createArtPlayer = async ({ id, container, source, onEnded, onReady 
 		}
 	});
 
+	const elem = document.createElement('div');
+	mount(NextIcon, { target: elem, props: { size: 22 } });
+
+	art.setting.add({
+		icon: art.icons.setting,
+		html: 'Player Settings',
+		selector: [
+			{
+				icon: art.icons.play,
+				html: 'Auto Play Episode',
+				switch: appState.settings.autoPlayEpisode,
+				onSwitch: () => {
+					appState.settings.autoPlayEpisode = !appState.settings.autoPlayEpisode;
+					return appState.settings.autoPlayEpisode;
+				}
+			},
+			{
+				icon: elem.innerHTML,
+				html: 'Auto Play Next Episode',
+				switch: appState.settings.autoNextEpisode,
+				onSwitch: () => {
+					appState.settings.autoNextEpisode = !appState.settings.autoNextEpisode;
+					return appState.settings.autoNextEpisode;
+				}
+			}
+		]
+	});
+
 	art.on('ready', () => {
 		art.hotkey.add('KeyF', () => {
 			art.fullscreen = !art.fullscreen;
@@ -121,7 +158,13 @@ export const createArtPlayer = async ({ id, container, source, onEnded, onReady 
 			art.muted = !art.muted;
 		});
 
-		onReady?.(art);
+		if (appState.settings.autoPlayEpisode) {
+			art.play();
+		}
+	});
+
+	art.on('video:canplay', () => {
+		setIsLoading(false);
 	});
 
 	art.on('fullscreen', (isFullScreen) => {
@@ -133,7 +176,9 @@ export const createArtPlayer = async ({ id, container, source, onEnded, onReady 
 	});
 
 	art.on('video:ended', () => {
-		onEnded?.(art);
+		if (nextEpisodeUrl && appState.settings.autoNextEpisode) {
+			goto(nextEpisodeUrl);
+		}
 	});
 
 	return art;

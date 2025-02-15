@@ -29,7 +29,10 @@ export function fetchJson<T>(
 		url.searchParams.append(key, String(value));
 	}
 
-	return fetch(url, options)
+	return fetch(url, {
+		...options,
+		credentials: 'include'
+	})
 		.then(async (res) => {
 			if (res.ok) return res;
 			const errorBody = await res.text();
@@ -45,7 +48,10 @@ export function mutate(fetch: typeof global.fetch, endpoint: string, options: Op
 		url.searchParams.append(key, String(value));
 	}
 
-	return fetch(url, options).then(async (res) => {
+	return fetch(url, {
+		...options,
+		credentials: 'include'
+	}).then(async (res) => {
 		if (res.ok) return res;
 		const errorBody = await res.text();
 		throw new StatusError(res.status, `Fetch failed: ${url}, Error: ${errorBody}`);

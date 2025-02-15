@@ -5,8 +5,8 @@
 
 	import { page } from '$app/state';
 	import Navbar from '$lib/components/navigation/navbar.svelte';
-	import { setUser } from '$lib/context/user';
-	import { setSettings } from '$lib/context/settings';
+	import SettingsSync from '$lib/components/settings/sync.svelte';
+	import { setSettings, setUser } from '$lib/context/state.svelte';
 	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
 	import type { LayoutProps } from './$types';
 
@@ -16,14 +16,7 @@
 	const title = $derived(baseTitle ? `${baseTitle} | Aniways` : 'Aniways');
 
 	if (data.user) setUser(data.user);
-	setSettings(
-		data.settings ?? {
-			autoPlayEpisode: true,
-			autoNextEpisode: true,
-			autoUpdateMal: false,
-			userId: -1
-		}
-	);
+	if (data.settings) setSettings(data.settings);
 </script>
 
 <svelte:head>
@@ -34,3 +27,5 @@
 <Navbar />
 
 {@render children()}
+
+<SettingsSync />

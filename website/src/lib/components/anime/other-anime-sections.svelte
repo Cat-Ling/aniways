@@ -12,10 +12,12 @@
 </script>
 
 {#await seasonsAndRelatedAnimes}
-	<h2 class="mx-3 font-sora text-xl font-bold md:mx-8">Seasons</h2>
-	<Skeleton class="mx-3 mb-3 mt-3 h-20 w-full md:mx-8 md:mb-8" />
-	<h2 class="mx-3 font-sora text-xl font-bold md:mx-8">Related Anime</h2>
-	<Skeleton class="mx-3 mb-3 mt-3 h-20 w-full md:mx-8 md:mb-8" />
+	<div class="px-3 md:px-8">
+		<h2 class="font-sora text-xl font-bold">Seasons</h2>
+		<Skeleton class="mb-3 mt-3 h-20 w-full md:mb-8" />
+		<h2 class="font-sora text-xl font-bold">Related Anime</h2>
+		<Skeleton class="mb-3 mt-3 h-20 w-full md:mb-8" />
+	</div>
 {:then sections}
 	{#each sections as sec}
 		<h2 class={'mx-3 mt-6 font-sora text-xl font-bold first-of-type:mt-3 md:mx-8'}>

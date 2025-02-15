@@ -1,25 +1,24 @@
 <script lang="ts">
-	import { goto, preloadData } from '$app/navigation';
+	import { preloadData } from '$app/navigation';
 	import type { streamInfo } from '$lib/api/anime/types';
-	import type { settings as settingsSchema } from '$lib/api/settings/types';
-	import { createArtPlayer } from '$lib/player';
+	import { createArtPlayer } from '$lib/components/anime/player/create-player.svelte';
+	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
-	import { Skeleton } from '../ui/skeleton';
 
 	type Props = {
 		playerId: string;
 		info: typeof streamInfo.infer;
-		settings: typeof settingsSchema.infer;
 		nextEpisodeUrl?: string;
 	};
 
-	let { info, settings, playerId, nextEpisodeUrl }: Props = $props();
+	let { info, playerId, nextEpisodeUrl }: Props = $props();
 
 	let element: HTMLDivElement | null = $state(null);
 	let isLoading = $state(true);
 
 	$effect(() => {
-		if (!nextEpisodeUrl || !settings.autoNextEpisode) return;
+		if (!nextEpisodeUrl || appState.settings.autoNextEpisode) return;
 		preloadData(nextEpisodeUrl);
 	});
 
@@ -31,15 +30,9 @@
 			id: playerId,
 			container: element,
 			source: info,
-			onReady: (art) => {
-				isLoading = false;
-				if (settings.autoPlayEpisode) {
-					art.play();
-				}
-			},
-			onEnded: () => {
-				if (!settings.autoNextEpisode || !nextEpisodeUrl) return;
-				goto(nextEpisodeUrl);
+			nextEpisodeUrl,
+			setIsLoading: (loading) => {
+				isLoading = loading;
 			}
 		});
 

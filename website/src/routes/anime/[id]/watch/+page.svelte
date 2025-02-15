@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import Metadata from '$lib/components/anime/metadata.svelte';
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
-	import Player from '$lib/components/anime/player.svelte';
+	import Player from '$lib/components/anime/player/index.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
@@ -11,12 +11,9 @@
 	import { onMount, tick } from 'svelte';
 	import type { Action } from 'svelte/action';
 	import { type PageProps } from './$types';
-	import { getSettings } from '$lib/context/settings';
 
 	let props: PageProps = $props();
 	let { query, data } = $derived(props.data);
-
-	const settings = getSettings();
 
 	let nextEpisodeUrl = $derived.by(() => {
 		const currentIndex = data.episodes.findIndex((ep) => ep.id === query.key);
@@ -120,12 +117,7 @@
 			{#await data.streamInfo}
 				<Skeleton class="h-full w-full" />
 			{:then info}
-				<Player
-					playerId="{query.id}-{query.episode}-{query.type}"
-					settings={settings()}
-					{nextEpisodeUrl}
-					{info}
-				/>
+				<Player playerId="{query.id}-{query.episode}-{query.type}" {nextEpisodeUrl} {info} />
 			{/await}
 		</div>
 	</div>
