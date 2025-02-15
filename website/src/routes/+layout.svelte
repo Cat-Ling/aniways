@@ -31,9 +31,9 @@
 <SvelteKitTopLoader color="hsl(var(--primary))" showSpinner={false} />
 <Navbar />
 
-{@render children()}
-
-<SettingsSync />
+<div class="min-h-screen">
+	{@render children()}
+</div>
 
 <Footer
 	genres={data.genres.map((genre) => ({
@@ -44,3 +44,5 @@
 			.join(' ')
 	}))}
 />
+
+<SettingsSync />
