@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { anime } from '$lib/api/anime/types';
-	import { onMount, type Snippet } from 'svelte';
-	import * as Pagination from '$lib/components/ui/pagination';
 	import { goto } from '$app/navigation';
+	import type { anime } from '$lib/api/anime/types';
+	import * as Pagination from '$lib/components/ui/pagination';
 	import { cn } from '$lib/utils';
+	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { type Snippet } from 'svelte';
 	import { Button } from '../ui/button';
-	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	type Props = {
 		animes: (typeof anime.infer)[];

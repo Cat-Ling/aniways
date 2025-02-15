@@ -23,7 +23,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<SvelteKitTopLoader color="hsl(346.8 77.2% 49.8%)" showSpinner={false} />
+<SvelteKitTopLoader color="hsl(var(--primary))" showSpinner={false} />
 <Navbar />
 
 {@render children()}

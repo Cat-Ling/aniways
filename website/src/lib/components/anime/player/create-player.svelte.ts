@@ -4,9 +4,7 @@ import { appState } from '$lib/context/state.svelte';
 import { convertComponentToHTML } from '$lib/utils';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import type Hls from 'hls.js';
-import Captions from 'lucide-svelte/icons/captions';
-import Spinner from 'lucide-svelte/icons/loader-circle';
-import NextIcon from 'lucide-svelte/icons/skip-forward';
+import { Captions, LoaderCircle, SkipForward } from 'lucide-svelte';
 import { skipPlugin, thumbnailPlugin, windowKeyBindPlugin } from './plugins';
 
 type Props = {
@@ -50,7 +48,7 @@ export const createArtPlayer = async ({
 		pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
 		airplay: true,
 		icons: {
-			loading: convertComponentToHTML(Spinner, {
+			loading: convertComponentToHTML(LoaderCircle, {
 				size: 100,
 				class: 'animate-spin text-primary',
 				style: 'fill: none !important;'
@@ -142,7 +140,7 @@ export const createArtPlayer = async ({
 				}
 			},
 			{
-				icon: convertComponentToHTML(NextIcon, { size: 22 }),
+				icon: convertComponentToHTML(SkipForward, { size: 22 }),
 				html: 'Auto Play Next Episode',
 				switch: appState.settings.autoNextEpisode,
 				onSwitch: () => {

@@ -2,10 +2,7 @@
 	import { page } from '$app/state';
 	import { getAnimeMetadata } from '$lib/api/anime';
 	import { cn } from '$lib/utils';
-	import Info from 'lucide-svelte/icons/info';
-	import PlayIcon from 'lucide-svelte/icons/play';
-	import Tv from 'lucide-svelte/icons/tv';
-	import Plus from 'lucide-svelte/icons/plus';
+	import { Info, PlayIcon, Plus, Tv } from 'lucide-svelte';
 	import { Button } from '../ui/button';
 	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 	import Trailer from './trailer.svelte';

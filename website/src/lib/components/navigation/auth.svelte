@@ -4,9 +4,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
-	import List from 'lucide-svelte/icons/list';
-	import LogIn from 'lucide-svelte/icons/log-in';
-	import Logout from 'lucide-svelte/icons/log-out';
+	import { List, LogIn, LogOut } from 'lucide-svelte';
 
 	let user = $derived(appState.user);
 
@@ -33,7 +31,7 @@
 				href="/auth/logout?redirect={page.url}"
 				class="flex cursor-pointer items-center gap-2"
 			>
-				<Logout className="h-5 w-5" />
+				<LogOut className="h-5 w-5" />
 				Logout
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

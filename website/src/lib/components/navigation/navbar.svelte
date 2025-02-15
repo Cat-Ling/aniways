@@ -2,7 +2,7 @@
 	import Logo from '$lib/assets/logo.png?enhanced';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { cn } from '$lib/utils';
-	import Shuffle from 'lucide-svelte/icons/shuffle';
+	import { Shuffle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	import Auth from './auth.svelte';

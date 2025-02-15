@@ -1,9 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import sorry from '$lib/assets/sorry.png?enhanced';
 	import { Button } from '$lib/components/ui/button';
-	import { page } from '$app/state';
-	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
-	import Home from 'lucide-svelte/icons/home';
+	import { ChevronLeft, Home } from 'lucide-svelte';
 
 	let is404 = $derived(page.status === 404);
 

@@ -6,8 +6,7 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import * as Select from '$lib/components/ui/select';
 	import type { Selected } from 'bits-ui';
-	import Refresh from 'lucide-svelte/icons/refresh-ccw';
-	import Search from 'lucide-svelte/icons/search';
+	import { RefreshCcw, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -99,7 +98,7 @@
 			Search
 		</Button>
 		<Button href="/search" variant="secondary">
-			<Refresh class="mr-2" />
+			<RefreshCcw class="mr-2" />
 			Clear Filters
 		</Button>
 	</form>

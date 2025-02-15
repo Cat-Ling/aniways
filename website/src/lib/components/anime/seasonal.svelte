@@ -6,11 +6,7 @@
 	import { cn } from '$lib/utils';
 	import { format } from 'date-fns';
 	import Autoplay from 'embla-carousel-autoplay';
-	import Calendar from 'lucide-svelte/icons/calendar';
-	import Clapperboard from 'lucide-svelte/icons/clapperboard';
-	import Play from 'lucide-svelte/icons/play';
-	import Video from 'lucide-svelte/icons/video';
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import { Calendar, ChevronRight, Clapperboard, Play, Video } from 'lucide-svelte';
 
 	type Props = {
 		seasonalAnimes: (typeof anilistAnime.infer)[];

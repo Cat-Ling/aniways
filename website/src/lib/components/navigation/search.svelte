@@ -5,7 +5,7 @@
 	import * as Command from '$lib/components/ui/command';
 	import { appState } from '$lib/context/state.svelte';
 	import { debounce } from 'lodash-es';
-	import Search from 'lucide-svelte/icons/search';
+	import { Search } from 'lucide-svelte';
 	import { Button } from '../ui/button';
 
 	let value = $state('');
