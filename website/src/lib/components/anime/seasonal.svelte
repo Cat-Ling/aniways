@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { anilistAnime } from '$lib/api/anime/types';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Carousel from '$lib/components/ui/carousel';
 	import type { CarouselAPI } from '$lib/components/ui/carousel/context';
 	import { cn } from '$lib/utils';
@@ -53,21 +53,30 @@
 					</h1>
 					<div class="mb-2 flex gap-2 md:mb-3">
 						<span
-							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
+							class={buttonVariants({
+								variant: 'outline',
+								class: 'rounded-full bg-card text-primary hover:bg-card hover:text-primary'
+							})}
 						>
-							<Calendar />
-							{format(new Date(anime.startDate), 'MMMM yyyy') ?? '???'}
+							<Calendar class="mr-2 size-5" />
+							{format(new Date(anime.startDate), 'dd MMMM yyyy') ?? '???'}
 						</span>
 						<span
-							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
+							class={buttonVariants({
+								variant: 'outline',
+								class: 'rounded-full bg-card text-primary hover:bg-card hover:text-primary'
+							})}
 						>
-							<Clapperboard />
+							<Clapperboard class="mr-2 size-5" />
 							{anime.type}
 						</span>
 						<span
-							class="flex items-center gap-2 rounded-full bg-card p-2 text-xs text-primary md:text-base"
+							class={buttonVariants({
+								variant: 'outline',
+								class: 'rounded-full bg-card text-primary hover:bg-card hover:text-primary'
+							})}
 						>
-							<Video />
+							<Video class="mr-2 size-5" />
 							{anime.episodes ?? '???'} episodes
 						</span>
 					</div>
