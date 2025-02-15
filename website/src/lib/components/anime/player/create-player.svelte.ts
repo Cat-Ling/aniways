@@ -7,7 +7,7 @@ import type Hls from 'hls.js';
 import Captions from 'lucide-svelte/icons/captions';
 import Spinner from 'lucide-svelte/icons/loader-circle';
 import NextIcon from 'lucide-svelte/icons/skip-forward';
-import { skipPlugin, thumbnailPlugin } from './plugins';
+import { skipPlugin, thumbnailPlugin, windowKeyBindPlugin } from './plugins';
 
 type Props = {
 	id: string;
@@ -75,7 +75,8 @@ export const createArtPlayer = async ({
 				}
 			}),
 			thumbnailPlugin(thumbnails!),
-			skipPlugin(source)
+			skipPlugin(source),
+			windowKeyBindPlugin()
 		],
 		settings: [
 			{
@@ -153,14 +154,6 @@ export const createArtPlayer = async ({
 	});
 
 	art.on('ready', () => {
-		art.hotkey.add('KeyF', () => {
-			art.fullscreen = !art.fullscreen;
-		});
-
-		art.hotkey.add('KeyM', () => {
-			art.muted = !art.muted;
-		});
-
 		if (appState.settings.autoPlayEpisode) {
 			art.play();
 		}

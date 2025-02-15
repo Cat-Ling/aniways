@@ -118,52 +118,25 @@ export const thumbnailPlugin = (thumbnails: { file: string }) => {
 };
 
 export const skipPlugin = (source: typeof streamInfo.infer) => {
-	const highlight: {
-		time: number;
-		text: string;
-	}[] = [];
-
-	if (source.intro) {
-		highlight.push({
-			time: source.intro.start,
-			text: 'OP Start'
-		});
-		highlight.push({
-			time: source.intro.end,
-			text: 'OP End'
-		});
-	}
-
-	if (source.outro) {
-		highlight.push({
-			time: source.outro.start,
-			text: 'ED Start'
-		});
-		highlight.push({
-			time: source.outro.end,
-			text: 'ED End'
-		});
-	}
-
 	return async (art: Artplayer) => {
 		art.on('ready', () => {
-			const highlightElement = art.template.$progress.querySelector('.art-progress-highlight');
-			if (source.intro) {
-				const startPercentage = (source.intro.start / art.duration) * 100;
-				const endPercentage = (source.intro.end / art.duration) * 100;
+			function addElement(title: string, start: number, end: number) {
+				const startPercentage = (start / art.duration) * 100;
+				const endPercentage = ((end - start) / art.duration) * 100;
+				const highlightElement = art.template.$progress.querySelector('.art-progress-highlight');
+
 				highlightElement?.insertAdjacentHTML(
 					'beforeend',
-					`<span data-text="Opening" data-time="${source.intro.start}" style="left: ${startPercentage}%; width: ${endPercentage}% !important"></span>`
+					`<span data-time="${start}" data-text="${title}" style="left: ${startPercentage}%; width: ${endPercentage}% !important"></span>`
 				);
 			}
 
+			if (source.intro) {
+				addElement('Opening', source.intro.start, source.intro.end);
+			}
+
 			if (source.outro) {
-				const startPercentage = (source.outro.start / art.duration) * 100;
-				const endPercentage = (source.outro.end / art.duration) * 100;
-				highlightElement?.insertAdjacentHTML(
-					'beforeend',
-					`<span data-text="Ending" data-time="${source.outro.start}" style="left: ${startPercentage}%; width: ${endPercentage}% !important"></span>`
-				);
+				addElement('Ending', source.outro.start, source.outro.end);
 			}
 		});
 
@@ -217,6 +190,37 @@ export const skipPlugin = (source: typeof streamInfo.infer) => {
 			) {
 				art.controls.remove('ending');
 			}
+		});
+	};
+};
+
+export const windowKeyBindPlugin = () => {
+	return async (art: Artplayer) => {
+		art.on('ready', () => {
+			art.hotkey.add('KeyF', () => {
+				art.fullscreen = !art.fullscreen;
+			});
+
+			art.hotkey.add('KeyM', () => {
+				art.muted = !art.muted;
+			});
+
+			const keys = Object.keys(art.hotkey.keys);
+
+			const listener = (e: KeyboardEvent) => {
+				if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+				if (keys.includes(e.code)) {
+					e.preventDefault();
+					art.hotkey.keys[e.code].forEach((fn) => fn?.(e));
+				}
+			};
+
+			window.addEventListener('keydown', listener);
+
+			return () => {
+				window.removeEventListener('keydown', listener);
+			};
 		});
 	};
 };
