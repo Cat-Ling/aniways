@@ -11,6 +11,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.reflect.KClass
+import kotlin.time.toKotlinDuration
 
 class TaskScheduler {
     private val logger = KtorSimpleLogger("Scheduler")
@@ -95,22 +96,11 @@ class TaskScheduler {
         logger.info("Scheduling '${frequency.getCleanName()}' frequency tasks '$taskNames'")
 
         while (isActive) {
-            val nextExecution = cronExecTime.nextExecution(
-                Instant.now().atZone(ZoneId.systemDefault())
-            ).get()
-            val delay = Duration.between(Instant.now(), nextExecution).toMillis()
-            delay(delay)
+            val zoneTime = Instant.now().atZone(ZoneId.systemDefault())
+            val nextExecution = cronExecTime.nextExecution(zoneTime).get()
+            delay(Duration.between(Instant.now(), nextExecution).toKotlinDuration())
 
-            logger.info("Running '${frequency.getCleanName()}' frequency tasks '$taskNames'")
-
-            val deferredTasks = tasks.map { task ->
-                async {
-                    logger.info("Executing task: ${task.name}")
-                    execute(task)
-                }
-            }
-
-            deferredTasks.joinAll()
+            tasks.map { async { execute(it) } }.awaitAll()
 
             logger.info("'${frequency.getCleanName()}' frequency tasks '$taskNames' completed")
         }
