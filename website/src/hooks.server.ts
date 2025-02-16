@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { HandleFetch } from '@sveltejs/kit';
 
@@ -6,5 +7,11 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 		request.headers.set('cookie', event.request.headers.get('cookie') || '');
 	}
 
-	return fetch(request);
+	if (!browser) {
+		return fetch(request);
+	}
+
+	return fetch(request, {
+		credentials: 'include'
+	});
 };
