@@ -12,6 +12,12 @@ fun Application.configureCors() {
         allowHost(allowHost)
 
         allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHeader(HttpHeaders.AccessControlAllowCredentials)
+        allowHeader(HttpHeaders.AccessControlAllowHeaders)
+        allowHeader(HttpHeaders.AccessControlAllowMethods)
+        allowHeader(HttpHeaders.AccessControlExposeHeaders)
+        allowHeader(HttpHeaders.AccessControlMaxAge)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
 
