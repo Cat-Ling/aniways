@@ -1,0 +1,2 @@
+ALTER TABLE settings
+    ADD COLUMN auto_resume_episode BOOLEAN NOT NULL DEFAULT FALSE;
