@@ -46,7 +46,19 @@
 					{@render pill(anime.avgEpDuration)}
 					{@render pill(anime.airingStatus)}
 				</div>
-				<div class="mt-4 flex flex-col md:flex-row md:gap-4">
+				<div class="mt-2 flex flex-1 flex-wrap items-end gap-2">
+					{#each anime.genre as genre}
+						<Button
+							variant="outline"
+							size="sm"
+							class="capitalize"
+							href="/genre/{genre.toLowerCase().replaceAll(' ', '-')}"
+						>
+							{genre}
+						</Button>
+					{/each}
+				</div>
+				<div class="mt-2 flex flex-col md:flex-row md:gap-4">
 					<div>
 						{@render keyValue('Total Episodes', anime.totalEpisodes)}
 						{@render keyValue('Studio', anime.studio)}
@@ -80,7 +92,7 @@
 				{#if isDescriptionOverflow}
 					<Button
 						variant="secondary"
-						class="mt-2 md:hidden"
+						class="mt-2 w-full md:hidden"
 						onclick={() => (isDescriptionExpanded = !isDescriptionExpanded)}
 					>
 						{isDescriptionExpanded ? 'Show Less' : 'Show More'}
@@ -91,15 +103,11 @@
 				<div class="mt-4 grid grid-cols-2 items-center gap-2 md:flex">
 					<Button href="/anime/{anime.id}" class={[isWatchPage || 'hidden']}>
 						<Info class="mr-2" />
-						Anime Details
+						View Details
 					</Button>
 					<Button href="/anime/{anime.id}/watch" class={[isWatchPage && 'hidden']}>
 						<PlayIcon class="mr-2" />
 						Watch Now
-					</Button>
-					<Button>
-						<Plus class="mr-2" />
-						Add to list
 					</Button>
 					<Dialog bind:open={isTrailerOpen}>
 						<DialogTrigger asChild>
@@ -119,18 +127,6 @@
 						</DialogContent>
 					</Dialog>
 				</div>
-				<div class="mt-4 flex flex-1 flex-wrap items-end gap-2">
-					{#each anime.genre as genre}
-						<Button
-							variant="outline"
-							size="sm"
-							class="capitalize"
-							href="/genre/{genre.toLowerCase().replaceAll(' ', '-')}"
-						>
-							{genre}
-						</Button>
-					{/each}
-				</div>
 			</div>
 		</div>
 	</div>
@@ -143,10 +139,8 @@
 {/snippet}
 
 {#snippet keyValue(key: string, value: string | number | undefined | null)}
-	{#if value}
-		<div class="flex gap-2">
-			<span class="font-semibold text-muted-foreground">{key}:</span>
-			<span class="capitalize">{value}</span>
-		</div>
-	{/if}
+	<div class="flex gap-2">
+		<span class="font-semibold text-muted-foreground">{key}:</span>
+		<span class="capitalize">{value || '???'}</span>
+	</div>
 {/snippet}

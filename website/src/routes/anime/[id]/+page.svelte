@@ -62,7 +62,7 @@
 	</div>
 </div>
 
-<div class="mx-3 mt-4 grid grid-cols-1 gap-4 pb-3 md:mx-8 md:grid-cols-2 md:pb-8 lg:grid-cols-3">
+<div class="mx-3 mt-4 grid grid-cols-2 gap-4 pb-3 md:mx-8 md:grid-cols-2 md:pb-8 lg:grid-cols-3">
 	{#each displayEpisodes as episode}
 		<Button
 			variant="outline"
@@ -72,7 +72,7 @@
 			<p class="font-sora">
 				Episode {episode.number}
 			</p>
-			<p class="w-full truncate text-muted-foreground">
+			<p class="w-full truncate text-xs text-muted-foreground md:text-inherit">
 				{episode.title === `Episode ${episode.number}` ? 'No title available' : episode.title}
 			</p>
 		</Button>
