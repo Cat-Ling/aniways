@@ -12,16 +12,9 @@ type Props = {
 	container: HTMLDivElement;
 	source: typeof streamInfo.infer;
 	nextEpisodeUrl: string | undefined;
-	setIsLoading: (loading: boolean) => void;
 };
 
-export const createArtPlayer = async ({
-	id,
-	container,
-	source,
-	nextEpisodeUrl,
-	setIsLoading
-}: Props) => {
+export const createArtPlayer = async ({ id, container, source, nextEpisodeUrl }: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
 	const defaultSubtitle = source.tracks.find((track) => track.default && track.kind === 'captions');
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -119,7 +112,6 @@ export const createArtPlayer = async ({
 						art.on('destroy', () => hls.destroy());
 					} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
 						video.src = url;
-						setIsLoading(false);
 					} else {
 						art.notice.show = 'Unsupported playback format: m3u8';
 					}
@@ -157,10 +149,6 @@ export const createArtPlayer = async ({
 		if (appState.settings.autoPlayEpisode) {
 			art.play();
 		}
-	});
-
-	art.on('video:canplay', () => {
-		setIsLoading(false);
 	});
 
 	art.on('fullscreen', (isFullScreen) => {
