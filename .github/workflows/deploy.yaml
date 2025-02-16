@@ -96,4 +96,4 @@ jobs:
       - name: Deploy Docker Stack
         run: |
           docker context use remote
-          docker stack deploy -c docker-compose.yaml aniways --with-registry-auth
+          docker stack deploy -c docker-compose.yaml aniways --with-registry-auth --detach=false

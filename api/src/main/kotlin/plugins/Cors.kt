@@ -12,17 +12,13 @@ fun Application.configureCors() {
         allowHost(allowHost)
 
         allowHeader(HttpHeaders.ContentType)
-        allowHeader(HttpHeaders.AccessControlAllowOrigin)
-        allowHeader(HttpHeaders.AccessControlAllowCredentials)
-        allowHeader(HttpHeaders.AccessControlAllowHeaders)
-        allowHeader(HttpHeaders.AccessControlAllowMethods)
-        allowHeader(HttpHeaders.AccessControlExposeHeaders)
-        allowHeader(HttpHeaders.AccessControlMaxAge)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Options)
 
         allowCredentials = true
-        allowNonSimpleContentTypes = true
-        maxAgeInSeconds = 60 * 60 * 24 // 1 day
     }
 }
