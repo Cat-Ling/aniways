@@ -31,24 +31,26 @@
 	});
 </script>
 
-<div class="relative w-full">
-	{#await banner}
-		<Skeleton class="h-96 w-full" />
-	{:then banner}
-		{#key anime.id}
-			<img
-				src={banner?.banner ?? anime.mainPicture}
-				alt={`Banner for ${anime.jname}`}
-				class="h- w-full object-cover object-center md:h-96"
-			/>
-			<div
-				class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
-			></div>
-		{/key}
-	{/await}
-</div>
+<div id="anime-page">
+	<div class="sticky top-0 w-full overflow-hidden rounded-b-md border-border">
+		{#await banner}
+			<Skeleton class="h-48 w-full md:h-96" />
+		{:then banner}
+			{#key anime.id}
+				<img
+					src={banner?.banner ?? anime.mainPicture}
+					alt={`Banner for ${anime.jname}`}
+					class="h-48 w-full overflow-hidden object-cover object-center md:h-96"
+				/>
+				<div
+					class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
+				></div>
+			{/key}
+		{/await}
+	</div>
 
-<Metadata {anime} />
+	<Metadata {anime} />
+</div>
 
 <div class="flex w-full items-center justify-between px-3 pt-8 md:px-8">
 	<h2 class="font-sora text-xl font-bold">Episodes</h2>
