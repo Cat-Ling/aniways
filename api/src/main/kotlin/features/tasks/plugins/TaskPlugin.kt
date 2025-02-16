@@ -24,7 +24,7 @@ val TaskSchedulerPlugin = createApplicationPlugin(
         val runTaskRegex = "/tasks/([a-zA-Z0-9]+)".toRegex()
 
         if (!this@createApplicationPlugin.application.isDev) {
-            return@onCall call.respond(HttpStatusCode.NotFound)
+            return@onCall
         }
 
         when {
@@ -41,10 +41,7 @@ val TaskSchedulerPlugin = createApplicationPlugin(
 
                 val task = tasks.find {
                     it.name == taskName && it.frequency !is TaskScheduler.Frequency.OnStartUp
-                } ?: return@onCall call.respondText(
-                    "Task not found",
-                    status = HttpStatusCode.NotFound
-                )
+                } ?: return@onCall call.respond(HttpStatusCode.NotFound)
 
                 scope.launch {
                     scheduler.execute(task)
