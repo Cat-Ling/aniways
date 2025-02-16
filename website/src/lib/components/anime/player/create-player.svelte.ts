@@ -4,8 +4,9 @@ import { appState } from '$lib/context/state.svelte';
 import { convertComponentToHTML } from '$lib/utils';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import type Hls from 'hls.js';
-import { Captions, LoaderCircle, SkipForward } from 'lucide-svelte';
+import { Captions, LoaderCircle, Pause, SkipForward } from 'lucide-svelte';
 import { amplifyVolumePlugin, skipPlugin, thumbnailPlugin, windowKeyBindPlugin } from './plugins';
+import { ArkErrors, type } from 'arktype';
 
 type Props = {
 	id: string;
@@ -13,6 +14,10 @@ type Props = {
 	source: typeof streamInfo.infer;
 	nextEpisodeUrl: string | undefined;
 };
+
+const artplayerSettingsSchema = type({
+	times: 'Record<string, number>'
+});
 
 export const createArtPlayer = async ({ id, container, source, nextEpisodeUrl }: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
@@ -141,11 +146,30 @@ export const createArtPlayer = async ({ id, container, source, nextEpisodeUrl }:
 					appState.settings.autoNextEpisode = !appState.settings.autoNextEpisode;
 					return appState.settings.autoNextEpisode;
 				}
+			},
+			{
+				icon: convertComponentToHTML(Pause, { size: 22 }),
+				html: 'Auto Resume Episode',
+				switch: appState.settings.autoResumeEpisode,
+				onSwitch: () => {
+					appState.settings.autoResumeEpisode = !appState.settings.autoResumeEpisode;
+					return appState.settings.autoResumeEpisode;
+				}
 			}
 		]
 	});
 
 	art.on('ready', () => {
+		if (appState.settings.autoResumeEpisode) {
+			const time = artplayerSettingsSchema(
+				JSON.parse(localStorage.getItem('artplayer_settings') ?? '{}')
+			);
+			if (time instanceof ArkErrors === false && time.times[id]) {
+				if (time.times[id] >= art.duration) return;
+				art.currentTime = time.times[id];
+			}
+		}
+
 		if (appState.settings.autoPlayEpisode) {
 			art.play();
 		}

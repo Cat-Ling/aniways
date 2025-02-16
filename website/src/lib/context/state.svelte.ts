@@ -21,7 +21,8 @@ function getDefaultSettings(): State['settings'] {
 	return {
 		autoNextEpisode: true,
 		autoPlayEpisode: true,
-		autoUpdateMal: false
+		autoUpdateMal: false,
+		autoResumeEpisode: true
 	};
 }
 
