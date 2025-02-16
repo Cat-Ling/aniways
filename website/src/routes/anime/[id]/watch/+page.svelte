@@ -62,7 +62,7 @@
 
 <div class="mt-20 px-3 md:px-8">
 	<div class="flex flex-col-reverse gap-2 md:flex-row">
-		<div class="mt-3 flex w-full max-w-md flex-col gap-3 md:mt-0 md:w-1/5">
+		<div class="mt-3 flex w-full max-w-md flex-col-reverse gap-3 md:mt-0 md:w-1/5 md:flex-col">
 			<div class={'h-60 w-full overflow-scroll rounded-md bg-card md:h-full md:max-h-[512px]'}>
 				<div class="sticky top-0 flex w-full items-center justify-between border-b bg-card p-3">
 					<h3 class={'font-sora font-bold'}>Episodes</h3>

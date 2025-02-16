@@ -119,6 +119,7 @@ export const createArtPlayer = async ({
 						art.on('destroy', () => hls.destroy());
 					} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
 						video.src = url;
+						setIsLoading(false);
 					} else {
 						art.notice.show = 'Unsupported playback format: m3u8';
 					}
