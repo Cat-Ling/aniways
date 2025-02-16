@@ -79,21 +79,16 @@ class TaskScheduler {
     }
 
     suspend fun schedule(tasks: List<Task>, frequency: Frequency) = coroutineScope {
-        if (frequency is Frequency.OnStartUp) {
-            return@coroutineScope tasks.forEach { task ->
-                launch {
-                    execute(task)
-                }
-            }
+        val freq = when (frequency) {
+            is Frequency.OnStartUp -> return@coroutineScope
+            is Frequency.Cron -> frequency
         }
 
-        frequency as Frequency.Cron
-
-        val parsedCron = frequency.parseCron()
+        val parsedCron = freq.parseCron()
         val cronExecTime = ExecutionTime.forCron(parsedCron)
         val taskNames = tasks.joinToString("', '") { it.name }
 
-        logger.info("Scheduling '${frequency.getCleanName()}' frequency tasks '$taskNames'")
+        logger.info("Scheduling '${freq.getCleanName()}' frequency tasks '$taskNames'")
 
         while (isActive) {
             val zoneTime = Instant.now().atZone(ZoneId.systemDefault())
@@ -102,7 +97,7 @@ class TaskScheduler {
 
             tasks.map { async { execute(it) } }.awaitAll()
 
-            logger.info("'${frequency.getCleanName()}' frequency tasks '$taskNames' completed")
+            logger.info("'${freq.getCleanName()}' frequency tasks '$taskNames' completed")
         }
     }
 
