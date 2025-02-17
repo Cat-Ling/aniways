@@ -82,7 +82,7 @@
 				<Select.Trigger class="col-span-2 md:max-w-72">
 					<Select.Value placeholder="Genre" />
 				</Select.Trigger>
-				<Select.Content class="max-h-56 overflow-scroll">
+				<Select.Content class="max-h-56 overflow-y-scroll">
 					<Select.Item value="all" label="All">All</Select.Item>
 					{#each data.genres as genre}
 						<Select.Item value={genre.toLowerCase().replaceAll(' ', '-')} label={genre}>

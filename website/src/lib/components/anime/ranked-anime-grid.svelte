@@ -12,8 +12,8 @@
 
 <div
 	class={cn(
-		'mt-3 flex w-full overflow-scroll overflow-y-hidden md:mt-5 md:gap-2',
-		mode === 'vertical' ? 'mb-5 flex-col gap-2' : 'flex-row'
+		'mt-3 flex w-full overflow-y-hidden md:mt-5 md:gap-2',
+		mode === 'vertical' ? 'mb-5 flex-col gap-2' : 'flex-row overflow-x-scroll'
 	)}
 >
 	{#each animes as anime, i (anime.id)}
