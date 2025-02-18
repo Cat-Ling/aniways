@@ -13,9 +13,9 @@ interface TokenEntity: Entity<TokenEntity> {
     var id: String
     var userId: String
     var token: String
-    var refreshToken: String
+    var refreshToken: String?
     var provider: String
-    var expiresAt: Instant
+    var expiresAt: Instant?
     var createdAt: Instant
 
     companion object : Entity.Factory<TokenEntity>()

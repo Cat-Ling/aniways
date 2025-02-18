@@ -10,19 +10,19 @@ import io.ktor.server.routing.Route
 import io.ktor.server.sessions.*
 import org.koin.ktor.ext.inject
 import xyz.aniways.features.auth.services.AuthService
-import xyz.aniways.features.auth.services.MalUserService
+import xyz.aniways.features.users.UserService
 import xyz.aniways.features.users.dtos.AuthDto
-import xyz.aniways.plugins.Auth
-import xyz.aniways.plugins.Session
-import xyz.aniways.plugins.USER_SESSION
-import xyz.aniways.plugins.UserSession
+import xyz.aniways.plugins.*
 
 @Resource("/auth")
 class AuthRoute() {
     @Resource("/login")
     class Login(val parent: AuthRoute)
 
-    @Resource("/callback")
+    @Resource("/myanimelist/login")
+    class MalLogin(val parent: AuthRoute)
+
+    @Resource("/myanimelist/callback")
     class Callback(val parent: AuthRoute)
 
     @Resource("/me")
@@ -33,8 +33,8 @@ class AuthRoute() {
 }
 
 fun Route.authRoutes() {
-    val malUserService by inject<MalUserService>()
     val authService by inject<AuthService>()
+    val userService by inject<UserService>()
 
     post<AuthRoute.Login> {
         val redirectTo = call.request.queryParameters["redirectUrl"]
@@ -45,37 +45,43 @@ fun Route.authRoutes() {
         call.respondRedirect(redirectTo)
     }
 
-    authenticate(Auth.MAL_OAUTH) {
-        get<AuthRoute.Login> {}
+    authenticate(Auth.MAL_OAUTH, strategy = AuthenticationStrategy.Required) {
+        authenticate(USER_SESSION, strategy = AuthenticationStrategy.Required) {
+            get<AuthRoute.MalLogin> {
+                val redirectTo = call.request.queryParameters["redirectUrl"]
+                call.respondRedirect("/auth/myanimelist?redirectUrl=$redirectTo")
+            }
 
-        get<AuthRoute.Callback> {
-            val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()
-            currentPrincipal ?: return@get call.respond(HttpStatusCode.Unauthorized)
+            get<AuthRoute.Callback> {
+                val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()
+                currentPrincipal ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-            call.sessions.set(Session.UserSession(currentPrincipal.accessToken))
+                val userSession = call.sessions.get<Auth.UserSession>()
+                    ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-            val redirectTo = call.sessions.get<Session.RedirectTo>()?.url ?: "/"
-            call.sessions.clear(Session.RedirectTo.KEY)
+                authService.saveOauthToken(userSession.userId, "myanimelist", currentPrincipal)
 
-            call.respondRedirect(redirectTo)
+                val redirectTo = call.sessions.get<RedirectTo>()?.url ?: "/"
+                call.sessions.clear(REDIRECT_TO)
+
+                call.respondRedirect(redirectTo)
+            }
         }
-
     }
 
-    authenticate(Auth.SESSION) {
+    authenticate(USER_SESSION) {
         get<AuthRoute.Me> {
-            val currentUser = call.principal<Auth.UserPrincipal>()
-            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+            val session = call.principal<Auth.UserSession>(USER_SESSION)
+            session ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-            malUserService.getUserInfo(currentUser.token).let {
-                call.respond(it)
-            }
+            val user = userService.getUserById(session.userId)
+
+            call.respond(user)
         }
     }
 
     get<AuthRoute.Logout> {
         val redirectTo = call.request.queryParameters["redirectUrl"] ?: "/"
-        call.sessions.clear(Session.UserSession.KEY)
         val userSession = call.sessions.get<UserSession>()
         userSession?.let {
             authService.logout(it)

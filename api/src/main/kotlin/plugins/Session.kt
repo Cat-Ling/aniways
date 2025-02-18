@@ -7,35 +7,18 @@ import xyz.aniways.env
 import kotlin.time.Duration.Companion.days
 
 typealias UserSession = String
+
 const val USER_SESSION = "user_session"
 
-sealed class Session {
-    @Serializable
-    data class UserSession(val token: String) : Session() {
-        companion object {
-            const val KEY = "session"
-        }
-    }
+@Serializable
+data class RedirectTo(val url: String)
 
-    @Serializable
-    data class RedirectTo(val url: String) : Session() {
-        companion object {
-            const val KEY = "redirect_to"
-        }
-    }
-}
+const val REDIRECT_TO = "redirect_to"
 
 fun Application.configureSession() {
     val domain = env.serverConfig.rootDomain
 
     install(Sessions) {
-        cookie<Session.UserSession>(Session.UserSession.KEY) {
-            cookie.maxAgeInSeconds = 60 * 60 * 24 * 30 // 30 days
-            cookie.httpOnly = true
-            cookie.sameSite = "lax"
-            cookie.path = "/"
-            cookie.domain = if (domain == "localhost") null else ".$domain"
-        }
         cookie<UserSession>(USER_SESSION) {
             cookie.maxAge = 30.days
             cookie.httpOnly = true
@@ -43,6 +26,6 @@ fun Application.configureSession() {
             cookie.path = "/"
             cookie.domain = if (domain == "localhost") null else ".$domain"
         }
-        cookie<Session.RedirectTo>(Session.RedirectTo.KEY)
+        cookie<RedirectTo>(REDIRECT_TO)
     }
 }

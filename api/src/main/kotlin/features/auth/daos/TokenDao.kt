@@ -1,5 +1,6 @@
 package xyz.aniways.features.auth.daos
 
+import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
 import org.ktorm.entity.add
 import org.ktorm.entity.find
@@ -9,7 +10,7 @@ import xyz.aniways.features.auth.db.tokens
 import java.time.Instant
 
 interface TokenDao {
-    suspend fun getToken(token: String): TokenEntity?
+    suspend fun getToken(userId: String, provider: String): TokenEntity?
     suspend fun createToken(
         userId: String,
         token: String,
@@ -24,16 +25,17 @@ interface TokenDao {
 class DbTokenDao(
     private val db: AniwaysDatabase
 ) : TokenDao {
-    override suspend fun getToken(token: String): TokenEntity? {
+    override suspend fun getToken(userId: String, provider: String): TokenEntity? {
         return db.query {
-            val tokenEntity = tokens.find { it.token eq token }
-            tokenEntity?.expiresAt?.let {
-                if (it.toEpochMilli() < System.currentTimeMillis()) {
-                    tokenEntity.delete()
-                    return@query null
+            val token = tokens.find { it.userId eq userId and (it.provider eq provider) }
+            token?.expiresAt?.let {
+                if (it.isAfter(Instant.now())) {
+                    token
+                } else {
+                    token.delete()
+                    null
                 }
             }
-            tokenEntity
         }
     }
 

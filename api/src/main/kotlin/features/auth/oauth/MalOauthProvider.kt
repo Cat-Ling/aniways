@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.sessions.*
 import xyz.aniways.Env
-import xyz.aniways.plugins.Session
+import xyz.aniways.plugins.RedirectTo
 
 class MalOauthProvider(
     private val ctx: ApplicationCall,
@@ -51,7 +51,7 @@ class MalOauthProvider(
         },
         onStateCreated = { call, _ ->
             val url = call.request.queryParameters["redirectUrl"] ?: "/"
-            call.sessions.set(Session.RedirectTo(url))
+            call.sessions.set(RedirectTo(url))
         }
     )
 }

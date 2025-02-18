@@ -1,32 +1,30 @@
 package xyz.aniways.plugins
 
-import com.auth0.jwt.JWT
 import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
-import io.ktor.server.sessions.*
-import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 import xyz.aniways.env
 import xyz.aniways.features.auth.oauth.MalOauthProvider
+import xyz.aniways.features.auth.services.AuthService
 
-sealed class Auth {
-    companion object {
-        const val MAL_OAUTH = "mal-oauth"
-        const val SESSION = Session.UserSession.KEY
-    }
+object Auth {
+    const val MAL_OAUTH = "mal-oauth"
 
-    @Serializable
-    data class UserPrincipal(val id: Int, val token: String) : Auth()
+    class UserSession(
+        val sessionId: String,
+        val userId: String,
+    )
 }
 
 fun Application.configureAuth() {
     val httpClient by inject<HttpClient>()
-    val callbackUrl = "${env.serverConfig.apiUrl}/auth/callback"
+    val callbackUrl = "${env.serverConfig.apiUrl}/auth/myanimelist/callback"
     val credentials = env.malCredentials
     val codeChallenges = mutableMapOf<String, String>()
+    val authService by inject<AuthService>()
 
     install(Authentication) {
         oauth(Auth.MAL_OAUTH) {
@@ -44,18 +42,15 @@ fun Application.configureAuth() {
             }
         }
 
-        session<Session.UserSession>(Auth.SESSION) {
-            validate {
-                val id = JWT.decode(it.token).subject
-                Auth.UserPrincipal(id.toInt(), it.token)
+        session<UserSession>(USER_SESSION) {
+            validate { sessionId ->
+                val session = authService.getSession(sessionId)
+                session?.let { Auth.UserSession(it.id, it.userId) }
             }
 
             challenge {
-                it?.let { call.sessions.set(it) }
                 call.respond(HttpStatusCode.Unauthorized)
             }
         }
-
-
     }
 }

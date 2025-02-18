@@ -23,6 +23,6 @@ val authModule = module {
     }
 
     factory {
-        AuthService(get(), get())
+        AuthService(get(), get(), get())
     }
 }
