@@ -55,5 +55,7 @@ fun Application.configureAuth() {
                 call.respond(HttpStatusCode.Unauthorized)
             }
         }
+
+
     }
 }

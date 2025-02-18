@@ -4,6 +4,10 @@ import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import kotlinx.serialization.Serializable
 import xyz.aniways.env
+import kotlin.time.Duration.Companion.days
+
+typealias UserSession = String
+const val USER_SESSION = "user_session"
 
 sealed class Session {
     @Serializable
@@ -27,6 +31,13 @@ fun Application.configureSession() {
     install(Sessions) {
         cookie<Session.UserSession>(Session.UserSession.KEY) {
             cookie.maxAgeInSeconds = 60 * 60 * 24 * 30 // 30 days
+            cookie.httpOnly = true
+            cookie.sameSite = "lax"
+            cookie.path = "/"
+            cookie.domain = if (domain == "localhost") null else ".$domain"
+        }
+        cookie<UserSession>(USER_SESSION) {
+            cookie.maxAge = 30.days
             cookie.httpOnly = true
             cookie.sameSite = "lax"
             cookie.path = "/"
