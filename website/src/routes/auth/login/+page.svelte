@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { login } from '$lib/api/auth';
 	import { loginFormSchema } from '$lib/api/auth/types';
@@ -17,7 +16,7 @@
 				if (!form.valid) return;
 				await login(fetch, form.data);
 				const redirectTo = page.url.searchParams.get('redirectUrl') || '/';
-				goto(redirectTo);
+				window.location.href = redirectTo;
 			}
 		}
 	);
