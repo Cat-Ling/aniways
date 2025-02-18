@@ -47,10 +47,7 @@ fun Route.authRoutes() {
 
     authenticate(Auth.MAL_OAUTH, strategy = AuthenticationStrategy.Required) {
         authenticate(USER_SESSION, strategy = AuthenticationStrategy.Required) {
-            get<AuthRoute.MalLogin> {
-                val redirectTo = call.request.queryParameters["redirectUrl"]
-                call.respondRedirect("/auth/myanimelist?redirectUrl=$redirectTo")
-            }
+            get<AuthRoute.MalLogin> {}
 
             get<AuthRoute.Callback> {
                 val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()

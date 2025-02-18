@@ -11,7 +11,7 @@ import xyz.aniways.features.settings.db.settings
 class DBSettingsDao(
     private val db: AniwaysDatabase
 ) : SettingsDao {
-    override suspend fun getSettings(userId: Int): Settings {
+    override suspend fun getSettings(userId: String): Settings {
         return db.query {
             settings.find { it.userId eq userId } ?: Settings {
                 this.userId = userId

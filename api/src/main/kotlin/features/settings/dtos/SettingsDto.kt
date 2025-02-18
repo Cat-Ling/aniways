@@ -5,7 +5,7 @@ import xyz.aniways.features.settings.db.Settings
 
 @Serializable
 data class SettingsDto(
-    val userId: Int,
+    val userId: String,
     val autoNextEpisode: Boolean,
     val autoPlayEpisode: Boolean,
     val autoUpdateMal: Boolean,

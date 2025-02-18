@@ -18,7 +18,6 @@ import xyz.aniways.plugins.USER_SESSION
 @Resource("/settings")
 class SettingsRoute
 
-// TODO: SETTINGS BROKEN COS BASED ON MAL AUTH
 fun Route.settingsRoutes() {
     val settingsService by inject<SettingsService>()
 
@@ -28,7 +27,7 @@ fun Route.settingsRoutes() {
             session ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
             val settings = settingsService
-                .getSettingsByUserId(session.userId.toInt())
+                .getSettingsByUserId(session.userId)
                 .toDto()
 
             call.respond(settings)
