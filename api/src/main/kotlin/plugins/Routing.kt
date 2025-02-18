@@ -7,6 +7,7 @@ import io.ktor.server.routing.*
 import xyz.aniways.features.anime.animeRoutes
 import xyz.aniways.features.auth.authRoutes
 import xyz.aniways.features.settings.settingsRoutes
+import xyz.aniways.features.users.userRoutes
 
 fun Application.configureRouting() {
     install(Resources)
@@ -15,6 +16,7 @@ fun Application.configureRouting() {
         authRoutes()
         settingsRoutes()
         animeRoutes()
+        userRoutes()
 
         get("/") {
             call.respondText("Aniways API")

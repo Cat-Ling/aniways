@@ -46,6 +46,9 @@ dependencies {
     implementation(libs.ktor.server.cors)
     implementation(libs.ktor.server.status.pages)
 
+    // Auth dependencies
+    implementation(libs.bcrypt)
+
     // Ktor Client dependencies
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)

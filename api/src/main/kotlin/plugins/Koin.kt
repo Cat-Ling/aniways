@@ -20,6 +20,7 @@ import xyz.aniways.env
 import xyz.aniways.features.anime.animeModule
 import xyz.aniways.features.auth.authModule
 import xyz.aniways.features.settings.settingsModule
+import xyz.aniways.features.users.userModule
 
 fun Application.configureKoin() {
     val envModule = module {
@@ -88,7 +89,8 @@ fun Application.configureKoin() {
             mainModule,
             authModule,
             animeModule,
-            settingsModule
+            settingsModule,
+            userModule
         )
     }
 }

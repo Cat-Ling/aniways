@@ -18,4 +18,5 @@ fun Application.module() {
     configureSimpleCache()
     configureRouting()
     configureCors()
+    configureStatusPage()
 }
