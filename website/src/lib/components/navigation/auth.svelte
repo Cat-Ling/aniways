@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
 	import { List, LogIn, LogOut } from 'lucide-svelte';
+	import { Button } from '../ui/button';
 	import { Skeleton } from '../ui/skeleton';
 
 	let user = $derived(appState.user);
@@ -20,13 +20,13 @@
 	<DropdownMenu.Root bind:open>
 		<DropdownMenu.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
 			<img
-				src={user.picture}
+				src={user.profilePicture}
 				alt="avatar"
 				class="size-10 rounded-full object-cover object-center"
 			/>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content align="end" class="w-56">
-			<DropdownMenu.Label>{user.name}</DropdownMenu.Label>
+			<DropdownMenu.Label>{user.username}</DropdownMenu.Label>
 			<DropdownMenu.Separator />
 			<DropdownMenu.Item href="/anime-list" class="flex cursor-pointer items-center gap-2">
 				<List className="h-5 w-5" />

@@ -9,7 +9,6 @@ fun Application.configureSerialization() {
     install(ContentNegotiation) {
         json(Json {
             ignoreUnknownKeys = true
-            explicitNulls = false
         })
     }
 }
