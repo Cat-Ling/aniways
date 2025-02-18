@@ -15,7 +15,7 @@
 			onUpdate: async ({ form }) => {
 				if (!form.valid) return;
 				await login(fetch, form.data);
-				const redirectTo = page.url.searchParams.get('redirectUrl') || '/';
+				const redirectTo = page.url.searchParams.get('redirect') || '/';
 				window.location.href = redirectTo;
 			}
 		}

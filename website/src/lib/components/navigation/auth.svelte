@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import miku from '$lib/assets/miku.png?enhanced';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
-	import { List, LogIn, LogOut } from 'lucide-svelte';
+	import { History, Library, LogIn, LogOut, Settings, User } from 'lucide-svelte';
 	import { Button } from '../ui/button';
 	import { Skeleton } from '../ui/skeleton';
-	import miku from '$lib/assets/miku.png?enhanced';
 
 	let user = $derived(appState.user);
 
@@ -37,15 +37,35 @@
 		<DropdownMenu.Content align="end" class="w-56">
 			<DropdownMenu.Label>{user.username}</DropdownMenu.Label>
 			<DropdownMenu.Separator />
-			<DropdownMenu.Item href="/anime-list" class="flex cursor-pointer items-center gap-2">
-				<List className="h-5 w-5" />
-				Anime List
-			</DropdownMenu.Item>
+			<DropdownMenu.Group>
+				<DropdownMenu.Label>Navigation</DropdownMenu.Label>
+				<DropdownMenu.Item href="/library" class="flex cursor-pointer items-center gap-2">
+					<Library className="size-4" />
+					Library
+				</DropdownMenu.Item>
+				<DropdownMenu.Item href="/history" class="flex cursor-pointer items-center gap-2">
+					<History className="size-4" />
+					History
+				</DropdownMenu.Item>
+			</DropdownMenu.Group>
+			<DropdownMenu.Separator />
+			<DropdownMenu.Group>
+				<DropdownMenu.Label>Account</DropdownMenu.Label>
+				<DropdownMenu.Item href="/profile" class="flex cursor-pointer items-center gap-2">
+					<User className="size-4" />
+					Profile
+				</DropdownMenu.Item>
+				<DropdownMenu.Item href="/settings" class="flex cursor-pointer items-center gap-2">
+					<Settings className="size-4" />
+					Settings
+				</DropdownMenu.Item>
+			</DropdownMenu.Group>
+			<DropdownMenu.Separator />
 			<DropdownMenu.Item
 				href="/auth/logout?redirect={page.url}"
 				class="flex cursor-pointer items-center gap-2"
 			>
-				<LogOut className="h-5 w-5" />
+				<LogOut className="size-4" />
 				Logout
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>
