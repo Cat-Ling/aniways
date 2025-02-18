@@ -19,6 +19,16 @@ export const login = async (fetch: typeof global.fetch, body: typeof loginFormSc
 	});
 };
 
+export const register = async (fetch: typeof global.fetch, body: typeof loginFormSchema.infer) => {
+	return mutate(fetch, '/users', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+};
+
 export const getLogoutUrl = async (currentPageUrl: string | undefined) => {
 	return `${PUBLIC_API_URL}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };
