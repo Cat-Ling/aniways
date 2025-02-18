@@ -6,6 +6,7 @@
 	import { List, LogIn, LogOut } from 'lucide-svelte';
 	import { Button } from '../ui/button';
 	import { Skeleton } from '../ui/skeleton';
+	import miku from '$lib/assets/miku.png?enhanced';
 
 	let user = $derived(appState.user);
 
@@ -19,11 +20,19 @@
 {:else if user}
 	<DropdownMenu.Root bind:open>
 		<DropdownMenu.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
-			<img
-				src={user.profilePicture}
-				alt="avatar"
-				class="size-10 rounded-full object-cover object-center"
-			/>
+			{#if user.profilePicture}
+				<img
+					src={user.profilePicture}
+					alt="avatar"
+					class="size-10 rounded-full object-cover object-center"
+				/>
+			{:else}
+				<enhanced:img
+					src={miku}
+					alt="avatar"
+					class="size-10 rounded-full object-cover object-top"
+				/>
+			{/if}
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content align="end" class="w-56">
 			<DropdownMenu.Label>{user.username}</DropdownMenu.Label>
