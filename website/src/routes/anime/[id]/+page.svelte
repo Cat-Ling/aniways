@@ -80,7 +80,7 @@
 </div>
 {#if canShowAll}
 	<div class="mb-3 px-3 md:mb-8 md:px-8">
-		<Button variant="outline" on:click={() => (showAll = !showAll)} class="w-full">
+		<Button variant="outline" onclick={() => (showAll = !showAll)} class="w-full">
 			<p class="font-sora">
 				{showAll ? 'Show less' : 'Show all'}
 			</p>

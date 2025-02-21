@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { searchAnime } from '$lib/api/anime';
 	import type { anime } from '$lib/api/anime/types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Command from '$lib/components/ui/command';
 	import { appState } from '$lib/context/state.svelte';
+	import { cn } from '$lib/utils';
 	import { debounce } from 'lodash-es';
-	import { Search } from 'lucide-svelte';
+	import { Loader2, Search } from 'lucide-svelte';
 
 	let value = $state('');
 
@@ -46,7 +46,7 @@
 	variant="ghost"
 	class="hidden rounded-full hover:bg-primary md:flex"
 	size="icon"
-	on:click={() => (appState.searchOpen = true)}
+	onclick={() => (appState.searchOpen = true)}
 >
 	<Search class="size-6" />
 </Button>
@@ -59,18 +59,22 @@
 	<Command.Input placeholder="Search for animes..." bind:value />
 	<Command.List class="max-h-min">
 		{#if loading}
-			<Command.Loading class="p-2">Loading...</Command.Loading>
-		{:else if !value}
-			<Command.Empty>Type to search for animes</Command.Empty>
-		{:else}
+			<Command.Loading class="flex items-center justify-center gap-2 p-2">
+				<Loader2 class="animate-spin text-primary" />
+				Loading...
+			</Command.Loading>
+		{:else if animes.length}
 			<Command.Group heading="Search Results">
 				{#each animes as anime (anime.id)}
-					<Command.Item
-						onSelect={() => (goto(`/anime/${anime.id}`), (appState.searchOpen = false))}
-						class="gap-2"
-					>
-						<img src={anime.poster} alt={anime.name} class="aspect-[300/400] w-1/5 rounded" />
-						<div class="h-full">
+					<Command.LinkItem href={`/anime/${anime.id}`} class="grid grid-cols-5 items-center gap-2">
+						<div class="col-span-1 aspect-[300/400] overflow-hidden rounded-md bg-muted">
+							<img
+								src={anime.poster}
+								alt={anime.name}
+								class="h-full w-full rounded-md object-cover object-center"
+							/>
+						</div>
+						<div class="col-span-4 flex h-full flex-col justify-center">
 							<p class="line-clamp-1 font-bold">
 								{@html anime.jname.replaceAll('"', "'")}
 							</p>
@@ -81,20 +85,17 @@
 								{anime.lastEpisode} episode{(anime.lastEpisode ?? 1) > 1 ? 's' : ''}
 							</p>
 						</div>
-					</Command.Item>
+					</Command.LinkItem>
 				{/each}
 				{#if animes.length && hasMore}
-					<Command.Item
-						onSelect={() => (goto(`/search?q=${value}`), (appState.searchOpen = false))}
-						class="gap-2"
-					>
+					<Command.LinkItem href={`/search?q=${value}`} class="gap-2">
 						{@html `See all results for <q>${value}</q>`}
-					</Command.Item>
+					</Command.LinkItem>
 				{/if}
 			</Command.Group>
-			{#if !animes.length}
-				<Command.Empty>No results found for <q>{value}</q></Command.Empty>
-			{/if}
 		{/if}
+		<Command.Empty class={cn((loading || !value) && 'hidden')}>
+			No results found for <q>{value}</q>
+		</Command.Empty>
 	</Command.List>
 </Command.Dialog>

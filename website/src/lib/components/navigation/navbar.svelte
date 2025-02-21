@@ -33,7 +33,7 @@
 	});
 </script>
 
-<svelte:window on:scroll={checkScroll} />
+<svelte:window onscroll={checkScroll} />
 
 <nav
 	class={cn(

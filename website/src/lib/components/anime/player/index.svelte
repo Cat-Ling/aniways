@@ -3,7 +3,6 @@
 	import type { streamInfo } from '$lib/api/anime/types';
 	import { createArtPlayer } from '$lib/components/anime/player/create-player.svelte';
 	import { appState } from '$lib/context/state.svelte';
-	import { cn } from '$lib/utils';
 
 	type Props = {
 		playerId: string;

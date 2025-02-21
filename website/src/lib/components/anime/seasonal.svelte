@@ -33,7 +33,7 @@
 </script>
 
 <Carousel.Root
-	bind:api
+	setApi={(emblaApi) => (api = emblaApi)}
 	class="relative mb-24"
 	opts={{ loop: true }}
 	plugins={[
@@ -128,7 +128,7 @@
 	>
 		{#each seasonalAnimes as _, i}
 			<Button
-				on:click={() => api?.scrollTo(i)}
+				onclick={() => api?.scrollTo(i)}
 				class="mx-1 size-3 rounded-full p-0"
 				variant={i === currentSlide ? 'default' : 'outline'}
 			/>

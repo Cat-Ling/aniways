@@ -1,7 +1,7 @@
 import { type } from 'arktype';
 
 export const settings = type({
-	userId: 'number.integer',
+	userId: 'string',
 	autoPlayEpisode: 'boolean',
 	autoNextEpisode: 'boolean',
 	autoUpdateMal: 'boolean',

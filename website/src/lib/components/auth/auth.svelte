@@ -11,6 +11,7 @@
 	import { History, Library, LogIn, LogOut, Settings, User } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import RegisterForm from './register-form.svelte';
+	import { goto } from '$app/navigation';
 
 	let user = $derived(appState.user);
 
@@ -45,11 +46,17 @@
 			<DropdownMenu.Separator />
 			<DropdownMenu.Group>
 				<DropdownMenu.Label>Navigation</DropdownMenu.Label>
-				<DropdownMenu.Item href="/library" class="flex cursor-pointer items-center gap-2">
+				<DropdownMenu.Item
+					class="flex cursor-pointer items-center gap-2"
+					onclick={() => goto('/library')}
+				>
 					<Library className="size-4" />
 					Library
 				</DropdownMenu.Item>
-				<DropdownMenu.Item href="/history" class="flex cursor-pointer items-center gap-2">
+				<DropdownMenu.Item
+					class="flex cursor-pointer items-center gap-2"
+					onclick={() => goto('/history')}
+				>
 					<History className="size-4" />
 					History
 				</DropdownMenu.Item>
@@ -57,19 +64,25 @@
 			<DropdownMenu.Separator />
 			<DropdownMenu.Group>
 				<DropdownMenu.Label>Account</DropdownMenu.Label>
-				<DropdownMenu.Item href="/profile" class="flex cursor-pointer items-center gap-2">
+				<DropdownMenu.Item
+					class="flex cursor-pointer items-center gap-2"
+					onclick={() => goto('/profile')}
+				>
 					<User className="size-4" />
 					Profile
 				</DropdownMenu.Item>
-				<DropdownMenu.Item href="/settings" class="flex cursor-pointer items-center gap-2">
+				<DropdownMenu.Item
+					class="flex cursor-pointer items-center gap-2"
+					onclick={() => goto('/settings')}
+				>
 					<Settings className="size-4" />
 					Settings
 				</DropdownMenu.Item>
 			</DropdownMenu.Group>
 			<DropdownMenu.Separator />
 			<DropdownMenu.Item
-				href="/auth/logout?redirect={page.url}"
 				class="flex cursor-pointer items-center gap-2"
+				onclick={() => goto(`/auth/logout?redirect=${page.url}`)}
 			>
 				<LogOut className="size-4" />
 				Logout
@@ -88,9 +101,9 @@
 			{#if formType === 'login'}
 				<Dialog.Title>Login to AniWays</Dialog.Title>
 				<LoginForm />
-				<Button variant="secondary" onclick={() => (formType = 'register')}
-					>Create an account</Button
-				>
+				<Button variant="secondary" onclick={() => (formType = 'register')}>
+					Create an account
+				</Button>
 			{:else}
 				<Dialog.Title>Register to AniWays</Dialog.Title>
 				<RegisterForm />

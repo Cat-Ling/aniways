@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getAnimeMetadata } from '$lib/api/anime';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
 	import { cn } from '$lib/utils';
 	import { Info, PlayIcon, Tv } from 'lucide-svelte';
@@ -110,16 +110,12 @@
 						Watch Now
 					</Button>
 					<Dialog bind:open={isTrailerOpen}>
-						<DialogTrigger asChild>
-							<Button
-								variant="outline"
-								onclick={() => {
-									isTrailerOpen = true;
-								}}
-							>
-								<Tv class="mr-2" />
-								View Trailer
-							</Button>
+						<DialogTrigger
+							class={buttonVariants({ variant: 'outline' })}
+							onclick={() => (isTrailerOpen = true)}
+						>
+							<Tv class="mr-2" />
+							View Trailer
 						</DialogTrigger>
 						<DialogContent>
 							<DialogTitle>{anime.jname} Trailer</DialogTitle>

@@ -5,7 +5,6 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import * as Select from '$lib/components/ui/select';
-	import type { Selected } from 'bits-ui';
 	import { RefreshCcw, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
@@ -13,19 +12,11 @@
 	let { data }: PageProps = $props();
 
 	let input: HTMLInputElement | undefined = $state(undefined);
-	let selected: Selected<string> | undefined = $state(undefined);
+	let selected: string | undefined = $state(undefined);
 
 	$effect(() => {
 		if (input) input.value = data.query ?? '';
-		selected = data.genre
-			? {
-					value: data.genre,
-					label: data.genre
-						?.split('-')
-						.map((word) => word[0].toUpperCase() + word.slice(1))
-						.join(' ')
-				}
-			: undefined;
+		if (data.genre) selected = data.genre;
 	});
 
 	onMount(() => {
@@ -58,13 +49,12 @@
 			e.preventDefault();
 
 			const query = input?.value;
-			const genre = selected?.value;
 
-			if (!query && !genre) return;
+			if (!query && !selected) return;
 
 			const searchParams = new URLSearchParams();
 			if (query) searchParams.set('q', query);
-			if (genre) searchParams.set('genre', genre);
+			if (selected) searchParams.set('genre', selected);
 
 			goto(`/search?${searchParams.toString()}`);
 		}}
@@ -75,12 +65,12 @@
 			placeholder="Search for anime..."
 			class="col-span-2 md:max-w-72"
 			defaultValue={data.query ?? ''}
-			bind:instance={input}
+			bind:ref={input}
 		/>
-		{#key selected?.value}
-			<Select.Root bind:selected>
-				<Select.Trigger class="col-span-2 md:max-w-72">
-					<Select.Value placeholder="Genre" />
+		{#key selected}
+			<Select.Root bind:value={selected} type="single">
+				<Select.Trigger class="col-span-2 capitalize md:max-w-72">
+					{selected ? (selected === 'all' ? 'All' : selected.replaceAll('-', ' ')) : 'Genre'}
 				</Select.Trigger>
 				<Select.Content class="max-h-56 overflow-y-scroll">
 					<Select.Item value="all" label="All">All</Select.Item>
@@ -90,7 +80,6 @@
 						</Select.Item>
 					{/each}
 				</Select.Content>
-				<Select.Input name="genre" value={selected?.value} />
 			</Select.Root>
 		{/key}
 		<Button type="submit">

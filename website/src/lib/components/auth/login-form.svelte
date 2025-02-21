@@ -26,21 +26,25 @@
 
 <form method="POST" use:enhance class="flex flex-col justify-center gap-2">
 	<Form.Field {form} name="email">
-		<Form.Control let:attrs>
-			<Form.Label>Email</Form.Label>
-			<Input {...attrs} bind:value={$formData.email} placeholder="Enter your email" />
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Email</Form.Label>
+				<Input {...props} bind:value={$formData.email} placeholder="Enter your email" />
+			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Field {form} name="password">
-		<Form.Control let:attrs>
-			<Form.Label>Password</Form.Label>
-			<Input
-				{...attrs}
-				bind:value={$formData.password}
-				type="password"
-				placeholder="Enter your password"
-			/>
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Password</Form.Label>
+				<Input
+					{...props}
+					bind:value={$formData.password}
+					type="password"
+					placeholder="Enter your password"
+				/>
+			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
