@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import Logo from '$lib/assets/logo.png?enhanced';
+	import { Button } from '$lib/components/ui/button';
+	import Input from '$lib/components/ui/input/input.svelte';
 	import { ArrowUp, Home, Search, Shuffle } from 'lucide-svelte';
-	import { Button } from '../ui/button';
-	import Input from '../ui/input/input.svelte';
 
 	type Props = {
 		genres: { value: string; label: string }[];

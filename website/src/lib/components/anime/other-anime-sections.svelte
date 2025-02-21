@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { getSeasonsAndRelatedAnimes } from '$lib/api/anime';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { cn } from '$lib/utils';
-	import { Skeleton } from '../ui/skeleton';
 
 	type Props = {
 		animeId: string;

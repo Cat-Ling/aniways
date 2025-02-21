@@ -1,6 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { fetchJson, mutate, StatusError } from '$lib/api';
-import { loginFormSchema, user } from './types';
+import { loginFormSchema, user, registerFormSchema } from './types';
 
 export const getCurrentUser = async (fetch: typeof global.fetch) => {
 	return fetchJson(fetch, '/auth/me', user).catch((e) => {
@@ -19,7 +19,10 @@ export const login = async (fetch: typeof global.fetch, body: typeof loginFormSc
 	});
 };
 
-export const register = async (fetch: typeof global.fetch, body: typeof loginFormSchema.infer) => {
+export const register = async (
+	fetch: typeof global.fetch,
+	body: typeof registerFormSchema.infer
+) => {
 	return mutate(fetch, '/users', {
 		method: 'POST',
 		headers: {

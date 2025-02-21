@@ -1,16 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import miku from '$lib/assets/miku.png?enhanced';
+	import LoginForm from '$lib/components/auth/login-form.svelte';
+	import { buttonVariants } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
 	import { History, Library, LogIn, LogOut, Settings, User } from 'lucide-svelte';
-	import { Button } from '../ui/button';
-	import { Skeleton } from '../ui/skeleton';
+	import Button from '../ui/button/button.svelte';
+	import RegisterForm from './register-form.svelte';
 
 	let user = $derived(appState.user);
 
 	let open = $state(false);
+
+	let formType = $state<'login' | 'register'>('login');
 </script>
 
 {#if appState.isLoading}
@@ -71,10 +77,27 @@
 		</DropdownMenu.Content>
 	</DropdownMenu.Root>
 {:else}
-	<div class="ml-2 rounded-md bg-background">
-		<Button href="/auth/login?redirect={page.url}">
-			<LogIn class="mr-2 size-6" />
-			Sign in
-		</Button>
-	</div>
+	<Dialog.Root>
+		<div class="ml-2 rounded-md bg-background">
+			<Dialog.Trigger class={buttonVariants()}>
+				<LogIn class="mr-2 size-6" />
+				Sign in
+			</Dialog.Trigger>
+		</div>
+		<Dialog.Content>
+			{#if formType === 'login'}
+				<Dialog.Title>Login to AniWays</Dialog.Title>
+				<LoginForm />
+				<Button variant="secondary" onclick={() => (formType = 'register')}
+					>Create an account</Button
+				>
+			{:else}
+				<Dialog.Title>Register to AniWays</Dialog.Title>
+				<RegisterForm />
+				<Button variant="secondary" onclick={() => (formType = 'login')}>
+					Already have an account?
+				</Button>
+			{/if}
+		</Dialog.Content>
+	</Dialog.Root>
 {/if}

@@ -1,11 +1,10 @@
 <script lang="ts">
 	import Logo from '$lib/assets/logo.png?enhanced';
+	import Auth from '$lib/components/auth/auth.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { cn } from '$lib/utils';
 	import { Shuffle } from 'lucide-svelte';
-	import { onMount, onDestroy } from 'svelte';
-
-	import Auth from './auth.svelte';
+	import { onMount } from 'svelte';
 	import SearchButton from './search.svelte';
 
 	let isHidden = false;

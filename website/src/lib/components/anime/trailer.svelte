@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getTrailer } from '$lib/api/anime';
-	import Skeleton from '../ui/skeleton/skeleton.svelte';
+	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 
 	type Props = {
 		title: string;

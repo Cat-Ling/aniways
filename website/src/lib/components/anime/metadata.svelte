@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getAnimeMetadata } from '$lib/api/anime';
+	import { Button } from '$lib/components/ui/button';
+	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
 	import { cn } from '$lib/utils';
-	import { Info, PlayIcon, Plus, Tv } from 'lucide-svelte';
-	import { Button } from '../ui/button';
-	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
+	import { Info, PlayIcon, Tv } from 'lucide-svelte';
 	import Trailer from './trailer.svelte';
 
 	type Props = {

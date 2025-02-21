@@ -16,7 +16,7 @@ export const registerFormSchema = type({
 	username: 'string',
 	email: 'string.email',
 	password: 'string > 6',
-	confirmPassword: 'string|null'
+	confirmPassword: 'string'
 }).narrow((data, ctx) => {
 	if (data.password === data.confirmPassword) {
 		return true;

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { anime } from '$lib/api/anime/types';
+	import { Button } from '$lib/components/ui/button';
 	import * as Pagination from '$lib/components/ui/pagination';
 	import { cn } from '$lib/utils';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 	import { type Snippet } from 'svelte';
-	import { Button } from '../ui/button';
 
 	type Props = {
 		animes: (typeof anime.infer)[];
