@@ -28,7 +28,12 @@ export const register = async (
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify(body)
+		body: JSON.stringify({
+			username: body.username,
+			email: body.email,
+			password: body.password,
+			profilePicture: null
+		})
 	});
 };
 
