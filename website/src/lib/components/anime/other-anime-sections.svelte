@@ -36,7 +36,7 @@
 					)}
 				>
 					<img
-						src={data.metadata?.mainPicture ?? data.poster}
+						src={data.metadata?.mainPicture || data.poster}
 						alt={data.jname}
 						class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
 					/>

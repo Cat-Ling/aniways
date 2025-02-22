@@ -47,7 +47,7 @@
 		>
 			<div class="aspect-[3/4] w-full min-w-full overflow-hidden rounded-md bg-card">
 				<img
-					src={result.metadata?.mainPicture ?? result.poster}
+					src={result.metadata?.mainPicture || result.poster}
 					alt={result.jname}
 					class="aspect-[3/4] w-full scale-105 rounded-md object-cover transition group-hover:scale-100"
 				/>

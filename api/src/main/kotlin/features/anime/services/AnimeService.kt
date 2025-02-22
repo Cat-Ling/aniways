@@ -80,9 +80,9 @@ class AnimeService(
         return saveMetadataInDB(anime)
     }
 
-    suspend fun getAnimeWatchOrder(id: String): List<AnimeDto> {
+    suspend fun getAnimeWatchOrder(id: String): List<AnimeWithMetadataDto> {
         val anime = animeDao.getAnimeById(id) ?: return emptyList()
-        val malId = anime.malId ?: return listOf(anime.toAnimeDto())
+        val malId = anime.malId ?: return listOf(anime.toAnimeWithMetadataDto())
         val franchise = shikimoriApi.getAnimeFranchise(malId)
 
         val sequels = franchise.links.filter { it.relation == "sequel" }
@@ -98,12 +98,12 @@ class AnimeService(
         }.toList()
 
         val dbMap = animeDao.getAnimesInMalIds(watchOrder)
-            .associate { it.malId to it.toAnimeDto() }
+            .associate { it.malId to it.toAnimeWithMetadataDto() }
 
         return watchOrder.mapNotNull { dbMap[it] }
     }
 
-    suspend fun getRelatedAnime(id: String): List<AnimeDto> {
+    suspend fun getRelatedAnime(id: String): List<AnimeWithMetadataDto> {
         val anime = animeDao.getAnimeById(id) ?: return emptyList()
         val malId = anime.malId ?: return emptyList()
 
@@ -119,19 +119,19 @@ class AnimeService(
         if (relatedAnime.isEmpty()) return emptyList()
 
         val dbAnimes = animeDao.getAnimesInMalIds(relatedAnime)
-            .associate { it.malId to it.toAnimeDto() }
+            .associate { it.malId to it.toAnimeWithMetadataDto() }
 
         return relatedAnime.mapNotNull { dbAnimes[it] }
     }
 
-    suspend fun getFranchiseOfAnime(id: String): List<AnimeDto> {
+    suspend fun getFranchiseOfAnime(id: String): List<AnimeWithMetadataDto> {
         val anime = animeDao.getAnimeById(id) ?: return emptyList()
-        val malId = anime.malId ?: return listOf(anime.toAnimeDto())
+        val malId = anime.malId ?: return listOf(anime.toAnimeWithMetadataDto())
 
         val franchise = shikimoriApi.getAnimeFranchise(malId)
 
         val dbAnimes = animeDao.getAnimesInMalIds(franchise.nodes.mapNotNull { it.id })
-            .associate { it.malId to it.toAnimeDto() }
+            .associate { it.malId to it.toAnimeWithMetadataDto() }
 
         return franchise.nodes.mapNotNull { dbAnimes[it.id] }
     }
@@ -167,12 +167,12 @@ class AnimeService(
         }
     }
 
-    suspend fun getTrendingAnimes(): List<AnimeDto> {
+    suspend fun getTrendingAnimes(): List<AnimeWithMetadataDto> {
         val trendingAnimes = anilistApi.getTrendingAnime()
         val dbAnimes = animeDao.getAnimesInMalIds(trendingAnimes.mapNotNull { it.malId })
 
         return trendingAnimes.mapNotNull { scrapedAnime ->
-            dbAnimes.find { it.malId == scrapedAnime.malId }?.toAnimeDto()
+            dbAnimes.find { it.malId == scrapedAnime.malId }?.toAnimeWithMetadataDto()
         }
     }
 
@@ -180,19 +180,19 @@ class AnimeService(
         return transformToAnilistAnimeDto(anilistApi.getSeasonalAnime())
     }
 
-    suspend fun getPopularAnimes(): List<AnimeDto> {
+    suspend fun getPopularAnimes(): List<AnimeWithMetadataDto> {
         val popular = anilistApi.getAllTimePopularAnime()
         val dbAnimes = animeDao.getAnimesInMalIds(popular.mapNotNull { it.malId })
 
         return popular.mapNotNull { anilistAnime ->
-            dbAnimes.find { it.malId == anilistAnime.malId }?.toAnimeDto()
+            dbAnimes.find { it.malId == anilistAnime.malId }?.toAnimeWithMetadataDto()
         }
     }
 
-    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
+    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> {
         val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
 
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
     }
 
     suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {
@@ -205,9 +205,9 @@ class AnimeService(
         return retryWithDelay { animeScraper.getServersOfEpisode(episodeId) } ?: emptyList()
     }
 
-    suspend fun searchAnime(query: String, genre: String?, page: Int, itemsPerPage: Int = 20): Pagination<AnimeDto> {
+    suspend fun searchAnime(query: String, genre: String?, page: Int, itemsPerPage: Int = 20): Pagination<AnimeWithMetadataDto> {
         val result = animeDao.searchAnimes(query, genre?.formatGenre(), page, itemsPerPage)
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
     }
 
     suspend fun getAnimeCount(): Int {
@@ -218,24 +218,24 @@ class AnimeService(
         return animeDao.getAllGenres()
     }
 
-    suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeDto> {
+    suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> {
         val result = animeDao.getAnimesByGenre(
             genre = genre.formatGenre(),
             page = page,
             itemsPerPage = itemsPerPage
         )
 
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeDto() })
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
     }
 
-    suspend fun getRandomAnime(): AnimeDto {
-        return animeDao.getRandomAnime().toAnimeDto()
+    suspend fun getRandomAnime(): AnimeWithMetadataDto {
+        return animeDao.getRandomAnime().toAnimeWithMetadataDto()
     }
 
-    suspend fun getRandomAnimeByGenre(genre: String): AnimeDto {
+    suspend fun getRandomAnimeByGenre(genre: String): AnimeWithMetadataDto {
         return animeDao.getRandomAnimeByGenre(
             genre = genre.formatGenre()
-        ).toAnimeDto()
+        ).toAnimeWithMetadataDto()
     }
 
     suspend fun scrapeAndPopulateAnime(page: Int = 1): Unit = coroutineScope {

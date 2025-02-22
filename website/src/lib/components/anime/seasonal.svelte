@@ -112,7 +112,7 @@
 					class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-b from-background via-background/55 to-background"
 				></div>
 				<img
-					src={anime.bannerImage ?? anime.coverImage}
+					src={anime.bannerImage || anime.coverImage}
 					alt={anime.title}
 					class="h-full w-full object-cover object-center shadow-lg"
 					onerror={(e) => {

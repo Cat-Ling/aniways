@@ -58,7 +58,7 @@
 			<Skeleton class="h-48 w-full md:h-96" />
 		{:else}
 			<img
-				src={metadataState.banner ?? anime.mainPicture}
+				src={metadataState.banner || anime.mainPicture}
 				alt={`Banner for ${anime.jname}`}
 				class="h-48 w-full overflow-hidden object-cover object-center md:h-96"
 			/>
