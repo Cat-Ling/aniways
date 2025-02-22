@@ -50,9 +50,6 @@ services:
       - 'traefik.http.routers.website.rule=Host(`${WEBSITE_DOMAIN}`)'
       - 'traefik.http.routers.website.entrypoints=websecure'
       - 'traefik.http.routers.website.tls.certresolver=myresolver'
-    environment:
-      - PUBLIC_API_URL=${API_DOMAIN}
-      - PUBLIC_STREAMING_URL=${STREAMING_DOMAIN}
     deploy:
       update_config:
         order: start-first
