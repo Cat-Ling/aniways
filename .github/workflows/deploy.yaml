@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - 'main'
-    paths:
-      - 'api/**'
-      - 'streaming/**'
-      - 'docker-compose.yaml'
-      - '.github/workflows/deploy.yaml'
 
 permissions:
   packages: write
