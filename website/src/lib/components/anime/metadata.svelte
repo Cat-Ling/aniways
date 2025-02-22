@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getAnimeMetadata } from '$lib/api/anime';
+	import type { libraryItemSchema } from '$lib/api/library/types';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
 	import { cn } from '$lib/utils';
 	import { Info, PlayIcon, Tv } from 'lucide-svelte';
+	import LibraryBtn from './library-btn.svelte';
+	import { metadataState } from './library-state.svelte';
 	import Trailer from './trailer.svelte';
 
 	type Props = {
 		anime: Awaited<ReturnType<typeof getAnimeMetadata>>;
+		library: typeof libraryItemSchema.infer | null;
 	};
 
-	const { anime }: Props = $props();
+	const { anime, library }: Props = $props();
 
 	let isTrailerOpen = $state(false);
 	let isDescriptionExpanded = $state(false);
@@ -23,6 +27,11 @@
 	});
 
 	let isWatchPage = $derived.by(() => page.url.pathname.includes('/watch'));
+
+	$effect(() => {
+		metadataState.animeId = anime.id;
+		metadataState.library = library;
+	});
 </script>
 
 <div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'relative z-20 -mt-12 md:-mt-24')}>
@@ -43,7 +52,6 @@
 				<div class="mt-2 hidden gap-2 md:flex">
 					{@render pill(anime.mediaType)}
 					{@render pill(anime.rating)}
-					{@render pill(anime.avgEpDuration)}
 					{@render pill(anime.airingStatus)}
 				</div>
 				<div class="mt-2 flex flex-1 flex-wrap items-end gap-2">
@@ -64,18 +72,27 @@
 						{@render keyValue('Studio', anime.studio)}
 						{@render keyValue('Rank', anime.rank)}
 						{@render keyValue('Score', anime.score)}
+						{@render keyValue('Avg Ep Duration', anime.avgEpDuration)}
 					</div>
 					<div>
 						{@render keyValue('Popularity', anime.popularity)}
 						{@render keyValue('Airing', anime.airing)}
 						{@render keyValue('Season', anime.season)}
 						{@render keyValue('Source', anime.source?.replace('_', ' '))}
+						<span class="hidden md:inline">
+							{@render keyValue(
+								'Library',
+								metadataState.library
+									? `${metadataState.library?.status} (${metadataState.library?.watchedEpisodes} eps)`
+									: 'Not in Library'
+							)}
+						</span>
 					</div>
 					<div class="md:hidden">
 						{@render keyValue('Media Type', anime.mediaType)}
 						{@render keyValue('Rating', anime.rating)}
-						{@render keyValue('Avg Ep Duration', anime.avgEpDuration)}
 						{@render keyValue('Airing Status', anime.airingStatus)}
+						{@render keyValue('Library', `${library?.status} (${library?.watchedEpisodes} eps)`)}
 					</div>
 				</div>
 				{#key anime.id}
@@ -102,19 +119,20 @@
 			<div class="flex flex-col justify-end">
 				<div class="mt-4 grid grid-cols-2 items-center gap-2 md:flex">
 					<Button href="/anime/{anime.id}" class={[isWatchPage || 'hidden']}>
-						<Info class="mr-2" />
+						<Info />
 						View Details
 					</Button>
 					<Button href="/anime/{anime.id}/watch" class={[isWatchPage && 'hidden']}>
-						<PlayIcon class="mr-2" />
+						<PlayIcon />
 						Watch Now
 					</Button>
+					<LibraryBtn />
 					<Dialog bind:open={isTrailerOpen}>
 						<DialogTrigger
-							class={buttonVariants({ variant: 'outline' })}
+							class={buttonVariants({ variant: 'outline', class: 'col-span-2' })}
 							onclick={() => (isTrailerOpen = true)}
 						>
-							<Tv class="mr-2" />
+							<Tv />
 							View Trailer
 						</DialogTrigger>
 						<DialogContent>

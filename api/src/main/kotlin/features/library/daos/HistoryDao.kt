@@ -13,6 +13,7 @@ import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 
 interface HistoryDao {
+    suspend fun getHistoryAnime(userId: String, animeId: String): HistoryEntity?
     suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): Pagination<HistoryEntity>
     suspend fun saveToHistory(userId: String, animeId: String, watchedEpisodes: Int)
     suspend fun deleteFromHistory(userId: String, animeId: String)
@@ -21,6 +22,12 @@ interface HistoryDao {
 class DBHistoryDao(
     private val db: AniwaysDatabase
 ) : HistoryDao {
+    override suspend fun getHistoryAnime(userId: String, animeId: String): HistoryEntity? {
+        return db.query {
+            history.find { (it.userId eq userId) and (it.animeId eq animeId) }
+        }
+    }
+
     override suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): Pagination<HistoryEntity> {
         return db.query {
             val totalItems = history.count { it.userId eq userId }

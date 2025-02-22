@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { metadataState } from '$lib/components/anime/library-state.svelte';
 	import Metadata from '$lib/components/anime/metadata.svelte';
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -7,7 +8,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { anime, episodes, seasonsAndRelatedAnimes, banner } = $derived(data);
+	let { anime, episodes, seasonsAndRelatedAnimes, banner, library } = $derived(data);
 
 	let showAll = $state(false);
 	let searchValue = $state('');
@@ -29,27 +30,45 @@
 		if (showAll) return filteredEpisodes;
 		return filteredEpisodes.slice(0, 12);
 	});
+
+	let isBannerLoading = $state(true);
+
+	$effect(() => {
+		if (metadataState.animeId !== anime.id) {
+			isBannerLoading = true;
+		}
+
+		banner
+			.then((banner) => {
+				if (!banner?.banner) return;
+				metadataState.banner = banner.banner ?? anime.mainPicture;
+			})
+			.catch(() => {
+				metadataState.banner = anime.mainPicture ?? null;
+			})
+			.finally(() => {
+				isBannerLoading = false;
+			});
+	});
 </script>
 
 <div id="anime-page">
 	<div class="sticky top-0 w-full overflow-hidden rounded-b-md border-border">
-		{#await banner}
+		{#if isBannerLoading}
 			<Skeleton class="h-48 w-full md:h-96" />
-		{:then banner}
-			{#key anime.id}
-				<img
-					src={banner?.banner ?? anime.mainPicture}
-					alt={`Banner for ${anime.jname}`}
-					class="h-48 w-full overflow-hidden object-cover object-center md:h-96"
-				/>
-				<div
-					class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
-				></div>
-			{/key}
-		{/await}
+		{:else}
+			<img
+				src={metadataState.banner ?? anime.mainPicture}
+				alt={`Banner for ${anime.jname}`}
+				class="h-48 w-full overflow-hidden object-cover object-center md:h-96"
+			/>
+			<div
+				class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
+			></div>
+		{/if}
 	</div>
 
-	<Metadata {anime} />
+	<Metadata {anime} {library} />
 </div>
 
 <div class="flex w-full items-center justify-between px-3 pt-8 md:px-8">

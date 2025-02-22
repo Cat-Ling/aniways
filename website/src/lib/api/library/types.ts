@@ -44,3 +44,8 @@ export const historySchema = type({
 	}),
 	items: historyItemSchema.array()
 });
+
+export const updateLibrarySchema = type({
+	status: libraryStatusSchema,
+	watchedEpisodes: 'number.integer'
+});

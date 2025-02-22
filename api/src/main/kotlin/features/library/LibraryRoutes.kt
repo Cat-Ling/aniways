@@ -34,6 +34,12 @@ class LibraryRoutes(
     }
 
     @Resource("/{animeId}")
+    class LibraryAnime(val parent: LibraryRoutes, val animeId: String)
+
+    @Resource("/{animeId}/history")
+    class HistoryAnime(val parent: LibraryRoutes, val animeId: String)
+
+    @Resource("/{animeId}")
     class DeleteLibrary(val parent: LibraryRoutes, val animeId: String)
 
     @Resource("/{animeId}/history")
@@ -68,6 +74,32 @@ fun Route.libraryRoutes() {
                 userId = currentUser.userId,
                 itemsPerPage = it.parent.itemsPerPage,
                 page = it.parent.page
+            )
+
+            call.respond(result)
+        }
+
+        // Get library anime
+        get<LibraryRoutes.LibraryAnime> {
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val result = service.getLibraryAnime(
+                userId = currentUser.userId,
+                animeId = it.animeId
+            )
+
+            call.respond(result)
+        }
+
+        // Get history anime
+        get<LibraryRoutes.HistoryAnime> {
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val result = service.getHistoryAnime(
+                userId = currentUser.userId,
+                animeId = it.animeId
             )
 
             call.respond(result)

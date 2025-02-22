@@ -1,5 +1,11 @@
 import { fetchJson, mutate } from '..';
-import { historySchema, librarySchema, libraryStatusSchema } from './types';
+import {
+	historyItemSchema,
+	historySchema,
+	libraryItemSchema,
+	librarySchema,
+	libraryStatusSchema
+} from './types';
 
 export const getLibrary = async (
 	fetch: typeof global.fetch,
@@ -14,6 +20,14 @@ export const getLibrary = async (
 			status
 		}
 	});
+};
+
+export const getLibraryItem = async (fetch: typeof global.fetch, animeId: string) => {
+	return fetchJson(fetch, `/library/${animeId}`, libraryItemSchema).catch(() => null);
+};
+
+export const getHistoryItem = async (fetch: typeof global.fetch, animeId: string) => {
+	return fetchJson(fetch, `/library/${animeId}/history`, historyItemSchema).catch(() => null);
 };
 
 export const getHistory = async (

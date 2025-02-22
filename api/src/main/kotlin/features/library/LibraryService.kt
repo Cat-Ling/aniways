@@ -1,5 +1,6 @@
 package xyz.aniways.features.library
 
+import io.ktor.server.plugins.*
 import xyz.aniways.features.library.daos.HistoryDao
 import xyz.aniways.features.library.daos.LibraryDao
 import xyz.aniways.features.library.db.LibraryStatus
@@ -12,6 +13,20 @@ class LibraryService(
     private val libraryDao: LibraryDao,
     private val historyDao: HistoryDao
 ) {
+    suspend fun getLibraryAnime(
+        userId: String,
+        animeId: String,
+    ): LibraryDto {
+        val result = libraryDao.getLibraryAnime(
+            userId = userId,
+            animeId = animeId
+        )
+
+        result ?: throw NotFoundException("Anime not found in library")
+
+        return result.toDto()
+    }
+
     suspend fun getLibrary(
         userId: String,
         status: LibraryStatus,
@@ -29,6 +44,20 @@ class LibraryService(
             pageInfo = result.pageInfo,
             items = result.items.map { it.toDto() }
         )
+    }
+
+    suspend fun getHistoryAnime(
+        userId: String,
+        animeId: String,
+    ): HistoryDto {
+        val result = historyDao.getHistoryAnime(
+            userId = userId,
+            animeId = animeId
+        )
+
+        result ?: throw NotFoundException("Anime not found in history")
+
+        return result.toDto()
     }
 
     suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): Pagination<HistoryDto> {

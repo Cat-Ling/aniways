@@ -14,13 +14,17 @@ import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 
 interface LibraryDao {
+    suspend fun getLibraryAnime(
+        userId: String,
+        animeId: String
+    ): LibraryEntity?
+
     suspend fun getLibrary(
         userId: String,
         page: Int,
         itemsPerPage: Int,
         status: LibraryStatus
     ): Pagination<LibraryEntity>
-
     suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, epNo: Int? = null)
     suspend fun deleteFromLibrary(userId: String, animeId: String)
 }
@@ -28,6 +32,12 @@ interface LibraryDao {
 class DBLibraryDao(
     private val db: AniwaysDatabase
 ) : LibraryDao {
+    override suspend fun getLibraryAnime(userId: String, animeId: String): LibraryEntity? {
+        return db.query {
+            library.find { (it.userId eq userId) and (it.animeId eq animeId) }
+        }
+    }
+
     override suspend fun getLibrary(
         userId: String,
         page: Int,

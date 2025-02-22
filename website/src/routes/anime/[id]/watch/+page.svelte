@@ -123,6 +123,6 @@
 	</div>
 </div>
 
-<Metadata anime={data.anime} />
+<Metadata anime={data.anime} library={data.library} />
 
 <OtherAnimeSections animeId={query.id} seasonsAndRelatedAnimes={data.seasonsAndRelatedAnimes} />
