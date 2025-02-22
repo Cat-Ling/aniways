@@ -18,10 +18,10 @@ export const libraryItemSchema = type({
 
 export const librarySchema = type({
 	pageInfo: type({
-		total: 'number.integer',
-		perPage: 'number.integer',
+		totalPage: 'number.integer',
 		currentPage: 'number.integer',
-		lastPage: 'number.integer'
+		hasNextPage: 'boolean',
+		hasPreviousPage: 'boolean'
 	}),
 	items: libraryItemSchema.array()
 });
@@ -37,10 +37,10 @@ export const historyItemSchema = type({
 
 export const historySchema = type({
 	pageInfo: type({
-		total: 'number.integer',
-		perPage: 'number.integer',
+		totalPage: 'number.integer',
 		currentPage: 'number.integer',
-		lastPage: 'number.integer'
+		hasNextPage: 'boolean',
+		hasPreviousPage: 'boolean'
 	}),
 	items: historyItemSchema.array()
 });

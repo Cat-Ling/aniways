@@ -15,12 +15,21 @@
 		};
 		class?: string;
 		buildUrl?: (anime: Props['animes'][number]) => string;
+		buildSubtitle?: (anime: Props['animes'][number], original: string) => string;
 		emptyLayout?: Snippet;
 		titleLayout?: Snippet<[{ pagination: Snippet<[{ className?: string }]> }]>;
 		onPaginationClick?: () => void;
 	};
 
-	let { animes, emptyLayout, pageInfo, titleLayout, buildUrl, ...props }: Props = $props();
+	let {
+		animes,
+		emptyLayout,
+		pageInfo,
+		titleLayout,
+		buildUrl,
+		buildSubtitle = (_, original) => original,
+		...props
+	}: Props = $props();
 </script>
 
 {@render titleLayout?.({ pagination })}
@@ -60,7 +69,10 @@
 				</h3>
 				<p class="mt-1 text-xs text-muted-foreground md:text-sm">{result.genre.join(', ')}</p>
 				<p class="mt-1 text-xs text-muted-foreground md:text-sm">
-					{result.lastEpisode ?? '???'} episode{(result.lastEpisode ?? 2) > 1 ? 's' : ''}
+					{buildSubtitle(
+						result,
+						`${result.lastEpisode ?? '???'} episode${(result.lastEpisode ?? 2) > 1 ? 's' : ''}`
+					)}
 				</p>
 			</div>
 		</a>
