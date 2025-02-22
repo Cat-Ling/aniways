@@ -1,6 +1,7 @@
 import { getServersOfEpisode, getStreamingData } from '$lib/api/anime';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import { getHistoryItem } from '$lib/api/library';
 
 export const load: PageLoad = async ({ url, fetch, parent: getParent, params }) => {
 	const parent = await getParent();
@@ -35,6 +36,8 @@ export const load: PageLoad = async ({ url, fetch, parent: getParent, params }) 
 		{} as Record<string, typeof servers>
 	);
 
+	const history = await getHistoryItem(fetch, params.id).catch(() => null);
+
 	return {
 		title: `${anime.jname} - Episode ${episode}`,
 		query: {
@@ -49,7 +52,8 @@ export const load: PageLoad = async ({ url, fetch, parent: getParent, params }) 
 			servers,
 			serversByType,
 			selectedServer,
-			streamInfo: getStreamingData(fetch, selectedServer.url)
+			streamInfo: getStreamingData(fetch, selectedServer.url),
+			history
 		}
 	};
 };

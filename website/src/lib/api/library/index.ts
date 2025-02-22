@@ -61,10 +61,12 @@ export const saveToLibrary = async (
 export const saveToHistory = async (
 	fetch: typeof global.fetch,
 	animeId: string,
-	watchedEpisodes: number
+	watchedEpisodes: number,
+	abortSignal?: AbortSignal
 ) => {
 	return mutate(fetch, `/library/${animeId}/history/${watchedEpisodes}`, {
-		method: 'PUT'
+		method: 'PUT',
+		signal: abortSignal
 	});
 };
 

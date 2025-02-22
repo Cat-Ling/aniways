@@ -13,13 +13,20 @@ type Props = {
 	container: HTMLDivElement;
 	source: typeof streamInfo.infer;
 	nextEpisodeUrl: string | undefined;
+	updateLibrary: () => void;
 };
 
 const artplayerSettingsSchema = type({
 	times: 'Record<string, number>'
 });
 
-export const createArtPlayer = async ({ id, container, source, nextEpisodeUrl }: Props) => {
+export const createArtPlayer = async ({
+	id,
+	container,
+	source,
+	nextEpisodeUrl,
+	updateLibrary
+}: Props) => {
 	const thumbnails = source.tracks.find((track) => track.kind === 'thumbnails');
 	const defaultSubtitle = source.tracks.find((track) => track.default && track.kind === 'captions');
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -187,6 +194,8 @@ export const createArtPlayer = async ({ id, container, source, nextEpisodeUrl }:
 		if (nextEpisodeUrl && appState.settings.autoNextEpisode) {
 			goto(nextEpisodeUrl);
 		}
+
+		updateLibrary();
 	});
 
 	return art;

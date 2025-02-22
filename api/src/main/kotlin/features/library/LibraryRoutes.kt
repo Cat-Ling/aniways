@@ -26,24 +26,15 @@ class LibraryRoutes(
     class Anime(
         val parent: LibraryRoutes,
         val animeId: String,
-        val status: LibraryStatus,
-        val epNo: Int
+        val status: LibraryStatus? = null,
+        val epNo: Int? = null
     ) {
         @Resource("/history/{epNo}")
         class History(val parent: Anime, val epNo: Int)
     }
 
-    @Resource("/{animeId}")
-    class LibraryAnime(val parent: LibraryRoutes, val animeId: String)
-
     @Resource("/{animeId}/history")
     class HistoryAnime(val parent: LibraryRoutes, val animeId: String)
-
-    @Resource("/{animeId}")
-    class DeleteLibrary(val parent: LibraryRoutes, val animeId: String)
-
-    @Resource("/{animeId}/history")
-    class DeleteHistory(val parent: LibraryRoutes, val animeId: String)
 }
 
 fun Route.libraryRoutes() {
@@ -80,7 +71,7 @@ fun Route.libraryRoutes() {
         }
 
         // Get library anime
-        get<LibraryRoutes.LibraryAnime> {
+        get<LibraryRoutes.Anime> {
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
@@ -110,6 +101,11 @@ fun Route.libraryRoutes() {
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@post call.respond(HttpStatusCode.Unauthorized)
 
+            if (route.status == null || route.epNo == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
             service.saveToLibrary(
                 userId = currentUser.userId,
                 animeId = route.animeId,
@@ -135,7 +131,7 @@ fun Route.libraryRoutes() {
         }
 
         // Remove from library
-        delete<LibraryRoutes.DeleteLibrary> { route ->
+        delete<LibraryRoutes.Anime> { route ->
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
 
@@ -148,7 +144,7 @@ fun Route.libraryRoutes() {
         }
 
         // Remove from history
-        delete<LibraryRoutes.DeleteHistory> { route ->
+        delete<LibraryRoutes.HistoryAnime> { route ->
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
 

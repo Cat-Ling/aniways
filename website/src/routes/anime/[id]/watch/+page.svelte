@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterNavigate, replaceState } from '$app/navigation';
+	import { afterNavigate, invalidate, replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import Metadata from '$lib/components/anime/metadata.svelte';
 	import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
@@ -11,6 +11,7 @@
 	import { onMount, tick } from 'svelte';
 	import type { Action } from 'svelte/action';
 	import { type PageProps } from './$types';
+	import { saveToHistory } from '$lib/api/library';
 
 	let props: PageProps = $props();
 	let { query, data } = $derived(props.data);
@@ -37,6 +38,9 @@
 
 	afterNavigate(() => {
 		episodeSearch = '';
+		const controller = new AbortController();
+		saveToHistory(fetch, query.id, query.episode, controller.signal);
+		return () => controller.abort();
 	});
 
 	onMount(async () => {
@@ -47,6 +51,12 @@
 		searchParams.set('server', query.server);
 		searchParams.set('type', query.type);
 		replaceState(`/anime/${query.id}/watch?${searchParams.toString()}`, {});
+	});
+
+	onMount(() => {
+		const controller = new AbortController();
+		saveToHistory(fetch, query.id, query.episode, controller.signal);
+		return () => controller.abort();
 	});
 
 	const scrollToCurrentEpisode: Action<HTMLAnchorElement, boolean> = (
@@ -117,7 +127,13 @@
 			{#await data.streamInfo}
 				<Skeleton class="h-full w-full" />
 			{:then info}
-				<Player playerId="{query.id}-{query.episode}-{query.type}" {nextEpisodeUrl} {info} />
+				<Player
+					playerId="{query.id}-{query.episode}-{query.type}"
+					currentEpisode={query.episode}
+					animeId={query.id}
+					{nextEpisodeUrl}
+					{info}
+				/>
 			{/await}
 		</div>
 	</div>
