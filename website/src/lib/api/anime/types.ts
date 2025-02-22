@@ -3,7 +3,7 @@ import { type } from 'arktype';
 export const animeMetadata = type({
 	malId: 'number.integer',
 	description: 'string',
-	mainPicture: 'string.url',
+	mainPicture: 'string',
 	mediaType: 'string',
 	rating: 'string|null',
 	avgEpDuration: 'number.integer|null',
