@@ -1,4 +1,4 @@
-import { PUBLIC_API_URL } from '$env/static/public';
+import { dev } from '$app/environment';
 import { fetchJson, mutate, StatusError } from '$lib/api';
 import { loginFormSchema, user, registerFormSchema } from './types';
 
@@ -38,5 +38,6 @@ export const register = async (
 };
 
 export const getLogoutUrl = async (currentPageUrl: string | undefined) => {
-	return `${PUBLIC_API_URL}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+	const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
+	return `${apiUrl}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };
