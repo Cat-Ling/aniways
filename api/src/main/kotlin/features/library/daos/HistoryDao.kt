@@ -6,11 +6,12 @@ import org.ktorm.dsl.insert
 import org.ktorm.dsl.update
 import org.ktorm.entity.*
 import xyz.aniways.database.AniwaysDatabase
+import xyz.aniways.features.library.db.HistoryEntity
 import xyz.aniways.features.library.db.HistoryTable
 import xyz.aniways.features.library.db.history
 
 interface HistoryDao {
-    suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int)
+    suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): List<HistoryEntity>
     suspend fun saveToHistory(userId: String, animeId: String, watchedEpisodes: Int)
     suspend fun deleteFromHistory(userId: String, animeId: String)
 }
@@ -18,8 +19,8 @@ interface HistoryDao {
 class DBHistoryDao(
     private val db: AniwaysDatabase
 ) : HistoryDao {
-    override suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int) {
-        db.query {
+    override suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): List<HistoryEntity> {
+        return db.query {
             history.filter { it.userId eq userId }
                 .drop((page - 1) * itemsPerPage)
                 .take(itemsPerPage)
