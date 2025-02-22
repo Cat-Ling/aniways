@@ -45,8 +45,9 @@ fun Route.authRoutes() {
         call.respondRedirect(redirectTo)
     }
 
-    authenticate(Auth.MAL_OAUTH, strategy = AuthenticationStrategy.Required) {
-        authenticate(USER_SESSION, strategy = AuthenticationStrategy.Required) {
+    // Need to be logged in to even connect MAL
+    authenticate(USER_SESSION, strategy = AuthenticationStrategy.Required) {
+        authenticate(Auth.MAL_OAUTH, strategy = AuthenticationStrategy.Required) {
             get<AuthRoute.MalLogin> {}
 
             get<AuthRoute.Callback> {

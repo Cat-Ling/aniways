@@ -7,7 +7,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import { setError, superForm } from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 
 	const form = superForm(
