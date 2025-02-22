@@ -4,6 +4,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 export class StatusError extends Error {
 	constructor(
 		public status: number,
+		public response: Response,
 		message: string
 	) {
 		super(message);
@@ -38,7 +39,7 @@ export function fetchJson<T>(
 		.then(async (res) => {
 			if (res.ok) return res;
 			const errorBody = await res.text();
-			throw new StatusError(res.status, `Fetch failed: ${url}, Error: ${errorBody}`);
+			throw new StatusError(res.status, res, `Fetch failed: ${url}, Error: ${errorBody}`);
 		})
 		.then((res) => res.json())
 		.then(schema.assert);
@@ -57,6 +58,6 @@ export function mutate(fetch: typeof global.fetch, endpoint: string, options: Op
 	return fetch(url, options).then(async (res) => {
 		if (res.ok) return res;
 		const errorBody = await res.text();
-		throw new StatusError(res.status, `Fetch failed: ${url}, Error: ${errorBody}`);
+		throw new StatusError(res.status, res, `Fetch failed: ${url}, Error: ${errorBody}`);
 	});
 }

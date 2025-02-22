@@ -6,7 +6,8 @@
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { Loader2 } from 'lucide-svelte';
-	import { superForm } from 'sveltekit-superforms';
+	import { toast } from 'svelte-sonner';
+	import { setError, superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 
 	const form = superForm(
@@ -14,21 +15,26 @@
 		{
 			SPA: true,
 			validators: arktypeClient(registerFormSchema),
-			onUpdate: async (props) => {
-				if (!props.form.valid) return;
+			onUpdate: async ({ form, cancel }) => {
+				if (!form.valid) return;
 				try {
-					await register(fetch, props.form.data);
-					await login(fetch, props.form.data);
+					await register(fetch, form.data);
+					await login(fetch, form.data);
 					window.location.reload();
 				} catch (err) {
 					if (err instanceof StatusError && err.status === 400) {
-						// TODO: Set errors using api response
-						form.errors.set({
-							username: ['Username already exists or'],
-							email: ['Email already exists or']
-						});
-						props.cancel();
+						const error = await err.response.text();
+						if (error.includes('email')) {
+							setError(form, 'email', 'Email is already taken');
+						} else if (error.includes('username')) {
+							setError(form, 'username', 'Username is already taken');
+						} else {
+							toast.error('An error occurred. Please try again later.');
+						}
+					} else {
+						toast.error('An error occurred. Please try again later.');
 					}
+					cancel();
 				}
 			}
 		}

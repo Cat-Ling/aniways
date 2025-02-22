@@ -20,12 +20,12 @@ fun Application.configureStatusPage() {
         }
 
         exception<UserNotFoundException> { call, cause ->
-            val body = ErrorResponse(cause.message ?: "Bad Request")
+            val body = ErrorResponse(cause.message ?: "User not found")
             call.respond(HttpStatusCode.NotFound, body)
         }
 
         exception<UserUniqueConstraintException> { call, cause ->
-            val body = ErrorResponse(cause.message ?: "Not Found")
+            val body = ErrorResponse(cause.message ?: "User already exists")
             call.respond(HttpStatusCode.BadRequest, body)
         }
     }

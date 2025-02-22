@@ -7,6 +7,7 @@
 	import Footer from '$lib/components/navigation/footer.svelte';
 	import Navbar from '$lib/components/navigation/navbar.svelte';
 	import SettingsSync from '$lib/components/settings/sync.svelte';
+	import { Toaster } from '$lib/components/ui/sonner';
 	import { appState, setSettings, setUser } from '$lib/context/state.svelte';
 	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
 	import type { LayoutProps } from './$types';
@@ -34,6 +35,8 @@
 <div class="min-h-screen">
 	{@render children()}
 </div>
+
+<Toaster richColors />
 
 <Footer
 	genres={data.genres.map((genre) => ({
