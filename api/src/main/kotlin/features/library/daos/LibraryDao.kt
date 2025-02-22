@@ -10,9 +10,17 @@ import xyz.aniways.features.library.db.LibraryEntity
 import xyz.aniways.features.library.db.LibraryStatus
 import xyz.aniways.features.library.db.LibraryTable
 import xyz.aniways.features.library.db.library
+import xyz.aniways.models.PageInfo
+import xyz.aniways.models.Pagination
 
 interface LibraryDao {
-    suspend fun getLibrary(userId: String, page: Int, itemsPerPage: Int, status: LibraryStatus): List<LibraryEntity>
+    suspend fun getLibrary(
+        userId: String,
+        page: Int,
+        itemsPerPage: Int,
+        status: LibraryStatus
+    ): Pagination<LibraryEntity>
+
     suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, epNo: Int? = null)
     suspend fun deleteFromLibrary(userId: String, animeId: String)
 }
@@ -25,18 +33,40 @@ class DBLibraryDao(
         page: Int,
         itemsPerPage: Int,
         status: LibraryStatus
-    ): List<LibraryEntity> {
+    ): Pagination<LibraryEntity> {
         return db.query {
             if (status == LibraryStatus.ALL) {
-                library.filter { it.userId eq userId }
+                val totalItems = library.count { it.userId eq userId }
+                val items = library.filter { it.userId eq userId }
                     .drop((page - 1) * itemsPerPage)
                     .take(itemsPerPage)
                     .toList()
+
+                Pagination(
+                    items = items,
+                    pageInfo = PageInfo(
+                        hasNextPage = totalItems > page * itemsPerPage,
+                        totalPage = totalItems / itemsPerPage + 1,
+                        currentPage = page,
+                        hasPreviousPage = page > 1,
+                    )
+                )
             } else {
-                library.filter { (it.userId eq userId) and (it.status eq status) }
+                val totalItems = library.count { (it.userId eq userId) and (it.status eq status) }
+                val items = library.filter { (it.userId eq userId) and (it.status eq status) }
                     .drop((page - 1) * itemsPerPage)
                     .take(itemsPerPage)
                     .toList()
+
+                Pagination(
+                    items = items,
+                    pageInfo = PageInfo(
+                        hasNextPage = totalItems > page * itemsPerPage,
+                        totalPage = totalItems / itemsPerPage + 1,
+                        currentPage = page,
+                        hasPreviousPage = page > 1,
+                    )
+                )
             }
         }
     }

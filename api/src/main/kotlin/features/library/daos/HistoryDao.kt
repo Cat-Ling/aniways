@@ -9,9 +9,11 @@ import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.library.db.HistoryEntity
 import xyz.aniways.features.library.db.HistoryTable
 import xyz.aniways.features.library.db.history
+import xyz.aniways.models.PageInfo
+import xyz.aniways.models.Pagination
 
 interface HistoryDao {
-    suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): List<HistoryEntity>
+    suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): Pagination<HistoryEntity>
     suspend fun saveToHistory(userId: String, animeId: String, watchedEpisodes: Int)
     suspend fun deleteFromHistory(userId: String, animeId: String)
 }
@@ -19,12 +21,23 @@ interface HistoryDao {
 class DBHistoryDao(
     private val db: AniwaysDatabase
 ) : HistoryDao {
-    override suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): List<HistoryEntity> {
+    override suspend fun getHistory(userId: String, page: Int, itemsPerPage: Int): Pagination<HistoryEntity> {
         return db.query {
-            history.filter { it.userId eq userId }
+            val totalItems = history.count { it.userId eq userId }
+            val items = history.filter { it.userId eq userId }
                 .drop((page - 1) * itemsPerPage)
                 .take(itemsPerPage)
                 .toList()
+
+            Pagination(
+                items = items,
+                pageInfo = PageInfo(
+                    hasNextPage = totalItems > page * itemsPerPage,
+                    totalPage = totalItems / itemsPerPage + 1,
+                    currentPage = page,
+                    hasPreviousPage = page > 1,
+                )
+            )
         }
     }
 
