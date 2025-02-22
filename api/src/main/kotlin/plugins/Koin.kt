@@ -19,6 +19,7 @@ import xyz.aniways.database.AniwaysDatabaseImpl
 import xyz.aniways.env
 import xyz.aniways.features.anime.animeModule
 import xyz.aniways.features.auth.authModule
+import xyz.aniways.features.library.libraryModule
 import xyz.aniways.features.settings.settingsModule
 import xyz.aniways.features.users.userModule
 
@@ -90,7 +91,8 @@ fun Application.configureKoin() {
             authModule,
             animeModule,
             settingsModule,
-            userModule
+            userModule,
+            libraryModule
         )
     }
 }

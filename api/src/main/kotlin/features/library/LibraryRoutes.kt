@@ -1,5 +1,6 @@
 package xyz.aniways.features.library
 
+import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.auth.*
 import io.ktor.server.resources.*
@@ -7,7 +8,9 @@ import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 import xyz.aniways.features.library.db.LibraryStatus
+import xyz.aniways.plugins.Auth
 import xyz.aniways.plugins.USER_SESSION
 
 @Resource("/library")
@@ -23,52 +26,100 @@ class LibraryRoutes(
     class Anime(
         val parent: LibraryRoutes,
         val animeId: String,
-        val status: LibraryStatus? = null,
-        val epNo: Int? = null
+        val status: LibraryStatus,
+        val epNo: Int
     ) {
         @Resource("/history/{epNo}")
         class History(val parent: Anime, val epNo: Int)
-
-        @Resource("/watched/{epNo}")
-        class Watched(val parent: Anime, val epNo: Int)
     }
 }
 
 fun Route.libraryRoutes() {
+    val service by inject<LibraryService>()
+
     authenticate(USER_SESSION) {
         // Get library
         get<LibraryRoutes> { route ->
-            call.respondText { "Get library with filters: ${route.status}" }
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val result = service.getLibrary(
+                userId = currentUser.userId,
+                status = route.status,
+                itemsPerPage = route.itemsPerPage,
+                page = route.page
+            )
+
+            call.respond(result)
         }
 
         // Get history
         get<LibraryRoutes.History> {
-            call.respondText { "Get history" }
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val result = service.getHistory(
+                userId = currentUser.userId,
+                itemsPerPage = it.parent.itemsPerPage,
+                page = it.parent.page
+            )
+
+            call.respond(result)
         }
 
-        // Add to library
+        // Add to library, if already in library update current ep
         post<LibraryRoutes.Anime> { route ->
-            call.respondText { "Add ${route.animeId} to library" }
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@post call.respond(HttpStatusCode.Unauthorized)
+
+            service.saveToLibrary(
+                userId = currentUser.userId,
+                animeId = route.animeId,
+                status = route.status,
+                watchedEpisodes = route.epNo
+            )
+
+            call.respond(HttpStatusCode.Created)
         }
 
         // On every page navigation add this and update current ep if already in history
         put<LibraryRoutes.Anime.History> { route ->
-            call.respondText { "Update ${route.parent.animeId} to episode ${route.epNo}" }
-        }
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@put call.respond(HttpStatusCode.Unauthorized)
 
-        // After watching an episode till finish or user manually updates
-        put<LibraryRoutes.Anime.Watched> { route ->
-            call.respondText { "Update ${route.parent.animeId} to episode ${route.epNo}" }
-        }
+            service.saveToHistory(
+                userId = currentUser.userId,
+                animeId = route.parent.animeId,
+                epNo = route.epNo
+            )
 
-        // Manual update of library e.g. change status to dropped
-        put<LibraryRoutes> { route ->
-            call.respondText { "Update library" }
+            call.respond(HttpStatusCode.Created)
         }
 
         // Remove from library
         delete<LibraryRoutes.Anime> { route ->
-            call.respondText { "Remove ${route.animeId} from library" }
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
+
+            service.deleteFromLibrary(
+                userId = currentUser.userId,
+                animeId = route.animeId
+            )
+
+            call.respond(HttpStatusCode.NoContent)
+        }
+
+        // Remove from history
+        delete<LibraryRoutes.Anime.History> { route ->
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
+
+            service.deleteFromHistory(
+                userId = currentUser.userId,
+                animeId = route.parent.animeId
+            )
+
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }
