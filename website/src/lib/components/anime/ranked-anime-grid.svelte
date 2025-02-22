@@ -36,7 +36,7 @@
 				</p>
 				<div class={cn('aspect-[3/4] w-full overflow-hidden border-border md:rounded-md')}>
 					<img
-						src={anime.poster ?? ''}
+						src={anime.metadata?.mainPicture ?? anime.poster ?? ''}
 						alt={anime.jname ?? ''}
 						class={cn(
 							'h-full w-full scale-110 rounded-md object-cover transition group-hover:scale-100',
