@@ -4,14 +4,13 @@
 	import LoginForm from '$lib/components/auth/login-form.svelte';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { appState } from '$lib/context/state.svelte';
 	import { cn } from '$lib/utils';
 	import { History, Library, LogIn, LogOut, Settings, User } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import RegisterForm from './register-form.svelte';
-	import { goto } from '$app/navigation';
 
 	let user = $derived(appState.user);
 
@@ -25,70 +24,42 @@
 		<Skeleton class="h-full w-full" />
 	</div>
 {:else if user}
-	<DropdownMenu.Root bind:open>
-		<DropdownMenu.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
-			{#if user.profilePicture}
-				<img
-					src={user.profilePicture}
-					alt="avatar"
-					class="size-10 rounded-full object-cover object-center"
-				/>
-			{:else}
-				<enhanced:img
-					src={miku}
-					alt="avatar"
-					class="size-10 rounded-full object-cover object-top"
-				/>
-			{/if}
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content align="end" class="w-56">
-			<DropdownMenu.Label>{user.username}</DropdownMenu.Label>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Group>
-				<DropdownMenu.Label>Navigation</DropdownMenu.Label>
-				<DropdownMenu.Item
-					class="flex cursor-pointer items-center gap-2"
-					onclick={() => goto('/library')}
-				>
-					<Library className="size-4" />
-					Library
-				</DropdownMenu.Item>
-				<DropdownMenu.Item
-					class="flex cursor-pointer items-center gap-2"
-					onclick={() => goto('/history')}
-				>
-					<History className="size-4" />
-					History
-				</DropdownMenu.Item>
-			</DropdownMenu.Group>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Group>
-				<DropdownMenu.Label>Account</DropdownMenu.Label>
-				<DropdownMenu.Item
-					class="flex cursor-pointer items-center gap-2"
-					onclick={() => goto('/profile')}
-				>
-					<User className="size-4" />
-					Profile
-				</DropdownMenu.Item>
-				<DropdownMenu.Item
-					class="flex cursor-pointer items-center gap-2"
-					onclick={() => goto('/settings')}
-				>
-					<Settings className="size-4" />
-					Settings
-				</DropdownMenu.Item>
-			</DropdownMenu.Group>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Item
-				class="flex cursor-pointer items-center gap-2"
-				onclick={() => goto(`/auth/logout?redirect=${page.url}`)}
-			>
-				<LogOut className="size-4" />
+	<Sheet.Root bind:open>
+		<Sheet.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
+			{@render image(user.profilePicture)}
+		</Sheet.Trigger>
+		<Sheet.Content class="flex flex-col gap-2">
+			<Sheet.Header class="mb-4">
+				<Sheet.Title class="flex items-center gap-2">
+					{@render image(user.profilePicture)}
+					{user.username}
+				</Sheet.Title>
+			</Sheet.Header>
+			<div class="px-2 py-1.5 text-sm font-semibold">Navigation</div>
+			<Button variant="ghost" href="/library" class="justify-start">
+				<Library />
+				Library
+			</Button>
+			<Button variant="ghost" href="/history" class="justify-start">
+				<History />
+				History
+			</Button>
+			<div class="px-2 py-1.5 text-sm font-semibold">Account</div>
+			<Button variant="ghost" href="/profile" class="justify-start">
+				<User />
+				Profile
+			</Button>
+			<Button variant="ghost" href="/settings" class="justify-start">
+				<Settings />
+				Settings
+			</Button>
+			<div class="px-2 py-1.5 text-sm font-semibold">Actions</div>
+			<Button variant="ghost" href="/auth/logout?redirect={page.url}" class="justify-start">
+				<LogOut />
 				Logout
-			</DropdownMenu.Item>
-		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+			</Button>
+		</Sheet.Content>
+	</Sheet.Root>
 {:else}
 	<Dialog.Root onOpenChange={() => (formType = 'login')}>
 		<div class="ml-2 rounded-md bg-background">
@@ -114,3 +85,11 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {/if}
+
+{#snippet image(img: string | null)}
+	{#if img}
+		<img src={img} alt="avatar" class="size-10 rounded-full object-cover object-center" />
+	{:else}
+		<enhanced:img src={miku} alt="avatar" class="size-10 rounded-full object-cover object-top" />
+	{/if}
+{/snippet}
