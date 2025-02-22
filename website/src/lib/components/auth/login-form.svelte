@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { StatusError } from '$lib/api';
 	import { login } from '$lib/api/auth';
 	import { loginFormSchema } from '$lib/api/auth/types';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { Loader2 } from 'lucide-svelte';
-	import { superForm } from 'sveltekit-superforms';
+	import { toast } from 'svelte-sonner';
+	import { setError, superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 
 	const form = superForm(
@@ -13,10 +15,19 @@
 		{
 			SPA: true,
 			validators: arktypeClient(loginFormSchema),
-			onUpdate: async ({ form }) => {
+			onUpdate: async ({ form, cancel }) => {
 				if (!form.valid) return;
-				await login(fetch, form.data);
-				window.location.reload();
+				try {
+					await login(fetch, form.data);
+					window.location.reload();
+				} catch (err) {
+					if (err instanceof StatusError && err.status < 500 && err.status >= 400) {
+						toast.error('Invalid email or password. Please try again.');
+					} else {
+						toast.error('An error occurred. Please try again later.');
+					}
+					cancel();
+				}
 			}
 		}
 	);

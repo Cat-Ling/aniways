@@ -90,7 +90,7 @@
 		</DropdownMenu.Content>
 	</DropdownMenu.Root>
 {:else}
-	<Dialog.Root>
+	<Dialog.Root onOpenChange={() => (formType = 'login')}>
 		<div class="ml-2 rounded-md bg-background">
 			<Dialog.Trigger class={buttonVariants()}>
 				<LogIn class="mr-2 size-6" />
