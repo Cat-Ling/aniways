@@ -11,7 +11,7 @@
 	import { onMount, tick } from 'svelte';
 	import type { Action } from 'svelte/action';
 	import { type PageProps } from './$types';
-	import { saveToHistory } from '$lib/api/library';
+	import { saveToHistory, saveToLibrary } from '$lib/api/library';
 
 	let props: PageProps = $props();
 	let { query, data } = $derived(props.data);
@@ -122,11 +122,13 @@
 				<Skeleton class="h-full w-full" />
 			{:then info}
 				<Player
-					playerId="{query.id}-{query.episode}-{query.type}"
-					currentEpisode={query.episode}
-					animeId={query.id}
-					{nextEpisodeUrl}
 					{info}
+					{nextEpisodeUrl}
+					playerId="{query.id}-{query.episode}-{query.type}"
+					updateLibrary={() => {
+						if (data.library && query.episode <= data.library?.watchedEpisodes) return;
+						saveToLibrary(fetch, query.id, 'watching', query.episode);
+					}}
 				/>
 			{/await}
 		</div>

@@ -7,7 +7,6 @@
 	import { cn } from '$lib/utils';
 	import { Info, PlayIcon, Tv } from 'lucide-svelte';
 	import LibraryBtn from './library-btn.svelte';
-	import { metadataState } from './library-state.svelte';
 	import Trailer from './trailer.svelte';
 
 	type Props = {
@@ -27,11 +26,6 @@
 	});
 
 	let isWatchPage = $derived.by(() => page.url.pathname.includes('/watch'));
-
-	$effect(() => {
-		metadataState.animeId = anime.id;
-		metadataState.library = library;
-	});
 </script>
 
 <div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'relative z-20 -mt-12 md:-mt-24')}>
@@ -82,9 +76,7 @@
 						<span class="hidden md:inline">
 							{@render keyValue(
 								'Library',
-								metadataState.library
-									? `${metadataState.library?.status} (${metadataState.library?.watchedEpisodes} eps)`
-									: 'Not in Library'
+								library ? `${library?.status} (${library?.watchedEpisodes} eps)` : 'Not in Library'
 							)}
 						</span>
 					</div>
@@ -126,7 +118,7 @@
 						<PlayIcon />
 						Watch Now
 					</Button>
-					<LibraryBtn />
+					<LibraryBtn animeId={anime.id} {library} />
 					<Dialog bind:open={isTrailerOpen}>
 						<DialogTrigger
 							class={buttonVariants({ variant: 'outline', class: 'col-span-2' })}

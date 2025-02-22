@@ -144,7 +144,7 @@ export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: s
 };
 
 export const getStreamingData = async (fetch: typeof global.fetch, iframeUrl: string) => {
-	const streamingUrl = dev ? 'http://localhost:8080' : 'https://streaming.aniways.xyz';
+	const streamingUrl = dev ? 'http://localhost:1234' : 'https://streaming.aniways.xyz';
 
 	const url = new URL(iframeUrl).pathname.split('/').pop();
 	const response = await fetch(`${streamingUrl}/info/${url}`)

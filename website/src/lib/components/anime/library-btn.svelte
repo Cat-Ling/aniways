@@ -1,38 +1,34 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
-	import { saveToLibrary, deleteFromLibrary } from '$lib/api/library';
-	import {
-		libraryStatusSchema,
-		updateLibrarySchema,
-		type libraryItemSchema
-	} from '$lib/api/library/types';
+	import { deleteFromLibrary, saveToLibrary } from '$lib/api/library';
+	import { updateLibrarySchema, type libraryItemSchema } from '$lib/api/library/types';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import * as Select from '$lib/components/ui/select';
-	import { Bookmark, Loader2, Pencil } from 'lucide-svelte';
+	import { Bookmark, Loader2, Pencil, Trash } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
-	import { metadataState } from './library-state.svelte';
 
-	let { animeId, library } = $derived(metadataState);
+	type Props = {
+		animeId: string;
+		library: typeof libraryItemSchema.infer | null;
+	};
+
+	let { animeId, library }: Props = $props();
 
 	let open = $state(false);
+	let isAddToLibraryLoading = $state(false);
+	let isRemoveFromLibraryLoading = $state(false);
 
 	const addToLibrary = async () => {
-		if (!animeId) return;
-
-		// Optimistic update
-		metadataState.library = {
-			animeId,
-			status: 'watching',
-			watchedEpisodes: 0
-		} as never;
-
+		isAddToLibraryLoading = true;
 		try {
 			await saveToLibrary(fetch, animeId, 'watching', 0);
+			await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+			toast.success('Anime added to library');
 		} catch (error) {
 			toast.error('Failed to add anime to library', {
 				action: {
@@ -40,25 +36,16 @@
 					onClick: addToLibrary
 				}
 			});
-			metadataState.library = null;
 		}
-
-		await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+		isAddToLibraryLoading = false;
 	};
 
 	const removeFromLibrary = async () => {
-		if (!animeId) return;
-
-		let oldLibrary = metadataState.library;
-
-		// Optimistic update
-		if (metadataState.library) {
-			metadataState.library = null;
-			open = false;
-		}
-
+		isRemoveFromLibraryLoading = true;
 		try {
 			await deleteFromLibrary(fetch, animeId);
+			await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+			toast.success('Anime removed from library');
 		} catch (err) {
 			toast.error('Failed to remove anime from library', {
 				action: {
@@ -66,31 +53,25 @@
 					onClick: removeFromLibrary
 				}
 			});
-			metadataState.library = oldLibrary;
 		}
-
-		await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+		isRemoveFromLibraryLoading = false;
 	};
 
 	const form = superForm(updateLibrarySchema.assert({ status: 'watching', watchedEpisodes: 0 }), {
 		SPA: true,
 		validators: arktypeClient(updateLibrarySchema),
+		resetForm: false,
 		onUpdate: async ({ form, cancel }) => {
 			if (!form.valid) return;
-			if (!animeId) return;
 
-			let oldLibrary = metadataState.library;
-			// Optimistic update
 			const { status, watchedEpisodes } = form.data;
 			if (status === undefined || watchedEpisodes === undefined) return;
-			if (metadataState.library) {
-				metadataState.library.status = status;
-				metadataState.library.watchedEpisodes = watchedEpisodes;
-				open = false;
-			}
 
 			try {
 				await saveToLibrary(fetch, animeId, status, watchedEpisodes);
+				await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+				toast.success('Anime updated in library');
+				open = false;
 			} catch (error) {
 				toast.error('Failed to update anime in library', {
 					action: {
@@ -98,20 +79,21 @@
 						onClick: addToLibrary
 					}
 				});
-				metadataState.library = oldLibrary;
 				cancel();
 			}
-
-			await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
 		}
 	});
 
 	const { form: formData, enhance, submitting } = form;
 
 	$effect(() => {
-		if (library) {
-			formData.set({ watchedEpisodes: library.watchedEpisodes, status: library.status });
-		}
+		if (!library) return;
+		form.reset({
+			data: {
+				status: library.status,
+				watchedEpisodes: library.watchedEpisodes
+			}
+		});
 	});
 </script>
 
@@ -159,8 +141,18 @@
 					<Form.FieldErrors />
 				</Form.Field>
 				<Dialog.Footer>
-					<Button variant="secondary" type="button" class="mr-auto" onclick={removeFromLibrary}>
-						Remove from Library
+					<Button
+						variant="secondary"
+						type="button"
+						class="mr-auto"
+						onclick={removeFromLibrary}
+						disabled={$submitting || isRemoveFromLibraryLoading}
+					>
+						{#if isRemoveFromLibraryLoading}
+							<Loader2 class="animate-spin" />
+						{:else}
+							Remove from Library
+						{/if}
 					</Button>
 					<Dialog.Close class={buttonVariants({ variant: 'secondary' })} type="button">
 						Cancel
@@ -177,8 +169,12 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {:else}
-	<Button onclick={addToLibrary}>
-		<Bookmark />
-		Add to Library
+	<Button onclick={addToLibrary} disabled={isAddToLibraryLoading}>
+		{#if isAddToLibraryLoading}
+			<Loader2 class="animate-spin" />
+		{:else}
+			<Bookmark />
+			Add to Library
+		{/if}
 	</Button>
 {/if}
