@@ -11,7 +11,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN bun run -r dotenv/config build
+RUN bun run build
 
 # Stage 3: Production server
 FROM base AS runner
