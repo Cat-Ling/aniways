@@ -32,6 +32,12 @@ class LibraryRoutes(
         @Resource("/history/{epNo}")
         class History(val parent: Anime, val epNo: Int)
     }
+
+    @Resource("/{animeId}")
+    class DeleteLibrary(val parent: LibraryRoutes, val animeId: String)
+
+    @Resource("/{animeId}/history")
+    class DeleteHistory(val parent: LibraryRoutes, val animeId: String)
 }
 
 fun Route.libraryRoutes() {
@@ -97,7 +103,7 @@ fun Route.libraryRoutes() {
         }
 
         // Remove from library
-        delete<LibraryRoutes.Anime> { route ->
+        delete<LibraryRoutes.DeleteLibrary> { route ->
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
 
@@ -110,13 +116,13 @@ fun Route.libraryRoutes() {
         }
 
         // Remove from history
-        delete<LibraryRoutes.Anime.History> { route ->
+        delete<LibraryRoutes.DeleteHistory> { route ->
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
 
             service.deleteFromHistory(
                 userId = currentUser.userId,
-                animeId = route.parent.animeId
+                animeId = route.animeId
             )
 
             call.respond(HttpStatusCode.NoContent)
