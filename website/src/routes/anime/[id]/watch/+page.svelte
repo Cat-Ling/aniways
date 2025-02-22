@@ -53,12 +53,6 @@
 		replaceState(`/anime/${query.id}/watch?${searchParams.toString()}`, {});
 	});
 
-	onMount(() => {
-		const controller = new AbortController();
-		saveToHistory(fetch, query.id, query.episode, controller.signal);
-		return () => controller.abort();
-	});
-
 	const scrollToCurrentEpisode: Action<HTMLAnchorElement, boolean> = (
 		node,
 		isCurrentEp: boolean
