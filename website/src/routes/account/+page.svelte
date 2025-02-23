@@ -23,6 +23,7 @@
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 	import type { PageProps } from './$types';
 	import { onMount } from 'svelte';
+	import LibrarySync from '$lib/components/anime/library-sync.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -276,10 +277,7 @@
 				{/if}
 			</div>
 
-			<Button class="mt-4" disabled={data.providers.length === 0}>
-				<RefreshCw />
-				Pull library from external services
-			</Button>
+			<LibrarySync providers={data.providers} class="mt-4" />
 		</div>
 		<div class="rounded-lg bg-card p-4">
 			<h3 class="font-sora text-xl font-bold">Security</h3>

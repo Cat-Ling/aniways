@@ -3,20 +3,18 @@
 	import Empty from '$lib/assets/search.png';
 	import AnimeGrid from '$lib/components/anime/anime-grid.svelte';
 	import LibraryBtn from '$lib/components/anime/library-btn.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import LibrarySync from '$lib/components/anime/library-sync.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { RefreshCcw } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 </script>
 
 <div class="mx-3 mb-3 mt-20 md:mx-8 md:mb-8">
-	<h1 class="mb-3 font-sora text-2xl font-bold">Your Library</h1>
-	<Button class="mb-3">
-		<RefreshCcw />
-		Sync with external
-	</Button>
+	<div class="mb-3 flex items-center justify-between md:flex-col md:items-start md:gap-3">
+		<h1 class="font-sora text-2xl font-bold">Your Library</h1>
+		<LibrarySync providers={data.providers} />
+	</div>
 
 	<Tabs.Root
 		value={data.status}
