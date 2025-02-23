@@ -82,6 +82,9 @@ dependencies {
     // Cron Utility Dependencies
     implementation(libs.cron.utils)
 
+    // Cloudinary
+    implementation(libs.cloudinary)
+
     // Testing Dependencies
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlin.test.junit)

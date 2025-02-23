@@ -106,6 +106,18 @@ class Env {
             port = redisPort
         )
     }
+
+    data class CloudinaryConfig(
+        val url: String,
+    )
+
+    val cloudinaryConfig by lazy {
+        val cloudinaryUrl = envMap["CLOUDINARY_URL"] ?: throw EnvNotFoundException("CLOUDINARY_URL")
+
+        CloudinaryConfig(
+            url = cloudinaryUrl
+        )
+    }
 }
 
 val Application.env by lazy { Env() }

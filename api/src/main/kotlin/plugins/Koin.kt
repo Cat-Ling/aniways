@@ -46,6 +46,11 @@ fun Application.configureKoin() {
             val env: Env = get()
             env.redisConfig
         }
+
+        single {
+            val env: Env = get()
+            env.cloudinaryConfig
+        }
     }
 
     /*

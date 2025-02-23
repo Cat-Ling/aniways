@@ -1,23 +1,36 @@
 package xyz.aniways.features.users
 
 import at.favre.lib.crypto.bcrypt.BCrypt
+import com.cloudinary.Cloudinary
+import com.cloudinary.utils.ObjectUtils
 import io.ktor.server.plugins.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import xyz.aniways.Env
 import xyz.aniways.features.users.dao.UserDao
 import xyz.aniways.features.users.db.UserEntity
-import xyz.aniways.features.users.dtos.CreateUserDto
-import xyz.aniways.features.users.dtos.UpdateUserDto
-import xyz.aniways.features.users.dtos.UserDto
-import xyz.aniways.features.users.dtos.toDto
+import xyz.aniways.features.users.dtos.*
+import java.io.File
 
 class UnauthorizedException(message: String) : Exception(message)
 
 class UserService(
     private val userDao: UserDao,
+    private val cloudinaryConfig: Env.CloudinaryConfig,
 ) {
     suspend fun getUserById(id: String): UserDto {
         val user = userDao.getUserById(id)
         user ?: throw NotFoundException("User not found")
         return user.toDto()
+    }
+
+    suspend fun uploadImage(image: ByteArray): String {
+        return withContext(Dispatchers.IO) {
+            val cloudinary = Cloudinary(cloudinaryConfig.url)
+            val response = cloudinary.uploader().upload(image, ObjectUtils.emptyMap())
+            val url = response["secure_url"] as String?
+            url ?: throw Exception("Failed to upload image")
+        }
     }
 
     suspend fun createUser(user: CreateUserDto): UserDto {
@@ -34,7 +47,7 @@ class UserService(
     suspend fun updateUser(id: String, user: UpdateUserDto): UserDto {
         return userDao.updateUser(id, user.run {
             if (password != null) {
-                copy(password = password)
+                copy(password = BCrypt.withDefaults().hashToString(12, password.toCharArray()))
             } else {
                 this
             }
@@ -58,5 +71,11 @@ class UserService(
         }
 
         return user.toDto()
+    }
+
+    suspend fun updateUserPassword(userId: String, body: UpdatePasswordDto): UserDto {
+        val email = this.getUserById(userId).email
+        this.authenticateUser(email, body.oldPassword)
+        return this.updateUser(userId, UpdateUserDto(password = body.newPassword))
     }
 }

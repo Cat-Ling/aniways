@@ -11,35 +11,40 @@
 	import { setError, superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 
-	const form = superForm(
-		{ email: '', username: '', password: '', confirmPassword: '' },
-		{
-			SPA: true,
-			validators: arktypeClient(registerFormSchema),
-			onUpdate: async ({ form, cancel }) => {
-				if (!form.valid) return;
-				try {
-					await register(fetch, form.data);
-					await login(fetch, form.data);
-					await invalidateAll();
-				} catch (err) {
-					if (err instanceof StatusError && err.status === 400) {
-						const error = await err.response.text();
-						if (error.includes('email')) {
-							setError(form, 'email', 'Email is already taken');
-						} else if (error.includes('username')) {
-							setError(form, 'username', 'Username is already taken');
-						} else {
-							toast.error('An error occurred. Please try again later.');
-						}
+	const defaultValues = {
+		email: '',
+		username: '',
+		password: '',
+		confirmPassword: '',
+		profilePicture: null
+	} as typeof registerFormSchema.infer;
+
+	const form = superForm(defaultValues, {
+		SPA: true,
+		validators: arktypeClient(registerFormSchema),
+		onUpdate: async ({ form, cancel }) => {
+			if (!form.valid) return;
+			try {
+				await register(fetch, form.data);
+				await login(fetch, form.data);
+				await invalidateAll();
+			} catch (err) {
+				if (err instanceof StatusError && err.status === 400) {
+					const error = await err.response.text();
+					if (error.includes('email')) {
+						setError(form, 'email', 'Email is already taken');
+					} else if (error.includes('username')) {
+						setError(form, 'username', 'Username is already taken');
 					} else {
 						toast.error('An error occurred. Please try again later.');
 					}
-					cancel();
+				} else {
+					toast.error('An error occurred. Please try again later.');
 				}
+				cancel();
 			}
 		}
-	);
+	});
 
 	const { form: formData, enhance, submitting } = form;
 </script>

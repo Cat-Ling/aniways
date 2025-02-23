@@ -9,6 +9,7 @@ import xyz.aniways.features.users.db.UserEntity
 import xyz.aniways.features.users.db.UserTable
 import xyz.aniways.features.users.db.users
 import xyz.aniways.features.users.dtos.UpdateUserDto
+import java.time.Instant
 
 class UserNotFoundException(message: String) : Exception(message)
 class UserUniqueConstraintException(message: String) : Exception(message)
@@ -55,6 +56,7 @@ class DbUserDao(
                 updateUserBody.username?.let { user.username = it }
                 updateUserBody.profilePicture?.let { user.profilePicture = it }
                 updateUserBody.password?.let { user.passwordHash = it }
+                user.updatedAt = Instant.now()
 
                 user.flushChanges()
 

@@ -5,11 +5,14 @@ import io.ktor.resources.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
+import io.ktor.server.resources.post
+import io.ktor.server.resources.put
 import io.ktor.server.response.*
-import io.ktor.server.routing.Route
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import xyz.aniways.features.users.dtos.AuthDto
 import xyz.aniways.features.users.dtos.CreateUserDto
+import xyz.aniways.features.users.dtos.UpdatePasswordDto
 import xyz.aniways.features.users.dtos.UpdateUserDto
 import xyz.aniways.plugins.Auth
 import xyz.aniways.plugins.USER_SESSION
@@ -18,6 +21,12 @@ import xyz.aniways.plugins.USER_SESSION
 class UserRoutes {
     @Resource("/{id}")
     class UserByIdRoute(val parent: UserRoutes, val id: String)
+
+    @Resource("/password")
+    class UserPasswordRoute(val parent: UserRoutes)
+
+    @Resource("/image")
+    class UserImageRoute(val parent: UserRoutes)
 }
 
 fun Route.userRoutes() {
@@ -28,6 +37,16 @@ fun Route.userRoutes() {
         val body = call.receive<CreateUserDto>()
         val user = service.createUser(body)
         call.respond(user)
+    }
+
+    // Upload a image
+    post<UserRoutes.UserImageRoute> {
+        val stream = call.receiveStream()
+        val image = stream.readBytes()
+        val file = service.uploadImage(image)
+        call.respond(
+            mapOf("url" to file)
+        )
     }
 
     authenticate(USER_SESSION) {
@@ -49,7 +68,20 @@ fun Route.userRoutes() {
             val userId = call.principal<Auth.UserSession>()?.userId
                 ?: return@put call.respond(HttpStatusCode.Unauthorized)
             val body = call.receive<UpdateUserDto>()
+            // Prevent updating password through this route
+            if (body.password != null) {
+                return@put call.respond(HttpStatusCode.BadRequest)
+            }
             val user = service.updateUser(userId, body)
+            call.respond(user)
+        }
+
+        // Update a user's password
+        put<UserRoutes.UserPasswordRoute> {
+            val userId = call.principal<Auth.UserSession>()?.userId
+                ?: return@put call.respond(HttpStatusCode.Unauthorized)
+            val body = call.receive<UpdatePasswordDto>()
+            val user = service.updateUserPassword(userId, body)
             call.respond(user)
         }
 

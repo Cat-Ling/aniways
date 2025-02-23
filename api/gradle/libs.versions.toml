@@ -61,6 +61,9 @@ kreds = { module = "io.github.crackthecodeabhi:kreds", version = "0.9.1" }
 # Cron dependencies
 cron-utils = { module = "com.cronutils:cron-utils", version = "9.2.1" }
 
+# Cloudinary depencencies
+cloudinary = { module = "com.cloudinary:cloudinary-http5", version = "2.2.0" }
+
 # Testing dependencies
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

@@ -7,5 +7,5 @@ import xyz.aniways.features.users.dao.UserDao
 val userModule = module {
     factory { DbUserDao(get()) as UserDao }
 
-    factory { UserService(get()) }
+    factory { UserService(get(), get()) }
 }
