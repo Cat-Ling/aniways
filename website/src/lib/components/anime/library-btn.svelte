@@ -15,9 +15,10 @@
 	type Props = {
 		animeId: string;
 		library: typeof libraryItemSchema.infer | null;
+		mode?: 'icon' | 'button';
 	};
 
-	let { animeId, library }: Props = $props();
+	let { animeId, library, mode = 'button' }: Props = $props();
 
 	let open = $state(false);
 	let isAddToLibraryLoading = $state(false);
@@ -101,9 +102,17 @@
 
 {#if library}
 	<Dialog.Root bind:open>
-		<Dialog.Trigger class={buttonVariants()}>
+		<Dialog.Trigger
+			class={buttonVariants()}
+			onclick={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				open = true;
+			}}
+		>
 			<Pencil />
-			Update Library
+			{mode === 'icon' ? null : 'Update Library'}
 		</Dialog.Trigger>
 		<Dialog.Content>
 			<Dialog.Title>Update Library</Dialog.Title>
@@ -144,7 +153,7 @@
 				</Form.Field>
 				<Dialog.Footer>
 					<Button
-						variant="secondary"
+						variant="destructive"
 						type="button"
 						class="mr-auto"
 						onclick={removeFromLibrary}

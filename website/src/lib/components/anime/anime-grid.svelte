@@ -69,7 +69,9 @@
 				<h3 class="line-clamp-2 font-sora text-sm font-bold md:text-base">
 					{result.jname}
 				</h3>
-				<p class="mt-1 text-xs text-muted-foreground md:text-sm">{result.genre.join(', ')}</p>
+				<p class="mt-1 hidden text-xs text-muted-foreground md:block md:text-sm">
+					{result.genre.join(', ')}
+				</p>
 				<p class="mt-1 text-xs text-muted-foreground md:text-sm">
 					{#if subtitle}
 						{@render subtitle({

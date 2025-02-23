@@ -28,8 +28,7 @@
 					{data.history.items.find((item) => item.anime.id === anime.id)?.watchedEpisodes} of {original}
 				</span>
 				<Button
-					variant="secondary"
-					class="w-fit md:w-full"
+					class="absolute right-0 top-0 m-3 w-fit"
 					onclick={async (e) => {
 						e.preventDefault();
 						e.stopPropagation();
@@ -39,7 +38,6 @@
 					}}
 				>
 					<TrashIcon />
-					<span class="hidden md:inline"> Remove from history </span>
 				</Button>
 			</span>
 		{/snippet}
