@@ -4,7 +4,7 @@ FROM base as builder
 WORKDIR /app
 COPY . .
 RUN bun install --frozen-lockfile
-RUN bun run build
+RUN bun run build --debug
 
 FROM base AS runner
 WORKDIR /app
