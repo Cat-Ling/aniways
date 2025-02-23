@@ -44,7 +44,7 @@
 >
 	<Carousel.Content>
 		{#each seasonalAnimes as anime}
-			<Carousel.Item class="relative h-[80dvh] w-full">
+			<Carousel.Item class="relative h-screen w-full">
 				<div
 					class="absolute left-6 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-16 md:w-1/2"
 				>
@@ -59,7 +59,7 @@
 									'h-fit bg-card px-2 py-1 text-primary hover:bg-card hover:text-primary md:h-9'
 							})}
 						>
-							<Calendar class="mr-1 size-4 md:mr-2 md:size-5" />
+							<Calendar />
 							{format(new Date(anime.startDate), 'dd MMMM yyyy') ?? '???'}
 						</span>
 						<span
@@ -69,7 +69,7 @@
 									'h-fit bg-card px-2 py-1 text-primary hover:bg-card hover:text-primary md:h-9'
 							})}
 						>
-							<Clapperboard class="mr-1 size-4 md:mr-2 md:size-5" />
+							<Clapperboard />
 							{anime.type}
 						</span>
 						<span
@@ -79,13 +79,13 @@
 									'h-fit bg-card px-2 py-1 text-primary hover:bg-card hover:text-primary md:h-9'
 							})}
 						>
-							<Video class="mr-1 size-4 md:mr-2 md:size-5" />
+							<Video />
 							{anime.episodes ?? '???'} episodes
 						</span>
 					</div>
 					<p
 						class={cn(
-							'mb-5 line-clamp-2 text-xs [display:-webkit-box] md:line-clamp-3 md:text-sm',
+							'mb-5 line-clamp-2 text-sm [display:-webkit-box] md:line-clamp-3 md:text-base',
 							{
 								italic: !anime.description
 							}
@@ -123,9 +123,7 @@
 			</Carousel.Item>
 		{/each}
 	</Carousel.Content>
-	<div
-		class="absolute bottom-32 left-1/2 flex w-fit -translate-x-1/2 justify-center md:bottom-24 md:left-0 md:m-16 md:mb-8 md:translate-x-0"
-	>
+	<div class="absolute bottom-56 left-1/2 flex w-fit -translate-x-1/2 justify-center">
 		{#each seasonalAnimes as _, i}
 			<Button
 				onclick={() => api?.scrollTo(i)}
