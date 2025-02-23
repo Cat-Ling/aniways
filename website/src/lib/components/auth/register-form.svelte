@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { StatusError } from '$lib/api';
 	import { login, register } from '$lib/api/auth';
 	import { registerFormSchema } from '$lib/api/auth/types';
@@ -20,7 +21,7 @@
 				try {
 					await register(fetch, form.data);
 					await login(fetch, form.data);
-					window.location.reload();
+					await invalidateAll();
 				} catch (err) {
 					if (err instanceof StatusError && err.status === 400) {
 						const error = await err.response.text();

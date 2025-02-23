@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { searchAnime } from '$lib/api/anime';
 	import type { anime } from '$lib/api/anime/types';
 	import { Button } from '$lib/components/ui/button';
@@ -32,6 +33,11 @@
 		debouncedSearch(value, signal);
 
 		return () => controller.abort();
+	});
+
+	afterNavigate(() => {
+		appState.searchOpen = false;
+		value = '';
 	});
 </script>
 

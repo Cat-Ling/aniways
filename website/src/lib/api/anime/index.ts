@@ -143,13 +143,13 @@ export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: s
 	return fetchJson(fetch, `/anime/random/${genre}`, animeSchema);
 };
 
-export const getStreamingData = async (fetch: typeof global.fetch, iframeUrl: string) => {
+export const getStreamingData = async (fetch: typeof global.fetch, serverId: string) => {
 	const streamingUrl = dev ? 'http://localhost:1234' : 'https://streaming.aniways.xyz';
 
-	const url = new URL(iframeUrl).pathname.split('/').pop();
-	const response = await fetch(`${streamingUrl}/info/${url}`)
+	const response = await fetch(`${streamingUrl}/info/${serverId}`)
 		.then((res) => res.json())
 		.then(streamInfo.assert);
+
 	return {
 		...response,
 		sources: response.sources.map((source) => ({

@@ -11,6 +11,9 @@ import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
 	try {
+		const banner = getBannerOfAnime(fetch, params.id).catch(() => null);
+		const seasonsAndRelatedAnimes = getSeasonsAndRelatedAnimes(fetch, params.id);
+
 		const [anime, episodes, library] = await Promise.all([
 			getAnimeMetadata(fetch, params.id),
 			getEpisodes(fetch, params.id),
@@ -21,8 +24,8 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
 			title: anime.jname,
 			anime,
 			episodes,
-			banner: getBannerOfAnime(fetch, params.id).catch(() => null),
-			seasonsAndRelatedAnimes: getSeasonsAndRelatedAnimes(fetch, params.id),
+			banner,
+			seasonsAndRelatedAnimes,
 			library
 		};
 	} catch (e) {

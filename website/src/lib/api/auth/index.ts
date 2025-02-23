@@ -37,7 +37,7 @@ export const register = async (
 	});
 };
 
-export const getLogoutUrl = async (currentPageUrl: string | undefined) => {
+export const getLogoutUrl = (currentPageUrl: string | undefined) => {
 	const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
 	return `${apiUrl}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { StatusError } from '$lib/api';
 	import { login } from '$lib/api/auth';
 	import { loginFormSchema } from '$lib/api/auth/types';
@@ -19,7 +20,7 @@
 				if (!form.valid) return;
 				try {
 					await login(fetch, form.data);
-					window.location.reload();
+					await invalidateAll();
 				} catch (err) {
 					if (err instanceof StatusError && err.status < 500 && err.status >= 400) {
 						toast.error('Invalid email or password. Please try again.');

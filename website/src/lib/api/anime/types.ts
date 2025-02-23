@@ -80,7 +80,7 @@ export const episode = type({
 export const episodeServer = type({
 	type: 'string',
 	serverName: 'string',
-	url: 'string.url'
+	serverId: 'string'
 });
 
 export const streamInfo = type({

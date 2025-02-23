@@ -8,7 +8,7 @@
 	import Navbar from '$lib/components/navigation/navbar.svelte';
 	import SettingsSync from '$lib/components/settings/sync.svelte';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { appState, setSettings, setUser } from '$lib/context/state.svelte';
+	import { setSettings, setUser } from '$lib/context/state.svelte';
 	import { SvelteKitTopLoader } from 'sveltekit-top-loader';
 	import type { LayoutProps } from './$types';
 
@@ -17,11 +17,9 @@
 	const baseTitle = $derived(page.data?.title);
 	const title = $derived(baseTitle ? `${baseTitle} | Aniways` : 'Aniways');
 
-	appState.isLoading = true;
-	Promise.all([data.settings, data.user]).then(([settings, user]) => {
-		if (settings) setSettings(settings);
-		if (user) setUser(user);
-		appState.isLoading = false;
+	$effect(() => {
+		setUser(data.user);
+		setSettings(data.settings);
 	});
 </script>
 
@@ -30,7 +28,7 @@
 </svelte:head>
 
 <SvelteKitTopLoader color="hsl(var(--primary))" showSpinner={false} />
-<Navbar />
+<Navbar user={data.user} />
 
 <div class="min-h-screen">
 	{@render children()}

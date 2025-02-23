@@ -20,7 +20,7 @@ data class RawEpisodeData(
 data class EpisodeServerDto(
     val type: String,
     val serverName: String,
-    val url: String,
+    val serverId: String,
 )
 
 @Serializable

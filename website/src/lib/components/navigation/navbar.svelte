@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { user as userSchema } from '$lib/api/auth/types';
 	import Logo from '$lib/assets/logo.png?enhanced';
 	import Auth from '$lib/components/auth/auth.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -7,8 +8,14 @@
 	import { onMount } from 'svelte';
 	import SearchButton from './search.svelte';
 
-	let isHidden = false;
-	let changeBackground = false;
+	type Props = {
+		user: typeof userSchema.infer | null;
+	};
+
+	let { user }: Props = $props();
+
+	let isHidden = $state(false);
+	let changeBackground = $state(false);
 
 	let lastScrollY = 0;
 	const THRESHOLD = 200;
@@ -56,6 +63,6 @@
 		<Button variant="ghost" class="rounded-full hover:bg-primary" href="/random" size="icon">
 			<Shuffle class="size-6" />
 		</Button>
-		<Auth />
+		<Auth {user} />
 	</div>
 </nav>

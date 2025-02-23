@@ -260,7 +260,8 @@ class HianimeScraper(
         }
     }
 
-    private suspend fun getIframeUrl(episodeId: String, serverId: String): String? {
+    @Deprecated("This method is deprecated, get iframe through streaming service instead")
+    suspend fun getIframeUrl(episodeId: String, serverId: String): String? {
         val response = httpClient.get("$baseUrl/ajax/v2/episode/sources?id=$serverId") {
             header("X-Requested-With", "XMLHttpRequest")
             header("Referer", "$baseUrl/watch/$episodeId")
@@ -281,20 +282,19 @@ class HianimeScraper(
         val document = data.html?.let { Jsoup.parse(it) } ?: return@coroutineScope emptyList()
 
         document.select(".server-item").map { element ->
-            async {
-                val serverIndex = element.attr("data-server-id")
+            val serverIndex = element.attr("data-server-id")
 
-                if (serverIndex != "1" && serverIndex != "4") return@async null
-
-                val serverId = element.attr("data-id")
-                val url = retryWithDelay { getIframeUrl(episodeId, serverId) } ?: return@async null
-
-                EpisodeServerDto(
-                    type = element.attr("data-type"),
-                    serverName = element.text().trim(),
-                    url = url
-                )
+            if (serverIndex != "1" && serverIndex != "4") {
+                return@map null
             }
-        }.awaitAll().filterNotNull()
+
+            val serverId = element.attr("data-id")
+
+            EpisodeServerDto(
+                type = element.attr("data-type"),
+                serverName = element.text().trim(),
+                serverId = serverId,
+            )
+        }.filterNotNull()
     }
 }

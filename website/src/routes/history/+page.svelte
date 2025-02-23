@@ -13,9 +13,13 @@
 	<AnimeGrid
 		animes={data.history.items.map((item) => item.anime)}
 		pageInfo={data.history.pageInfo}
+		buildUrl={(anime) => {
+			const historyItem = data.history.items.find((item) => item.anime.id === anime.id);
+			return `/anime/${anime.id}/watch?episode=${historyItem?.watchedEpisodes ?? 1}`;
+		}}
 		buildSubtitle={(anime, original) => {
 			const historyItem = data.history.items.find((item) => item.anime.id === anime.id);
-			return `${historyItem?.watchedEpisodes} of ${original}`;
+			return `${historyItem?.watchedEpisodes ?? 1} of ${original}`;
 		}}
 	/>
 </div>
