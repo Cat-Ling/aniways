@@ -14,11 +14,11 @@
 	import { saveToHistory, saveToLibrary } from '$lib/api/library';
 
 	let props: PageProps = $props();
-	let { query, data } = $derived(props.data);
+	let { query, data, episodes: eps, anime, seasonsAndRelatedAnimes } = $derived(props.data);
 
 	let nextEpisodeUrl = $derived.by(() => {
-		const currentIndex = data.episodes.findIndex((ep) => ep.id === query.key);
-		const nextEpisode = data.episodes[currentIndex + 1];
+		const currentIndex = eps.findIndex((ep) => ep.id === query.key);
+		const nextEpisode = eps[currentIndex + 1];
 		if (!nextEpisode) return;
 		return `/anime/${query.id}/watch?episode=${nextEpisode.number}&key=${nextEpisode.id}`;
 	});
@@ -26,8 +26,8 @@
 	let episodeSearch = $state('');
 
 	let episodes = $derived.by(() => {
-		if (!episodeSearch) return data.episodes;
-		return data.episodes
+		if (!episodeSearch) return eps;
+		return eps
 			.filter(
 				(ep) =>
 					ep.title?.toLowerCase().includes(episodeSearch.toLowerCase()) ||
@@ -125,9 +125,10 @@
 					{info}
 					{nextEpisodeUrl}
 					playerId="{query.id}-{query.episode}-{query.type}"
-					updateLibrary={() => {
-						if (data.library && query.episode <= data.library?.watchedEpisodes) return;
-						saveToLibrary(fetch, query.id, 'watching', query.episode);
+					updateLibrary={async () => {
+						if (props.data.library && query.episode <= props.data.library?.watchedEpisodes) return;
+						await saveToLibrary(fetch, query.id, 'watching', query.episode);
+						await invalidate((url) => url.pathname.includes('library'));
 					}}
 				/>
 			{/await}
@@ -135,6 +136,6 @@
 	</div>
 </div>
 
-<Metadata anime={data.anime} library={data.library} />
+<Metadata {anime} library={props.data.library} />
 
-<OtherAnimeSections animeId={query.id} seasonsAndRelatedAnimes={data.seasonsAndRelatedAnimes} />
+<OtherAnimeSections animeId={query.id} {seasonsAndRelatedAnimes} />

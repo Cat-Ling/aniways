@@ -5,7 +5,6 @@ import {
 	getEpisodes,
 	getSeasonsAndRelatedAnimes
 } from '$lib/api/anime';
-import { getLibraryItem } from '$lib/api/library';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 
@@ -14,10 +13,9 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
 		const banner = getBannerOfAnime(fetch, params.id).catch(() => null);
 		const seasonsAndRelatedAnimes = getSeasonsAndRelatedAnimes(fetch, params.id);
 
-		const [anime, episodes, library] = await Promise.all([
+		const [anime, episodes] = await Promise.all([
 			getAnimeMetadata(fetch, params.id),
-			getEpisodes(fetch, params.id),
-			getLibraryItem(fetch, params.id)
+			getEpisodes(fetch, params.id)
 		]);
 
 		return {
@@ -25,8 +23,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
 			anime,
 			episodes,
 			banner,
-			seasonsAndRelatedAnimes,
-			library
+			seasonsAndRelatedAnimes
 		};
 	} catch (e) {
 		if (e instanceof StatusError && (e?.status === 400 || e?.status === 404)) {
