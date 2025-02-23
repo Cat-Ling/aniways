@@ -31,13 +31,17 @@
 {#if user}
 	<Sheet.Root bind:open>
 		<Sheet.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
-			<img src={img ?? miku} alt="avatar" class="size-10 rounded-full object-cover object-center" />
+			<img
+				src={user.profilePicture ?? miku}
+				alt="avatar"
+				class="size-10 rounded-full object-cover object-center"
+			/>
 		</Sheet.Trigger>
 		<Sheet.Content class="flex flex-col gap-2">
 			<Sheet.Header class="mb-4">
 				<Sheet.Title class="flex items-center gap-2">
 					<img
-						src={img ?? miku}
+						src={user.profilePicture ?? miku}
 						alt="avatar"
 						class="size-10 rounded-full object-cover object-center"
 					/>
