@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { getLogoutUrl } from '$lib/api/auth';
 	import { type user as userSchema } from '$lib/api/auth/types';
-	import miku from '$lib/assets/miku.png?enhanced';
+	import miku from '$lib/assets/miku.png';
 	import LoginForm from '$lib/components/auth/login-form.svelte';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -31,12 +31,16 @@
 {#if user}
 	<Sheet.Root bind:open>
 		<Sheet.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
-			{@render image(user.profilePicture)}
+			<img src={img ?? miku} alt="avatar" class="size-10 rounded-full object-cover object-center" />
 		</Sheet.Trigger>
 		<Sheet.Content class="flex flex-col gap-2">
 			<Sheet.Header class="mb-4">
 				<Sheet.Title class="flex items-center gap-2">
-					{@render image(user.profilePicture)}
+					<img
+						src={img ?? miku}
+						alt="avatar"
+						class="size-10 rounded-full object-cover object-center"
+					/>
 					{user.username}
 				</Sheet.Title>
 			</Sheet.Header>
@@ -99,11 +103,3 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {/if}
-
-{#snippet image(img: string | null)}
-	{#if img}
-		<img src={img} alt="avatar" class="size-10 rounded-full object-cover object-center" />
-	{:else}
-		<enhanced:img src={miku} alt="avatar" class="size-10 rounded-full object-cover object-top" />
-	{/if}
-{/snippet}
