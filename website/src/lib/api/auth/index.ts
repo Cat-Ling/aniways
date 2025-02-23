@@ -3,6 +3,7 @@ import { fetchJson, mutate, StatusError } from '$lib/api';
 import {
 	loginFormSchema,
 	profilePictureUploadResultSchema,
+	providerSchema,
 	registerFormSchema,
 	updatePasswordFormSchema,
 	updateUserFormSchema,
@@ -84,4 +85,8 @@ export const uploadImage = async (fetch: typeof global.fetch, file: File) => {
 export const getLogoutUrl = (currentPageUrl: string | undefined) => {
 	const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
 	return `${apiUrl}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+};
+
+export const getInstalledProviders = async (fetch: typeof global.fetch) => {
+	return fetchJson(fetch, '/auth/providers', providerSchema.array());
 };

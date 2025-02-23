@@ -57,3 +57,5 @@ export const updatePasswordFormSchema = type({
 		path: ['confirmPassword']
 	});
 });
+
+export const providerSchema = type("'myanimelist'|'anilist'|'kitsu'");

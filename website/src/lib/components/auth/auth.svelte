@@ -58,13 +58,9 @@
 				History
 			</Button>
 			<div class="px-2 py-1.5 text-sm font-semibold">Account</div>
-			<Button variant="ghost" href="/profile" class="justify-start">
+			<Button variant="ghost" href="/account" class="justify-start">
 				<User />
-				Profile
-			</Button>
-			<Button variant="ghost" href="/settings" class="justify-start">
-				<Settings />
-				Settings
+				Account
 			</Button>
 			<div class="px-2 py-1.5 text-sm font-semibold">Actions</div>
 			<Button

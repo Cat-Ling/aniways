@@ -28,6 +28,9 @@ class AuthRoute() {
     @Resource("/me")
     class Me(val parent: AuthRoute)
 
+    @Resource("/providers")
+    class Providers(val parent: AuthRoute)
+
     @Resource("/logout")
     class Logout(val parent: AuthRoute)
 }
@@ -75,6 +78,13 @@ fun Route.authRoutes() {
             val user = userService.getUserById(session.userId)
 
             call.respond(user)
+        }
+
+        get<AuthRoute.Providers> {
+            val currentUser = call.principal<Auth.UserSession>(USER_SESSION)
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            call.respond(authService.getProviders(currentUser.userId))
         }
     }
 

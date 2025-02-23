@@ -20,6 +20,8 @@ class AuthService(
         return session
     }
 
+    suspend fun getProviders(userId: String) = tokenDao.getProviders(userId)
+
     suspend fun logout(session: String) {
         sessionDao.deleteSession(session)
     }

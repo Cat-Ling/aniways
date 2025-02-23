@@ -58,7 +58,7 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label>Old Password</Form.Label>
-						<Input type="password" bind:value={$formdata.oldPassword} />
+						<Input type="password" bind:value={$formdata.oldPassword} {...props} />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
@@ -67,7 +67,7 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label>New Password</Form.Label>
-						<Input type="password" bind:value={$formdata.newPassword} />
+						<Input type="password" bind:value={$formdata.newPassword} {...props} />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
@@ -76,7 +76,7 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label>Confirm Password</Form.Label>
-						<Input type="password" bind:value={$formdata.confirmPassword} />
+						<Input type="password" bind:value={$formdata.confirmPassword} {...props} />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />

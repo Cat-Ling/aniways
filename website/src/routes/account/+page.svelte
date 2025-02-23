@@ -227,7 +227,9 @@
 		<div class="rounded-lg bg-card p-4">
 			<h3 class="font-sora text-xl font-bold">Tracking</h3>
 			<p class="text-sm text-muted-foreground">Add external tracking services to your account</p>
-			TODO
+			<div class="mt-4">
+				<p class="text-sm text-muted-foreground">Coming soon</p>
+			</div>
 		</div>
 		<div class="rounded-lg bg-card p-4">
 			<h3 class="font-sora text-xl font-bold">Security</h3>
