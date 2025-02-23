@@ -11,6 +11,7 @@ import xyz.aniways.features.library.db.HistoryTable
 import xyz.aniways.features.library.db.history
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
+import java.time.Instant
 
 interface HistoryDao {
     suspend fun getHistoryAnime(userId: String, animeId: String): HistoryEntity?
@@ -32,6 +33,7 @@ class DBHistoryDao(
         return db.query {
             val totalItems = history.count { it.userId eq userId }
             val items = history.filter { it.userId eq userId }
+                .sortedByDescending { it.updatedAt }
                 .drop((page - 1) * itemsPerPage)
                 .take(itemsPerPage)
                 .toList()
@@ -55,6 +57,7 @@ class DBHistoryDao(
             if (alreadyInDB != null) {
                 update(HistoryTable) { row ->
                     set(row.watchedEpisodes, watchedEpisodes)
+                    set(row.updatedAt, Instant.now())
                     where {
                         (row.userId eq userId) and (row.animeId eq animeId)
                     }

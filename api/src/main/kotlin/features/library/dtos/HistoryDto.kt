@@ -12,6 +12,7 @@ data class HistoryDto(
     val userId: String,
     val watchedEpisodes: Int,
     val createdAt: Long,
+    val updatedAt: Long,
     val anime: AnimeDto,
 )
 
@@ -21,5 +22,6 @@ fun HistoryEntity.toDto() = HistoryDto(
     userId = this.userId,
     watchedEpisodes = this.watchedEpisodes,
     createdAt = this.createdAt.toEpochMilli(),
+    updatedAt = this.updatedAt.toEpochMilli(),
     anime = this.anime.toAnimeDto()
 )

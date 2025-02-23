@@ -16,6 +16,7 @@
 		class?: string;
 		buildUrl?: (anime: Props['animes'][number]) => string;
 		buildSubtitle?: (anime: Props['animes'][number], original: string) => string;
+		subtitle?: Snippet<[{ anime: Props['animes'][number]; original: string }]>;
 		emptyLayout?: Snippet;
 		titleLayout?: Snippet<[{ pagination: Snippet<[{ className?: string }]> }]>;
 		onPaginationClick?: () => void;
@@ -28,6 +29,7 @@
 		titleLayout,
 		buildUrl,
 		buildSubtitle = (_, original) => original,
+		subtitle,
 		...props
 	}: Props = $props();
 </script>
@@ -69,10 +71,17 @@
 				</h3>
 				<p class="mt-1 text-xs text-muted-foreground md:text-sm">{result.genre.join(', ')}</p>
 				<p class="mt-1 text-xs text-muted-foreground md:text-sm">
-					{buildSubtitle(
-						result,
-						`${result.lastEpisode ?? '???'} episode${(result.lastEpisode ?? 2) > 1 ? 's' : ''}`
-					)}
+					{#if subtitle}
+						{@render subtitle({
+							anime: result,
+							original: `${result.lastEpisode ?? '???'} episode${(result.lastEpisode ?? 2) > 1 ? 's' : ''}`
+						})}
+					{:else}
+						{buildSubtitle(
+							result,
+							`${result.lastEpisode ?? '???'} episode${(result.lastEpisode ?? 2) > 1 ? 's' : ''}`
+						)}
+					{/if}
 				</p>
 			</div>
 		</a>

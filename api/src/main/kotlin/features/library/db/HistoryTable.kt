@@ -17,6 +17,7 @@ interface HistoryEntity: Entity<HistoryEntity> {
     var userId: String
     var watchedEpisodes: Int
     var createdAt: Instant
+    var updatedAt: Instant
     var anime: Anime
 
     companion object: Entity.Factory<HistoryEntity>()
@@ -28,6 +29,7 @@ object HistoryTable: Table<HistoryEntity>("history") {
     val userId = varchar("user_id").bindTo { it.userId }
     val watchedEpisodes = int("watched_episodes").bindTo { it.watchedEpisodes }
     val createdAt = timestamp("created_at").bindTo { it.createdAt }
+    val updatedAt = timestamp("updated_at").bindTo { it.updatedAt }
 }
 
 val Database.history get() = this.sequenceOf(HistoryTable)

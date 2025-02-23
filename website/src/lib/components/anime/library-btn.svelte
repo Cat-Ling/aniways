@@ -27,8 +27,9 @@
 		isAddToLibraryLoading = true;
 		try {
 			await saveToLibrary(fetch, animeId, 'watching', 0);
-			await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+			await invalidate((url) => url.pathname.startsWith(`/library`));
 			toast.success('Anime added to library');
+			open = false;
 		} catch (error) {
 			toast.error('Failed to add anime to library', {
 				action: {
@@ -44,8 +45,9 @@
 		isRemoveFromLibraryLoading = true;
 		try {
 			await deleteFromLibrary(fetch, animeId);
-			await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+			await invalidate((url) => url.pathname.startsWith(`/library`));
 			toast.success('Anime removed from library');
+			open = false;
 		} catch (err) {
 			toast.error('Failed to remove anime from library', {
 				action: {
@@ -69,7 +71,7 @@
 
 			try {
 				await saveToLibrary(fetch, animeId, status, watchedEpisodes);
-				await invalidate((url) => url.pathname.startsWith(`/anime/${animeId}`));
+				await invalidate((url) => url.pathname.startsWith(`/library`));
 				toast.success('Anime updated in library');
 				open = false;
 			} catch (error) {
