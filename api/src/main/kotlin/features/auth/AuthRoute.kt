@@ -31,6 +31,9 @@ class AuthRoute() {
     @Resource("/providers")
     class Providers(val parent: AuthRoute)
 
+    @Resource("/providers/{provider}/logout")
+    class ProviderLogout(val parent: AuthRoute, val provider: String)
+
     @Resource("/logout")
     class Logout(val parent: AuthRoute)
 }
@@ -57,7 +60,7 @@ fun Route.authRoutes() {
                 val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()
                 currentPrincipal ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-                val userSession = call.sessions.get<Auth.UserSession>()
+                val userSession = call.principal<Auth.UserSession>()
                     ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
                 authService.saveOauthToken(userSession.userId, "myanimelist", currentPrincipal)
@@ -85,6 +88,17 @@ fun Route.authRoutes() {
             currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
             call.respond(authService.getProviders(currentUser.userId))
+        }
+
+        get<AuthRoute.ProviderLogout> { route ->
+            val currentUser = call.principal<Auth.UserSession>(USER_SESSION)
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val token = authService.getAccessToken(route.provider, currentUser.userId)
+
+            authService.deleteToken(token)
+
+            call.respond(HttpStatusCode.OK)
         }
     }
 

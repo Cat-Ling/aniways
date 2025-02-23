@@ -87,6 +87,16 @@ export const getLogoutUrl = (currentPageUrl: string | undefined) => {
 	return `${apiUrl}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };
 
+export const getMyanimeListUrl = (currentPageUrl: string | undefined) => {
+	const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
+	return `${apiUrl}/auth/myanimelist/login${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+};
+
+export const getMyAnimeListLogoutUrl = () => {
+	const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
+	return `${apiUrl}/auth/providers/myanimelist/logout`;
+};
+
 export const getInstalledProviders = async (fetch: typeof global.fetch) => {
 	return fetchJson(fetch, '/auth/providers', providerSchema.array());
 };

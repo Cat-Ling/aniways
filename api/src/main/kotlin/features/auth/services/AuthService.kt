@@ -42,4 +42,8 @@ class AuthService(
     }
 
     suspend fun getSession(sessionId: String) = sessionDao.getSession(sessionId)
+
+    suspend fun deleteToken(token: String) {
+        tokenDao.deleteToken(token)
+    }
 }

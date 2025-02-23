@@ -1,21 +1,28 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
-	import { updateUser, uploadImage } from '$lib/api/auth';
+	import { goto, invalidate, invalidateAll, replaceState } from '$app/navigation';
+	import { page } from '$app/state';
+	import {
+		getMyAnimeListLogoutUrl,
+		getMyanimeListUrl,
+		updateUser,
+		uploadImage
+	} from '$lib/api/auth';
 	import { updateUserFormSchema } from '$lib/api/auth/types';
 	import Miku from '$lib/assets/miku.png';
 	import ChangePassword from '$lib/components/auth/change-password.svelte';
+	import { Button } from '$lib/components/ui/button';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Switch } from '$lib/components/ui/switch';
+	import { appState } from '$lib/context/state.svelte';
 	import { format } from 'date-fns';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, RefreshCw } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 	import type { PageProps } from './$types';
-	import { appState } from '$lib/context/state.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { onMount } from 'svelte';
 
 	let { data }: PageProps = $props();
 
@@ -226,10 +233,53 @@
 		</div>
 		<div class="rounded-lg bg-card p-4">
 			<h3 class="font-sora text-xl font-bold">Tracking</h3>
-			<p class="text-sm text-muted-foreground">Add external tracking services to your account</p>
-			<div class="mt-4">
-				<p class="text-sm text-muted-foreground">Coming soon</p>
+			<p class="text-sm text-muted-foreground">
+				Add external tracking services to your account. If connected, will auto update tracker when
+				library is updated. Update is push only and doesn't update when external service changes
+				unless manually synced
+			</p>
+			<div class="mt-4 flex flex-col flex-wrap gap-2 md:flex-row">
+				{#if !data.providers.includes('myanimelist')}
+					<Button
+						variant="outline"
+						onclick={() => {
+							window.location.href = getMyanimeListUrl(page.url.href);
+						}}
+					>
+						<img src="/mal.svg" alt="MyAnimeList" class="size-6" />
+						Connect MyAnimeList
+					</Button>
+				{:else}
+					<Button
+						variant="outline"
+						onclick={async () => {
+							await fetch(getMyAnimeListLogoutUrl(), { credentials: 'include' });
+							await invalidateAll();
+							toast.success('Disconnected from MyAnimeList');
+						}}
+					>
+						<img src="/mal.svg" alt="MyAnimeList" class="size-6" />
+						Disconnect from MyAnimeList
+					</Button>
+				{/if}
+				{#if !data.providers.includes('anilist')}
+					<Button variant="outline">
+						<img src="/anilist.svg" alt="AniList" class="size-6" />
+						Connect AniList
+					</Button>
+				{/if}
+				{#if !data.providers.includes('kitsu')}
+					<Button variant="outline">
+						<img src="/kitsu.png" alt="Kitsu" class="size-6" />
+						Connect Kitsu
+					</Button>
+				{/if}
 			</div>
+
+			<Button class="mt-4" disabled={data.providers.length === 0}>
+				<RefreshCw />
+				Pull library from external services
+			</Button>
 		</div>
 		<div class="rounded-lg bg-card p-4">
 			<h3 class="font-sora text-xl font-bold">Security</h3>
@@ -238,7 +288,7 @@
 			<div class="mt-4 flex items-center gap-2">
 				<Switch
 					id="incognito"
-					checked={data.settings?.autoNextEpisode}
+					checked={data.settings?.incognitoMode}
 					onCheckedChange={onSettingChange('incognitoMode')}
 				/>
 				<Label for="incognito">Incognito Mode</Label>

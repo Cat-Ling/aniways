@@ -2,10 +2,7 @@ package xyz.aniways.features.auth.daos
 
 import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
-import org.ktorm.entity.add
-import org.ktorm.entity.filter
-import org.ktorm.entity.find
-import org.ktorm.entity.map
+import org.ktorm.entity.*
 import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.auth.db.TokenEntity
 import xyz.aniways.features.auth.db.tokens
@@ -30,7 +27,17 @@ class DbTokenDao(
 ) : TokenDao {
     override suspend fun getProviders(userId: String): List<String> {
         return db.query {
-            tokens.filter { it.userId eq userId }.map { it.provider }.distinct()
+            val tokens = tokens.filter { it.userId eq userId }
+            tokens.mapNotNull { token ->
+                token.expiresAt?.let {
+                    if (it.isAfter(Instant.now())) {
+                        token.provider
+                    } else {
+                        token.delete()
+                        null
+                    }
+                }
+            }
         }
     }
 
