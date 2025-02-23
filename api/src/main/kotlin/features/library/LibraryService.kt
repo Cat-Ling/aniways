@@ -1,5 +1,6 @@
 package xyz.aniways.features.library
 
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import xyz.aniways.features.library.daos.HistoryDao
 import xyz.aniways.features.library.daos.LibraryDao
@@ -7,11 +8,13 @@ import xyz.aniways.features.library.db.LibraryStatus
 import xyz.aniways.features.library.dtos.HistoryDto
 import xyz.aniways.features.library.dtos.LibraryDto
 import xyz.aniways.features.library.dtos.toDto
+import xyz.aniways.features.settings.services.SettingsService
 import xyz.aniways.models.Pagination
 
 class LibraryService(
     private val libraryDao: LibraryDao,
-    private val historyDao: HistoryDao
+    private val historyDao: HistoryDao,
+    private val settingsService: SettingsService,
 ) {
     suspend fun getLibraryAnime(
         userId: String,
@@ -74,6 +77,9 @@ class LibraryService(
     }
 
     suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, watchedEpisodes: Int) {
+        val settings = settingsService.getSettingsByUserId(userId)
+        if (settings.incognitoMode) return
+
         libraryDao.saveToLibrary(
             userId = userId,
             animeId = animeId,
@@ -83,6 +89,10 @@ class LibraryService(
     }
 
     suspend fun saveToHistory(userId: String, animeId: String, epNo: Int) {
+        val settings = settingsService.getSettingsByUserId(userId)
+        println(settings)
+        if (settings.incognitoMode) return
+
         historyDao.saveToHistory(
             userId = userId,
             animeId = animeId,

@@ -3,15 +3,19 @@
 	import { updateUser, uploadImage } from '$lib/api/auth';
 	import { updateUserFormSchema } from '$lib/api/auth/types';
 	import Miku from '$lib/assets/miku.png';
+	import ChangePassword from '$lib/components/auth/change-password.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import { Switch } from '$lib/components/ui/switch';
+	import { format } from 'date-fns';
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms';
 	import { arktypeClient } from 'sveltekit-superforms/adapters';
 	import type { PageProps } from './$types';
-	import { format } from 'date-fns';
-	import ChangePassword from '$lib/components/auth/change-password.svelte';
+	import { appState } from '$lib/context/state.svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	let { data }: PageProps = $props();
 
@@ -26,6 +30,13 @@
 		if (!timeMillis) return '';
 		return format(new Date(timeMillis), 'do MMMM yyyy');
 	});
+
+	const onSettingChange = (key: keyof (typeof appState)['settings']) => {
+		return (checked: boolean) => {
+			if (!data.settings) return;
+			appState.settings[key] = checked;
+		};
+	};
 
 	const submit = async (
 		data: typeof updateUserFormSchema.infer,
@@ -78,8 +89,8 @@
 	});
 </script>
 
-<div class="m-3 mt-20 flex gap-2 md:m-8 md:mt-20">
-	<div>
+<div class="m-3 mt-20 flex flex-col-reverse gap-2 md:m-8 md:mt-20 md:flex-row">
+	<div class="h-full md:sticky md:top-20">
 		<form use:enhance class="max-w-md rounded-lg border bg-card p-4" enctype="multipart/form-data">
 			<h1 class="mb-5 font-sora text-2xl font-bold">Profile</h1>
 			<Form.Field {form} name="email">
@@ -109,9 +120,7 @@
 				Last updated on {updatedAt}
 			</p>
 
-			<ChangePassword />
-
-			<Form.Button disabled={$submitting} class="w-full">
+			<Form.Button disabled={$submitting} class="mt-4 w-full">
 				{#if $submitting}
 					<Loader2 class="animate-spin" />
 				{:else}
@@ -177,7 +186,71 @@
 			</Form.Field>
 		</div>
 	</div>
-	<div class="w-full rounded-lg bg-card p-4">
+	<div class="mt-4 flex h-fit w-full flex-col gap-4 md:mt-0 md:px-4">
 		<h2 class="font-sora text-2xl font-bold">Settings</h2>
+		<div class="rounded-lg bg-card p-4">
+			<h3 class="font-sora text-xl font-bold">General</h3>
+			<p class="text-sm text-muted-foreground">Manage your account settings</p>
+
+			<div class="mt-4 flex items-center gap-2">
+				<Switch
+					id="auto-resume"
+					checked={data.settings?.autoResumeEpisode}
+					onCheckedChange={onSettingChange('autoResumeEpisode')}
+				/>
+				<Label for="auto-resume">Auto Resume</Label>
+			</div>
+			<p class="mb-1 text-muted-foreground">
+				Automatically resume from where you left off in the same device
+			</p>
+
+			<div class="mt-4 flex items-center gap-2">
+				<Switch
+					id="auto-play"
+					checked={data.settings?.autoPlayEpisode}
+					onCheckedChange={onSettingChange('autoPlayEpisode')}
+				/>
+				<Label for="auto-play">Auto Play</Label>
+			</div>
+			<p class="my-1 text-muted-foreground">Automatically play the next episode</p>
+
+			<div class="mt-4 flex items-center gap-2">
+				<Switch
+					id="auto-next"
+					checked={data.settings?.autoNextEpisode}
+					onCheckedChange={onSettingChange('autoNextEpisode')}
+				/>
+				<Label for="auto-next">Auto Next</Label>
+			</div>
+			<p class="my-1 text-muted-foreground">Automatically play the next episode</p>
+		</div>
+		<div class="rounded-lg bg-card p-4">
+			<h3 class="font-sora text-xl font-bold">Tracking</h3>
+			<p class="text-sm text-muted-foreground">Add external tracking services to your account</p>
+			TODO
+		</div>
+		<div class="rounded-lg bg-card p-4">
+			<h3 class="font-sora text-xl font-bold">Security</h3>
+			<p class="text-sm text-muted-foreground">Change your password and other security settings</p>
+
+			<div class="mt-4 flex items-center gap-2">
+				<Switch
+					id="incognito"
+					checked={data.settings?.autoNextEpisode}
+					onCheckedChange={onSettingChange('incognitoMode')}
+				/>
+				<Label for="incognito">Incognito Mode</Label>
+			</div>
+			<p class="my-1 text-muted-foreground">Will not save to library or history when enabled</p>
+
+			<ChangePassword />
+		</div>
+		<div class="rounded-lg bg-card p-4">
+			<h3 class="font-sora text-xl font-bold">Delete Account</h3>
+			<p class="text-sm text-muted-foreground">Delete your account and all associated data</p>
+			<Button variant="destructive" type="button" class="mt-4 w-full max-w-md"
+				>Delete Account</Button
+			>
+		</div>
 	</div>
 </div>

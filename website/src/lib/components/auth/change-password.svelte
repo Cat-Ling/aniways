@@ -46,7 +46,7 @@
 
 <Dialog.Root bind:open>
 	<Dialog.Trigger
-		class={buttonVariants({ variant: 'outline', class: 'mb-2 mt-4 w-full' })}
+		class={buttonVariants({ variant: 'outline', class: 'mb-2 mt-4 w-full max-w-md' })}
 		type="button"
 	>
 		Change Password

@@ -16,6 +16,6 @@ val libraryModule = module {
     }
 
     factory {
-        LibraryService(get(), get())
+        LibraryService(get(), get(), get())
     }
 }
