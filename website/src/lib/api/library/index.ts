@@ -4,7 +4,10 @@ import {
 	historySchema,
 	libraryItemSchema,
 	librarySchema,
-	libraryStatusSchema
+	libraryStatusSchema,
+	runningSchema,
+	statusSchema,
+	syncStatusResponseSchema
 } from './types';
 
 export const getLibrary = async (
@@ -76,8 +79,28 @@ export const deleteFromLibrary = async (fetch: typeof global.fetch, animeId: str
 	});
 };
 
+export const deleteAllFromLibrary = async (fetch: typeof global.fetch) => {
+	return mutate(fetch, `/library`, {
+		method: 'DELETE'
+	});
+};
+
 export const deleteFromHistory = async (fetch: typeof global.fetch, animeId: string) => {
 	return mutate(fetch, `/library/${animeId}/history`, {
 		method: 'DELETE'
 	});
+};
+
+export const pullFromMal = async (fetch: typeof global.fetch) => {
+	return fetchJson(fetch, '/library/pull/myanimelist', syncStatusResponseSchema, {
+		method: 'POST'
+	});
+};
+
+export const getRunningSyncs = async (fetch: typeof global.fetch) => {
+	return fetchJson(fetch, '/library/status/running', runningSchema);
+};
+
+export const getSyncStatus = async (fetch: typeof global.fetch, syncId: string) => {
+	return fetchJson(fetch, `/library/pull/status/${syncId}`, statusSchema);
 };

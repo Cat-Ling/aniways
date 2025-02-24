@@ -28,6 +28,7 @@ interface LibraryDao {
 
     suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, epNo: Int? = null)
     suspend fun deleteFromLibrary(userId: String, animeId: String)
+    suspend fun deleteAllFromLibrary(userId: String)
 }
 
 class DBLibraryDao(
@@ -121,6 +122,12 @@ class DBLibraryDao(
     override suspend fun deleteFromLibrary(userId: String, animeId: String) {
         db.query {
             library.find { (it.userId eq userId) and (it.animeId eq animeId) }?.delete()
+        }
+    }
+
+    override suspend fun deleteAllFromLibrary(userId: String) {
+        db.query {
+            delete(LibraryTable) { it.userId eq userId }
         }
     }
 }

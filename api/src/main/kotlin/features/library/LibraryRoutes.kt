@@ -20,10 +20,11 @@ class LibraryRoutes(
     val page: Int = 1,
     val itemsPerPage: Int = 20
 ) {
+    @Resource("/status/running")
+    class RunningStatuses(val parent: LibraryRoutes)
+
     @Resource("/pull/{provider}")
     class Pull(val parent: LibraryRoutes, val provider: Provider) {
-        @Resource("/status/running")
-        class RunningStatuses(val parent: Pull)
 
         @Resource("/status/{syncId}")
         class Status(val parent: Pull, val syncId: String)
@@ -153,6 +154,18 @@ fun Route.libraryRoutes() {
             call.respond(HttpStatusCode.NoContent)
         }
 
+        // Remove all from library
+        delete<LibraryRoutes> {
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@delete call.respond(HttpStatusCode.Unauthorized)
+
+            service.deleteAllFromLibrary(
+                userId = currentUser.userId
+            )
+
+            call.respond(HttpStatusCode.NoContent)
+        }
+
         // Remove from history
         delete<LibraryRoutes.HistoryAnime> { route ->
             val currentUser = call.principal<Auth.UserSession>()
@@ -180,7 +193,7 @@ fun Route.libraryRoutes() {
         }
 
         // Get running syncs
-        get<LibraryRoutes.Pull.RunningStatuses> {
+        get<LibraryRoutes.RunningStatuses> {
             val currentUser = call.principal<Auth.UserSession>()
             currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
 

@@ -198,4 +198,8 @@ class LibraryService(
         val sync = syncLibraryDao.getSyncLibrary(syncId) ?: throw NotFoundException("Sync not found")
         return sync.syncStatus
     }
+
+    suspend fun deleteAllFromLibrary(userId: String) {
+        libraryDao.deleteAllFromLibrary(userId)
+    }
 }

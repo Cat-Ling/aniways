@@ -49,3 +49,15 @@ export const updateLibrarySchema = type({
 	status: libraryStatusSchema,
 	watchedEpisodes: 'number.integer'
 });
+
+export const syncStatusResponseSchema = type({
+	syncId: 'string'
+});
+
+export const runningSchema = type({
+	statuses: 'string[]'
+});
+
+export const statusSchema = type({
+	status: '"completed"|"syncing"|"failed"'
+});
