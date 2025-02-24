@@ -6,8 +6,6 @@ import xyz.aniways.features.anime.api.mal.MalApi
 import xyz.aniways.features.anime.api.mal.models.Data
 import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.dao.AnimeDao
-import xyz.aniways.features.anime.dtos.AnimeDto
-import xyz.aniways.features.anime.dtos.toAnimeDto
 import xyz.aniways.features.auth.daos.TokenDao
 import xyz.aniways.features.auth.db.Provider
 import xyz.aniways.features.library.daos.HistoryDao
@@ -21,6 +19,7 @@ import xyz.aniways.features.library.dtos.toDto
 import xyz.aniways.features.settings.services.SettingsService
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
+import java.time.Instant
 
 class LibraryService(
     private val libraryDao: LibraryDao,
@@ -186,12 +185,22 @@ class LibraryService(
             async {
                 val anime = animes.find { it.malId == a.node?.id } ?: return@async
 
+                val status = a.listStatus?.status?.let {
+                    LibraryStatus.fromMalStatus(it)
+                } ?: LibraryStatus.PLANNING
+
+                val updatedAt = try {
+                    a.listStatus?.updatedAt?.let { Instant.parse(it) }
+                } catch (e: Exception) {
+                    null
+                }
+
                 libraryDao.saveToLibrary(
                     userId = userId,
                     animeId = anime.id,
-                    status = a.listStatus?.status?.let { LibraryStatus.fromMalStatus(it) }
-                        ?: LibraryStatus.PLANNING,
+                    status = status,
                     epNo = a.listStatus?.numEpisodesWatched ?: 0,
+                    updatedAt = updatedAt
                 )
             }
         }

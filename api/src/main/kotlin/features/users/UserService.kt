@@ -10,7 +10,6 @@ import xyz.aniways.Env
 import xyz.aniways.features.users.dao.UserDao
 import xyz.aniways.features.users.db.UserEntity
 import xyz.aniways.features.users.dtos.*
-import java.io.File
 
 class UnauthorizedException(message: String) : Exception(message)
 

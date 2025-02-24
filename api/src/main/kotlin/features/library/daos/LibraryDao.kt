@@ -1,19 +1,17 @@
 package xyz.aniways.features.library.daos
 
 import org.ktorm.dsl.*
-import org.ktorm.entity.*
-import org.ktorm.schema.timestamp
+import org.ktorm.entity.count
+import org.ktorm.entity.find
 import xyz.aniways.database.AniwaysDatabase
-import xyz.aniways.features.anime.db.Anime
 import xyz.aniways.features.anime.db.AnimeTable
-import xyz.aniways.features.anime.dtos.AnimeDto
-import xyz.aniways.features.anime.dtos.toAnimeDto
 import xyz.aniways.features.library.db.LibraryEntity
 import xyz.aniways.features.library.db.LibraryStatus
 import xyz.aniways.features.library.db.LibraryTable
 import xyz.aniways.features.library.db.library
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
+import java.time.Instant
 
 interface LibraryDao {
     suspend fun getLibraryAnime(
@@ -28,7 +26,14 @@ interface LibraryDao {
         status: LibraryStatus
     ): Pagination<LibraryEntity>
 
-    suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, epNo: Int? = null)
+    suspend fun saveToLibrary(
+        userId: String,
+        animeId: String,
+        status: LibraryStatus,
+        epNo: Int? = null,
+        updatedAt: Instant? = null
+    )
+
     suspend fun deleteFromLibrary(userId: String, animeId: String)
     suspend fun deleteAllFromLibrary(userId: String)
 }
@@ -97,7 +102,13 @@ class DBLibraryDao(
         }
     }
 
-    override suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, epNo: Int?) {
+    override suspend fun saveToLibrary(
+        userId: String,
+        animeId: String,
+        status: LibraryStatus,
+        epNo: Int?,
+        updatedAt: Instant?
+    ) {
         db.query {
             val alreadyInDB = library.find { (it.userId eq userId) and (it.animeId eq animeId) }
 
@@ -105,6 +116,8 @@ class DBLibraryDao(
                 update(LibraryTable) { row ->
                     set(row.status, status)
                     set(row.watchedEpisodes, epNo ?: 0)
+                    updatedAt?.let { set(row.updatedAt, it)}
+
                     where {
                         (row.userId eq userId) and (row.animeId eq animeId)
                     }
@@ -112,11 +125,15 @@ class DBLibraryDao(
                 return@query
             }
 
-            insert(LibraryTable) {
-                set(it.animeId, animeId)
-                set(it.userId, userId)
-                set(it.status, status)
-                set(it.watchedEpisodes, epNo ?: 0)
+            insert(LibraryTable) { row ->
+                set(row.animeId, animeId)
+                set(row.userId, userId)
+                set(row.status, status)
+                set(row.watchedEpisodes, epNo ?: 0)
+                updatedAt?.let {
+                    set(row.createdAt, it)
+                    set(row.updatedAt, it)
+                }
             }
         }
     }

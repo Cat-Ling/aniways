@@ -3,8 +3,6 @@ package xyz.aniways.features.anime.scrapers
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -12,7 +10,6 @@ import xyz.aniways.features.anime.dtos.*
 import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 import xyz.aniways.utils.getDocument
-import xyz.aniways.utils.retryWithDelay
 import xyz.aniways.utils.toStringOrNull
 
 class HianimeScraper(
