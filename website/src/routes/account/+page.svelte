@@ -264,15 +264,9 @@
 					</Button>
 				{/if}
 				{#if !data.providers.includes('anilist')}
-					<Button variant="outline">
+					<Button variant="outline" onclick={() => toast.warning('Coming soon')}>
 						<img src="/anilist.svg" alt="AniList" class="size-6" />
 						Connect AniList
-					</Button>
-				{/if}
-				{#if !data.providers.includes('kitsu')}
-					<Button variant="outline">
-						<img src="/kitsu.png" alt="Kitsu" class="size-6" />
-						Connect Kitsu
 					</Button>
 				{/if}
 			</div>

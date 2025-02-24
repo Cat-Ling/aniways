@@ -58,4 +58,4 @@ export const updatePasswordFormSchema = type({
 	});
 });
 
-export const providerSchema = type("'myanimelist'|'anilist'|'kitsu'");
+export const providerSchema = type("'myanimelist'|'anilist'");

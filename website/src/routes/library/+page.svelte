@@ -13,7 +13,7 @@
 <div class="mx-3 mb-3 mt-20 md:mx-8 md:mb-8">
 	<div class="mb-3 flex items-center justify-between md:flex-col md:items-start md:gap-3">
 		<h1 class="font-sora text-2xl font-bold">Your Library</h1>
-		<LibrarySync providers={data.providers} />
+		<LibrarySync providers={data.providers} class="w-fit [&_span]:hidden md:[&_span]:inline" />
 	</div>
 
 	<Tabs.Root

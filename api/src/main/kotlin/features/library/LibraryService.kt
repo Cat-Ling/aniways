@@ -1,6 +1,5 @@
 package xyz.aniways.features.library
 
-import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import xyz.aniways.features.library.daos.HistoryDao
 import xyz.aniways.features.library.daos.LibraryDao
