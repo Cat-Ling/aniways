@@ -35,6 +35,7 @@
 					currentPage: 1,
 					totalPage: 1
 				}}
+				buildSubtitle={(anime) => `Episode ${anime.lastEpisode}`}
 				animes={data.continueWatching.items.map((lib) => ({
 					...lib.anime,
 					lastEpisode: lib.watchedEpisodes + 1
@@ -59,6 +60,7 @@
 					currentPage: 1,
 					totalPage: 1
 				}}
+				buildSubtitle={(anime) => `Episode ${anime.lastEpisode}`}
 				animes={data.planToWatch.items.map((lib) => ({
 					...lib.anime,
 					lastEpisode: lib.watchedEpisodes + 1
