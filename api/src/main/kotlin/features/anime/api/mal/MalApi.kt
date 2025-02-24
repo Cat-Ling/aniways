@@ -10,6 +10,7 @@ import xyz.aniways.features.anime.api.mal.models.MalAnimeList
 import xyz.aniways.features.anime.api.mal.models.MalAnimeMetadata
 import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.api.mal.models.UpdateAnimeListRequest
+import xyz.aniways.features.auth.services.MalUser
 import xyz.aniways.utils.getDocument
 
 class MalApi(
@@ -77,6 +78,7 @@ class MalApi(
                 parameters.append("fields", fields.joinToString(","))
                 status?.let { parameters.append("status", it) }
                 sort?.let { parameters.append("sort", it) }
+                parameters.append("nsfw", "true")
                 parameters.append("limit", itemsPerPage.toString())
                 parameters.append("offset", ((page - 1) * itemsPerPage).toString())
             }
@@ -130,5 +132,15 @@ class MalApi(
         httpClient.delete("$baseUrl/anime/$id/my_list_status") {
             header("Authorization", "Bearer $token")
         }
+    }
+
+    suspend fun getUserInfo(accessToken: String): MalUser {
+        val response = httpClient.get("$baseUrl/users/@me") {
+            headers {
+                header("Authorization", "Bearer $accessToken")
+            }
+        }
+
+        return response.body<MalUser>()
     }
 }

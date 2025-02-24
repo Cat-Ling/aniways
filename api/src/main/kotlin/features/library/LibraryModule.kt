@@ -1,10 +1,7 @@
 package xyz.aniways.features.library
 
 import org.koin.dsl.module
-import xyz.aniways.features.library.daos.DBHistoryDao
-import xyz.aniways.features.library.daos.DBLibraryDao
-import xyz.aniways.features.library.daos.HistoryDao
-import xyz.aniways.features.library.daos.LibraryDao
+import xyz.aniways.features.library.daos.*
 
 val libraryModule = module {
     factory {
@@ -16,6 +13,18 @@ val libraryModule = module {
     }
 
     factory {
-        LibraryService(get(), get(), get())
+        DBSyncLibraryDao(get()) as SyncLibraryDao
+    }
+
+    factory {
+        LibraryService(
+            libraryDao = get(),
+            historyDao = get(),
+            syncLibraryDao = get(),
+            malApi = get(),
+            settingsService = get(),
+            tokenDao = get(),
+            animeDao = get()
+        )
     }
 }

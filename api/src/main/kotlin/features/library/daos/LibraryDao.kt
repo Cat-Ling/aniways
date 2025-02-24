@@ -1,11 +1,11 @@
 package xyz.aniways.features.library.daos
 
-import org.ktorm.dsl.and
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.insert
-import org.ktorm.dsl.update
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
+import org.ktorm.schema.timestamp
 import xyz.aniways.database.AniwaysDatabase
+import xyz.aniways.features.anime.db.Anime
+import xyz.aniways.features.anime.db.AnimeTable
 import xyz.aniways.features.library.db.LibraryEntity
 import xyz.aniways.features.library.db.LibraryStatus
 import xyz.aniways.features.library.db.LibraryTable
@@ -25,6 +25,7 @@ interface LibraryDao {
         itemsPerPage: Int,
         status: LibraryStatus
     ): Pagination<LibraryEntity>
+
     suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, epNo: Int? = null)
     suspend fun deleteFromLibrary(userId: String, animeId: String)
 }
@@ -47,9 +48,15 @@ class DBLibraryDao(
         return db.query {
             if (status == LibraryStatus.ALL) {
                 val totalItems = library.count { it.userId eq userId }
-                val items = library.filter { it.userId eq userId }
-                    .drop((page - 1) * itemsPerPage)
-                    .take(itemsPerPage)
+                val items = from(LibraryTable)
+                    .leftJoin(AnimeTable, on = AnimeTable.id eq LibraryTable.animeId)
+                    .select()
+                    .where { LibraryTable.userId eq userId }
+                    .orderBy(AnimeTable.jname.asc())
+                    .limit(offset = (page - 1) * itemsPerPage, limit = itemsPerPage)
+                    .map { row ->
+                        LibraryTable.createEntity(row, withReferences = true)
+                    }
                     .toList()
 
                 Pagination(
@@ -63,9 +70,15 @@ class DBLibraryDao(
                 )
             } else {
                 val totalItems = library.count { (it.userId eq userId) and (it.status eq status) }
-                val items = library.filter { (it.userId eq userId) and (it.status eq status) }
-                    .drop((page - 1) * itemsPerPage)
-                    .take(itemsPerPage)
+                val items = from(LibraryTable)
+                    .leftJoin(AnimeTable, on = AnimeTable.id eq LibraryTable.animeId)
+                    .select()
+                    .where { (LibraryTable.userId eq userId) and (LibraryTable.status eq status) }
+                    .orderBy(AnimeTable.jname.asc())
+                    .limit(offset = (page - 1) * itemsPerPage, limit = itemsPerPage)
+                    .map { row ->
+                        LibraryTable.createEntity(row, withReferences = true)
+                    }
                     .toList()
 
                 Pagination(

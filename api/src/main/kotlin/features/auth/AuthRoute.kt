@@ -9,6 +9,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.Route
 import io.ktor.server.sessions.*
 import org.koin.ktor.ext.inject
+import xyz.aniways.features.auth.db.Provider
 import xyz.aniways.features.auth.services.AuthService
 import xyz.aniways.features.users.UserService
 import xyz.aniways.features.users.dtos.AuthDto
@@ -32,7 +33,7 @@ class AuthRoute() {
     class Providers(val parent: AuthRoute)
 
     @Resource("/providers/{provider}/logout")
-    class ProviderLogout(val parent: AuthRoute, val provider: String)
+    class ProviderLogout(val parent: AuthRoute, val provider: Provider)
 
     @Resource("/logout")
     class Logout(val parent: AuthRoute)
@@ -63,7 +64,7 @@ fun Route.authRoutes() {
                 val userSession = call.principal<Auth.UserSession>()
                     ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-                authService.saveOauthToken(userSession.userId, "myanimelist", currentPrincipal)
+                authService.saveOauthToken(userSession.userId, Provider.MYANIMELIST, currentPrincipal)
 
                 val redirectTo = call.sessions.get<RedirectTo>()?.url ?: "/"
                 call.sessions.clear(REDIRECT_TO)

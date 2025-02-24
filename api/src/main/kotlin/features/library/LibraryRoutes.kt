@@ -9,6 +9,7 @@ import io.ktor.server.resources.put
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import xyz.aniways.features.auth.db.Provider
 import xyz.aniways.features.library.db.LibraryStatus
 import xyz.aniways.plugins.Auth
 import xyz.aniways.plugins.USER_SESSION
@@ -19,6 +20,15 @@ class LibraryRoutes(
     val page: Int = 1,
     val itemsPerPage: Int = 20
 ) {
+    @Resource("/pull/{provider}")
+    class Pull(val parent: LibraryRoutes, val provider: Provider) {
+        @Resource("/status/running")
+        class RunningStatuses(val parent: Pull)
+
+        @Resource("/status/{syncId}")
+        class Status(val parent: Pull, val syncId: String)
+    }
+
     @Resource("/history")
     class History(val parent: LibraryRoutes)
 
@@ -154,6 +164,35 @@ fun Route.libraryRoutes() {
             )
 
             call.respond(HttpStatusCode.NoContent)
+        }
+
+        // Sync library
+        post<LibraryRoutes.Pull> { route ->
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@post call.respond(HttpStatusCode.Unauthorized)
+
+            val syncId = service.startSyncingLibrary(
+                userId = currentUser.userId,
+                provider = route.provider
+            )
+
+            call.respond(mapOf("syncId" to syncId))
+        }
+
+        // Get running syncs
+        get<LibraryRoutes.Pull.RunningStatuses> {
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val statuses = service.getRunningSyncs(currentUser.userId)
+
+            call.respond(mapOf("statuses" to statuses))
+        }
+
+        // Get sync status
+        get<LibraryRoutes.Pull.Status> { route ->
+            val status = service.getSyncStatus(syncId = route.syncId)
+            call.respond(mapOf("status" to status))
         }
     }
 }

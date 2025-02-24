@@ -3,6 +3,7 @@ package xyz.aniways.features.auth.services
 import io.ktor.server.auth.*
 import xyz.aniways.features.auth.daos.SessionDao
 import xyz.aniways.features.auth.daos.TokenDao
+import xyz.aniways.features.auth.db.Provider
 import xyz.aniways.features.users.UnauthorizedException
 import xyz.aniways.features.users.UserService
 import xyz.aniways.features.users.dtos.AuthDto
@@ -20,13 +21,13 @@ class AuthService(
         return session
     }
 
-    suspend fun getProviders(userId: String) = tokenDao.getProviders(userId)
+    suspend fun getProviders(userId: String) = tokenDao.getInstalledProviders(userId)
 
     suspend fun logout(session: String) {
         sessionDao.deleteSession(session)
     }
 
-    suspend fun saveOauthToken(userId: String, provider: String, principal: OAuthAccessTokenResponse.OAuth2) {
+    suspend fun saveOauthToken(userId: String, provider: Provider, principal: OAuthAccessTokenResponse.OAuth2) {
         tokenDao.createToken(
             userId = userId,
             token = principal.accessToken,
@@ -36,7 +37,7 @@ class AuthService(
         )
     }
 
-    suspend fun getAccessToken(provider: String, userId: String): String {
+    suspend fun getAccessToken(provider: Provider, userId: String): String {
         val token = tokenDao.getToken(userId, provider)
         return token?.token ?: throw UnauthorizedException("Token not found")
     }

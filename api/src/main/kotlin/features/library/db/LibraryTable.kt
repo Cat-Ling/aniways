@@ -38,7 +38,20 @@ enum class LibraryStatus {
     PAUSED,
 
     @SerialName("all")
-    ALL // For fetching all library entries regardless of status (only for filtering in routes, not actl in db)
+    ALL; // For fetching all library entries regardless of status (only for filtering in routes, not actl in db)
+
+    companion object {
+        fun fromMalStatus(status: String): LibraryStatus {
+            return when (status) {
+                "watching" -> WATCHING
+                "completed" -> COMPLETED
+                "on_hold" -> PAUSED
+                "dropped" -> DROPPED
+                "plan_to_watch" -> PLANNING
+                else -> PLANNING
+            }
+        }
+    }
 }
 
 object LibraryTable : Table<LibraryEntity>("library") {

@@ -31,7 +31,11 @@ class AnilistApi(
                 coverImage = it.coverImage.large,
                 description = it.description,
                 startDate = Calendar.getInstance().apply {
-                    set(it.startDate.year, it.startDate.month, it.startDate.day)
+                    if (it.startDate.year == null || it.startDate.month == null || it.startDate.day == null) {
+                        set(1970, 0, 1)
+                    } else {
+                        set(it.startDate.year, it.startDate.month, it.startDate.day)
+                    }
                 }.timeInMillis,
                 type = it.format,
                 episodes = it.episodes,
@@ -62,7 +66,15 @@ class AnilistApi(
             coverImage = rawResponse.data.media.coverImage.large,
             description = rawResponse.data.media.description,
             startDate = Calendar.getInstance().apply {
-                set(rawResponse.data.media.startDate.year, rawResponse.data.media.startDate.month, rawResponse.data.media.startDate.day)
+                if (rawResponse.data.media.startDate.year == null || rawResponse.data.media.startDate.month == null || rawResponse.data.media.startDate.day == null) {
+                    set(1970, 0, 1)
+                } else {
+                    set(
+                        rawResponse.data.media.startDate.year,
+                        rawResponse.data.media.startDate.month,
+                        rawResponse.data.media.startDate.day
+                    )
+                }
             }.timeInMillis,
             type = rawResponse.data.media.format,
             episodes = rawResponse.data.media.episodes,

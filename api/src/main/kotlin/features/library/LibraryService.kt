@@ -1,9 +1,17 @@
 package xyz.aniways.features.library
 
 import io.ktor.server.plugins.*
+import kotlinx.coroutines.*
+import xyz.aniways.features.anime.api.mal.MalApi
+import xyz.aniways.features.anime.api.mal.models.Data
+import xyz.aniways.features.anime.dao.AnimeDao
+import xyz.aniways.features.auth.daos.TokenDao
+import xyz.aniways.features.auth.db.Provider
 import xyz.aniways.features.library.daos.HistoryDao
 import xyz.aniways.features.library.daos.LibraryDao
+import xyz.aniways.features.library.daos.SyncLibraryDao
 import xyz.aniways.features.library.db.LibraryStatus
+import xyz.aniways.features.library.db.SyncStatus
 import xyz.aniways.features.library.dtos.HistoryDto
 import xyz.aniways.features.library.dtos.LibraryDto
 import xyz.aniways.features.library.dtos.toDto
@@ -13,6 +21,10 @@ import xyz.aniways.models.Pagination
 class LibraryService(
     private val libraryDao: LibraryDao,
     private val historyDao: HistoryDao,
+    private val syncLibraryDao: SyncLibraryDao,
+    private val malApi: MalApi,
+    private val tokenDao: TokenDao,
+    private val animeDao: AnimeDao,
     private val settingsService: SettingsService,
 ) {
     suspend fun getLibraryAnime(
@@ -111,5 +123,79 @@ class LibraryService(
             userId = userId,
             animeId = animeId
         )
+    }
+
+    private suspend fun syncMAL(userId: String, token: String) = coroutineScope {
+        var page = 1
+        val listItems = mutableListOf<Data>()
+        var hasNextPage = true
+
+        while (hasNextPage) {
+            val nextPage = malApi.getListOfUserAnimeList(
+                username = "@me",
+                page = page,
+                itemsPerPage = 750,
+                token = token,
+                status = null,
+                sort = null
+            )
+            listItems.addAll(nextPage.data)
+            hasNextPage = nextPage.paging?.next != null
+            page++
+            delay(2000L)
+        }
+
+        val animes = animeDao.getAnimesInMalIds(malIds = listItems.mapNotNull { it.node?.id })
+
+        val deferred = listItems.map { a ->
+            async {
+                val anime = animes.find { it.malId == a.node?.id } ?: return@async
+
+                libraryDao.saveToLibrary(
+                    userId = userId,
+                    animeId = anime.id,
+                    status = a.listStatus?.status?.let { LibraryStatus.fromMalStatus(it) }
+                        ?: LibraryStatus.PLANNING,
+                    epNo = a.listStatus?.numEpisodesWatched ?: 0,
+                )
+            }
+        }
+
+        deferred.awaitAll()
+    }
+
+    private suspend fun syncLibrary(userId: String, provider: Provider, syncId: String) = coroutineScope {
+        try {
+            val token = tokenDao.getToken(userId, provider)?.token ?: throw IllegalStateException("Token not found")
+
+            when (provider) {
+                Provider.MYANIMELIST -> syncMAL(userId, token)
+                Provider.ANILIST -> throw NotImplementedError("Anilist sync is not implemented yet")
+            }
+
+            syncLibraryDao.updateSyncLibrary(syncId, SyncStatus.COMPLETED)
+        } catch (e: Exception) {
+            syncLibraryDao.updateSyncLibrary(syncId, SyncStatus.FAILED)
+        }
+    }
+
+    suspend fun startSyncingLibrary(userId: String, provider: Provider): String {
+        val syncId = syncLibraryDao.insertSyncLibrary(userId, provider)
+
+        // run syncLibrary in background cos it's a long running task
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch { syncLibrary(userId, provider, syncId) }
+
+        return syncId
+    }
+
+    suspend fun getRunningSyncs(userId: String): List<String> {
+        val syncs = syncLibraryDao.getRunningSyncsOfUser(userId)
+        return syncs.map { it.id }
+    }
+
+    suspend fun getSyncStatus(syncId: String): SyncStatus {
+        val sync = syncLibraryDao.getSyncLibrary(syncId) ?: throw NotFoundException("Sync not found")
+        return sync.syncStatus
     }
 }
