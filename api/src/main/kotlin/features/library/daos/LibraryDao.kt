@@ -6,6 +6,8 @@ import org.ktorm.schema.timestamp
 import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.anime.db.Anime
 import xyz.aniways.features.anime.db.AnimeTable
+import xyz.aniways.features.anime.dtos.AnimeDto
+import xyz.aniways.features.anime.dtos.toAnimeDto
 import xyz.aniways.features.library.db.LibraryEntity
 import xyz.aniways.features.library.db.LibraryStatus
 import xyz.aniways.features.library.db.LibraryTable

@@ -20,6 +20,12 @@ class LibraryRoutes(
     val page: Int = 1,
     val itemsPerPage: Int = 20
 ) {
+    @Resource("/continue-watching")
+    class ContinueWatching(val parent: LibraryRoutes)
+
+    @Resource("/plan-to-watch")
+    class PlanToWatch(val parent: LibraryRoutes)
+
     @Resource("/status/running")
     class RunningStatuses(val parent: LibraryRoutes)
 
@@ -206,6 +212,34 @@ fun Route.libraryRoutes() {
         get<LibraryRoutes.Pull.Status> { route ->
             val status = service.getSyncStatus(syncId = route.syncId)
             call.respond(mapOf("status" to status))
+        }
+
+        // get continue watching
+        get<LibraryRoutes.ContinueWatching> {
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val result = service.getContinueWatchingAnime(
+                userId = currentUser.userId,
+                itemsPerPage = it.parent.itemsPerPage,
+                page = it.parent.page
+            )
+
+            call.respond(result)
+        }
+
+        // get plan to watch
+        get<LibraryRoutes.PlanToWatch> {
+            val currentUser = call.principal<Auth.UserSession>()
+            currentUser ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+            val result = service.getPlanToWatchAnime(
+                userId = currentUser.userId,
+                itemsPerPage = it.parent.itemsPerPage,
+                page = it.parent.page
+            )
+
+            call.respond(result)
         }
     }
 }

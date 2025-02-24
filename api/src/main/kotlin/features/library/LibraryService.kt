@@ -6,6 +6,8 @@ import xyz.aniways.features.anime.api.mal.MalApi
 import xyz.aniways.features.anime.api.mal.models.Data
 import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.dao.AnimeDao
+import xyz.aniways.features.anime.dtos.AnimeDto
+import xyz.aniways.features.anime.dtos.toAnimeDto
 import xyz.aniways.features.auth.daos.TokenDao
 import xyz.aniways.features.auth.db.Provider
 import xyz.aniways.features.library.daos.HistoryDao
@@ -17,6 +19,7 @@ import xyz.aniways.features.library.dtos.HistoryDto
 import xyz.aniways.features.library.dtos.LibraryDto
 import xyz.aniways.features.library.dtos.toDto
 import xyz.aniways.features.settings.services.SettingsService
+import xyz.aniways.models.PageInfo
 import xyz.aniways.models.Pagination
 
 class LibraryService(
@@ -233,5 +236,68 @@ class LibraryService(
 
     suspend fun deleteAllFromLibrary(userId: String) {
         libraryDao.deleteAllFromLibrary(userId)
+    }
+
+    private suspend fun getContinueWatchingLibrary(
+        status: LibraryStatus,
+        userId: String,
+        page: Int,
+        itemsPerPage: Int
+    ): Pagination<LibraryDto> {
+        val watchingAnime = libraryDao.getLibrary(
+            userId = userId,
+            status = status,
+            itemsPerPage = itemsPerPage,
+            page = page,
+        )
+
+        var currentPage = page + 1
+        val result = watchingAnime.items.toMutableList()
+
+        while (true) {
+            val nextPage = libraryDao.getLibrary(
+                userId = userId,
+                status = status,
+                itemsPerPage = itemsPerPage,
+                page = currentPage,
+            )
+
+            if (nextPage.items.isEmpty()) break
+
+            result.addAll(nextPage.items)
+            currentPage++
+        }
+
+        val continueWatchingAnime = result
+            .filter { library -> library.anime.lastEpisode?.let { it > library.watchedEpisodes } ?: false }
+            .sortedByDescending { it.updatedAt }
+            .map { library -> library.toDto() }
+
+        val totalCount = continueWatchingAnime.size
+        val totalPage = totalCount / itemsPerPage + 1
+        val hasNextPage = totalCount > page * itemsPerPage
+        val hasPreviousPage = page > 1
+
+        val items = continueWatchingAnime
+            .drop((page - 1) * itemsPerPage)
+            .take(itemsPerPage)
+
+        return Pagination(
+            pageInfo = PageInfo(
+                totalPage = totalPage,
+                currentPage = page,
+                hasNextPage = hasNextPage,
+                hasPreviousPage = hasPreviousPage
+            ),
+            items = items
+        )
+    }
+
+    suspend fun getContinueWatchingAnime(userId: String, page: Int, itemsPerPage: Int): Pagination<LibraryDto> {
+        return getContinueWatchingLibrary(LibraryStatus.WATCHING, userId, page, itemsPerPage)
+    }
+
+    suspend fun getPlanToWatchAnime(userId: String, page: Int, itemsPerPage: Int): Pagination<LibraryDto> {
+        return getContinueWatchingLibrary(LibraryStatus.PLANNING, userId, page, itemsPerPage)
     }
 }
