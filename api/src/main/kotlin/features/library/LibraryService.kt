@@ -4,6 +4,7 @@ import io.ktor.server.plugins.*
 import kotlinx.coroutines.*
 import xyz.aniways.features.anime.api.mal.MalApi
 import xyz.aniways.features.anime.api.mal.models.Data
+import xyz.aniways.features.anime.api.mal.models.MalStatus
 import xyz.aniways.features.anime.dao.AnimeDao
 import xyz.aniways.features.auth.daos.TokenDao
 import xyz.aniways.features.auth.db.Provider
@@ -90,6 +91,37 @@ class LibraryService(
     suspend fun saveToLibrary(userId: String, animeId: String, status: LibraryStatus, watchedEpisodes: Int) {
         val settings = settingsService.getSettingsByUserId(userId)
         if (settings.incognitoMode) return
+
+        // run sync in background cos it's a long running task
+        CoroutineScope(Dispatchers.IO).launch {
+            val anime = animeDao.getAnimeById(animeId) ?: throw NotFoundException("Anime not found")
+            val installedTokens = tokenDao.getInstalledProviders(userId)
+
+            for (token in installedTokens) {
+                val tokenEntity = tokenDao.getToken(userId, token) ?: continue
+                when (tokenEntity.provider) {
+                    Provider.MYANIMELIST -> {
+                        anime.malId ?: continue
+                        malApi.updateAnimeListEntry(
+                            id = anime.malId!!,
+                            status = when (status) {
+                                LibraryStatus.PLANNING -> MalStatus.PLAN_TO_WATCH
+                                LibraryStatus.WATCHING -> MalStatus.WATCHING
+                                LibraryStatus.COMPLETED -> MalStatus.COMPLETED
+                                LibraryStatus.DROPPED -> MalStatus.DROPPED
+                                LibraryStatus.PAUSED -> MalStatus.ON_HOLD
+                                LibraryStatus.ALL -> throw IllegalArgumentException("Invalid status")
+                            },
+                            token = tokenEntity.token,
+                            score = 0,
+                            numWatchedEpisodes = watchedEpisodes
+                        )
+                    }
+
+                    Provider.ANILIST -> throw NotImplementedError("Anilist sync is not implemented yet")
+                }
+            }
+        }
 
         libraryDao.saveToLibrary(
             userId = userId,
