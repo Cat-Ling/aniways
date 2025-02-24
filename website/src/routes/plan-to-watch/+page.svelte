@@ -10,6 +10,7 @@
 	<AnimeGrid
 		class="md:last:[&_a]:hidden"
 		pageInfo={data.planToWatch.pageInfo}
+		buildUrl={(anime) => `/anime/${anime.id}/watch?episode=${anime.lastEpisode}`}
 		buildSubtitle={(anime) => `Episode ${anime.lastEpisode}`}
 		animes={data.planToWatch.items.map((lib) => ({
 			...lib.anime,

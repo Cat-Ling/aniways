@@ -35,6 +35,7 @@
 					currentPage: 1,
 					totalPage: 1
 				}}
+				buildUrl={(anime) => `/anime/${anime.id}/watch?episode=${anime.lastEpisode}`}
 				buildSubtitle={(anime) => `Episode ${anime.lastEpisode}`}
 				animes={data.continueWatching.items.map((lib) => ({
 					...lib.anime,
@@ -60,6 +61,7 @@
 					currentPage: 1,
 					totalPage: 1
 				}}
+				buildUrl={(anime) => `/anime/${anime.id}/watch?episode=${anime.lastEpisode}`}
 				buildSubtitle={(anime) => `Episode ${anime.lastEpisode}`}
 				animes={data.planToWatch.items.map((lib) => ({
 					...lib.anime,
