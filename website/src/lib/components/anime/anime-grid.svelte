@@ -38,7 +38,7 @@
 
 <div
 	class={cn(
-		'mb-3 mt-5 grid w-full min-w-full grid-cols-2 gap-4 md:mb-8 md:grid-cols-5',
+		'mb-3 mt-5 grid w-full min-w-full grid-cols-2 gap-5 md:mb-8 md:grid-cols-5',
 		props.class
 	)}
 >
@@ -90,7 +90,9 @@
 	{/each}
 </div>
 
-{@render pagination({})}
+{#if pageInfo.currentPage !== pageInfo.totalPage}
+	{@render pagination({})}
+{/if}
 
 {#snippet pagination({ className }: { className?: string })}
 	<Pagination.Root

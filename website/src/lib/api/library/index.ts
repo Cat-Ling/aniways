@@ -25,6 +25,32 @@ export const getLibrary = async (
 	});
 };
 
+export const getContinueWatchingAnime = async (
+	fetch: typeof global.fetch,
+	page: number,
+	itemsPerPage: number
+) => {
+	return fetchJson(fetch, `/library/continue-watching`, librarySchema, {
+		params: {
+			page,
+			itemsPerPage
+		}
+	});
+};
+
+export const getPlanToWatchAnime = async (
+	fetch: typeof global.fetch,
+	page: number,
+	itemsPerPage: number
+) => {
+	return fetchJson(fetch, `/library/plan-to-watch`, librarySchema, {
+		params: {
+			page,
+			itemsPerPage
+		}
+	});
+};
+
 export const getLibraryItem = async (fetch: typeof global.fetch, animeId: string) => {
 	return fetchJson(fetch, `/library/${animeId}`, libraryItemSchema).catch(() => null);
 };
