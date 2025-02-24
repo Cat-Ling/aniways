@@ -90,7 +90,7 @@
 	{/each}
 </div>
 
-{#if pageInfo.currentPage !== pageInfo.totalPage}
+{#if pageInfo.totalPage > 1}
 	{@render pagination({})}
 {/if}
 
