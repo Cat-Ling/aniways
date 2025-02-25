@@ -66,7 +66,7 @@
 							data-sveltekit-noscroll
 							href="/anime/{query.id}/watch?episode={ep.number}&key={ep.id}"
 							class={cn(
-								'flex cursor-pointer items-center border-b border-border p-3 text-start transition last:border-b-0 hover:bg-muted',
+								'flex cursor-pointer items-center p-3 text-start transition hover:bg-muted',
 								ep.number === query.episode && '!text-primary'
 							)}
 						>
@@ -75,6 +75,9 @@
 							</span>
 							{ep.title}
 						</Command.LinkItem>
+						{#if i !== episodes.length - 1}
+							<Command.Separator />
+						{/if}
 					{/each}
 				</Command.List>
 			</Command.Root>
