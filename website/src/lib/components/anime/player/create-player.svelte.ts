@@ -41,17 +41,16 @@ export const createArtPlayer = async ({
 		container,
 		url: source.sources[0].file,
 		setting: true,
-		theme: 'hsl(346.8 77.2% 49.8%)',
-		screenshot: true,
-		volume: 100,
+		theme: 'hsl(var(--primary))',
 		fullscreen: true,
 		mutex: true,
 		playbackRate: true,
 		autoPlayback: true,
 		autoOrientation: true,
-		playsInline: true,
+		playsInline: false,
 		pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
 		airplay: true,
+		miniProgressBar: true,
 		icons: {
 			loading: convertComponentToHTML(LoaderCircle, {
 				size: 100,
@@ -73,6 +72,7 @@ export const createArtPlayer = async ({
 				quality: {
 					setting: true,
 					getName: (level: { height: number }) => `${level.height}p`,
+					control: true,
 					title: 'Quality',
 					auto: 'Auto'
 				}
@@ -81,35 +81,6 @@ export const createArtPlayer = async ({
 			skipPlugin(source),
 			windowKeyBindPlugin(),
 			amplifyVolumePlugin()
-		],
-		settings: [
-			{
-				icon: convertComponentToHTML(Captions, { size: 22, style: 'fill: none !important;' }),
-				html: 'Captions',
-				tooltip: defaultSubtitle?.label,
-				selector: [
-					{
-						html: 'Off',
-						default: false,
-						url: '',
-						off: true
-					},
-					...source.tracks
-						.filter((track) => track.kind === 'captions')
-						.map((track) => ({
-							default: track.default,
-							html: track.label ?? 'Unknown',
-							url: track.file
-						}))
-				],
-				onSelect: (item) => {
-					const url = item.url as unknown;
-					if (typeof url !== 'string') return;
-					art.subtitle.url = url;
-					art.subtitle.show = !!url;
-					return item.html;
-				}
-			}
 		],
 		customType: {
 			m3u8: (video, url, art) => {
@@ -164,6 +135,34 @@ export const createArtPlayer = async ({
 				}
 			}
 		]
+	});
+
+	art.setting.add({
+		icon: convertComponentToHTML(Captions, { size: 22, style: 'fill: none !important;' }),
+		html: 'Captions',
+		tooltip: defaultSubtitle?.label,
+		selector: [
+			{
+				html: 'Off',
+				default: false,
+				url: '',
+				off: true
+			},
+			...source.tracks
+				.filter((track) => track.kind === 'captions')
+				.map((track) => ({
+					default: track.default,
+					html: track.label ?? 'Unknown',
+					url: track.file
+				}))
+		],
+		onSelect: (item) => {
+			const url = item.url as unknown;
+			if (typeof url !== 'string') return;
+			art.subtitle.url = url;
+			art.subtitle.show = !!url;
+			return item.html;
+		}
 	});
 
 	art.on('ready', () => {
