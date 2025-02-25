@@ -2,11 +2,11 @@ import { goto } from '$app/navigation';
 import type { streamInfo } from '$lib/api/anime/types';
 import { appState } from '$lib/context/state.svelte';
 import { convertComponentToHTML } from '$lib/utils';
+import { ArkErrors, type } from 'arktype';
 import artplayerPluginHlsControl from 'artplayer-plugin-hls-control';
 import type Hls from 'hls.js';
 import { Captions, LoaderCircle, Pause, SkipForward } from 'lucide-svelte';
 import { amplifyVolumePlugin, skipPlugin, thumbnailPlugin, windowKeyBindPlugin } from './plugins';
-import { ArkErrors, type } from 'arktype';
 
 type Props = {
 	id: string;
