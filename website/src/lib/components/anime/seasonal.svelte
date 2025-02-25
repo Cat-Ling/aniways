@@ -44,19 +44,21 @@
 >
 	<Carousel.Content>
 		{#each seasonalAnimes as anime}
-			<Carousel.Item class="relative h-screen w-full">
+			<Carousel.Item class="relative h-[75vh] w-full md:h-screen">
 				<div
-					class="absolute left-6 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-16 md:w-1/2"
+					class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-16 md:w-1/2"
 				>
-					<h1 class="mb-2 line-clamp-2 font-sora text-2xl font-bold md:text-4xl">
+					<h1
+						class="mb-2 line-clamp-2 font-sora text-2xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:text-4xl"
+					>
 						{anime.title}
 					</h1>
-					<div class="mb-2 flex flex-wrap gap-2">
+					<div class="mb-2 flex flex-wrap gap-1 md:gap-2">
 						<span
 							class={buttonVariants({
 								variant: 'outline',
 								class:
-									'h-fit bg-card px-2 py-1 text-primary hover:bg-card hover:text-primary md:h-9'
+									'h-fit bg-card px-2 py-1 text-xs text-primary hover:bg-card hover:text-primary md:h-9 md:text-sm'
 							})}
 						>
 							<Calendar />
@@ -66,7 +68,7 @@
 							class={buttonVariants({
 								variant: 'outline',
 								class:
-									'h-fit bg-card px-2 py-1 text-primary hover:bg-card hover:text-primary md:h-9'
+									'h-fit bg-card px-2 py-1 text-xs text-primary hover:bg-card hover:text-primary md:h-9 md:text-sm'
 							})}
 						>
 							<Clapperboard />
@@ -76,7 +78,7 @@
 							class={buttonVariants({
 								variant: 'outline',
 								class:
-									'h-fit bg-card px-2 py-1 text-primary hover:bg-card hover:text-primary md:h-9'
+									'h-fit bg-card px-2 py-1 text-xs text-primary hover:bg-card hover:text-primary md:h-9 md:text-sm'
 							})}
 						>
 							<Video />
@@ -85,7 +87,7 @@
 					</div>
 					<p
 						class={cn(
-							'mb-5 line-clamp-2 text-sm [display:-webkit-box] md:line-clamp-3 md:text-base',
+							'mb-5 line-clamp-2 text-sm text-muted-foreground [display:-webkit-box] [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:line-clamp-3 md:text-base',
 							{
 								italic: !anime.description
 							}
@@ -123,7 +125,7 @@
 			</Carousel.Item>
 		{/each}
 	</Carousel.Content>
-	<div class="absolute bottom-56 left-1/2 flex w-fit -translate-x-1/2 justify-center">
+	<div class="absolute bottom-28 left-1/2 flex w-fit -translate-x-1/2 justify-center md:bottom-56">
 		{#each seasonalAnimes as _, i}
 			<Button
 				onclick={() => api?.scrollTo(i)}

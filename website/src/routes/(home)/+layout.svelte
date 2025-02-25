@@ -13,7 +13,7 @@
 
 <Seasonal {seasonalAnimes} />
 
-<div class="mx-3 -mt-72 flex flex-col md:mx-8">
+<div class="mx-3 -mt-40 flex flex-col md:mx-8 md:-mt-72">
 	<section class="z-30 mb-8">
 		<h1 class="relative z-30 font-sora text-2xl font-bold">Trending Animes</h1>
 		<RankedAnimeGrid animes={data.trendingAnime} />
