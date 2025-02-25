@@ -59,7 +59,7 @@
 	) => {
 		$effect(() => {
 			if (!isCurrentEp) return;
-			node.scrollIntoView({ behavior: 'instant', block: 'center' });
+			node.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 		});
 	};
 </script>
