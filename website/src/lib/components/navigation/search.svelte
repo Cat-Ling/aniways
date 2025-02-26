@@ -8,6 +8,7 @@
 	import { cn } from '$lib/utils';
 	import { debounce } from 'lodash-es';
 	import { Loader2, Search } from 'lucide-svelte';
+	import Image from '../image/Image.svelte';
 
 	let value = $state('');
 
@@ -53,11 +54,18 @@
 	class="hidden rounded-full hover:bg-primary md:flex"
 	size="icon"
 	onclick={() => (appState.searchOpen = true)}
+	aria-label="Search"
 >
 	<Search class="size-6" />
 </Button>
 
-<Button variant="ghost" class="rounded-full hover:bg-primary md:hidden" size="icon" href="/search">
+<Button
+	variant="ghost"
+	class="rounded-full hover:bg-primary md:hidden"
+	size="icon"
+	href="/search"
+	aria-label="Search"
+>
 	<Search class="size-6" />
 </Button>
 
@@ -74,7 +82,7 @@
 				{#each animes as anime (anime.id)}
 					<Command.LinkItem href={`/anime/${anime.id}`} class="grid grid-cols-5 items-center gap-2">
 						<div class="col-span-1 aspect-[300/400] overflow-hidden rounded-md bg-muted">
-							<img
+							<Image
 								src={anime.metadata?.mainPicture || anime.poster}
 								alt={anime.name}
 								class="h-full w-full rounded-md object-cover object-center"

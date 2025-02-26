@@ -60,7 +60,13 @@
 
 	<div class="flex items-center gap-2">
 		<SearchButton />
-		<Button variant="ghost" class="rounded-full hover:bg-primary" href="/random" size="icon">
+		<Button
+			variant="ghost"
+			class="rounded-full hover:bg-primary"
+			href="/random"
+			size="icon"
+			aria-label="Random"
+		>
 			<Shuffle class="size-6" />
 		</Button>
 		<Auth {user} />

@@ -6,6 +6,7 @@
 	import { cn } from '$lib/utils';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 	import { type Snippet } from 'svelte';
+	import Image from '../image/Image.svelte';
 
 	type Props = {
 		animes: (typeof anime.infer)[];
@@ -38,7 +39,7 @@
 
 <div
 	class={cn(
-		'mb-3 mt-5 grid w-full min-w-full grid-cols-2 gap-5 md:mb-8 md:grid-cols-5',
+		'mb-3 mt-5 grid w-full min-w-full grid-cols-2 gap-4 md:mb-8 md:grid-cols-5',
 		props.class
 	)}
 >
@@ -57,9 +58,11 @@
 			href={buildUrl?.(result) ?? `/anime/${result.id}`}
 		>
 			<div class="aspect-[3/4] w-full min-w-full overflow-hidden rounded-md bg-card">
-				<img
+				<Image
 					src={result.metadata?.mainPicture || result.poster}
 					alt={result.jname}
+					width={210}
+					height={280}
 					class="aspect-[3/4] w-full scale-105 rounded-md object-cover transition group-hover:scale-100"
 				/>
 			</div>

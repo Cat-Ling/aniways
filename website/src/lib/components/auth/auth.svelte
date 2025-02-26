@@ -9,7 +9,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { cn } from '$lib/utils';
-	import { History, Library, LogIn, LogOut, Settings, User } from 'lucide-svelte';
+	import { History, Library, LogIn, LogOut, User } from 'lucide-svelte';
+	import Image from '../image/Image.svelte';
 	import Button from '../ui/button/button.svelte';
 	import RegisterForm from './register-form.svelte';
 
@@ -31,7 +32,7 @@
 {#if user}
 	<Sheet.Root bind:open>
 		<Sheet.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
-			<img
+			<Image
 				src={user.profilePicture ?? miku}
 				alt="avatar"
 				class="size-10 rounded-full object-cover object-center"
@@ -40,7 +41,7 @@
 		<Sheet.Content class="flex flex-col gap-2">
 			<Sheet.Header class="mb-4">
 				<Sheet.Title class="flex items-center gap-2">
-					<img
+					<Image
 						src={user.profilePicture ?? miku}
 						alt="avatar"
 						class="size-10 rounded-full object-cover object-center"

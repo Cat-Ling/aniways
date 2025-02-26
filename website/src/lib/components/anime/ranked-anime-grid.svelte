@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { anime } from '$lib/api/anime/types';
 	import { cn } from '$lib/utils';
+	import Image from '../image/Image.svelte';
 
 	type Props = {
 		animes: (typeof anime.infer)[];
@@ -35,7 +36,7 @@
 					{`0${i + 1}`.slice(-2)}
 				</p>
 				<div class={cn('aspect-[3/4] w-full overflow-hidden border-border md:rounded-md')}>
-					<img
+					<Image
 						src={anime.metadata?.mainPicture || anime.poster}
 						alt={anime.jname ?? ''}
 						class={cn(
