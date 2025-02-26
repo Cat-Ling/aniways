@@ -4,5 +4,5 @@ import { defineConfig } from 'vite';
 import lucidePreprocess from 'vite-plugin-lucide-preprocess';
 
 export default defineConfig({
-	plugins: [enhancedImages(), sveltekit(), lucidePreprocess()]
+  plugins: [enhancedImages(), sveltekit(), lucidePreprocess()]
 });

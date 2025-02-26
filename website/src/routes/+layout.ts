@@ -4,15 +4,15 @@ import { getSettings } from '$lib/api/settings';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch }) => {
-	const [user, settings, genres] = await Promise.all([
-		getCurrentUser(fetch).catch(() => null),
-		getSettings(fetch).catch(() => null),
-		getGenres(fetch)
-	]);
+  const [user, settings, genres] = await Promise.all([
+    getCurrentUser(fetch).catch(() => null),
+    getSettings(fetch).catch(() => null),
+    getGenres(fetch)
+  ]);
 
-	return {
-		user,
-		settings,
-		genres
-	};
+  return {
+    user,
+    settings,
+    genres
+  };
 };
