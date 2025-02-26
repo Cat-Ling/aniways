@@ -1,7 +1,6 @@
 <script lang="ts">
   import Metadata from '$lib/components/anime/metadata.svelte';
   import OtherAnimeSections from '$lib/components/anime/other-anime-sections.svelte';
-  import Image from '$lib/components/image/Image.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
   import Input from '$lib/components/ui/input/input.svelte';
   import { Skeleton } from '$lib/components/ui/skeleton';
@@ -37,7 +36,7 @@
     {#await banner}
       <Skeleton class="h-48 w-full md:h-96" />
     {:then banner}
-      <Image
+      <img
         src={banner?.banner || anime.mainPicture || anime.poster}
         alt={`Banner for ${anime.jname}`}
         class="h-48 w-full overflow-hidden object-cover object-center md:h-96"

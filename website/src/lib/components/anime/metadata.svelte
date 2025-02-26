@@ -6,7 +6,6 @@
   import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '$lib/components/ui/dialog';
   import { cn } from '$lib/utils';
   import { Info, PlayIcon, Tv } from 'lucide-svelte';
-  import Image from '../image/Image.svelte';
   import LibraryBtn from './library-btn.svelte';
   import Trailer from './trailer.svelte';
 
@@ -33,11 +32,9 @@
   <div class="flex flex-col gap-8 rounded-md bg-card p-4 md:flex-row">
     <div class="w-full md:w-1/4">
       {#key anime.picture}
-        <Image
+        <img
           src={anime.picture}
           alt={anime.jname}
-          width={300}
-          height={400}
           class="aspect-[3/4] w-full rounded-md bg-muted object-cover object-center"
         />
       {/key}

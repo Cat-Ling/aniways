@@ -8,7 +8,6 @@
   import { cn } from '$lib/utils';
   import { debounce } from 'lodash-es';
   import { Loader2, Search } from 'lucide-svelte';
-  import Image from '../image/Image.svelte';
 
   let value = $state('');
 
@@ -82,7 +81,7 @@
         {#each animes as anime (anime.id)}
           <Command.LinkItem href={`/anime/${anime.id}`} class="grid grid-cols-5 items-center gap-2">
             <div class="col-span-1 aspect-[300/400] overflow-hidden rounded-md bg-muted">
-              <Image
+              <img
                 src={anime.metadata?.mainPicture || anime.poster}
                 alt={anime.name}
                 class="h-full w-full rounded-md object-cover object-center"

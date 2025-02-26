@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { anime } from '$lib/api/anime/types';
   import { cn } from '$lib/utils';
-  import Image from '../image/Image.svelte';
 
   type Props = {
     animes: (typeof anime.infer)[];
@@ -36,9 +35,10 @@
           {`0${i + 1}`.slice(-2)}
         </p>
         <div class={cn('aspect-[3/4] w-full overflow-hidden border-border md:rounded-md')}>
-          <Image
+          <img
             src={anime.metadata?.mainPicture || anime.poster}
             alt={anime.jname ?? ''}
+            loading="lazy"
             class={cn(
               'h-full w-full scale-110 rounded-md object-cover transition group-hover:scale-100',
               mode === 'vertical' && 'scale-100 group-hover:scale-110'

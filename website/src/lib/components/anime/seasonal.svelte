@@ -6,7 +6,6 @@
   import { cn } from '$lib/utils';
   import { format } from 'date-fns';
   import Autoplay from 'embla-carousel-autoplay';
-  import Image from '../image/Image.svelte';
   import { Calendar, ChevronRight, Clapperboard, Play, Video } from 'lucide-svelte';
 
   type Props = {
@@ -114,11 +113,9 @@
         <div
           class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-b from-background via-background/55 to-background"
         ></div>
-        <Image
+        <img
           src={anime.bannerImage || anime.coverImage}
           alt={anime.title}
-          quality={100}
-          priority={true}
           class="h-full w-full object-cover object-center shadow-lg"
           onerror={(e) => {
             const image = e.target as HTMLImageElement;

@@ -2,7 +2,6 @@
   import type { getSeasonsAndRelatedAnimes } from '$lib/api/anime';
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { cn } from '$lib/utils';
-  import Image from '../image/Image.svelte';
 
   type Props = {
     animeId: string;
@@ -36,9 +35,10 @@
             animeId === data.id && 'border-primary'
           )}
         >
-          <Image
+          <img
             src={data.metadata?.mainPicture || data.poster}
             alt={data.jname}
+            loading="lazy"
             class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
           />
           <div class="relative z-10 h-full bg-background bg-opacity-80 p-3">
