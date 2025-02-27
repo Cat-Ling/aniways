@@ -197,7 +197,15 @@ class AnimeService(
             launch {
                 val semaphore = Semaphore(20)
                 result.items.map { anime ->
-                    async { semaphore.withPermit { saveMetadataInDB(anime) } }
+                    async {
+                        semaphore.withPermit {
+                            try {
+                                saveMetadataInDB(anime)
+                            } catch (e: Exception) {
+                                logger.error("Failed to save metadata for anime ${anime.id}", e)
+                            }
+                        }
+                    }
                 }
             }
 
@@ -226,7 +234,15 @@ class AnimeService(
         launch {
             val semaphore = Semaphore(20)
             result.items.map { anime ->
-                async { semaphore.withPermit { saveMetadataInDB(anime) } }
+                async {
+                    semaphore.withPermit {
+                        try {
+                            saveMetadataInDB(anime)
+                        } catch (e: Exception) {
+                            logger.error("Failed to save metadata for anime ${anime.id}", e)
+                        }
+                    }
+                }
             }
         }
 
@@ -253,7 +269,15 @@ class AnimeService(
             launch {
                 val semaphore = Semaphore(20)
                 result.items.map { anime ->
-                    async { semaphore.withPermit { saveMetadataInDB(anime) } }
+                    async {
+                        semaphore.withPermit {
+                            try {
+                                saveMetadataInDB(anime)
+                            } catch (e: Exception) {
+                                logger.error("Failed to save metadata for anime ${anime.id}", e)
+                            }
+                        }
+                    }
                 }
             }
 
