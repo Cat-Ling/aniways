@@ -205,7 +205,12 @@ class AnimeService(
         return retryWithDelay { animeScraper.getServersOfEpisode(episodeId) } ?: emptyList()
     }
 
-    suspend fun searchAnime(query: String, genre: String?, page: Int, itemsPerPage: Int = 20): Pagination<AnimeWithMetadataDto> {
+    suspend fun searchAnime(
+        query: String,
+        genre: String?,
+        page: Int,
+        itemsPerPage: Int = 20
+    ): Pagination<AnimeWithMetadataDto> {
         val result = animeDao.searchAnimes(query, genre?.formatGenre(), page, itemsPerPage)
         return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
     }
@@ -277,10 +282,13 @@ class AnimeService(
         scrapeAndPopulateAnime(page + 1)
     }
 
-    suspend fun scrapeAndPopulateRecentlyUpdatedAnime(fromPage: Int? = null): Unit = coroutineScope {
+    suspend fun scrapeAndPopulateRecentlyUpdatedAnime(
+        fromPage: Int? = null,
+        ids: MutableList<String> = mutableListOf()
+    ): List<String> = coroutineScope {
         if (fromPage == 0) {
             logger.info("Scraping and populating recently updated anime completed")
-            return@coroutineScope
+            return@coroutineScope ids.distinct()
         }
 
         val page = fromPage ?: animeScraper.getRecentlyUpdatedAnime(1).pageInfo.totalPage
@@ -309,6 +317,7 @@ class AnimeService(
                     }
 
                     dbAnime?.let {
+                        ids.add(it.id)
                         animeDao.updateAnime(dbAnime.copy().apply {
                             poster = scrapedAnime.poster
                             lastEpisode = scrapedAnime.episodes?.toIntOrNull() ?: dbAnime.lastEpisode
@@ -317,7 +326,7 @@ class AnimeService(
                             updatedAt = Instant.ofEpochMilli(updateTime)
                         })
                     } ?: run {
-                        animeDao.insertAnime(Anime {
+                        val anime = Anime {
                             name = scrapedAnime.name
                             jname = scrapedAnime.jname
                             poster = scrapedAnime.poster
@@ -327,13 +336,15 @@ class AnimeService(
                             anilistId = info?.anilistId
                             lastEpisode = scrapedAnime.episodes?.toIntOrNull()
                             updatedAt = Instant.ofEpochMilli(updateTime)
-                        })
+                        }
+                        animeDao.insertAnime(anime)
+                        ids.add(anime.id)
                     }
                 }
             }
         }.awaitAll()
 
         delay(2000L)
-        scrapeAndPopulateRecentlyUpdatedAnime(page - 1)
+        scrapeAndPopulateRecentlyUpdatedAnime(page - 1, ids)
     }
 }

@@ -1,8 +1,8 @@
 package xyz.aniways.features.library.dtos
 
 import kotlinx.serialization.Serializable
-import xyz.aniways.features.anime.dtos.AnimeDto
-import xyz.aniways.features.anime.dtos.toAnimeDto
+import xyz.aniways.features.anime.dtos.AnimeWithMetadataDto
+import xyz.aniways.features.anime.dtos.toAnimeWithMetadataDto
 import xyz.aniways.features.library.db.LibraryEntity
 import xyz.aniways.features.library.db.LibraryStatus
 
@@ -15,7 +15,7 @@ data class LibraryDto(
     val status: LibraryStatus,
     val createdAt: Long,
     val updatedAt: Long,
-    val anime: AnimeDto,
+    val anime: AnimeWithMetadataDto,
 )
 
 fun LibraryEntity.toDto() = LibraryDto(
@@ -26,5 +26,5 @@ fun LibraryEntity.toDto() = LibraryDto(
     status = this.status,
     createdAt = this.createdAt.toEpochMilli(),
     updatedAt = this.updatedAt.toEpochMilli(),
-    anime = this.anime.toAnimeDto()
+    anime = this.anime.toAnimeWithMetadataDto()
 )

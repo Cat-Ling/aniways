@@ -1,8 +1,8 @@
 package xyz.aniways.features.library.dtos
 
 import kotlinx.serialization.Serializable
-import xyz.aniways.features.anime.dtos.AnimeDto
-import xyz.aniways.features.anime.dtos.toAnimeDto
+import xyz.aniways.features.anime.dtos.AnimeWithMetadataDto
+import xyz.aniways.features.anime.dtos.toAnimeWithMetadataDto
 import xyz.aniways.features.library.db.HistoryEntity
 
 @Serializable
@@ -13,7 +13,7 @@ data class HistoryDto(
     val watchedEpisodes: Int,
     val createdAt: Long,
     val updatedAt: Long,
-    val anime: AnimeDto,
+    val anime: AnimeWithMetadataDto,
 )
 
 fun HistoryEntity.toDto() = HistoryDto(
@@ -23,5 +23,5 @@ fun HistoryEntity.toDto() = HistoryDto(
     watchedEpisodes = this.watchedEpisodes,
     createdAt = this.createdAt.toEpochMilli(),
     updatedAt = this.updatedAt.toEpochMilli(),
-    anime = this.anime.toAnimeDto()
+    anime = this.anime.toAnimeWithMetadataDto()
 )

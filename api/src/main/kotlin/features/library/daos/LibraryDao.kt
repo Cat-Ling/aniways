@@ -4,6 +4,7 @@ import org.ktorm.dsl.*
 import org.ktorm.entity.count
 import org.ktorm.entity.find
 import xyz.aniways.database.AniwaysDatabase
+import xyz.aniways.features.anime.db.AnimeMetadataTable
 import xyz.aniways.features.anime.db.AnimeTable
 import xyz.aniways.features.library.db.LibraryEntity
 import xyz.aniways.features.library.db.LibraryStatus
@@ -58,14 +59,12 @@ class DBLibraryDao(
                 val totalItems = library.count { it.userId eq userId }
                 val items = from(LibraryTable)
                     .leftJoin(AnimeTable, on = AnimeTable.id eq LibraryTable.animeId)
+                    .leftJoin(AnimeMetadataTable, on = AnimeMetadataTable.malId eq AnimeTable.malId)
                     .select()
                     .where { LibraryTable.userId eq userId }
                     .orderBy(AnimeTable.jname.asc())
                     .limit(offset = (page - 1) * itemsPerPage, limit = itemsPerPage)
-                    .map { row ->
-                        LibraryTable.createEntity(row, withReferences = true)
-                    }
-                    .toList()
+                    .map { row -> LibraryTable.createEntity(row) }
 
                 Pagination(
                     items = items,
@@ -80,6 +79,7 @@ class DBLibraryDao(
                 val totalItems = library.count { (it.userId eq userId) and (it.status eq status) }
                 val items = from(LibraryTable)
                     .leftJoin(AnimeTable, on = AnimeTable.id eq LibraryTable.animeId)
+                    .leftJoin(AnimeMetadataTable, on = AnimeMetadataTable.malId eq AnimeTable.malId)
                     .select()
                     .where { (LibraryTable.userId eq userId) and (LibraryTable.status eq status) }
                     .orderBy(AnimeTable.jname.asc())
