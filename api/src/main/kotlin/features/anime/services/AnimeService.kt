@@ -347,4 +347,20 @@ class AnimeService(
         delay(2000L)
         scrapeAndPopulateRecentlyUpdatedAnime(page - 1, ids)
     }
+
+    suspend fun saveMissingMetadata() = coroutineScope {
+        val animes = animeDao.getAnimesWithoutMetadata()
+
+        if (animes.isEmpty()) return@coroutineScope
+
+        val semaphore = Semaphore(20)
+        val deferredMetadata = animes.map { anime ->
+            async {
+                semaphore.withPermit { retryWithDelay { getAnimeById(anime.id) } }
+            }
+        }
+
+        deferredMetadata.awaitAll()
+    }
+
 }

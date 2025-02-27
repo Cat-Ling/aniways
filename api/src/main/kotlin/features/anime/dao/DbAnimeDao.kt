@@ -57,7 +57,7 @@ class DbAnimeDao(
             val hasPreviousPage = page > 1
 
             val items = animes
-                .filter { it.genre like "%$genre%" and(it.malId.isNotNull() or it.malId.notEq(0)) }
+                .filter { it.genre like "%$genre%" and (it.malId.isNotNull() or it.malId.notEq(0)) }
                 .drop((page - 1) * itemsPerPage)
                 .take(itemsPerPage)
                 .toList()
@@ -82,7 +82,7 @@ class DbAnimeDao(
 
     override suspend fun getRandomAnimeByGenre(genre: String): Anime {
         return aniwaysDatabase.query {
-            animes.filter { it.malId.isNotNull().and(it.genre like "%$genre%")  }.toList().random()
+            animes.filter { it.malId.isNotNull().and(it.genre like "%$genre%") }.toList().random()
         }
     }
 
@@ -299,6 +299,19 @@ class DbAnimeDao(
         return aniwaysDatabase.query {
             this.animeMetadata.update(animeMetadata)
             animeMetadata
+        }
+    }
+
+    override suspend fun getAnimesWithoutMetadata(): List<Anime> {
+        return aniwaysDatabase.query {
+            from(AnimeTable)
+                .leftJoin(AnimeMetadataTable, AnimeTable.malId eq AnimeMetadataTable.malId)
+                .select(AnimeTable.columns)
+                .where {
+                    AnimeTable.malId.isNotNull()
+                        .and(AnimeMetadataTable.malId.isNull() or AnimeMetadataTable.malId.eq(0))
+                }
+                .map { AnimeTable.createEntity(it) }
         }
     }
 }
