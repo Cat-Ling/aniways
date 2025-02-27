@@ -143,12 +143,14 @@ class DbAnimeDao(
                 val searchQuery = """
                     SELECT 
                         *,
-                        ts_rank(search_vector, plainto_tsquery('english', ?)) AS rank
+                        ts_rank(search_vector, plainto_tsquery('english', ?)) AS query_rank
                     FROM 
                         animes
+                    LEFT JOIN
+                        anime_metadata ON animes.mal_id = anime_metadata.mal_id
                     $whereClause
                     ORDER BY 
-                        rank DESC
+                        query_rank DESC
                     LIMIT ? 
                     OFFSET ?
                 """.trimIndent()
@@ -210,11 +212,32 @@ class DbAnimeDao(
                                 malId = rs.getInt("mal_id")
                                 anilistId = rs.getInt("anilist_id")
                                 lastEpisode = rs.getInt("last_episode")
+                                metadata = AnimeMetadata {
+                                    malId = rs.getInt("mal_id")
+                                    description = rs.getString("description")
+                                    mainPicture = rs.getString("main_picture")
+                                    mediaType = rs.getString("media_type")
+                                    rating = rs.getString("rating")
+                                    avgEpDuration = rs.getInt("avg_ep_duration")
+                                    airingStatus = rs.getString("airing_status")
+                                    totalEpisodes = rs.getInt("total_episodes")
+                                    studio = rs.getString("studio")
+                                    rank = rs.getInt("rank")
+                                    mean = rs.getDouble("mean")
+                                    scoringUsers = rs.getInt("scoring_users")
+                                    popularity = rs.getInt("popularity")
+                                    airingStart = rs.getString("airing_start")
+                                    airingEnd = rs.getString("airing_end")
+                                    source = rs.getString("source")
+                                    trailer = rs.getString("trailer")
+                                    createdAt = rs.getTimestamp("created_at").toInstant()
+                                    lastUpdatedAt = rs.getTimestamp("last_updated_at")?.toInstant()
+                                    seasonYear = rs.getInt("season_year")
+                                    season = rs.getString("season")
+                                }
                             }
                         }.toList()
                     }
-
-                println("QUERY: $searchQuery")
 
                 Pagination(
                     pageInfo = PageInfo(
