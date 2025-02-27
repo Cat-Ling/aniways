@@ -31,6 +31,7 @@ class DbAnimeDao(
             val hasPreviousPage = page > 1
 
             val items = animes
+                .filter { it.malId.isNotNull() or it.malId.notEq(0) }
                 .sortedByDescending { it.updatedAt }
                 .drop((page - 1) * itemsPerPage)
                 .take(itemsPerPage)
@@ -56,7 +57,7 @@ class DbAnimeDao(
             val hasPreviousPage = page > 1
 
             val items = animes
-                .filter { it.genre like "%$genre%" }
+                .filter { it.genre like "%$genre%" and(it.malId.isNotNull() or it.malId.notEq(0)) }
                 .drop((page - 1) * itemsPerPage)
                 .take(itemsPerPage)
                 .toList()
@@ -133,6 +134,8 @@ class DbAnimeDao(
                     conditions.add("genre LIKE ?")
                     params.add("%$genre%")
                 }
+
+                conditions.add("mal_id IS NOT NULL")
 
                 val whereClause = if (conditions.isNotEmpty()) {
                     "WHERE ${conditions.joinToString(" AND ")}"
