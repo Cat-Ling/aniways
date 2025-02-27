@@ -4,7 +4,6 @@ import io.ktor.server.application.*
 import org.koin.ktor.ext.get
 import xyz.aniways.features.tasks.FreshServerInstallSeeder
 import xyz.aniways.features.tasks.HourlyRecentlyUpdatedScraperTask
-import xyz.aniways.features.tasks.MetadataSaver
 import xyz.aniways.features.tasks.plugins.TaskSchedulerPlugin
 
 fun Application.configureTaskScheduler() {
@@ -12,7 +11,6 @@ fun Application.configureTaskScheduler() {
         tasks = listOf(
             FreshServerInstallSeeder(get()),
             HourlyRecentlyUpdatedScraperTask(get()),
-            MetadataSaver(get())
         )
     }
 }
