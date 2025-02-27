@@ -135,7 +135,7 @@ class DbAnimeDao(
                     params.add("%$genre%")
                 }
 
-                conditions.add("mal_id IS NOT NULL")
+                conditions.add("animes.mal_id IS NOT NULL")
 
                 val whereClause = if (conditions.isNotEmpty()) {
                     "WHERE ${conditions.joinToString(" AND ")}"
