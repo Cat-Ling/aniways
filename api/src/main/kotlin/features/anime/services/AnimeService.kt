@@ -189,11 +189,20 @@ class AnimeService(
         }
     }
 
-    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> {
-        val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
+    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> =
+        coroutineScope {
+            val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
 
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
-    }
+            // Update metadata in background
+            launch {
+                val semaphore = Semaphore(20)
+                result.items.map { anime ->
+                    async { semaphore.withPermit { saveMetadataInDB(anime) } }
+                }
+            }
+
+            Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
+        }
 
     suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {
         val anime = animeDao.getAnimeById(id) ?: return emptyList()
@@ -210,9 +219,18 @@ class AnimeService(
         genre: String?,
         page: Int,
         itemsPerPage: Int = 20
-    ): Pagination<AnimeWithMetadataDto> {
+    ): Pagination<AnimeWithMetadataDto> = coroutineScope {
         val result = animeDao.searchAnimes(query, genre?.formatGenre(), page, itemsPerPage)
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
+
+        // Update metadata in background
+        launch {
+            val semaphore = Semaphore(20)
+            result.items.map { anime ->
+                async { semaphore.withPermit { saveMetadataInDB(anime) } }
+            }
+        }
+
+        Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
     }
 
     suspend fun getAnimeCount(): Int {
@@ -223,24 +241,37 @@ class AnimeService(
         return animeDao.getAllGenres()
     }
 
-    suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> {
-        val result = animeDao.getAnimesByGenre(
-            genre = genre.formatGenre(),
-            page = page,
-            itemsPerPage = itemsPerPage
-        )
+    suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> =
+        coroutineScope {
+            val result = animeDao.getAnimesByGenre(
+                genre = genre.formatGenre(),
+                page = page,
+                itemsPerPage = itemsPerPage
+            )
 
-        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
-    }
+            // Update metadata in background
+            launch {
+                val semaphore = Semaphore(20)
+                result.items.map { anime ->
+                    async { semaphore.withPermit { saveMetadataInDB(anime) } }
+                }
+            }
+
+            Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
+        }
 
     suspend fun getRandomAnime(): AnimeWithMetadataDto {
-        return animeDao.getRandomAnime().toAnimeWithMetadataDto()
+        val anime = animeDao.getRandomAnime()
+
+        return saveMetadataInDB(anime)
     }
 
     suspend fun getRandomAnimeByGenre(genre: String): AnimeWithMetadataDto {
-        return animeDao.getRandomAnimeByGenre(
+        val anime = animeDao.getRandomAnimeByGenre(
             genre = genre.formatGenre()
-        ).toAnimeWithMetadataDto()
+        )
+
+        return saveMetadataInDB(anime)
     }
 
     suspend fun scrapeAndPopulateAnime(page: Int = 1): Unit = coroutineScope {
@@ -347,20 +378,4 @@ class AnimeService(
         delay(2000L)
         scrapeAndPopulateRecentlyUpdatedAnime(page - 1, ids)
     }
-
-    suspend fun saveMissingMetadata() = coroutineScope {
-        val animes = animeDao.getAnimesWithoutMetadata()
-
-        if (animes.isEmpty()) return@coroutineScope
-
-        val semaphore = Semaphore(20)
-        val deferredMetadata = animes.map { anime ->
-            async {
-                semaphore.withPermit { retryWithDelay { getAnimeById(anime.id) } }
-            }
-        }
-
-        deferredMetadata.awaitAll()
-    }
-
 }
