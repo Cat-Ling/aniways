@@ -25,7 +25,9 @@ class DbAnimeDao(
 
     override suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<Anime> {
         return aniwaysDatabase.query {
-            val totalItems = animes.count()
+            val totalItems = animes
+                .filter { it.malId.isNotNull() or it.malId.notEq(0) }
+                .count()
             val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
             val hasNextPage = page < totalPage
             val hasPreviousPage = page > 1
@@ -51,7 +53,7 @@ class DbAnimeDao(
 
     override suspend fun getAnimesByGenre(genre: String, page: Int, itemsPerPage: Int): Pagination<Anime> {
         return aniwaysDatabase.query {
-            val totalItems = animes.filter { it.genre like "%$genre%" }.count()
+            val totalItems = animes.filter { it.genre like "%$genre%" and (it.malId.isNotNull() or it.malId.notEq(0)) }.count()
             val totalPage = ceil(totalItems.toDouble() / itemsPerPage).toInt()
             val hasNextPage = page < totalPage
             val hasPreviousPage = page > 1
