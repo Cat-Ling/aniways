@@ -189,28 +189,27 @@ class AnimeService(
         }
     }
 
-    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> =
-        coroutineScope {
-            val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
+    suspend fun getRecentlyUpdatedAnimes(page: Int, itemsPerPage: Int): Pagination<AnimeWithMetadataDto> {
+        val result = animeDao.getRecentlyUpdatedAnimes(page, itemsPerPage)
 
-            // Update metadata in background
-            launch {
-                val semaphore = Semaphore(20)
-                result.items.map { anime ->
-                    async {
-                        semaphore.withPermit {
-                            try {
-                                saveMetadataInDB(anime)
-                            } catch (e: Exception) {
-                                logger.error("Failed to save metadata for anime ${anime.id}", e)
-                            }
+        // Update metadata in background
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            val semaphore = Semaphore(20)
+            result.items.map { anime ->
+                async {
+                    semaphore.withPermit {
+                        try {
+                            saveMetadataInDB(anime)
+                        } catch (e: Exception) {
+                            logger.error("Failed to save metadata for anime ${anime.id}", e)
                         }
                     }
                 }
             }
-
-            Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
         }
+
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
+    }
 
     suspend fun getEpisodesOfAnime(id: String): List<EpisodeDto> {
         val anime = animeDao.getAnimeById(id) ?: return emptyList()
@@ -227,11 +226,11 @@ class AnimeService(
         genre: String?,
         page: Int,
         itemsPerPage: Int = 20
-    ): Pagination<AnimeWithMetadataDto> = coroutineScope {
+    ): Pagination<AnimeWithMetadataDto> {
         val result = animeDao.searchAnimes(query, genre?.formatGenre(), page, itemsPerPage)
 
         // Update metadata in background
-        launch {
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             val semaphore = Semaphore(20)
             result.items.map { anime ->
                 async {
@@ -246,7 +245,7 @@ class AnimeService(
             }
         }
 
-        Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
+        return Pagination(result.pageInfo, result.items.map { it.toAnimeWithMetadataDto() })
     }
 
     suspend fun getAnimeCount(): Int {
@@ -266,7 +265,7 @@ class AnimeService(
             )
 
             // Update metadata in background
-            launch {
+            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
                 val semaphore = Semaphore(20)
                 result.items.map { anime ->
                     async {
