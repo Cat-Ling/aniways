@@ -1,12 +1,13 @@
 <script lang="ts">
   import { afterNavigate } from '$app/navigation';
+  import type { getGenres } from '$lib/api/anime';
   import Logo from '$lib/assets/logo.png?enhanced';
   import { Button } from '$lib/components/ui/button';
   import Input from '$lib/components/ui/input/input.svelte';
   import { ArrowUp, Home, Search, Shuffle } from 'lucide-svelte';
 
   type Props = {
-    genres: { value: string; label: string }[];
+    genres: Awaited<ReturnType<typeof getGenres>>;
   };
 
   let { genres }: Props = $props();
@@ -50,7 +51,7 @@
 
   <div class="flex w-full flex-wrap gap-3">
     {#each genres as genre}
-      <Button variant="secondary" href="/genre/{genre.value}">{genre.label}</Button>
+      <Button variant="secondary" href="/genre/{genre.slug}">{genre.name}</Button>
     {/each}
   </div>
 

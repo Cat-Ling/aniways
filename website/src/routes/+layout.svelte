@@ -36,14 +36,6 @@
 
 <Toaster richColors />
 
-<Footer
-  genres={data.genres.map((genre) => ({
-    value: genre,
-    label: genre
-      .split('-')
-      .map((word) => word[0].toUpperCase() + word.slice(1))
-      .join(' ')
-  }))}
-/>
+<Footer genres={data.genres} />
 
 <SettingsSync />

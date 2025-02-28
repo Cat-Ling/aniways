@@ -5,14 +5,7 @@ export const load: PageLoad = async ({ fetch, params, url }) => {
   const page = Number(url.searchParams.get('page') || '1');
 
   const [genres, animes] = await Promise.all([
-    getGenres(fetch).then((genres) =>
-      genres
-        .map((genre) => ({
-          slug: genre.replace(/\s/g, '-').toLowerCase(),
-          name: genre
-        }))
-        .filter((genre) => genre.slug !== 'unknown')
-    ),
+    getGenres(fetch),
     getAnimeByGenre(fetch, params.genre, page, 20)
   ]);
 

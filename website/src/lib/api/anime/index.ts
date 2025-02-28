@@ -119,9 +119,16 @@ export const getServersOfEpisode = async (fetch: typeof global.fetch, episodeId:
 };
 
 export const getGenres = async (fetch: typeof global.fetch) => {
-  return fetchJson(fetch, '/anime/genres', {
+  const genres = await fetchJson(fetch, '/anime/genres', {
     assert: (data) => data as string[]
   });
+
+  return genres
+    .filter((genre) => genre !== 'unknown')
+    .map((genre) => ({
+      slug: genre.replace(/\s/g, '-').toLowerCase(),
+      name: genre
+    }));
 };
 
 export const getAnimeByGenre = async (

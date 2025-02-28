@@ -75,8 +75,8 @@
         <Select.Content class="max-h-56 overflow-y-scroll">
           <Select.Item value="all" label="All">All</Select.Item>
           {#each data.genres as genre}
-            <Select.Item value={genre.toLowerCase().replaceAll(' ', '-')} label={genre}>
-              {genre}
+            <Select.Item value={genre.slug} label={genre.name}>
+              {genre.name}
             </Select.Item>
           {/each}
         </Select.Content>

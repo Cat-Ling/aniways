@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ url, fetch }) => {
   }
 
   const genres = await getGenres(fetch).then((genres) =>
-    genres.sort((a, b) => a.localeCompare(b)).filter((g) => g !== 'unknown')
+    genres.sort((a, b) => a.name.localeCompare(b.name))
   );
 
   return {
