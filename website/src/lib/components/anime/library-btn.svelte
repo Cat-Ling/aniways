@@ -151,11 +151,11 @@
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
-        <Dialog.Footer>
+        <Dialog.Footer class="gap-2">
           <Button
             variant="destructive"
             type="button"
-            class="mr-auto"
+            class="md:mr-auto"
             onclick={removeFromLibrary}
             disabled={$submitting || isRemoveFromLibraryLoading}
           >
