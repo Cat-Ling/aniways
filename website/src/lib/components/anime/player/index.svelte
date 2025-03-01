@@ -8,7 +8,7 @@
     playerId: string;
     info: typeof streamInfo.infer;
     nextEpisodeUrl?: string;
-    updateLibrary: () => void;
+    updateLibrary: () => Promise<void>;
   };
 
   let { info, playerId, nextEpisodeUrl, updateLibrary }: Props = $props();

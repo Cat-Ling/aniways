@@ -13,7 +13,7 @@ type Props = {
   container: HTMLDivElement;
   source: typeof streamInfo.infer;
   nextEpisodeUrl: string | undefined;
-  updateLibrary: () => void;
+  updateLibrary: () => Promise<void>;
 };
 
 const artplayerSettingsSchema = type({
@@ -189,12 +189,12 @@ export const createArtPlayer = async ({
     art.subtitle.style('fontSize', fontSize);
   });
 
-  art.on('video:ended', () => {
-    if (nextEpisodeUrl && appState.settings.autoNextEpisode) {
-      goto(nextEpisodeUrl);
-    }
+  art.on('video:ended', async () => {
+    await updateLibrary();
 
-    updateLibrary();
+    if (nextEpisodeUrl && appState.settings.autoNextEpisode) {
+      await goto(nextEpisodeUrl);
+    }
   });
 
   return art;
