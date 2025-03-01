@@ -47,7 +47,7 @@ export const createArtPlayer = async ({
     playbackRate: true,
     autoPlayback: true,
     autoOrientation: true,
-    playsInline: false,
+    playsInline: true,
     pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
     airplay: true,
     miniProgressBar: true,
