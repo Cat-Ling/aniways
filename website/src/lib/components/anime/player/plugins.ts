@@ -200,6 +200,8 @@ export const windowKeyBindPlugin = () => {
     const listener = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
+      if (e.target instanceof HTMLVideoElement) return;
+
       if (appState.searchOpen) {
         if (art.fullscreen) {
           art.fullscreen = false;
@@ -240,6 +242,8 @@ export const windowKeyBindPlugin = () => {
 export const amplifyVolumePlugin = () => {
   return async (art: Artplayer) => {
     art.on('ready', () => {
+      art.volume = 100;
+
       const context = new AudioContext();
       const source = context.createMediaElementSource(art.video);
       const gainNode = context.createGain();
