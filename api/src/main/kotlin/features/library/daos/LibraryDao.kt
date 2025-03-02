@@ -116,7 +116,7 @@ class DBLibraryDao(
                 update(LibraryTable) { row ->
                     set(row.status, status)
                     set(row.watchedEpisodes, epNo ?: 0)
-                    updatedAt?.let { set(row.updatedAt, it)}
+                    set(row.updatedAt, updatedAt ?: Instant.now())
 
                     where {
                         (row.userId eq userId) and (row.animeId eq animeId)
@@ -140,7 +140,7 @@ class DBLibraryDao(
 
     override suspend fun deleteFromLibrary(userId: String, animeId: String) {
         db.query {
-            library.find { (it.userId eq userId) and (it.animeId eq animeId) }?.delete()
+            delete(LibraryTable) { (it.userId eq userId) and (it.animeId eq animeId) }
         }
     }
 

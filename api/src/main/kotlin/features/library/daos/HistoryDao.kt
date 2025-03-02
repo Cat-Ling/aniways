@@ -1,9 +1,6 @@
 package xyz.aniways.features.library.daos
 
-import org.ktorm.dsl.and
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.insert
-import org.ktorm.dsl.update
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import xyz.aniways.database.AniwaysDatabase
 import xyz.aniways.features.library.db.HistoryEntity
@@ -52,17 +49,15 @@ class DBHistoryDao(
 
     override suspend fun saveToHistory(userId: String, animeId: String, watchedEpisodes: Int) {
         db.query {
-            val alreadyInDB = history.find { (it.userId eq userId) and (it.animeId eq animeId) }
+            val existingHistoryItem = history.find { (it.userId eq userId) and (it.animeId eq animeId) }
 
-            if (alreadyInDB != null) {
-                update(HistoryTable) { row ->
-                    set(row.watchedEpisodes, watchedEpisodes)
-                    set(row.updatedAt, Instant.now())
-                    where {
-                        (row.userId eq userId) and (row.animeId eq animeId)
-                    }
+            if (existingHistoryItem != null) return@query update(HistoryTable) { row ->
+                set(row.watchedEpisodes, watchedEpisodes)
+                set(row.updatedAt, Instant.now())
+
+                where {
+                    (row.userId eq userId) and (row.animeId eq animeId)
                 }
-                return@query
             }
 
             insert(HistoryTable) {
@@ -75,7 +70,7 @@ class DBHistoryDao(
 
     override suspend fun deleteFromHistory(userId: String, animeId: String) {
         db.query {
-            history.find { (it.userId eq userId) and (it.animeId eq animeId) }?.delete()
+            delete(HistoryTable) { (it.userId eq userId) and (it.animeId eq animeId) }
         }
     }
 }
