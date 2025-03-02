@@ -200,8 +200,6 @@ export const windowKeyBindPlugin = () => {
     const listener = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
-      if (e.target instanceof HTMLVideoElement) return;
-
       if (appState.searchOpen) {
         if (art.fullscreen) {
           art.fullscreen = false;
