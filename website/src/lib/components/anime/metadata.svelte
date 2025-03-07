@@ -73,18 +73,15 @@
             {@render keyValue('Airing', anime.airing)}
             {@render keyValue('Season', anime.season)}
             {@render keyValue('Source', anime.source?.replace('_', ' '))}
-            <span class="hidden md:inline">
-              {@render keyValue(
-                'Library',
-                library ? `${library?.status} (${library?.watchedEpisodes} eps)` : 'Not in Library'
-              )}
-            </span>
-          </div>
-          <div class="md:hidden">
-            {@render keyValue('Media Type', anime.mediaType)}
-            {@render keyValue('Rating', anime.rating)}
-            {@render keyValue('Airing Status', anime.airingStatus)}
-            {@render keyValue('Library', `${library?.status} (${library?.watchedEpisodes} eps)`)}
+            <div class="md:hidden">
+              {@render keyValue('Media Type', anime.mediaType)}
+              {@render keyValue('Rating', anime.rating)}
+              {@render keyValue('Airing Status', anime.airingStatus)}
+            </div>
+            {@render keyValue(
+              'Library',
+              library ? `${library?.status} (${library?.watchedEpisodes} eps)` : 'Not in Library'
+            )}
           </div>
         </div>
         {#key anime.id}
