@@ -16,7 +16,7 @@
   let element: HTMLDivElement | null = $state(null);
 
   $effect(() => {
-    if (!nextEpisodeUrl || appState.settings.autoNextEpisode) return;
+    if (!nextEpisodeUrl || !appState.settings.autoNextEpisode) return;
     preloadData(nextEpisodeUrl);
   });
 

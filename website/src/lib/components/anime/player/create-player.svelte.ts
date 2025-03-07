@@ -73,7 +73,6 @@ export const createArtPlayer = async ({
         quality: {
           setting: true,
           getName: (level: { height: number }) => `${level.height}p`,
-          control: true,
           title: 'Quality',
           auto: 'Auto'
         }
@@ -94,6 +93,30 @@ export const createArtPlayer = async ({
             hls.attachMedia(video);
             art.hls = hls;
             art.on('destroy', () => hls.destroy());
+            // update art quality when hls quality changes
+            hls.on(Hls.Events.LEVEL_SWITCHED, () => {
+              const currentLevel = hls.levels[hls.currentLevel].height + 'p';
+              const currentSetting = art.setting.find('hls-quality') as unknown as {
+                selector: { default: boolean; html: string }[];
+                tooltip: string;
+              };
+
+              if (
+                currentSetting &&
+                currentSetting.selector.find((item) => item.default)?.html !== currentLevel
+              ) {
+                art.setting.update({
+                  ...currentSetting,
+                  selector: currentSetting.selector.map((item) => ({
+                    ...item,
+                    default: item.html === currentLevel
+                  })),
+                  tooltip: currentLevel
+                });
+              }
+
+              art.notice.show = `Quality: ${currentLevel}`;
+            });
           } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
           } else {
