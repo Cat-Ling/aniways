@@ -88,9 +88,9 @@ export const getAnimeMetadata = async (fetch: typeof global.fetch, id: string) =
 
 export const getSeasonsAndRelatedAnimes = async (fetch: typeof global.fetch, id: string) => {
   const [seasons, related, franchise] = await Promise.all([
-    fetchJson(fetch, `/anime/${id}/seasons`, animeSchema.array()),
-    fetchJson(fetch, `/anime/${id}/related`, animeSchema.array()),
-    fetchJson(fetch, `/anime/${id}/franchise`, animeSchema.array())
+    fetchJson(fetch, `/anime/${id}/seasons`, animeSchema.array()).catch(() => []),
+    fetchJson(fetch, `/anime/${id}/related`, animeSchema.array()).catch(() => []),
+    fetchJson(fetch, `/anime/${id}/franchise`, animeSchema.array()).catch(() => [])
   ]);
 
   if (seasons.length > 1 && seasons.some((a) => a.id === id)) {
