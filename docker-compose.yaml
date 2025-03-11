@@ -42,25 +42,6 @@ services:
       - db
       - redis
 
-  website:
-    image: ghcr.io/coeeter/aniways-website:${GITHUB_SHA:-latest}
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.services.website.loadbalancer.server.port=3000'
-      - 'traefik.http.routers.website.rule=Host(`${WEBSITE_DOMAIN}`)'
-      - 'traefik.http.routers.website.entrypoints=websecure'
-      - 'traefik.http.routers.website.tls.certresolver=myresolver'
-    deploy:
-      update_config:
-        order: start-first
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 5
-    depends_on:
-      - api
-
   streaming:
     image: ghcr.io/coeeter/aniways-streaming:${GITHUB_SHA:-latest}
     labels:
