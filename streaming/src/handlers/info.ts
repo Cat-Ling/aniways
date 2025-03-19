@@ -60,6 +60,7 @@ async function getStreamingSources(xrax: string, serverId: string) {
 function createResponse(entry: CacheEntry) {
   const transformedSources = entry.sources.map(src => ({
     ...src,
+    raw: src.file,
     file: `/proxy/${entry.xrax}/${encodeURIComponent(
       src.file.split('/').pop()!
     )}`,
