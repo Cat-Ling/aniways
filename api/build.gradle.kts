@@ -75,8 +75,6 @@ dependencies {
     implementation(libs.flyway.database.postgresql)
 
     // Caching Dependencies
-    implementation(libs.ktor.simple.cache)
-    implementation(libs.ktor.simple.redis.cache)
     implementation(libs.kreds)
 
     // Cron Utility Dependencies

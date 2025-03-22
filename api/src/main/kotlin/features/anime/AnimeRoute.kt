@@ -5,8 +5,9 @@ import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import xyz.aniways.Env
+import xyz.aniways.cache.getCachedOrRun
 import xyz.aniways.features.anime.services.AnimeService
-import xyz.aniways.plugins.cache
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
@@ -66,6 +67,7 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
 fun Route.animeRoutes() {
     val service by inject<AnimeService>()
+    val redisConfig by inject<Env.RedisConfig>()
 
     get<AnimeRoute.RecentlyUpdated> { route ->
         val recentlyUpdatedAnimes = service.getRecentlyUpdatedAnimes(
@@ -81,63 +83,105 @@ fun Route.animeRoutes() {
         call.respond(anime)
     }
 
-    cache(invalidateAt = 7.days) {
-        get<AnimeRoute.Metadata.Seasons> { route ->
-            val seasons = service.getAnimeWatchOrder(route.parent.id)
-            call.respond(seasons)
+    get<AnimeRoute.Metadata.Seasons> { route ->
+        val seasons = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:${route.parent.id}:seasons",
+            invalidatesAt = 7.days
+        ) {
+            service.getAnimeWatchOrder(route.parent.id)
         }
+
+        call.respond(seasons)
     }
 
-    cache(invalidateAt = 7.days) {
-        get<AnimeRoute.Metadata.Related> { route ->
-            val related = service.getRelatedAnime(route.parent.id)
-            call.respond(related)
+    get<AnimeRoute.Metadata.Related> { route ->
+        val related = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:${route.parent.id}:related",
+            invalidatesAt = 7.days
+        ) {
+            service.getRelatedAnime(route.parent.id)
         }
+
+        call.respond(related)
     }
 
-    cache(invalidateAt = 7.days) {
-        get<AnimeRoute.Metadata.Franchise> { route ->
-            val franchise = service.getFranchiseOfAnime(route.parent.id)
-            call.respond(franchise)
+    get<AnimeRoute.Metadata.Franchise> { route ->
+        val franchise = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:${route.parent.id}:franchise",
+            invalidatesAt = 7.days
+        ) {
+            service.getFranchiseOfAnime(route.parent.id)
         }
+
+        call.respond(franchise)
     }
 
-    cache(invalidateAt = 31.days) {
-        get<AnimeRoute.Metadata.Banner> { route ->
-            val banner = service.getBannerImage(route.parent.id)
-            call.respond(mapOf("banner" to banner))
+    get<AnimeRoute.Metadata.Banner> { route ->
+        val banner = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:${route.parent.id}:banner",
+            invalidatesAt = 31.days
+        ) {
+            service.getBannerImage(route.parent.id)
         }
+
+        call.respond(mapOf("banner" to banner))
     }
 
-    cache(invalidateAt = 7.days) {
-        get<AnimeRoute.Seasonal> {
-            call.respond(service.getSeasonalAnimes())
+    get<AnimeRoute.Seasonal> {
+        val seasonalAnime = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:seasonal",
+            invalidatesAt = 7.days
+        ) {
+            service.getSeasonalAnimes()
         }
+
+        call.respond(seasonalAnime)
     }
 
-    cache(invalidateAt = 7.days) {
-        get<AnimeRoute.Trending> {
-            call.respond(service.getTrendingAnimes())
+    get<AnimeRoute.Trending> {
+        val trendingAnime = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:trending",
+            invalidatesAt = 7.days
+        ) {
+            service.getTrendingAnimes()
         }
+
+        call.respond(trendingAnime)
     }
 
-    cache(invalidateAt = 30.days) {
-        get<AnimeRoute.Popular> {
-            call.respond(service.getPopularAnimes())
+    get<AnimeRoute.Popular> {
+        val popularAnime = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:popular",
+            invalidatesAt = 30.days
+        ) {
+            service.getPopularAnimes()
         }
+
+        call.respond(popularAnime)
     }
 
-    cache(invalidateAt = 1.hours) {
-        get<AnimeRoute.Search> { route ->
-            val result = service.searchAnime(
+    get<AnimeRoute.Search> { route ->
+        val result = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:search:${route.query}:${route.genre}:${route.parent.page}:${route.parent.itemsPerPage}",
+            invalidatesAt = 1.hours
+        ) {
+            service.searchAnime(
                 query = route.query,
                 genre = route.genre,
                 page = route.parent.page,
                 itemsPerPage = route.parent.itemsPerPage
             )
-
-            call.respond(result)
         }
+
+        call.respond(result)
     }
 
     get<AnimeRoute.Metadata.Trailer> { route ->
@@ -145,36 +189,56 @@ fun Route.animeRoutes() {
         call.respond(mapOf("trailer" to trailer))
     }
 
-    cache(invalidateAt = 1.hours) {
-        get<AnimeRoute.Metadata.Episodes> { route ->
-            call.respond(service.getEpisodesOfAnime(route.parent.id))
+    get<AnimeRoute.Metadata.Episodes> { route ->
+        val episodes = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:${route.parent.id}:episodes",
+            invalidatesAt = 1.hours
+        ) {
+            service.getEpisodesOfAnime(route.parent.id)
         }
+
+        call.respond(episodes)
     }
 
-    cache(invalidateAt = 1.hours) {
-        get<AnimeRoute.EpisodeServers> { route ->
-            val servers = service.getServersOfEpisode(route.episodeId)
-
-            call.respond(servers)
+    get<AnimeRoute.EpisodeServers> { route ->
+        val servers = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:episode:${route.episodeId}:servers",
+            invalidatesAt = 1.hours
+        ) {
+            service.getServersOfEpisode(route.episodeId)
         }
+
+        call.respond(servers)
     }
 
-    cache(invalidateAt = 30.days) {
-        get<AnimeRoute.Genres> {
-            call.respond(service.getAllGenres())
+    get<AnimeRoute.Genres> {
+        val genres = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:genres",
+            invalidatesAt = 30.days
+        ) {
+            service.getAllGenres()
         }
+
+        call.respond(genres)
     }
 
-    cache(invalidateAt = 7.days) {
-        get<AnimeRoute.Genre> { route ->
-            val animes = service.getAnimesByGenre(
+    get<AnimeRoute.Genre> { route ->
+        val animes = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:genre:${route.genre}:${route.parent.page}:${route.parent.itemsPerPage}",
+            invalidatesAt = 7.days
+        ) {
+            service.getAnimesByGenre(
                 page = route.parent.page,
                 itemsPerPage = route.parent.itemsPerPage,
                 genre = route.genre
             )
-
-            call.respond(animes)
         }
+
+        call.respond(animes)
     }
 
     get<AnimeRoute.Random> {
