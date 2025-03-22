@@ -5,13 +5,28 @@ import io.github.crackthecodeabhi.kreds.connection.KredsClient
 import io.github.crackthecodeabhi.kreds.connection.newClient
 import xyz.aniways.Env
 
+object RedisCache {
+    private var client: KredsClient? = null
+
+    fun getClient(credentials: Env.RedisConfig): KredsClient {
+        return client ?: synchronized(this) {
+            client ?: newClient(
+                endpoint = Endpoint(
+                    host = credentials.host,
+                    port = credentials.port
+                )
+            ).also {
+                client = it
+            }
+        }
+    }
+}
+
 suspend fun <T> runCacheQuery(
     credentials: Env.RedisConfig,
     query: suspend (client: KredsClient) -> T
 ): T {
-    val endpoint = Endpoint(host = credentials.host, port = credentials.port)
+    val client = RedisCache.getClient(credentials)
 
-    return newClient(endpoint).use { client ->
-        query(client)
-    }
+    return query(client)
 }
