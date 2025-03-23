@@ -197,18 +197,17 @@ export const skipPlugin = (source: typeof streamInfo.infer) => {
 
 export const windowKeyBindPlugin = () => {
   return async (art: Artplayer) => {
-    const listener = (e: KeyboardEvent) => {
+    art.events.proxy(window, 'keydown', (e) => {
+      if (e instanceof KeyboardEvent === false) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
-      if (appState.searchOpen) {
-        if (art.fullscreen) {
-          art.fullscreen = false;
-          appState.searchOpen = false;
+      if (appState.searchOpen && art.fullscreen) {
+        art.fullscreen = false;
+        appState.searchOpen = false;
 
-          setTimeout(() => {
-            appState.searchOpen = true;
-          }, 500);
-        }
+        setTimeout(() => {
+          appState.searchOpen = true;
+        }, 500);
 
         return;
       }
@@ -217,7 +216,7 @@ export const windowKeyBindPlugin = () => {
         e.preventDefault();
         art.hotkey.keys[e.code].forEach((fn) => fn?.(e));
       }
-    };
+    });
 
     art.on('ready', () => {
       art.hotkey.add('KeyF', () => {
@@ -227,12 +226,6 @@ export const windowKeyBindPlugin = () => {
       art.hotkey.add('KeyM', () => {
         art.muted = !art.muted;
       });
-
-      window.addEventListener('keydown', listener);
-    });
-
-    art.on('destroy', () => {
-      window.removeEventListener('keydown', listener);
     });
   };
 };
