@@ -152,7 +152,10 @@ export const skipPlugin = (source: typeof streamInfo.infer) => {
           name: 'opening',
           position: 'top',
           html: `<button class="${buttonVariants({ class: 'absolute bottom-6 right-0' })}">Skip Opening</button>`,
-          click: () => {
+          click: (_, e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
             art.seek = source.intro!.end;
             art.notice.show = 'Skipped Opening';
           }
@@ -169,7 +172,10 @@ export const skipPlugin = (source: typeof streamInfo.infer) => {
           name: 'ending',
           position: 'top',
           html: `<button class="${buttonVariants({ class: 'absolute bottom-6 right-0' })}">Skip Ending</button>`,
-          click: () => {
+          click: (_, e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
             art.seek = source.outro!.end;
             art.notice.show = 'Skipped Ending';
           }
