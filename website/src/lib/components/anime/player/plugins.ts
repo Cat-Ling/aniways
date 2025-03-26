@@ -207,10 +207,6 @@ export const windowKeyBindPlugin = () => {
       if (e instanceof KeyboardEvent === false) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
-      if (document.activeElement && art.template.$container.contains(document.activeElement)) {
-        return;
-      }
-
       if (appState.searchOpen && art.fullscreen) {
         art.fullscreen = false;
         appState.searchOpen = false;
@@ -235,6 +231,26 @@ export const windowKeyBindPlugin = () => {
 
       art.hotkey.add('KeyM', () => {
         art.muted = !art.muted;
+      });
+
+      art.hotkey.add('Space', () => {
+        art.toggle();
+      });
+
+      art.hotkey.add('ArrowLeft', () => {
+        art.seek -= 5;
+      });
+
+      art.hotkey.add('ArrowRight', () => {
+        art.seek += 5;
+      });
+
+      art.hotkey.add('ArrowUp', () => {
+        art.volume += 10;
+      });
+
+      art.hotkey.add('ArrowDown', () => {
+        art.volume -= 10;
       });
     });
   };

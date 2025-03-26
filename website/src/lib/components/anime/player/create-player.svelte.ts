@@ -39,7 +39,7 @@ export const createArtPlayer = async ({
   const art = new Artplayer({
     id,
     container,
-    hotkey: true,
+    hotkey: false,
     url: source.sources[0].file,
     setting: true,
     theme: 'hsl(var(--primary))',
