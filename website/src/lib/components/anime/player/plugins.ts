@@ -238,19 +238,19 @@ export const windowKeyBindPlugin = () => {
       });
 
       art.hotkey.add('ArrowLeft', () => {
-        art.seek -= 5;
+        art.seek = Math.max(0, art.seek - 5);
       });
 
       art.hotkey.add('ArrowRight', () => {
-        art.seek += 5;
+        art.seek = Math.min(art.duration, art.seek + 5);
       });
 
       art.hotkey.add('ArrowUp', () => {
-        art.volume += 10;
+        art.volume += 0.1;
       });
 
       art.hotkey.add('ArrowDown', () => {
-        art.volume -= 10;
+        art.volume -= 0.1;
       });
     });
   };
