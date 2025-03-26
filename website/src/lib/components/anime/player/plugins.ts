@@ -207,6 +207,10 @@ export const windowKeyBindPlugin = () => {
       if (e instanceof KeyboardEvent === false) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
+      if (document.activeElement && art.template.$container.contains(document.activeElement)) {
+        return;
+      }
+
       if (appState.searchOpen && art.fullscreen) {
         art.fullscreen = false;
         appState.searchOpen = false;
