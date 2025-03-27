@@ -95,7 +95,7 @@
             <img
               src={Empty}
               alt="Empty"
-              class="mb-6 w-48 overflow-hidden rounded-full border-2 border-border"
+              class="border-border mb-6 w-48 overflow-hidden rounded-full border-2"
             />
             <h2 class="font-sora font-bold">Your library is empty</h2>
             <p class="text-muted-foreground">Add an anime to your library</p>

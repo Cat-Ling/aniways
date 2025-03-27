@@ -80,7 +80,7 @@
   </Sheet.Root>
 {:else}
   <Dialog.Root onOpenChange={() => (formType = 'login')}>
-    <div class="ml-2 rounded-md bg-background">
+    <div class="bg-background ml-2 rounded-md">
       <Dialog.Trigger class={buttonVariants()}>
         <LogIn class="mr-2 size-6" />
         Sign in

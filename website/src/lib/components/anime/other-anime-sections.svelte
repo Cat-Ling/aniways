@@ -20,7 +20,7 @@
   </div>
 {:then sections}
   {#each sections as sec}
-    <h2 class={'mx-3 mt-6 font-sora text-xl font-bold first-of-type:mt-3 md:mx-8'}>
+    <h2 class={'font-sora mx-3 mt-6 text-xl font-bold first-of-type:mt-3 md:mx-8'}>
       {sec.label}
     </h2>
 
@@ -41,10 +41,10 @@
             loading="lazy"
             class="absolute left-0 top-0 h-full w-full scale-110 object-cover object-center transition group-hover:scale-100"
           />
-          <div class="relative z-10 h-full bg-background bg-opacity-80 p-3">
-            <p class="line-clamp-1 font-sora text-lg font-bold">{data.jname}</p>
-            <p class="line-clamp-1 text-muted-foreground">{data.name}</p>
-            <p class="mt-2 text-sm text-muted-foreground">{data.lastEpisode} Episodes</p>
+          <div class="bg-background relative z-10 h-full bg-opacity-80 p-3">
+            <p class="font-sora line-clamp-1 text-lg font-bold">{data.jname}</p>
+            <p class="text-muted-foreground line-clamp-1">{data.name}</p>
+            <p class="text-muted-foreground mt-2 text-sm">{data.lastEpisode} Episodes</p>
           </div>
         </a>
       {/each}
@@ -52,7 +52,7 @@
   {/each}
 {:catch}
   <div
-    class="mx-3 rounded-md bg-card p-3 text-center font-sora text-xl font-bold text-destructive md:mx-8"
+    class="bg-card font-sora text-destructive mx-3 rounded-md p-3 text-center text-xl font-bold md:mx-8"
   >
     Oops! There was an error fetching the data. Please try again later.
   </div>

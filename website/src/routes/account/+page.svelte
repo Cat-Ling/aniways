@@ -99,8 +99,8 @@
 
 <div class="m-3 mt-20 flex flex-col-reverse gap-2 md:m-8 md:mt-20 md:flex-row">
   <div class="h-full md:sticky md:top-20">
-    <form use:enhance class="max-w-md rounded-lg border bg-card p-4" enctype="multipart/form-data">
-      <h1 class="mb-5 font-sora text-2xl font-bold">Profile</h1>
+    <form use:enhance class="bg-card max-w-md rounded-lg border p-4" enctype="multipart/form-data">
+      <h1 class="font-sora mb-5 text-2xl font-bold">Profile</h1>
       <Form.Field {form} name="email">
         <Form.Control>
           {#snippet children({ props })}
@@ -120,11 +120,11 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <p class="text-sm text-muted-foreground">
+      <p class="text-muted-foreground text-sm">
         Member since {createdAt}
       </p>
 
-      <p class="text-sm text-muted-foreground">
+      <p class="text-muted-foreground text-sm">
         Last updated on {updatedAt}
       </p>
 
@@ -137,15 +137,15 @@
       </Form.Button>
     </form>
 
-    <div class="mt-4 max-w-md rounded-lg bg-card p-4">
+    <div class="bg-card mt-4 max-w-md rounded-lg p-4">
       <h2 class="font-sora text-xl font-bold">Profile Picture</h2>
-      <p class="mb-8 text-sm text-muted-foreground">Click on the image to change it</p>
+      <p class="text-muted-foreground mb-8 text-sm">Click on the image to change it</p>
       <Form.Field {form} name="profilePicture">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>
               <div
-                class="group relative mx-auto size-72 cursor-pointer overflow-hidden rounded-full border bg-background"
+                class="bg-background group relative mx-auto size-72 cursor-pointer overflow-hidden rounded-full border"
               >
                 <img
                   src={$formdata.profilePicture ?? Miku}
@@ -153,7 +153,7 @@
                   alt={`Profile picture of ${data.user?.username}`}
                 />
                 <div
-                  class="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 transition group-hover:opacity-100"
+                  class="bg-background/50 absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100"
                 >
                   Change
                 </div>
@@ -196,9 +196,9 @@
   </div>
   <div class="mt-4 flex h-fit w-full flex-col gap-4 md:mt-0 md:px-4">
     <h2 class="font-sora text-2xl font-bold">Settings</h2>
-    <div class="rounded-lg bg-card p-4">
+    <div class="bg-card rounded-lg p-4">
       <h3 class="font-sora text-xl font-bold">General</h3>
-      <p class="text-sm text-muted-foreground">Manage your account settings</p>
+      <p class="text-muted-foreground text-sm">Manage your account settings</p>
 
       <div class="mt-4 flex items-center gap-2">
         <Switch
@@ -208,7 +208,7 @@
         />
         <Label for="auto-resume">Auto Resume</Label>
       </div>
-      <p class="mb-1 text-muted-foreground">
+      <p class="text-muted-foreground mb-1">
         Automatically resume from where you left off in the same device
       </p>
 
@@ -220,7 +220,7 @@
         />
         <Label for="auto-play">Auto Play</Label>
       </div>
-      <p class="my-1 text-muted-foreground">Automatically play the next episode</p>
+      <p class="text-muted-foreground my-1">Automatically play the next episode</p>
 
       <div class="mt-4 flex items-center gap-2">
         <Switch
@@ -230,11 +230,11 @@
         />
         <Label for="auto-next">Auto Next</Label>
       </div>
-      <p class="my-1 text-muted-foreground">Automatically play the next episode</p>
+      <p class="text-muted-foreground my-1">Automatically play the next episode</p>
     </div>
-    <div class="rounded-lg bg-card p-4">
+    <div class="bg-card rounded-lg p-4">
       <h3 class="font-sora text-xl font-bold">Tracking</h3>
-      <p class="text-sm text-muted-foreground">
+      <p class="text-muted-foreground text-sm">
         Add external tracking services to your account. If connected, will auto update tracker when
         library is updated. Update is push only and doesn't update when external service changes
         unless manually synced
@@ -273,9 +273,9 @@
 
       <LibrarySync providers={data.providers} class="mt-4" />
     </div>
-    <div class="rounded-lg bg-card p-4">
+    <div class="bg-card rounded-lg p-4">
       <h3 class="font-sora text-xl font-bold">Security</h3>
-      <p class="text-sm text-muted-foreground">Change your password and other security settings</p>
+      <p class="text-muted-foreground text-sm">Change your password and other security settings</p>
 
       <div class="mt-4 flex items-center gap-2">
         <Switch
@@ -285,13 +285,13 @@
         />
         <Label for="incognito">Incognito Mode</Label>
       </div>
-      <p class="my-1 text-muted-foreground">Will not save to library or history when enabled</p>
+      <p class="text-muted-foreground my-1">Will not save to library or history when enabled</p>
 
       <ChangePassword />
     </div>
-    <div class="rounded-lg bg-card p-4">
+    <div class="bg-card rounded-lg p-4">
       <h3 class="font-sora text-xl font-bold">Delete Account</h3>
-      <p class="text-sm text-muted-foreground">Delete your account and all associated data</p>
+      <p class="text-muted-foreground text-sm">Delete your account and all associated data</p>
       <Button variant="destructive" type="button" class="mt-4 w-full max-w-md"
         >Delete Account</Button
       >

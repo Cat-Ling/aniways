@@ -52,7 +52,7 @@
   <a href="/" class="group flex items-center gap-2">
     <enhanced:img src={Logo} alt="logo" class="size-12 transition group-hover:scale-125" />
     <span
-      class="hidden font-sora text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:inline"
+      class="font-sora hidden text-3xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:inline"
     >
       aniways
     </span>
@@ -62,7 +62,7 @@
     <SearchButton />
     <Button
       variant="ghost"
-      class="rounded-full hover:bg-primary"
+      class="hover:bg-primary rounded-full"
       href="/random"
       size="icon"
       aria-label="Random"

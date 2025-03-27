@@ -56,7 +56,7 @@
       class="group relative overflow-hidden rounded-md border transition hover:scale-105"
       href={buildUrl?.(result) ?? `/anime/${result.id}`}
     >
-      <div class="aspect-[3/4] w-full min-w-full overflow-hidden rounded-md bg-card">
+      <div class="bg-card aspect-[3/4] w-full min-w-full overflow-hidden rounded-md">
         <img
           src={result.metadata?.mainPicture || result.poster}
           alt={result.jname}
@@ -65,15 +65,15 @@
         />
       </div>
       <div
-        class="absolute bottom-0 left-0 top-0 flex w-full flex-col justify-end bg-gradient-to-t from-background to-transparent p-3"
+        class="from-background absolute bottom-0 left-0 top-0 flex w-full flex-col justify-end bg-gradient-to-t to-transparent p-3"
       >
-        <h3 class="line-clamp-2 font-sora text-sm font-bold md:text-base">
+        <h3 class="font-sora line-clamp-2 text-sm font-bold md:text-base">
           {result.jname}
         </h3>
-        <p class="mt-1 hidden text-xs text-muted-foreground md:block md:text-sm">
+        <p class="text-muted-foreground mt-1 hidden text-xs md:block md:text-sm">
           {result.genre.join(', ')}
         </p>
-        <p class="mt-1 text-xs text-muted-foreground md:text-sm">
+        <p class="text-muted-foreground mt-1 text-xs md:text-sm">
           {#if subtitle}
             {@render subtitle({
               anime: result,
@@ -158,7 +158,7 @@
     >
       <ChevronLeft />
     </Button>
-    <div class="h-10 rounded-md bg-card p-2">
+    <div class="bg-card h-10 rounded-md p-2">
       {pageInfo.currentPage} <span class="text-muted-foreground">/ {pageInfo.totalPage}</span>
     </div>
     <Button

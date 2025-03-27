@@ -40,7 +40,7 @@
   });
 </script>
 
-<h1 class="mx-3 mt-20 font-sora text-2xl font-bold md:mx-8">Search</h1>
+<h1 class="font-sora mx-3 mt-20 text-2xl font-bold md:mx-8">Search</h1>
 
 <div class="mt-3 px-3 md:px-8">
   <form
@@ -95,8 +95,8 @@
   <AnimeGrid animes={data.results.items} pageInfo={data.results.pageInfo}>
     {#snippet emptyLayout()}
       <enhanced:img src={SearchImage} alt="Search" class="mx-auto w-72" />
-      <p class="mt-3 text-center font-sora text-lg font-bold">No results found</p>
-      <p class="mt-1 text-center text-muted-foreground">Try searching for something else</p>
+      <p class="font-sora mt-3 text-center text-lg font-bold">No results found</p>
+      <p class="text-muted-foreground mt-1 text-center">Try searching for something else</p>
     {/snippet}
   </AnimeGrid>
 </div>

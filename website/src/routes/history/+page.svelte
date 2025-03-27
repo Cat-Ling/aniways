@@ -11,7 +11,7 @@
 
 <div class="mt-20 px-3 pb-3 md:px-8 md:pb-8">
   <h1 class="font-sora text-2xl font-bold">History</h1>
-  <p class="mt-2 font-sora text-muted-foreground">
+  <p class="font-sora text-muted-foreground mt-2">
     All the history of anime you have watched will be displayed here.
   </p>
   <AnimeGrid

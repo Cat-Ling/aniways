@@ -29,20 +29,20 @@
 </script>
 
 <div class={cn('p-3 md:px-8', isWatchPage ? 'mt-0' : 'relative z-20 -mt-12 md:-mt-24')}>
-  <div class="flex flex-col gap-8 rounded-md bg-card p-4 md:flex-row">
+  <div class="bg-card flex flex-col gap-8 rounded-md p-4 md:flex-row">
     <div class="w-full md:w-1/4">
       {#key anime.picture}
         <img
           src={anime.picture}
           alt={anime.jname}
-          class="aspect-[3/4] w-full rounded-md bg-muted object-cover object-center"
+          class="bg-muted aspect-[3/4] w-full rounded-md object-cover object-center"
         />
       {/key}
     </div>
     <div class="flex w-full flex-col justify-between">
       <div>
         <h1 class="font-sora text-2xl font-bold">{anime.jname}</h1>
-        <h2 class="text-lg font-semibold text-muted-foreground">{anime.name}</h2>
+        <h2 class="text-muted-foreground text-lg font-semibold">{anime.name}</h2>
         <div class="mt-2 hidden gap-2 md:flex">
           {@render pill(anime.mediaType)}
           {@render pill(anime.rating)}
@@ -87,7 +87,7 @@
         {#key anime.id}
           <p
             class={cn(
-              'mt-3 text-muted-foreground',
+              'text-muted-foreground mt-3',
               !isDescriptionExpanded && 'line-clamp-5 md:line-clamp-none'
             )}
             bind:this={animeDescriptionElement}
@@ -137,13 +137,13 @@
 
 {#snippet pill(text: string | undefined | null)}
   {#if text}
-    <span class="rounded-md bg-background p-2 text-sm text-primary">{text}</span>
+    <span class="bg-background text-primary rounded-md p-2 text-sm">{text}</span>
   {/if}
 {/snippet}
 
 {#snippet keyValue(key: string, value: string | number | undefined | null)}
   <div class="flex gap-2">
-    <span class="font-semibold text-muted-foreground">{key}:</span>
+    <span class="text-muted-foreground font-semibold">{key}:</span>
     <span class="capitalize">{value || '???'}</span>
   </div>
 {/snippet}

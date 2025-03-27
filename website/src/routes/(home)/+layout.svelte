@@ -15,13 +15,13 @@
 
 <div class="mx-3 -mt-40 flex flex-col md:mx-8 md:-mt-72">
   <section class="z-30 mb-8">
-    <h1 class="relative z-30 font-sora text-2xl font-bold">Trending Animes</h1>
+    <h1 class="font-sora relative z-30 text-2xl font-bold">Trending Animes</h1>
     <RankedAnimeGrid animes={data.trendingAnime} />
   </section>
   {#if data.continueWatching}
     <section class="z-30">
       <div class="flex w-full items-center justify-between">
-        <h1 class="relative z-30 font-sora text-2xl font-bold">Continue Watching</h1>
+        <h1 class="font-sora relative z-30 text-2xl font-bold">Continue Watching</h1>
         {#if data.continueWatching.pageInfo.hasNextPage}
           <Button href="/continue-watching" variant="link">
             View All
@@ -47,7 +47,7 @@
   {#if data.planToWatch}
     <section class="z-30">
       <div class="flex w-full items-center justify-between">
-        <h1 class="relative z-30 font-sora text-2xl font-bold">Your Plan to Watch</h1>
+        <h1 class="font-sora relative z-30 text-2xl font-bold">Your Plan to Watch</h1>
         {#if data.planToWatch.pageInfo.hasNextPage}
           <Button href="/plan-to-watch" variant="link">
             View All
@@ -73,7 +73,7 @@
   <div class="flex flex-col gap-3 md:flex-row">
     {@render children()}
     <section class="w-full max-w-md">
-      <h1 class="relative z-30 mb-5 font-sora text-2xl font-bold">Popular Anime</h1>
+      <h1 class="font-sora relative z-30 mb-5 text-2xl font-bold">Popular Anime</h1>
       <RankedAnimeGrid animes={data.popularAnime} mode="vertical" />
     </section>
   </div>

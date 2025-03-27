@@ -50,7 +50,7 @@
 
 <Button
   variant="ghost"
-  class="hidden rounded-full hover:bg-primary md:flex"
+  class="hover:bg-primary hidden rounded-full md:flex"
   size="icon"
   onclick={() => (appState.searchOpen = true)}
   aria-label="Search"
@@ -60,7 +60,7 @@
 
 <Button
   variant="ghost"
-  class="rounded-full hover:bg-primary md:hidden"
+  class="hover:bg-primary rounded-full md:hidden"
   size="icon"
   href="/search"
   aria-label="Search"
@@ -73,14 +73,14 @@
   <Command.List class="max-h-min">
     {#if loading}
       <Command.Loading class="flex items-center justify-center gap-2 p-2">
-        <Loader2 class="animate-spin text-primary" />
+        <Loader2 class="text-primary animate-spin" />
         Loading...
       </Command.Loading>
     {:else if animes.length}
       <Command.Group heading="Search Results">
         {#each animes as anime (anime.id)}
           <Command.LinkItem href={`/anime/${anime.id}`} class="grid grid-cols-5 items-center gap-2">
-            <div class="col-span-1 aspect-[300/400] overflow-hidden rounded-md bg-muted">
+            <div class="bg-muted col-span-1 aspect-[300/400] overflow-hidden rounded-md">
               <img
                 src={anime.metadata?.mainPicture || anime.poster}
                 alt={anime.name}
@@ -91,7 +91,7 @@
               <p class="line-clamp-1 font-bold">
                 {@html anime.jname.replaceAll('"', "'")}
               </p>
-              <p class="line-clamp-1 text-muted-foreground">
+              <p class="text-muted-foreground line-clamp-1">
                 {@html anime.name.replaceAll('"', "'")}
               </p>
               <p class="mt-3 text-sm">

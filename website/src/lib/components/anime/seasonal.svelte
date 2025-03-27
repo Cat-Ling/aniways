@@ -49,7 +49,7 @@
           class="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 select-none flex-col justify-end p-3 md:left-16 md:w-1/2"
         >
           <h1
-            class="mb-2 line-clamp-2 font-sora text-2xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:text-4xl"
+            class="font-sora mb-2 line-clamp-2 text-2xl font-bold [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:text-4xl"
           >
             {anime.title}
           </h1>
@@ -58,7 +58,7 @@
               class={buttonVariants({
                 variant: 'outline',
                 class:
-                  'h-fit bg-card px-2 py-1 text-xs text-primary hover:bg-card hover:text-primary md:h-9 md:text-sm'
+                  'bg-card text-primary hover:bg-card hover:text-primary h-fit px-2 py-1 text-xs md:h-9 md:text-sm'
               })}
             >
               <Calendar />
@@ -68,7 +68,7 @@
               class={buttonVariants({
                 variant: 'outline',
                 class:
-                  'h-fit bg-card px-2 py-1 text-xs text-primary hover:bg-card hover:text-primary md:h-9 md:text-sm'
+                  'bg-card text-primary hover:bg-card hover:text-primary h-fit px-2 py-1 text-xs md:h-9 md:text-sm'
               })}
             >
               <Clapperboard />
@@ -78,7 +78,7 @@
               class={buttonVariants({
                 variant: 'outline',
                 class:
-                  'h-fit bg-card px-2 py-1 text-xs text-primary hover:bg-card hover:text-primary md:h-9 md:text-sm'
+                  'bg-card text-primary hover:bg-card hover:text-primary h-fit px-2 py-1 text-xs md:h-9 md:text-sm'
               })}
             >
               <Video />
@@ -87,7 +87,7 @@
           </div>
           <p
             class={cn(
-              'mb-5 line-clamp-2 text-sm text-muted-foreground [display:-webkit-box] [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:line-clamp-3 md:text-base',
+              'text-muted-foreground mb-5 line-clamp-2 text-sm [display:-webkit-box] [text-shadow:_0_2px_0_rgb(0_0_0_/_40%)] md:line-clamp-3 md:text-base',
               {
                 italic: !anime.description
               }
@@ -111,7 +111,7 @@
           </div>
         </div>
         <div
-          class="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-b from-background via-background/55 to-background"
+          class="from-background via-background/55 to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-b"
         ></div>
         <img
           src={anime.bannerImage || anime.coverImage}

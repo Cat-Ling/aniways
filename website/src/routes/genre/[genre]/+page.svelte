@@ -12,7 +12,7 @@
   });
 </script>
 
-<h1 class="mx-3 mt-20 font-sora text-2xl font-bold md:mx-8">
+<h1 class="font-sora mx-3 mt-20 text-2xl font-bold md:mx-8">
   {data.genre.name}
   Animes
 </h1>
@@ -21,8 +21,8 @@
   <section class="col-span-4 w-full">
     <AnimeGrid animes={data.animes.items} pageInfo={data.animes.pageInfo} class="mt-0" />
   </section>
-  <div class="mb-3 grid h-fit w-full max-w-md grid-cols-3 gap-3 rounded-md bg-card p-3 md:mb-8">
-    <h2 class="col-span-3 font-sora text-lg font-bold">Genres</h2>
+  <div class="bg-card mb-3 grid h-fit w-full max-w-md grid-cols-3 gap-3 rounded-md p-3 md:mb-8">
+    <h2 class="font-sora col-span-3 text-lg font-bold">Genres</h2>
     {#each data.genres as genre}
       <Button
         href={`/genre/${genre.slug}`}

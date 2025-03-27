@@ -32,7 +32,7 @@
 </script>
 
 <div id="anime-page">
-  <div class="sticky top-0 w-full overflow-hidden rounded-b-md border-border">
+  <div class="border-border sticky top-0 w-full overflow-hidden rounded-b-md">
     {#await banner}
       <Skeleton class="h-48 w-full md:h-96" />
     {:then banner}
@@ -42,7 +42,7 @@
         class="h-48 w-full overflow-hidden object-cover object-center md:h-96"
       />
       <div
-        class="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-background via-background/70 to-background"
+        class="from-background via-background/70 to-background absolute left-0 top-0 h-full w-full bg-gradient-to-b"
       ></div>
     {/await}
   </div>
@@ -53,7 +53,7 @@
 <div class="flex w-full items-center justify-between px-3 pt-8 md:px-8">
   <h2 class="font-sora text-xl font-bold">Episodes</h2>
   <div class="flex items-center gap-2">
-    <p class="hidden font-sora text-muted-foreground md:block">
+    <p class="font-sora text-muted-foreground hidden md:block">
       {episodes.length} episodes
     </p>
     <Input placeholder="Search episodes" class="w-48" bind:value={searchValue} />
@@ -64,13 +64,13 @@
   {#each displayEpisodes as episode}
     <Button
       variant="outline"
-      class="h-fit flex-col items-start rounded-md bg-card p-3"
+      class="bg-card h-fit flex-col items-start rounded-md p-3"
       href="/anime/{anime.id}/watch?episode={episode.number}&key={episode.id}"
     >
       <p class="font-sora">
         Episode {episode.number}
       </p>
-      <p class="w-full truncate text-xs text-muted-foreground md:text-inherit">
+      <p class="text-muted-foreground w-full truncate text-xs md:text-inherit">
         {episode.title === `Episode ${episode.number}` ? 'No title available' : episode.title}
       </p>
     </Button>

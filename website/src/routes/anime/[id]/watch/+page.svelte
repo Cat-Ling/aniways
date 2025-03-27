@@ -48,13 +48,13 @@
 
 <div class="mt-20 px-3 md:px-8">
   <div class="flex flex-col-reverse gap-2 md:flex-row">
-    <div class="mt-3 flex w-full max-w-md flex-col-reverse gap-3 md:mt-0 md:w-1/5 md:flex-col">
+    <div class="mt-3 flex w-full flex-col-reverse gap-3 md:mt-0 md:w-1/5 md:max-w-md md:flex-col">
       <Command.Root
-        class={'h-60 w-full rounded-md bg-card md:h-full md:max-h-[512px]'}
+        class={'bg-card h-60 w-full rounded-md md:h-full md:max-h-[512px]'}
         value={query.key}
       >
         <div
-          class="flex w-full flex-col justify-between border-b bg-card px-3 pt-3 md:flex-row md:items-center md:pt-0"
+          class="bg-card flex w-full flex-col justify-between border-b px-3 pt-3 md:flex-row md:items-center md:pt-0"
         >
           <h3 class={'font-sora text-lg font-bold'}>Episodes</h3>
           <Command.Input placeholder="Search episodes" containerClass="border-none" />
@@ -66,7 +66,7 @@
               data-sveltekit-noscroll
               href="/anime/{query.id}/watch?episode={ep.number}&key={ep.id}"
               class={cn(
-                'flex cursor-pointer items-center p-3 text-start transition hover:bg-muted',
+                'hover:bg-muted flex cursor-pointer items-center p-3 text-start transition',
                 ep.number === query.episode && '!text-primary'
               )}
             >
@@ -81,9 +81,9 @@
           {/each}
         </Command.List>
       </Command.Root>
-      <div class="w-full flex-1 rounded-md bg-card">
-        <h3 class="p-3 font-sora text-xl font-bold">Servers</h3>
-        <p class="px-3 pb-3 text-sm text-muted-foreground">
+      <div class="bg-card w-full flex-1 rounded-md">
+        <h3 class="font-sora p-3 text-xl font-bold">Servers</h3>
+        <p class="text-muted-foreground px-3 pb-3 text-sm">
           If the video doesn't load, please select another server.
         </p>
         {#each Object.entries(data.serversByType) as [type, servers]}
@@ -109,7 +109,7 @@
         {/each}
       </div>
     </div>
-    <div class="aspect-video w-full flex-1 overflow-hidden rounded-md bg-card">
+    <div class="bg-card aspect-video w-full flex-1 overflow-hidden rounded-md">
       <Player
         {nextEpisodeUrl}
         info={data.streamInfo}
