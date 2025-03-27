@@ -238,11 +238,11 @@ export const windowKeyBindPlugin = () => {
       });
 
       art.hotkey.add('ArrowLeft', () => {
-        art.seek = Math.max(0, art.seek - 5);
+        art.backward = 10;
       });
 
       art.hotkey.add('ArrowRight', () => {
-        art.seek = Math.min(art.duration, art.seek + 5);
+        art.forward = 10;
       });
 
       art.hotkey.add('ArrowUp', () => {
