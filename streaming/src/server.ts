@@ -8,6 +8,7 @@ import { handleProxyRequest } from './handlers/proxy';
 export type CacheEntry = extractedSrc & {
   serverId?: string;
   xrax?: string;
+  expiresAt: Date;
 };
 
 export type Cache = Map<string, CacheEntry>;
@@ -35,6 +36,15 @@ const routes: Route[] = [
   }),
 ];
 
+async function removeExpiredCacheEntries() {
+  const now = new Date();
+  for (const [key, entry] of SOURCE_CACHE.entries()) {
+    if (entry.expiresAt < now) {
+      SOURCE_CACHE.delete(key);
+    }
+  }
+}
+
 /**
  * Handles incoming requests and routes them to the appropriate handler.
  * @param req The request to handle.
@@ -46,6 +56,9 @@ async function handleRequest(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {
     return handleOptionsRequest(allowedOrigin);
   }
+
+  // Remove expired cache entries
+  await removeExpiredCacheEntries();
 
   for (const route of routes) {
     const response = await route.handle(req);

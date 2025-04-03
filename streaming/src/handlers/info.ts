@@ -103,7 +103,10 @@ export async function handleInfoRequest(
   const sources = cachedSources ?? (await getStreamingSources(xrax, serverId));
 
   if (sources) {
-    SOURCE_CACHE.set(xrax, sources);
+    SOURCE_CACHE.set(xrax, {
+      ...sources,
+      expiresAt: new Date(Date.now() + 3600 * 1000), // 1 hour
+    });
   }
 
   const responseBody = createResponse(sources);

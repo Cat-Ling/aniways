@@ -1,4 +1,5 @@
-import { getSources, type extractedSrc } from '../scrapers/getSources';
+import { getSources } from '../scrapers/getSources';
+import type { CacheEntry } from '../server';
 import { createDefaultHeaders } from '../utils/headers';
 
 /**
@@ -12,7 +13,7 @@ import { createDefaultHeaders } from '../utils/headers';
 export async function handleProxyRequest(
   xrax: string,
   file: string,
-  SOURCE_CACHE: Map<string, extractedSrc>,
+  SOURCE_CACHE: Map<string, CacheEntry>,
   allowedOrigin: string
 ): Promise<Response> {
   const headers = createDefaultHeaders(allowedOrigin);
@@ -23,7 +24,12 @@ export async function handleProxyRequest(
     return new Response('Not Found', { status: 404, headers });
   }
 
-  SOURCE_CACHE.set(xrax, source);
+  if (!cachedSources) {
+    SOURCE_CACHE.set(xrax, {
+      ...source,
+      expiresAt: new Date(Date.now() + 3600 * 1000), // 1 hour
+    });
+  }
 
   const baseUrl = new URL(source.sources[0].file);
   const finalUrl = file.startsWith('http')
