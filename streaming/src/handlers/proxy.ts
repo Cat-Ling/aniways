@@ -1,7 +1,6 @@
 import { getSources } from '../scrapers/getSources';
 import type { CacheEntry } from '../server';
 import { createDefaultHeaders } from '../utils/headers';
-import { getRandomUserAgent } from '../utils/user-agent';
 
 /**
  * Handles the /proxy/:xrax/:file endpoint, proxying requests to the source file.
@@ -38,15 +37,7 @@ export async function handleProxyRequest(
     : new URL(file, baseUrl).toString();
 
   try {
-    const response = await fetch(finalUrl, {
-      headers: {
-        'User-Agent': getRandomUserAgent(),
-        Referer: `https://megacloud.tv/embed-2/e-1/${xrax}?k=1`,
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        Accept: '*/*',
-      },
-    });
+    const response = await fetch(finalUrl);
 
     headers.append('Content-Type', response.headers.get('content-type') ?? '');
     headers.append(
