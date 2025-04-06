@@ -12,12 +12,15 @@ Violating this may lead to takedowns or legal action. Ensure full compliance whe
 
 ## 📝 Overview
 
-AniWays is a self-hosted anime streaming platform offering HD playback, subtitle support, multiple server selection, and watchlist tracking. It uses:
+AniWays is a self-hosted anime streaming platform built for personal use. It supports HD playback with subtitles, lets users switch between streaming servers, tracks watch progress, and integrates with external services like MyAnimeList.
 
-- 🟧 **Ktor** for the backend API (written in Kotlin)
-- 🟨 **Bun** as a fast HLS proxy server
-- 🟩 **SvelteKit** for the frontend
-- 🐳 Docker & Docker Compose for containerization
+The project is composed of three main services:
+
+- **Backend API:** Built with [Ktor](https://ktor.io/) using Kotlin
+- **Streaming Proxy:** A high-performance HLS proxy written in [Bun](https://bun.sh/)
+- **Frontend:** A modern interface built with [SvelteKit](https://kit.svelte.dev/)
+
+For production deployments, AniWays uses **Docker Swarm** with Traefik and automatic HTTPS support.
 
 ## 🚀 Features
 
@@ -26,7 +29,7 @@ AniWays is a self-hosted anime streaming platform offering HD playback, subtitle
 - 🌐 Switch between multiple servers for reliability
 - 📌 Track viewing progress
 - 📝 Maintain a personal watchlist
-- 🔗 Integrate with external services (like MyAnimeList)
+- 🔗 Integrate with external services (like MyAnimeList, Anilist in the future)
 
 ## 📁 Project Structure
 
@@ -36,21 +39,21 @@ aniways/
 ├── streaming/        # Bun-based HLS proxy server
 ├── website/          # SvelteKit frontend
 ├── .env.example      # Sample environment variables
-├── docker-compose.yaml
+├── docker-stack.yaml # Docker Swarm deployment file
 └── README.md
 ```
 
 ## 🛠️ Local Development
 
+Docker is **not** used for local development. You can run each service manually using your local environment.
+
 ### 🔧 Requirements
 
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
-- [Bun](https://bun.sh/) (for running proxy manually)
-- [Java 17+](https://adoptium.net/) (for running Ktor API manually)
+- [Bun](https://bun.sh/)
+- [Java 17+](https://adoptium.net/)
 - [Node.js](https://nodejs.org/)
 
-### ▶️ Quick Start (Docker)
+### ▶️ Local Setup
 
 1. **Clone the Repository**
 
@@ -67,39 +70,27 @@ cp .env.example .env
 
 Edit `.env` with your preferred values.
 
-3. **Run the App**
+3. **Run Services Manually**
 
-```bash
-docker-compose up --build
-```
-
-This will:
-
-- Start the API on `http://localhost:8080`
-- Start the HLS proxy on `http://localhost:1234`
-- Start the frontend on `http://localhost:5173`
-
-## 🧪 Running Without Docker
-
-### 🔸 API (Ktor)
+#### 🔸 API (Ktor)
 
 ```bash
 cd api
 ENV_FILE=../.env ./gradlew run
 ```
 
-> Make sure you have Java 17+ installed.
+> Requires Java 17+
 
-### 🔸 Streaming Proxy (Bun)
+#### 🔸 Streaming Proxy (Bun)
 
 ```bash
 cd streaming
 NODE_ENV=development bun src/index.ts
 ```
 
-> Make sure Bun is installed. This assumes your config is loaded based on `NODE_ENV`.
+> Make sure Bun is installed
 
-### 🔸 Frontend (SvelteKit)
+#### 🔸 Frontend (SvelteKit)
 
 ```bash
 cd website
@@ -107,23 +98,41 @@ bun install     # or npm install
 bun run dev     # or npm run dev
 ```
 
-## ☁️ Deployment (Free Options)
+## 🐳 Deployment with Docker Swarm
 
-### 🔹 **Frontend (SvelteKit)**
+AniWays can be deployed in production using Docker Swarm and Traefik for HTTPS routing.
 
-- [Netlify](https://www.netlify.com/)
-- [Vercel](https://vercel.com/)
+### 📦 Requirements
 
-These platforms can deploy your `website/` directory directly. You’ll need to expose your API/proxy URLs via environment variables.
+- Docker Swarm (`docker swarm init`)
+- Valid domain names with DNS configured
+- Let's Encrypt email
+- Docker secret for environment variables
 
-### 🔹 **Backend (API + Streaming)**
+### 🔧 Setup
 
-- [Railway](https://railway.app/)
-- [Render](https://render.com/)
-- [Fly.io](https://fly.io/)
-- [Glitch](https://glitch.com/) _(for basic experimentation)_
+1. **Prepare Environment**
 
-> These can deploy your `api/` and `streaming/` services individually by pointing to their Dockerfiles or using a `Docker Compose` file on platforms that support it.
+```bash
+cp .env.example .env
+docker secret create env-v5 .env
+```
+
+2. **Deploy the Stack**
+
+```bash
+docker stack deploy -c docker-stack.yaml aniways
+```
+
+This will deploy:
+
+- `api` (Ktor)
+- `streaming` (Bun proxy)
+- `website` (Frontend)
+- `traefik` (reverse proxy with TLS)
+- `redis` and `postgres`
+
+All services will be automatically exposed via HTTPS using Traefik and Let's Encrypt.
 
 ## 🌍 Environment Variables
 
@@ -133,7 +142,20 @@ Refer to `.env.example` for the required environment variables across:
 - `streaming` (HLS Proxy)
 - `website` (Frontend)
 
-Make sure to configure CORS, API base URLs, and streaming paths appropriately depending on environment (`NODE_ENV` / `ENV_FILE`).
+Make sure to configure:
+
+- CORS
+- API base URLs
+- Streaming paths
+- Domain names used by Traefik
+
+## ☁️ Optional Hosting
+
+If you're not using Swarm, you can also deploy components separately on platforms like:
+
+- [Netlify](https://www.netlify.com/) / [Vercel](https://vercel.com/) for frontend
+- [Railway](https://railway.app/) / [Render](https://render.com/) for backend
+- [Fly.io](https://fly.io/) for full stack deployments
 
 ## 🛡️ License
 
