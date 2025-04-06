@@ -4,11 +4,30 @@
   <sub>An anime streaming website</sub>
 </h1>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Ktor-Kotlin-blueviolet" />
+  <img src="https://img.shields.io/badge/Bun-JS-yellow" />
+  <img src="https://img.shields.io/badge/SvelteKit-Frontend-orange" />
+  <img src="https://img.shields.io/badge/Docker-Swarm-blue" />
+  <img src="https://img.shields.io/badge/Traefik-Reverse%20Proxy-green" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue" />
+  <img src="https://img.shields.io/badge/Redis-Cache-red" />
+  <img src="https://img.shields.io/badge/Let's%20Encrypt-TLS%20Certs-orange" />
+  <img src="https://img.shields.io/badge/Java-17%2B-orange" />
+  <img src="https://img.shields.io/badge/Svelte-UI%20Framework-orange" />
+  <img src="https://img.shields.io/badge/Gradle-Build%20Tool-blue" />
+  <img src="https://img.shields.io/badge/GitHub-Repository-lightgrey" />
+  <img src="https://img.shields.io/badge/License-MIT-green" />
+  <img src="https://img.shields.io/github/issues/Coeeter/aniways" />
+  <img src="https://img.shields.io/github/forks/Coeeter/aniways" />
+  <img src="https://img.shields.io/github/stars/Coeeter/aniways" />
+</p>
+
 ## ⚠️ Disclaimer
 
 **AniWays is intended for personal use only.**  
-Commercial use and any form of monetization, such as placing advertisements, are strictly prohibited.  
-Violating this may lead to takedowns or legal action. Ensure full compliance when self-hosting.
+Any form of commercial use, redistribution, public streaming, or monetization (e.g., advertisements) is strictly prohibited.  
+Violating these terms may lead to takedown requests or legal action. Please ensure you are in full compliance when self-hosting this project.
 
 ## 📝 Overview
 
@@ -159,5 +178,6 @@ If you're not using Swarm, you can also deploy components separately on platform
 
 ## 🛡️ License
 
-This project is provided as-is for educational and personal purposes.  
-**Not licensed for commercial redistribution or public streaming.**
+This project is licensed under the **MIT License** for personal use and educational purposes only.  
+**Commercial redistribution, public streaming, or monetization is strictly prohibited.**  
+By using this project, you agree to abide by the terms of the license and the restrictions outlined in this README.
