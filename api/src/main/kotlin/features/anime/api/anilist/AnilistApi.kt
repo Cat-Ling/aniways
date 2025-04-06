@@ -86,10 +86,10 @@ class AnilistApi(
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
 
         val season = when (currentMonth) {
-            in 0..2 -> "WINTER"
-            in 3..5 -> "SPRING"
-            in 6..8 -> "SUMMER"
-            else -> "FALL"
+            in 1..3 -> "WINTER" // February to April
+            in 4..6 -> "SPRING" // May to July
+            in 7..9 -> "SUMMER" // August to October
+            else -> "FALL"  // November to January
         }
 
         return makeMediaRequest {
