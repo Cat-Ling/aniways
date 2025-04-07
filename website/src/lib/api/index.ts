@@ -1,6 +1,5 @@
-import { browser, dev } from '$app/environment';
-
-const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
+import { browser } from '$app/environment';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export class StatusError extends Error {
   constructor(
@@ -26,7 +25,7 @@ export function fetchJson<T>(
   schema: Schema<T>,
   options: Options = {}
 ) {
-  const url = new URL(`${apiUrl}${endpoint}`);
+  const url = new URL(`${PUBLIC_API_URL}${endpoint}`);
   for (const [key, value] of Object.entries(options.params ?? {})) {
     if (value === undefined) continue;
     url.searchParams.append(key, String(value));
@@ -47,7 +46,7 @@ export function fetchJson<T>(
 }
 
 export function mutate(fetch: typeof global.fetch, endpoint: string, options: Options = {}) {
-  const url = new URL(`${apiUrl}${endpoint}`);
+  const url = new URL(`${PUBLIC_API_URL}${endpoint}`);
   for (const [key, value] of Object.entries(options.params ?? {})) {
     url.searchParams.append(key, String(value));
   }

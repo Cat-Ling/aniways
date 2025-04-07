@@ -12,7 +12,7 @@ import {
   topAnime,
   trailer as trailerSchema
 } from './types';
-import { dev } from '$app/environment';
+import { PUBLIC_STREAMING_URL } from '$env/static/public';
 
 export const getSeasonalAnime = async (fetch: typeof global.fetch) => {
   return fetchJson(fetch, '/anime/seasonal', anilistAnime.array());
@@ -151,9 +151,7 @@ export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: s
 };
 
 export const getStreamingData = async (fetch: typeof global.fetch, serverId: string) => {
-  const streamingUrl = dev ? 'http://localhost:1234' : 'https://streaming.aniways.xyz';
-
-  const response = await fetch(`${streamingUrl}/info/${serverId}`)
+  const response = await fetch(`${PUBLIC_STREAMING_URL}/info/${serverId}`)
     .then((res) => res.json())
     .then(streamInfo.assert);
 
@@ -161,7 +159,7 @@ export const getStreamingData = async (fetch: typeof global.fetch, serverId: str
     ...response,
     sources: response.sources.map((source) => ({
       ...source,
-      file: `${streamingUrl}${source.file}`
+      file: `${PUBLIC_STREAMING_URL}${source.file}`
     }))
   };
 };

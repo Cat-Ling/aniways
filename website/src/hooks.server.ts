@@ -1,10 +1,8 @@
-import { dev } from '$app/environment';
+import { PUBLIC_API_URL } from '$env/static/public';
 import type { HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
-  const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
-
-  if (request.url.startsWith(apiUrl)) {
+  if (request.url.startsWith(PUBLIC_API_URL)) {
     request.headers.set('cookie', event.request.headers.get('cookie') || '');
   }
 

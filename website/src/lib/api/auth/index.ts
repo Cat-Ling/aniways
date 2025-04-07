@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { PUBLIC_API_URL } from '$env/static/public';
 import { fetchJson, mutate, StatusError } from '$lib/api';
 import {
   loginFormSchema,
@@ -83,18 +83,15 @@ export const uploadImage = async (fetch: typeof global.fetch, file: File) => {
 };
 
 export const getLogoutUrl = (currentPageUrl: string | undefined) => {
-  const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
-  return `${apiUrl}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+  return `${PUBLIC_API_URL}/auth/logout${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };
 
 export const getMyanimeListUrl = (currentPageUrl: string | undefined) => {
-  const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
-  return `${apiUrl}/auth/myanimelist/login${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
+  return `${PUBLIC_API_URL}/auth/myanimelist/login${currentPageUrl ? `?redirectUrl=${encodeURIComponent(currentPageUrl)}` : ''}`;
 };
 
 export const getMyAnimeListLogoutUrl = () => {
-  const apiUrl = dev ? 'http://localhost:8080' : 'https://api.aniways.xyz';
-  return `${apiUrl}/auth/providers/myanimelist/logout`;
+  return `${PUBLIC_API_URL}/auth/providers/myanimelist/logout`;
 };
 
 export const getInstalledProviders = async (fetch: typeof global.fetch) => {
