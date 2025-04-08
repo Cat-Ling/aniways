@@ -1,27 +1,12 @@
-<h1 align="center">
-  <img src="./website/static/logo.png" width="200" height="200" /><br>
-  AniWays<br>
-  <sub>An anime streaming website</sub>
-</h1>
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Ktor-Kotlin-blueviolet" />
-  <img src="https://img.shields.io/badge/Bun-JS-yellow" />
-  <img src="https://img.shields.io/badge/SvelteKit-Frontend-orange" />
-  <img src="https://img.shields.io/badge/Docker-Swarm-blue" />
-  <img src="https://img.shields.io/badge/Traefik-Reverse%20Proxy-green" />
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue" />
-  <img src="https://img.shields.io/badge/Redis-Cache-red" />
-  <img src="https://img.shields.io/badge/Let's%20Encrypt-TLS%20Certs-orange" />
-  <img src="https://img.shields.io/badge/Java-17%2B-orange" />
-  <img src="https://img.shields.io/badge/Svelte-UI%20Framework-orange" />
-  <img src="https://img.shields.io/badge/Gradle-Build%20Tool-blue" />
-  <img src="https://img.shields.io/badge/GitHub-Repository-lightgrey" />
-  <img src="https://img.shields.io/badge/License-MIT-green" />
-  <img src="https://img.shields.io/github/issues/Coeeter/aniways" />
-  <img src="https://img.shields.io/github/forks/Coeeter/aniways" />
-  <img src="https://img.shields.io/github/stars/Coeeter/aniways" />
-</p>
+<img src="./website/static/logo.png" width="150" alt="AniWays logo" />
+
+# AniWays
+
+**An anime streaming website**
+
+</div>
 
 ## ⚠️ Disclaimer
 
@@ -81,15 +66,24 @@ git clone https://github.com/Coeeter/aniways.git
 cd aniways
 ```
 
-2. **Set Up Environment Variables**
+2. **Set Up Root Environment Variables**
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your preferred values.
+> Edit `.env` with your preferred values.
 
-3. **Run Services Manually**
+3. **Set Up Frontend Environment Variables**
+
+```bash
+cd website
+cp .env.example .env
+```
+
+> Make sure the values match your root `.env`, especially the API and streaming URLs.
+
+4. **Run Services Manually**
 
 #### 🔸 API (Ktor)
 
@@ -98,16 +92,17 @@ cd api
 ENV_FILE=../.env ./gradlew run
 ```
 
-> Requires Java 17+
+> The API will run on `http://localhost:8080` by default.
 
 #### 🔸 Streaming Proxy (Bun)
 
 ```bash
 cd streaming
+bun install
 NODE_ENV=development bun src/index.ts
 ```
 
-> Make sure Bun is installed
+> The streaming proxy will run on `http://localhost:1234` by default.
 
 #### 🔸 Frontend (SvelteKit)
 
@@ -117,9 +112,12 @@ bun install     # or npm install
 bun run dev     # or npm run dev
 ```
 
+> Access the website at `http://localhost:3000`
+
 ## 🐳 Deployment with Docker Swarm
 
-AniWays can be deployed in production using Docker Swarm and Traefik for HTTPS routing.
+AniWays can be deployed in production using Docker Swarm and Traefik for HTTPS routing for only the backend and streaming proxy.
+This setup is ideal for self-hosting on a VPS or cloud server.
 
 ### 📦 Requirements
 
@@ -147,37 +145,59 @@ This will deploy:
 
 - `api` (Ktor)
 - `streaming` (Bun proxy)
-- `website` (Frontend)
 - `traefik` (reverse proxy with TLS)
-- `redis` and `postgres`
+- `redis` and `postgres` instances
 
 All services will be automatically exposed via HTTPS using Traefik and Let's Encrypt.
 
+## Deploying Frontend
+
+The frontend is not included in the Docker stack. You can deploy it separately using platforms like:
+
+- [Netlify](https://www.netlify.com/)
+- [Vercel](https://vercel.com/)
+- [Railway](https://railway.app/)
+- [Render](https://render.com/)
+- [Fly.io](https://fly.io/)
+- [Cloudflare Pages](https://pages.cloudflare.com/)
+
 ## 🌍 Environment Variables
 
-Refer to `.env.example` for the required environment variables across:
-
-- `api` (Ktor)
-- `streaming` (HLS Proxy)
-- `website` (Frontend)
+Refer to the `.env.example` files in both the project root and `website/` directory for the required variables.
 
 Make sure to configure:
 
 - CORS
-- API base URLs
-- Streaming paths
+- API and streaming base URLs
 - Domain names used by Traefik
+- MAL credentials
+- Cloudinary settings (if used)
 
 ## ☁️ Optional Hosting
 
-If you're not using Swarm, you can also deploy components separately on platforms like:
+If you're not using Swarm, you can also deploy the API and streaming proxy on platforms like:
 
-- [Netlify](https://www.netlify.com/) / [Vercel](https://vercel.com/) for frontend
-- [Railway](https://railway.app/) / [Render](https://render.com/) for backend
-- [Fly.io](https://fly.io/) for full stack deployments
+- [Railway](https://railway.app/)
+- [Render](https://render.com/)
+- [Fly.io](https://fly.io/)
+- [Render](https://render.com/)
+- [Replit](https://replit.com/)
+
+## 🐞 Issues
+
+If you encounter any issues or have feature requests, please open an issue on the [GitHub repository](https://github.com/Coeeter/aniways/issues).
+
+When reporting a bug, please include:
+
+- Steps to reproduce the issue
+- Expected behavior
+- Actual behavior
+- Logs or screenshots (if applicable)
+
+We welcome contributions! Feel free to fork the repository and submit a pull request with your changes.
 
 ## 🛡️ License
 
-This project is licensed under the **MIT License** for personal use and educational purposes only.  
-**Commercial redistribution, public streaming, or monetization is strictly prohibited.**  
+This project is licensed under the **MIT License** for personal use and educational purposes only.
+**Commercial redistribution, public streaming, or monetization is strictly prohibited.**
 By using this project, you agree to abide by the terms of the license and the restrictions outlined in this README.
