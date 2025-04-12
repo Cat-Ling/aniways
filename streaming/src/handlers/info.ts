@@ -19,11 +19,11 @@ const USER_AGENTS = [
 ];
 
 /**
- * Gets the XRAX token from the server ID.
- * @param serverId The server ID to get the XRAX token for.
- * @returns The XRAX token.
+ * Gets the iframe url from the server ID.
+ * @param serverId The server ID to get the iframe url for.
+ * @returns The iframe url.
  */
-async function getXraxFromServerId(serverId: string): Promise<string> {
+async function getIframeUrl(serverId: string): Promise<string> {
   const response = await fetch(
     `https://hianime.to/ajax/v2/episode/sources?id=${serverId}`,
     {
@@ -35,7 +35,9 @@ async function getXraxFromServerId(serverId: string): Promise<string> {
     }
   ).then(res => res.json());
 
-  return new URL(response.link).pathname.split('/').pop()!;
+  console.log(response);
+
+  return new URL(response.link).href;
 }
 
 /**
@@ -43,8 +45,9 @@ async function getXraxFromServerId(serverId: string): Promise<string> {
  * @param xrax The XRAX token to get the streaming sources for.
  * @returns The streaming sources.
  */
-async function getStreamingSources(xrax: string, serverId: string) {
-  const response = await getSources(xrax);
+async function getStreamingSources(iframeUrl: string, serverId: string) {
+  const xrax = new URL(iframeUrl).pathname.split('/').pop()!.split('?')[0];
+  const response = await getSources(iframeUrl);
   return {
     ...response,
     serverId,
@@ -97,10 +100,12 @@ export async function handleInfoRequest(
     return new Response(responseBody, { headers });
   }
 
-  const xrax = await getXraxFromServerId(serverId);
+  const iframeUrl = await getIframeUrl(serverId);
+  const xrax = new URL(iframeUrl).pathname.split('/').pop()!.split('?')[0];
 
   const cachedSources = SOURCE_CACHE.get(xrax);
-  const sources = cachedSources ?? (await getStreamingSources(xrax, serverId));
+  const sources =
+    cachedSources ?? (await getStreamingSources(iframeUrl, serverId));
 
   if (sources) {
     SOURCE_CACHE.set(xrax, {

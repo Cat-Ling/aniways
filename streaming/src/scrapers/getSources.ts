@@ -864,7 +864,18 @@ function z(a: any) {
   ];
 }
 
-export async function getSources(xrax: string) {
+export async function getSources(urlOrXrax: string) {
+  let xrax, embed_url;
+
+  if (urlOrXrax.startsWith('https')) {
+    const url = new URL(urlOrXrax);
+    xrax = url.pathname.split('/').pop()?.split('?')[0];
+    embed_url = url.origin + '/embed-2/e-1/';
+  } else {
+    xrax = urlOrXrax;
+    embed_url = 'https://megacloud.tv/embed-2/e-1/';
+  }
+
   await getMeta(embed_url + xrax + '?k=1');
   fake_window.xrax = xrax;
   fake_window.G = xrax;
