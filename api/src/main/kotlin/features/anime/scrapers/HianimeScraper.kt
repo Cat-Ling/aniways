@@ -15,7 +15,7 @@ import xyz.aniways.utils.toStringOrNull
 class HianimeScraper(
     private val httpClient: HttpClient,
 ) : AnimeScraper() {
-    private val baseUrl = "https://hianime.to"
+    private val baseUrl = "https://hianimez.to"
 
     override suspend fun getTrendingAnimes(): List<ScrapedAnimeDto> {
         val document = httpClient.getDocument("$baseUrl/home") {

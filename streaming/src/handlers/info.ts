@@ -25,7 +25,7 @@ const USER_AGENTS = [
  */
 async function getIframeUrl(serverId: string): Promise<string> {
   const response = await fetch(
-    `https://hianime.to/ajax/v2/episode/sources?id=${serverId}`,
+    `https://hianimez.to/ajax/v2/episode/sources?id=${serverId}`,
     {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
