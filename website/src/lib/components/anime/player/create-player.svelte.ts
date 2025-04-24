@@ -52,6 +52,7 @@ export const createArtPlayer = async ({
     pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
     airplay: true,
     miniProgressBar: true,
+    gesture: false,
     icons: {
       loading: convertComponentToHTML(LoaderCircle, {
         size: 100,
