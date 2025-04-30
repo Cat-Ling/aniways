@@ -204,6 +204,11 @@ export const createArtPlayer = async ({
     if (appState.settings.autoPlayEpisode) {
       art.play();
     }
+
+    if (sessionStorage.getItem('artplayer_resume_fullscreen') === 'true') {
+      art.fullscreen = true;
+      sessionStorage.removeItem('artplayer_resume_fullscreen');
+    }
   });
 
   art.on('fullscreen', (isFullScreen) => {
@@ -218,6 +223,12 @@ export const createArtPlayer = async ({
     await updateLibrary();
 
     if (nextEpisodeUrl && appState.settings.autoNextEpisode) {
+      if (art.fullscreen) {
+        sessionStorage.setItem('artplayer_resume_fullscreen', 'true');
+      } else {
+        sessionStorage.removeItem('artplayer_resume_fullscreen');
+      }
+
       await goto(nextEpisodeUrl);
     }
   });
