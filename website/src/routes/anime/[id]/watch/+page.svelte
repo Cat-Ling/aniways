@@ -17,7 +17,7 @@
     const currentIndex = episodes.findIndex((ep) => ep.id === query.key);
     const nextEpisode = episodes[currentIndex + 1];
     if (!nextEpisode) return;
-    return `/anime/${query.id}/watch?episode=${nextEpisode.number}&key=${nextEpisode.id}`;
+    return `/anime/${query.id}/watch?episode=${nextEpisode.number}&key=${nextEpisode.id}&server=${query.server}&type=${query.type}`;
   });
 
   afterNavigate(() => {
