@@ -63,6 +63,14 @@ class AnimeRoute(val page: Int = 1, val itemsPerPage: Int = 30) {
 
     @Resource("/random/{genre}")
     class RandomGenre(val parent: AnimeRoute, val genre: String)
+
+    @Resource("/mapper")
+    class Mapper(
+        val parent: AnimeRoute,
+        val malId: String? = null,
+        val aniId: String? = null,
+        val id: String? = null
+    )
 }
 
 fun Route.animeRoutes() {
@@ -249,5 +257,21 @@ fun Route.animeRoutes() {
         val animes = service.getRandomAnimeByGenre(route.genre)
 
         call.respond(animes)
+    }
+
+    get<AnimeRoute.Mapper> { route ->
+        val anime = getCachedOrRun(
+            credentials = redisConfig,
+            key = "anime:mapper:${route.malId}:${route.aniId}:${route.id}",
+            invalidatesAt = 30.days
+        ) {
+            service.mapper(
+                malId = route.malId,
+                aniId = route.aniId,
+                id = route.id
+            )
+        }
+
+        call.respond(anime)
     }
 }

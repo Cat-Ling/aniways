@@ -401,4 +401,23 @@ class AnimeService(
         delay(2000L)
         scrapeAndPopulateRecentlyUpdatedAnime(page - 1, ids)
     }
+
+    suspend fun mapper(
+        malId: String? = null,
+        aniId: String? = null,
+        id: String? = null
+    ): AnimeWithMetadataDto {
+        val anime = when {
+            malId != null -> animeDao.getAnimeByMalId(
+                malId.toIntOrNull() ?: throw IllegalArgumentException("malId must be an integer")
+            )
+            aniId != null -> animeDao.getAnimeByAnilistId(
+                aniId.toIntOrNull() ?: throw IllegalArgumentException("aniId must be an integer")
+            )
+            id != null -> animeDao.getAnimeById(id)
+            else -> throw IllegalArgumentException("At least one of malId, aniId or id must be provided")
+        } ?: throw NotFoundException("Anime not found")
+
+        return saveMetadataInDB(anime)
+    }
 }
