@@ -50,7 +50,7 @@
   <div class="flex flex-col-reverse gap-2 md:flex-row">
     <div class="mt-3 flex w-full flex-col-reverse gap-3 md:mt-0 md:w-1/5 md:max-w-md md:flex-col">
       <Command.Root
-        class={'bg-card h-60 w-full rounded-md md:h-full md:max-h-[512px]'}
+        class={'bg-card h-60 w-full rounded-md md:max-h-[512px] md:min-h-[512px]'}
         value={query.key}
       >
         <div
@@ -87,9 +87,9 @@
           If the video doesn't load, please select another server.
         </p>
         {#each Object.entries(data.serversByType) as [type, servers]}
-          <div class="grid grid-cols-5 items-center gap-2 p-3">
+          <div class="grid grid-cols-3 items-center gap-2 p-3">
             {#if servers.length > 0}
-              <h4 class="font-sora capitalize">{type}</h4>
+              <h4 class="font-sora col-span-3 capitalize">{type}</h4>
             {/if}
             {#each servers as server}
               <Button
@@ -97,7 +97,6 @@
                 variant="outline"
                 size="sm"
                 class={cn(
-                  'col-span-2',
                   server.serverName === query.server && type === query.type && 'border-primary'
                 )}
                 data-sveltekit-replacestate
