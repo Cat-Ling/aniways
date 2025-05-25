@@ -281,7 +281,7 @@ class HianimeScraper(
         document.select(".server-item").map { element ->
             val serverIndex = element.attr("data-server-id")
 
-            if (serverIndex != "1" && serverIndex != "4") {
+            if (serverIndex !in listOf("1", "4", "6")) {
                 return@map null
             }
 
