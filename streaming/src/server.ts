@@ -84,7 +84,10 @@ export const startServer = () => {
         return await handleRequest(req);
       } catch (error) {
         console.error('Error handling request:', error);
-        return new Response('Internal Server Error', { status: 500 });
+        return new Response('Internal Server Error', {
+          status: 500,
+          headers: createDefaultHeaders(allowedOrigin),
+        });
       }
     },
   });
