@@ -3,19 +3,22 @@
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "bun esbuild.mjs",
-    "start": "bun dist/index.js"
+    "start": "bun src/index.ts",
+    "dev": "bun --watch src/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/crypto-js": "^4.2.2",
+    "bun-types": "^1.2.16",
     "esbuild": "^0.24.2"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "cheerio": "^1.0.0",
-    "crypto-js": "^4.2.0"
+    "axios": "^1.10.0",
+    "elysia": "^1.3.4",
+    "puppeteer": "^24.10.1",
+    "puppeteer-cluster": "^0.24.0",
+    "redis": "^5.5.6"
   }
 }
