@@ -150,16 +150,27 @@ export const getRandomAnimeByGenre = async (fetch: typeof global.fetch, genre: s
   return fetchJson(fetch, `/anime/random/${genre}`, animeSchema);
 };
 
-export const getStreamingData = async (fetch: typeof global.fetch, serverId: string) => {
-  const response = await fetch(`${PUBLIC_STREAMING_URL}/info/${serverId}`)
+export const getStreamingData = async (
+  fetch: typeof global.fetch,
+  epId: string,
+  type: 'sub' | 'dub'
+) => {
+  const response = await fetch(`${PUBLIC_STREAMING_URL}/info/${epId}?type=${type}`)
     .then((res) => res.json())
     .then(streamInfo.assert);
 
+  if (!response.success) {
+    throw error(404, 'Streaming data not found');
+  }
+
   return {
-    ...response,
-    sources: response.sources.map((source) => ({
-      ...source,
-      file: `${PUBLIC_STREAMING_URL}${source.file}`
+    ...response.data,
+    sources: {
+      file: `${PUBLIC_STREAMING_URL}/proxy?url=${response.data.sources.file}`
+    },
+    tracks: response.data.tracks.map((track) => ({
+      ...track,
+      file: `${PUBLIC_STREAMING_URL}/proxy?url=${track.file}`
     }))
   };
 };

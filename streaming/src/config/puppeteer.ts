@@ -22,7 +22,10 @@ export async function initPuppeteerCluster() {
           '--disable-web-security',
           '--disable-features=IsolateOrigins,site-per-process',
         ],
-        executablePath: '/usr/bin/chromium',
+        executablePath:
+          process.env.NODE_ENV === 'production'
+            ? '/usr/bin/chromium'
+            : undefined,
       },
     });
 

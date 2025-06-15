@@ -84,21 +84,24 @@ export const episodeServer = type({
 });
 
 export const streamInfo = type({
-  sources: type({
-    file: 'string'
-  }).array(),
-  tracks: type({
-    file: 'string.url',
-    'label?': 'string',
-    kind: '"captions"|"thumbnails"',
-    'default?': 'boolean'
-  }).array(),
-  'intro?': type({
-    start: 'number',
-    end: 'number'
-  }).or('undefined|null'),
-  'outro?': type({
-    start: 'number',
-    end: 'number'
-  }).or('undefined|null')
+  success: 'true',
+  data: type({
+    sources: type({
+      file: 'string'
+    }),
+    tracks: type({
+      file: 'string.url',
+      'label?': 'string',
+      kind: '"captions"|"thumbnails"',
+      'default?': 'boolean'
+    }).array(),
+    'intro?': type({
+      start: 'number',
+      end: 'number'
+    }).or('undefined|null'),
+    'outro?': type({
+      start: 'number',
+      end: 'number'
+    }).or('undefined|null')
+  })
 });

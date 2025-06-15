@@ -17,7 +17,7 @@
     const currentIndex = episodes.findIndex((ep) => ep.id === query.key);
     const nextEpisode = episodes[currentIndex + 1];
     if (!nextEpisode) return;
-    return `/anime/${query.id}/watch?episode=${nextEpisode.number}&key=${nextEpisode.id}&server=${query.server}&type=${query.type}`;
+    return `/anime/${query.id}/watch?episode=${nextEpisode.number}&key=${nextEpisode.id}&type=${query.type}`;
   });
 
   afterNavigate(() => {
@@ -83,29 +83,18 @@
       </Command.Root>
       <div class="bg-card w-full flex-1 rounded-md">
         <h3 class="font-sora p-3 text-xl font-bold">Servers</h3>
-        <p class="text-muted-foreground px-3 pb-3 text-sm">
-          If the video doesn't load, please select another server.
-        </p>
-        {#each Object.entries(data.serversByType) as [type, servers]}
-          <div class="grid grid-cols-3 items-center gap-2 p-3">
-            {#if servers.length > 0}
-              <h4 class="font-sora col-span-3 capitalize">{type}</h4>
-            {/if}
-            {#each servers as server}
-              <Button
-                href="/anime/{query.id}/watch?episode={query.episode}&key={query.key}&server={server.serverName}&type={type}"
-                variant="outline"
-                size="sm"
-                class={cn(
-                  server.serverName === query.server && type === query.type && 'border-primary'
-                )}
-                data-sveltekit-replacestate
-              >
-                {server.serverName}
-              </Button>
-            {/each}
-          </div>
-        {/each}
+        <div class="flex w-full gap-2 p-3">
+          {#each data.availableTypes as type}
+            <Button
+              class="flex-1 capitalize"
+              variant={query.type === type ? 'default' : 'ghost'}
+              data-sveltekit-noscroll
+              href={`/anime/${query.id}/watch?episode=${query.episode}&key=${query.key}&type=${type}`}
+            >
+              {type}
+            </Button>
+          {/each}
+        </div>
       </div>
     </div>
     <div class="bg-card aspect-video w-full flex-1 overflow-hidden rounded-md">

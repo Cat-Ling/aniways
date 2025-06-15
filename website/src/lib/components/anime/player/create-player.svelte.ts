@@ -11,7 +11,7 @@ import { amplifyVolumePlugin, skipPlugin, thumbnailPlugin, windowKeyBindPlugin }
 type Props = {
   id: string;
   container: HTMLDivElement;
-  source: typeof streamInfo.infer;
+  source: (typeof streamInfo.infer)['data'];
   nextEpisodeUrl: string | undefined;
   updateLibrary: () => Promise<void>;
 };
@@ -40,7 +40,7 @@ export const createArtPlayer = async ({
     id,
     container,
     hotkey: false,
-    url: source.sources[0].file,
+    url: source.sources.file,
     setting: true,
     theme: 'hsl(var(--primary))',
     fullscreen: true,
@@ -49,6 +49,7 @@ export const createArtPlayer = async ({
     autoPlayback: true,
     autoOrientation: true,
     playsInline: true,
+    type: 'm3u8',
     pip: !!/(chrome|edg|safari|opr)/i.exec(navigator.userAgent),
     airplay: true,
     miniProgressBar: true,
@@ -85,6 +86,7 @@ export const createArtPlayer = async ({
     ],
     customType: {
       m3u8: (video, url, art) => {
+        console.log('Custom type m3u8', url);
         Hls.then((module) => {
           const Hls = module.default;
           if (Hls.isSupported()) {

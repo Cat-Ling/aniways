@@ -4,8 +4,16 @@ import { getStreamingData } from '../services/stream';
 
 export const infoRoute = new Elysia().get(
   '/info/:id',
-  async ({ params: { id }, query: { type }, status }) => {
+  async ({ params: { id }, query: { type }, status, set }) => {
     const cacheKey = `${id}-${type}`;
+
+    set.headers = {
+      'Cache-Control': 'public, max-age=604800, immutable',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': '*',
+      'Access-Control-Allow-Headers': '*',
+    };
 
     try {
       const cached = await redisClient.get(cacheKey);

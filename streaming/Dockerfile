@@ -34,7 +34,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN bun build \
+RUN NODE_ENV=production bun build \
   --compile \
   --minify-whitespace \
   --minify-syntax \

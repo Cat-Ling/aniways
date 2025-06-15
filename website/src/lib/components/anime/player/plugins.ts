@@ -118,7 +118,7 @@ export const thumbnailPlugin = (thumbnails: { file: string }) => {
   };
 };
 
-export const skipPlugin = (source: typeof streamInfo.infer) => {
+export const skipPlugin = (source: (typeof streamInfo.infer)['data']) => {
   return async (art: Artplayer) => {
     art.on('ready', () => {
       function addElement(title: string, start: number, end: number) {

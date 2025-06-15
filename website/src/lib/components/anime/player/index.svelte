@@ -6,7 +6,7 @@
 
   type Props = {
     playerId: string;
-    info: typeof streamInfo.infer;
+    info: (typeof streamInfo.infer)['data'];
     nextEpisodeUrl?: string;
     updateLibrary: () => Promise<void>;
   };
@@ -37,4 +37,4 @@
   });
 </script>
 
-<div class="h-full w-full bg-card" bind:this={element}></div>
+<div class="bg-card h-full w-full" bind:this={element}></div>
