@@ -8,8 +8,7 @@ export async function getStreamingData(
 
   return await cluster.execute({ id, type }, async ({ page }) => {
     await page.setExtraHTTPHeaders({
-      Referer: 'https://megaplay.buzz/api',
-      Origin: 'https://megaplay.buzz',
+      Referer: 'https://megaplay.buzz',
     });
 
     const m3u8Data = new Promise((resolve, reject) => {
