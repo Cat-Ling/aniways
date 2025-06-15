@@ -25,7 +25,7 @@ export const load: LayoutLoad = async ({ fetch, url, parent, params }) => {
   const availableTypes =
     servers.length === 0 ? ['sub'] : [...new Set(servers.map((server) => server.type))];
 
-  const streamInfo = await getStreamingData(fetch, key, type as 'sub' | 'dub').catch(() => {
+  const streamInfo = getStreamingData(fetch, key, type as 'sub' | 'dub').catch(() => {
     throw error(404, 'Streaming data not found');
   });
 

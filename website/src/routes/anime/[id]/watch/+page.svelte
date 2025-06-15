@@ -9,6 +9,8 @@
   import { cn } from '$lib/utils';
   import { onMount, tick } from 'svelte';
   import { type PageProps } from './$types';
+  import { getStreamingData } from '$lib/api/anime';
+  import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 
   let props: PageProps = $props();
   let { query, data, episodes, anime, seasonsAndRelatedAnimes } = $derived(props.data);
@@ -98,16 +100,24 @@
       </div>
     </div>
     <div class="bg-card aspect-video w-full flex-1 overflow-hidden rounded-md">
-      <Player
-        {nextEpisodeUrl}
-        info={data.streamInfo}
-        playerId="{query.id}-{query.episode}-{query.type}"
-        updateLibrary={async () => {
-          if (props.data.library && query.episode <= props.data.library?.watchedEpisodes) return;
-          await saveToLibrary(fetch, query.id, 'watching', query.episode);
-          await invalidate((url) => url.pathname.includes('library'));
-        }}
-      />
+      {#await data.streamInfo}
+        <Skeleton class="h-full w-full" />
+      {:then streamingInfo}
+        <Player
+          {nextEpisodeUrl}
+          info={streamingInfo}
+          playerId="{query.id}-{query.episode}-{query.type}"
+          updateLibrary={async () => {
+            if (props.data.library && query.episode <= props.data.library?.watchedEpisodes) return;
+            await saveToLibrary(fetch, query.id, 'watching', query.episode);
+            await invalidate((url) => url.pathname.includes('library'));
+          }}
+        />
+      {:catch error}
+        <div class="flex h-full w-full items-center justify-center">
+          <p class="text-red-500">Error loading stream: {error.message}</p>
+        </div>
+      {/await}
     </div>
   </div>
 </div>
