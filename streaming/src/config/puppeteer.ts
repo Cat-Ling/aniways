@@ -11,7 +11,18 @@ export async function initPuppeteerCluster() {
       puppeteer,
       puppeteerOptions: {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--disable-gpu',
+          '--no-zygote',
+          '--single-process',
+          '--disable-web-security',
+          '--disable-features=IsolateOrigins,site-per-process',
+        ],
+        executablePath: '/usr/bin/chromium',
       },
     });
 
