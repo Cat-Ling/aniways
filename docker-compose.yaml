@@ -50,6 +50,8 @@ services:
       - 'traefik.http.routers.streaming.rule=Host(`${STREAMING_DOMAIN}`)'
       - 'traefik.http.routers.streaming.entrypoints=websecure'
       - 'traefik.http.routers.streaming.tls.certresolver=myresolver'
+    environment:
+      - REDIS_URL=redis://redis:6379
     deploy:
       update_config:
         order: start-first
