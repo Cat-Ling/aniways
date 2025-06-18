@@ -97,21 +97,21 @@ export async function getStreamingData(
   id: number,
   type: 'sub' | 'dub' = 'sub'
 ) {
+  // try {
+  //   console.log(
+  //     `Fetching streaming data for ID: ${id}, Type: ${type} (cheerio)`
+  //   );
+  //   const data = await fetchStreamingDataWithCheerio(id, type);
+  //   return data;
+  // } catch (error) {
   try {
-    console.log(
-      `Fetching streaming data for ID: ${id}, Type: ${type} (cheerio)`
-    );
-    const data = await fetchStreamingDataWithCheerio(id, type);
+    // console.error('Cheerio fetch failed, falling back to Puppeteer:', error);
+    const data = await fetchStreamingDataWithPuppeteer(id, type);
     return data;
   } catch (error) {
-    try {
-      console.error('Cheerio fetch failed, falling back to Puppeteer:', error);
-      const data = await fetchStreamingDataWithPuppeteer(id, type);
-      return data;
-    } catch (error) {
-      console.error('Puppeteer fetch failed:', error);
-      console.error('Error fetching streaming data:', error);
-      throw new Error('Failed to fetch streaming data');
-    }
+    console.error('Puppeteer fetch failed:', error);
+    console.error('Error fetching streaming data:', error);
+    throw new Error('Failed to fetch streaming data');
   }
+  // }
 }
