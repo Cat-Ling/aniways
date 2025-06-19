@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getPuppeteerCluster } from '../config/puppeteer';
+import { getPuppeteerBrowser } from '../config/puppeteer';
 import { load } from 'cheerio';
 
 async function fetchStreamingDataWithCheerio(
@@ -8,8 +8,8 @@ async function fetchStreamingDataWithCheerio(
 ) {
   const url = `https://megaplay.buzz/stream/s-2/${id}/${type}`;
 
-  console.time(`Getting html page for ID: ${id}, Type: ${type} (cheerio)`);
-  const { data: html } = await axios.get(url, {
+  console.time(`Cheerio HTML fetch ID:${id}, type:${type}`);
+  const { data: html } = await axios.get<string>(url, {
     responseType: 'text',
     headers: {
       'User-Agent':
@@ -17,21 +17,15 @@ async function fetchStreamingDataWithCheerio(
       Referer: 'https://megaplay.buzz',
     },
   });
+  console.timeEnd(`Cheerio HTML fetch ID:${id}, type:${type}`);
 
   const $ = load(html);
-  console.timeEnd(`Getting html page for ID: ${id}, Type: ${type} (cheerio)`);
+  const mediaId = $('#megaplay-player').attr('data-id');
+  if (!mediaId) throw new Error('Media ID not found in the HTML');
 
-  const mediaId = $('#megaplay-player').attr('data-mediaid');
-
-  if (!mediaId) {
-    throw new Error('Media ID not found in the HTML');
-  }
-
-  console.time(
-    `Fetching m3u8Data for ID: ${id}, Type: ${type}, MediaId: ${mediaId}`
-  );
+  console.time(`Cheerio JSON fetch ID:${id}, mediaId:${mediaId}`);
   const response = await axios.get(
-    `https://megaplay.buzz/stream/getSources?id=${mediaId}}`,
+    `https://megaplay.buzz/stream/getSources?id=${mediaId}`,
     {
       responseType: 'json',
       headers: {
@@ -42,13 +36,10 @@ async function fetchStreamingDataWithCheerio(
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json',
         Accept: 'application/json, text/plain, */*',
-        'Accept-Language': 'en-US,en;q=0.9',
       },
     }
   );
-  console.timeEnd(
-    `Fetching m3u8Data for ID: ${id}, Type: ${type}, MediaId: ${mediaId}`
-  );
+  console.timeEnd(`Cheerio JSON fetch ID:${id}, mediaId:${mediaId}`);
 
   if (response.status !== 200) {
     throw new Error(`Failed to fetch M3U8 URL: ${response.statusText}`);
@@ -61,57 +52,62 @@ async function fetchStreamingDataWithPuppeteer(
   id: number,
   type: 'sub' | 'dub' = 'sub'
 ) {
-  const cluster = getPuppeteerCluster();
+  const browser = getPuppeteerBrowser();
+  const page = await browser.newPage();
 
-  return await cluster.execute({ id, type }, async ({ page }) => {
+  try {
+    // 1) block devtools detector script
+    await page.setRequestInterception(true);
+    page.on('request', req => {
+      if (
+        req.resourceType() === 'script' &&
+        /devtools|detect/i.test(req.url())
+      ) {
+        return req.abort();
+      }
+      req.continue();
+    });
+
+    // 2) UA & headers
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
+        'AppleWebKit/537.36 (KHTML, like Gecko) ' +
+        'Chrome/58.0.3029.110 Safari/537.3'
+    );
     await page.setExtraHTTPHeaders({
       Referer: 'https://megaplay.buzz',
+      Origin: 'https://megaplay.buzz',
     });
 
-    const m3u8Data = new Promise((resolve, reject) => {
-      page.on('response', async response => {
-        const url = response.url();
-        if (url.startsWith('https://megaplay.buzz/stream/getSources?id=')) {
-          console.log('Response URL:', url);
-          try {
-            const json = await response.json();
-            resolve(json);
-          } catch (err) {
-            reject(err);
-          }
-        }
-      });
-    });
+    // 3) navigate
+    const url = `https://megaplay.buzz/stream/s-2/${id}/${type}`;
+    const resp = await page.goto(url, { waitUntil: 'domcontentloaded' });
+    if (!resp) throw new Error('Navigation failed');
 
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    // 4) wait for JSON
+    const jsonResp = await page.waitForResponse(
+      r => r.url().includes('/stream/getSources?id=') && r.ok(),
+      { timeout: 15_000 }
     );
-
-    await page.goto(`https://megaplay.buzz/stream/s-2/${id}/${type}`);
-
-    return await m3u8Data;
-  });
+    return await jsonResp.json();
+  } finally {
+    await page.close();
+  }
 }
 
 export async function getStreamingData(
   id: number,
   type: 'sub' | 'dub' = 'sub'
 ) {
-  // try {
-  //   console.log(
-  //     `Fetching streaming data for ID: ${id}, Type: ${type} (cheerio)`
-  //   );
-  //   const data = await fetchStreamingDataWithCheerio(id, type);
-  //   return data;
-  // } catch (error) {
   try {
-    // console.error('Cheerio fetch failed, falling back to Puppeteer:', error);
-    const data = await fetchStreamingDataWithPuppeteer(id, type);
-    return data;
-  } catch (error) {
-    console.error('Puppeteer fetch failed:', error);
-    console.error('Error fetching streaming data:', error);
-    throw new Error('Failed to fetch streaming data');
+    return await fetchStreamingDataWithCheerio(id, type);
+  } catch (cheerioErr) {
+    console.warn('Cheerio failed, falling back to Puppeteer:', cheerioErr);
+    try {
+      return await fetchStreamingDataWithPuppeteer(id, type);
+    } catch (puppeteerErr) {
+      console.error('Puppeteer fetch failed:', puppeteerErr);
+      throw new Error('Failed to fetch streaming data');
+    }
   }
-  // }
 }

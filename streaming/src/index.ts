@@ -1,10 +1,10 @@
 import { startServer } from './server';
 import { initRedis } from './config/redis';
-import { initPuppeteerCluster } from './config/puppeteer';
+import { initBrowser } from './config/puppeteer';
 
 async function bootstrap() {
   await initRedis();
-  await initPuppeteerCluster();
+  await initBrowser();
   await startServer();
 }
 
