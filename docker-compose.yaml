@@ -65,8 +65,6 @@ services:
     image: redis:latest
     command:
       ['redis-server', '--replicaof no one', '--maxmemory-policy noeviction']
-    ports:
-      - 6379:6379
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
@@ -83,8 +81,6 @@ services:
   db:
     image: postgres
     user: postgres
-    ports:
-      - 5432:5432
     environment:
       - POSTGRES_DB=aniways
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
