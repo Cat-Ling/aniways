@@ -21,9 +21,9 @@ services:
   api:
     image: ghcr.io/coeeter/aniways-api:${GITHUB_SHA:-latest}
     secrets:
-      - env-v5
+      - env-v6
     environment:
-      - ENV_FILE=/run/secrets/env-v5
+      - ENV_FILE=/run/secrets/env-v6
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.services.api.loadbalancer.server.port=8080'
@@ -103,5 +103,5 @@ volumes:
   postgres-data:
 
 secrets:
-  env-v5:
+  env-v6:
     external: true

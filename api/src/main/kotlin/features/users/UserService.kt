@@ -23,6 +23,12 @@ class UserService(
         return user.toDto()
     }
 
+    suspend fun getUserByEmail(email: String): UserDto {
+        val user = userDao.getUserByEmail(email)
+        user ?: throw NotFoundException("User not found")
+        return user.toDto()
+    }
+
     suspend fun uploadImage(image: ByteArray): String {
         return withContext(Dispatchers.IO) {
             val cloudinary = Cloudinary(cloudinaryConfig.url)
@@ -76,5 +82,9 @@ class UserService(
         val email = this.getUserById(userId).email
         this.authenticateUser(email, body.oldPassword)
         return this.updateUser(userId, UpdateUserDto(password = body.newPassword))
+    }
+
+    suspend fun resetUserPassword(userId: String, password: String): UserDto {
+        return this.updateUser(userId, UpdateUserDto(password = password))
     }
 }

@@ -83,6 +83,9 @@ dependencies {
     // Cloudinary
     implementation(libs.cloudinary)
 
+    // Resend
+    implementation(libs.resend)
+
     // Testing Dependencies
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlin.test.junit)

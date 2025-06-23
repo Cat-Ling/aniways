@@ -3,13 +3,17 @@ package xyz.aniways.features.auth
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.auth.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.Route
 import io.ktor.server.sessions.*
 import org.koin.ktor.ext.inject
+import xyz.aniways.features.auth.daos.ResetPasswordDao
 import xyz.aniways.features.auth.db.Provider
+import xyz.aniways.features.auth.dtos.ForgotPasswordDto
+import xyz.aniways.features.auth.dtos.ResetPasswordDto
 import xyz.aniways.features.auth.services.AuthService
 import xyz.aniways.features.users.UserService
 import xyz.aniways.features.users.dtos.AuthDto
@@ -19,6 +23,15 @@ import xyz.aniways.plugins.*
 class AuthRoute() {
     @Resource("/login")
     class Login(val parent: AuthRoute)
+
+    @Resource("/forgot-password")
+    class ForgotPassword(val parent: AuthRoute)
+
+    @Resource("/reset-password")
+    class ResetPassword(val parent: AuthRoute)
+
+    @Resource("/user/{token}")
+    class UserByForgotPasswordToken(val parent: AuthRoute, val token: String)
 
     @Resource("/myanimelist/login")
     class MalLogin(val parent: AuthRoute)
@@ -111,5 +124,22 @@ fun Route.authRoutes() {
             call.sessions.clear(USER_SESSION)
         }
         call.respondRedirect(redirectTo)
+    }
+
+    post<AuthRoute.ForgotPassword> {
+        val body = call.receive<ForgotPasswordDto>()
+        authService.forgetPassword(body.email)
+        call.respond(HttpStatusCode.OK)
+    }
+
+    get<AuthRoute.UserByForgotPasswordToken> { route ->
+        val user = authService.getUserByForgotPasswordToken(route.token)
+        call.respond(user)
+    }
+
+    post<AuthRoute.ResetPassword> {
+        val body = call.receive<ResetPasswordDto>()
+        authService.resetPassword(body.token, body.password)
+        call.respond(HttpStatusCode.OK)
     }
 }

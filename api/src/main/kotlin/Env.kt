@@ -117,6 +117,26 @@ class Env {
             url = cloudinaryUrl
         )
     }
+
+    data class ResendConfig(
+        val apiKey: String,
+        val fromEmail: String,
+    )
+
+    val resendConfig by lazy {
+        val apiKey = envMap["RESEND_API_KEY"] ?: throw EnvNotFoundException("RESEND_API_KEY")
+        val fromEmail = envMap["RESEND_FROM_EMAIL"] ?: throw EnvNotFoundException("RESEND_FROM_EMAIL")
+
+        println(
+            "Resend API Key: ${if (apiKey.isNotBlank()) "****" else "not set"}" +
+            ", From Email: ${if (fromEmail.isNotBlank()) fromEmail else "not set"}"
+        )
+
+        ResendConfig(
+            apiKey = apiKey,
+            fromEmail = fromEmail
+        )
+    }
 }
 
 val Application.env by lazy { Env() }
