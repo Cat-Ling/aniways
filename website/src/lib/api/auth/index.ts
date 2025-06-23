@@ -5,6 +5,7 @@ import {
   profilePictureUploadResultSchema,
   providerSchema,
   registerFormSchema,
+  resetPasswordFormSchema,
   updatePasswordFormSchema,
   updateUserFormSchema,
   user
@@ -96,4 +97,34 @@ export const getMyAnimeListLogoutUrl = () => {
 
 export const getInstalledProviders = async (fetch: typeof global.fetch) => {
   return fetchJson(fetch, '/auth/providers', providerSchema.array());
+};
+
+export const forgotPassword = async (fetch: typeof global.fetch, email: string) => {
+  return mutate(fetch, '/auth/forgot-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email })
+  });
+};
+
+export const getUserFromToken = async (fetch: typeof global.fetch, token: string) => {
+  return fetchJson(fetch, `/auth/user/${token}`, user).catch((e) => {
+    if (e instanceof StatusError && e.status === 401) return null;
+    throw e;
+  });
+};
+
+export const resetPassword = async (
+  fetch: typeof global.fetch,
+  body: typeof resetPasswordFormSchema.infer
+) => {
+  return mutate(fetch, '/auth/reset-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
 };

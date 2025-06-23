@@ -14,7 +14,7 @@ class EmailService(
 
     suspend fun sendResetPasswordEmail(to: String, resetToken: String) {
         return withContext(Dispatchers.IO) {
-            val resetLink = "${serverConfig.frontendUrl}/reset-password?token=$resetToken"
+            val resetLink = "${serverConfig.frontendUrl}/reset-password/$resetToken"
 
             val options = CreateEmailOptions.builder()
                 .from(resendConfig.fromEmail)

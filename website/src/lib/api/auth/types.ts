@@ -59,3 +59,22 @@ export const updatePasswordFormSchema = type({
 });
 
 export const providerSchema = type("'myanimelist'|'anilist'");
+
+export const forgotPasswordFormSchema = type({
+  email: 'string.email'
+});
+
+export const resetPasswordFormSchema = type({
+  token: 'string',
+  password: 'string > 6',
+  confirmPassword: 'string'
+}).narrow((data, ctx) => {
+  if (data.password === data.confirmPassword) {
+    return true;
+  }
+
+  return ctx.reject({
+    expected: 'identical to password',
+    actual: ''
+  });
+});

@@ -19,18 +19,19 @@
 
   let { user }: Props = $props();
 
-  let open = $state(false);
+  let sheetOpen = $state(false);
+  let dialogOpen = $state(false);
 
   let formType = $state<'login' | 'register'>('login');
 
   afterNavigate(() => {
-    open = false;
+    sheetOpen = false;
   });
 </script>
 
 {#if user}
-  <Sheet.Root bind:open>
-    <Sheet.Trigger class={cn('ml-2 transition', open || 'hover:scale-110')}>
+  <Sheet.Root bind:open={sheetOpen}>
+    <Sheet.Trigger class={cn('ml-2 transition', sheetOpen || 'hover:scale-110')}>
       <img
         src={user.profilePicture ?? miku}
         alt="avatar"
@@ -70,7 +71,7 @@
           const logoutUrl = getLogoutUrl(page.url.toString());
           await fetch(logoutUrl, { credentials: 'include', redirect: 'manual' });
           await invalidateAll();
-          open = false;
+          sheetOpen = false;
         }}
       >
         <LogOut />
@@ -79,7 +80,7 @@
     </Sheet.Content>
   </Sheet.Root>
 {:else}
-  <Dialog.Root onOpenChange={() => (formType = 'login')}>
+  <Dialog.Root onOpenChange={() => (formType = 'login')} bind:open={dialogOpen}>
     <div class="bg-background ml-2 rounded-md">
       <Dialog.Trigger class={buttonVariants()}>
         <LogIn class="mr-2 size-6" />
@@ -100,6 +101,14 @@
           Already have an account?
         </Button>
       {/if}
+      <Button
+        variant="link"
+        class="-mt-2 w-fit justify-start p-0"
+        href="/forgot-password"
+        onclick={() => (dialogOpen = false)}
+      >
+        Forgot your password?
+      </Button>
     </Dialog.Content>
   </Dialog.Root>
 {/if}
