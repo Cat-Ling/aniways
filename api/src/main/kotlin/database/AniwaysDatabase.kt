@@ -9,6 +9,7 @@ import org.flywaydb.core.api.FlywayException
 import org.ktorm.database.Database
 import org.ktorm.database.Transaction
 import org.ktorm.logging.Slf4jLoggerAdapter
+import org.slf4j.LoggerFactory
 import xyz.aniways.Env
 import javax.sql.DataSource
 import kotlin.coroutines.CoroutineContext
@@ -21,10 +22,15 @@ class AniwaysDatabaseImpl(
     private val config: Env.DBConfig,
     private val dispatcher: CoroutineContext = Dispatchers.IO,
 ) : AniwaysDatabase {
+    private val logger = LoggerFactory.getLogger("AniwaysDatabase")
+    init {
+        logger.info("Initializing AniwaysDatabase with DB url: ${config.url}")
+    }
+
     private val db = migrateAndConnect { dataSource ->
         Database.connect(
             dataSource = dataSource,
-            logger = Slf4jLoggerAdapter(loggerName = "AniwaysDB"),
+            logger = Slf4jLoggerAdapter(loggerName = "AniwaysDatabase")
         )
     }
 
@@ -54,17 +60,30 @@ class AniwaysDatabaseImpl(
             jdbcUrl = config.url
             username = config.user
             password = config.password
-            maximumPoolSize = 3
+            maximumPoolSize = 10
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
             addDataSourceProperty("ssl.mode", "disable")
             connectionTestQuery = "SELECT 1"
-            connectionTimeout = 1000 // 1 second
+            connectionTimeout = 10000 // 10 seconds
             idleTimeout = 60000 // 1 minute
             maxLifetime = 1800000 // 30 minutes
             validate()
         }
 
-        return HikariDataSource(config)
+        var lastError: Exception? = null
+        repeat(5) { attempt ->
+            try {
+                logger.info("🔄 Attempting to connect to DB (try ${attempt + 1}/5)...")
+                return HikariDataSource(config)
+            } catch (e: Exception) {
+                lastError = e
+                logger.error("❌ Failed to connect to DB (try ${attempt + 1}/5)", e)
+                Thread.sleep(3_000) // wait 3 seconds before retry
+            }
+        }
+
+        logger.error("❌ Failed to connect to DB after 5 attempts", lastError)
+        throw lastError ?: Exception("Unknown error occurred while connecting to the database")
     }
 
     override suspend fun <T> query(
